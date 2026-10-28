@@ -1,5 +1,10 @@
-/** Contract maintained alongside migrations. Regenerate from the dedicated
- * TruckControl project after provisioning; no remote project exists yet. */
+import type { Database as DeployedDatabase } from "./database.generated";
+/** Domain-facing contract narrows server text fields to the validated enums.
+ * database.generated.ts records the schema actually deployed to TruckControl. */
+export type DeployedFleetTables = Pick<
+  DeployedDatabase["public"]["Tables"],
+  "organizations" | "trucks" | "drivers" | "finance_entries"
+>;
 type Table<
   Row extends { id: string; created_at: string },
   Insert = Omit<Row, "id" | "created_at"> &
@@ -108,6 +113,15 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_public_catalog: { Args: Record<string, never>; Returns: Json };
+      tc_my_access: { Args: Record<string, never>; Returns: Json };
+      tc_finish_registration: { Args: Record<string, never>; Returns: Json };
+      tc_set_ai_opt_in: { Args: { p_enabled: boolean }; Returns: Json };
+      tc_request_plan: { Args: { p_plan_id: string }; Returns: string };
+      tc_admin_control: {
+        Args: { p_action: string; p_data?: Json };
+        Returns: Json;
+      };
       list_company_documents: {
         Args: { p_organization_id: string };
         Returns: CompanyDocument[];

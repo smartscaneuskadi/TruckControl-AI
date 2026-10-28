@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { FileText, Mail, RefreshCw, ShieldCheck, Unplug } from "lucide-react";
 import { useCompany } from "../app/CompanyAccess";
+import { useSubscription } from "../app/SubscriptionContext";
 import { errorMessage, useFleet } from "../app/FleetProvider";
 import { getSupabaseClient } from "../integrations/supabase/client";
 import type {
@@ -27,6 +28,7 @@ interface IntegrationStatus {
   ai_enabled: boolean;
 }
 export function Invoices() {
+  const subscription = useSubscription();
   const access = useCompany();
   const { snapshot, execute, refresh, notify } = useFleet();
   const client = getSupabaseClient();
@@ -304,6 +306,37 @@ export function Invoices() {
         <div className="config-fact">
           <ShieldCheck size={18} /> Documentos y conexión separados por empresa
         </div>
+        {cloud && subscription.enabled && (
+          <label className="check-row">
+            <input
+              type="checkbox"
+              checked={subscription.access?.profile?.ai_opt_in ?? false}
+              disabled={busy || !subscription.access?.profile?.ai_allowed}
+              onChange={(e) => {
+                if (!client) return;
+                setBusy(true);
+                setError("");
+                void Promise.resolve(
+                  client.rpc("tc_set_ai_opt_in", {
+                    p_enabled: e.target.checked,
+                  }),
+                )
+                  .then(({ error }) => {
+                    if (error)
+                      setError("No se ha podido cambiar tu preferencia de IA.");
+                    else subscription.refresh();
+                  })
+                  .finally(() => setBusy(false));
+              }}
+            />
+            <span>
+              Usar lectura IA para mis facturas{" "}
+              {subscription.access?.profile?.ai_allowed
+                ? "(opcional)"
+                : "· pendiente de autorización del administrador"}
+            </span>
+          </label>
+        )}
         {cloud ? (
           <>
             <p>

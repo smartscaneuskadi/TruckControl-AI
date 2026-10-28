@@ -16,6 +16,11 @@ const gmailScope = "https://www.googleapis.com/auth/gmail.readonly";
 const bucket = "truckcontrol-documents";
 type Data = Record<string, unknown>;
 export interface GmailGateway {
+  featureAllowed?(
+    organizationId: string,
+    userId: string,
+    feature: string,
+  ): Promise<boolean>;
   authenticate(token: string): Promise<{ id: string } | null>;
   owns(organizationId: string, userId: string): Promise<boolean>;
   server<T>(action: string, data: Data): Promise<T>;
@@ -23,6 +28,7 @@ export interface GmailGateway {
   remove(path: string): Promise<void>;
 }
 export interface GmailConfig {
+  enforceEntitlements?: boolean;
   appOrigin: string;
   callbackUrl: string;
   oauth?: { clientId: string; clientSecret: string; encryptionKey: string };
@@ -187,7 +193,7 @@ export function createGmailHandler(
     });
     return redirect("gmail_ticket", ticket);
   }
-  async function sync(organizationId: string) {
+  async function sync(organizationId: string, userId: string) {
     const oauth = config.oauth!;
     const locked = await gateway.server<boolean>("lock_sync", {
       organization_id: organizationId,
@@ -317,7 +323,16 @@ export function createGmailHandler(
               continue;
             }
             let invoice = emptyInvoice();
-            if (config.ai && bytes.length <= 6 * 1024 * 1024) {
+            if (
+              config.ai &&
+              bytes.length <= 6 * 1024 * 1024 &&
+              (!gateway.featureAllowed ||
+                (await gateway.featureAllowed(
+                  organizationId,
+                  userId,
+                  "invoice_ai",
+                )))
+            ) {
               const reserved = await gateway.server<boolean>("reserve_ai", {
                 organization_id: organizationId,
               });
@@ -424,10 +439,27 @@ export function createGmailHandler(
       const organizationId = body.organization_id;
       if (!(await gateway.owns(organizationId, user.id)))
         return json({ error: "organization_unavailable" }, 403);
+      if (config.enforceEntitlements && !gateway.featureAllowed)
+        return json({ error: "authorization_not_configured" }, 503);
+      const gmailAllowed =
+        !gateway.featureAllowed ||
+        (await gateway.featureAllowed(organizationId, user.id, "gmail"));
+      if (
+        ["start", "complete", "sync"].includes(String(body.action)) &&
+        !gmailAllowed
+      )
+        return json({ error: "module_not_available" }, 403);
       if (body.action === "status")
         return json({
           oauth_ready: Boolean(config.oauth),
-          ai_enabled: Boolean(config.ai),
+          ai_enabled:
+            Boolean(config.ai) &&
+            (!gateway.featureAllowed ||
+              (await gateway.featureAllowed(
+                organizationId,
+                user.id,
+                "invoice_ai",
+              ))),
         });
       if (!config.oauth) return json({ error: "gmail_not_configured" }, 503);
       const oauth = config.oauth;
@@ -488,7 +520,7 @@ export function createGmailHandler(
         await gateway.server("disconnect", { organization_id: organizationId });
         return json({ disconnected: true });
       }
-      if (body.action === "sync") return await sync(organizationId);
+      if (body.action === "sync") return await sync(organizationId, user.id);
       return json({ error: "unsupported_action" }, 400);
     } catch {
       return request.method === "GET"

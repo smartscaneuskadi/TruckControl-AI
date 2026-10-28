@@ -9,5 +9,6 @@ coverage/
 playwright-report/
 test-results/
 company-test-results/
+saas-test-results/
 .DS_Store
 .openai/artifacts/

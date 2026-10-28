@@ -4,11 +4,20 @@ import type { GmailConfig, GmailGateway } from "./handler.ts";
 
 const url = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const appOrigin = Deno.env.get("TRUCKCONTROL_APP_ORIGIN")!;
+const appOrigin =
+  Deno.env.get("TRUCKCONTROL_APP_ORIGIN") ??
+  "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site";
 const client = createClient(url, serviceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 const gateway: GmailGateway = {
+  async featureAllowed(organizationId, userId, feature) {
+    const { data, error } = await client.rpc("tc_platform_server", {
+      p_action: "user_access",
+      p_data: { organization_id: organizationId, user_id: userId },
+    });
+    return !error && Boolean(data?.active && data?.features?.[feature]);
+  },
   async authenticate(token) {
     const { data, error } = await client.auth.getUser(token);
     return error ? null : data.user;
@@ -47,6 +56,7 @@ const encryptionKey = Deno.env.get("GMAIL_TOKEN_ENCRYPTION_KEY");
 const key = Deno.env.get("OPENAI_API_KEY");
 const model = Deno.env.get("OPENAI_INVOICE_MODEL");
 const config: GmailConfig = {
+  enforceEntitlements: true,
   appOrigin,
   callbackUrl: `${url}/functions/v1/company-gmail`,
   oauth:

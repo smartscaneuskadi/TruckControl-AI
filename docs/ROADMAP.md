@@ -6,7 +6,7 @@ React + TypeScript, PWA, flota inicial de 50 camiones ficticios, conductores, co
 
 ## Fase 2 · Datos compartidos
 
-Implementados en código: Supabase Auth, empresas propias, repositorio remoto por entidad, documentos privados, control de versiones y Gmail OAuth por empresa. La activación espera al proyecto independiente `truckcontrol-ai`: la cuota gratuita ha bloqueado su creación. FIXPilot permanece intacto.
+Implementados en código: Supabase Auth, empresas propias, repositorio remoto, documentos privados, versiones, Gmail OAuth, registro comercial, prueba Full de diez días y control administrativo de planes, módulos e IA por usuario. El prototipo en merymery_16 se conserva; el proyecto nuevo `truckcontrol-ai` solicitado actualmente está pendiente. FIXPilot permanece intacto.
 
 Pendiente: validar Auth, Storage, asesores y RLS en el nuevo proyecto real; configurar Google OAuth y su consentimiento; miembros y roles de equipo, auditoría y copias de seguridad. Los trabajos programados y la IA de pago requieren autorización antes de activarse. Véase [empresas y Gmail](COMPANIES_GMAIL.md).
 

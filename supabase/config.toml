@@ -391,3 +391,7 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 # auth.getUser() and organization ownership inside the function instead.
 [functions.company-gmail]
 verify_jwt = false
+
+# Signed provider webhooks have no Supabase JWT. Checkout verifies auth.getUser().
+[functions.truckcontrol-billing]
+verify_jwt = false

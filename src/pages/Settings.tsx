@@ -123,7 +123,7 @@ export function Settings() {
               <p>
                 {access.configured
                   ? "El acceso de empresas está disponible."
-                  : "Pendiente de activar: Supabase ha bloqueado la creación del proyecto independiente por el límite de proyectos gratuitos."}
+                  : "La demo funciona sin conexión de empresa. El portal de TruckControl permite solicitar una cuenta y consultar los planes."}
               </p>
               <Button onClick={access.openAccount}>Acceso de empresas</Button>
             </>

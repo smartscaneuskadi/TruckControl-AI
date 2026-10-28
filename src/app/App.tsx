@@ -52,16 +52,44 @@ import { Documents } from "../pages/Documents";
 import { Invoices } from "../pages/Invoices";
 import { useCompany } from "./CompanyAccess";
 import { initials } from "../lib/format";
+import { FeatureGate, useSubscription } from "./SubscriptionContext";
+import { commercialEnabled, trialDaysLeft } from "../domain/subscriptions";
+import type { Feature } from "../domain/subscriptions";
 
 const navigation = [
-  { to: "/dashboard", label: "Resumen general", icon: LayoutDashboard },
-  { to: "/trucks", label: "Camiones", icon: Truck },
-  { to: "/drivers", label: "Conductores", icon: UsersRound },
-  { to: "/income", label: "Ingresos", icon: ArrowUpRight },
-  { to: "/expenses", label: "Gastos", icon: ArrowDownLeft },
-  { to: "/profitability", label: "Rentabilidad", icon: Wallet },
-  { to: "/documents", label: "Documentos", icon: FileText },
-  { to: "/invoices", label: "Facturas Gmail", icon: Mail },
+  {
+    to: "/dashboard",
+    label: "Resumen general",
+    icon: LayoutDashboard,
+    feature: "dashboard",
+  },
+  { to: "/trucks", label: "Camiones", icon: Truck, feature: "trucks" },
+  {
+    to: "/drivers",
+    label: "Conductores",
+    icon: UsersRound,
+    feature: "drivers",
+  },
+  { to: "/income", label: "Ingresos", icon: ArrowUpRight, feature: "income" },
+  {
+    to: "/expenses",
+    label: "Gastos",
+    icon: ArrowDownLeft,
+    feature: "expenses",
+  },
+  {
+    to: "/profitability",
+    label: "Rentabilidad",
+    icon: Wallet,
+    feature: "profitability",
+  },
+  {
+    to: "/documents",
+    label: "Documentos",
+    icon: FileText,
+    feature: "documents",
+  },
+  { to: "/invoices", label: "Facturas Gmail", icon: Mail, feature: "gmail" },
 ];
 
 export function App() {
@@ -73,7 +101,8 @@ export function App() {
 }
 
 function Workspace() {
-  const { snapshot } = useFleet();
+  const { snapshot, notify } = useFleet();
+  const subscription = useSubscription();
   const access = useCompany();
   const cloud = access.mode === "company";
   const location = useLocation();
@@ -116,7 +145,21 @@ function Workspace() {
       value={{
         period,
         setPeriod,
-        edit: setEditor,
+        edit: (value) => {
+          const feature: Feature =
+            value.kind === "truck"
+              ? "trucks"
+              : value.kind === "driver"
+                ? "drivers"
+                : value.kind === "income"
+                  ? "income"
+                  : "expenses";
+          if (subscription.enabled && !subscription.features[feature]) {
+            notify("Este módulo está desactivado para tu cuenta.");
+            return;
+          }
+          setEditor(value);
+        },
         viewTruck: (truck) => setTruckId(truck.id),
       }}
     >
@@ -167,31 +210,39 @@ function Workspace() {
         </div>
         <div className="nav-section-label">GESTIÓN DE FLOTA</div>
         <nav>
-          {navigation.map((item) => (
-            <NavLink
-              to={item.to}
-              key={item.to}
-              className={({ isActive }) =>
-                `nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <item.icon size={18} />
-              <span>{item.label}</span>
-              {item.to === "/trucks" && (
-                <span className="nav-count">{snapshot.trucks.length}</span>
-              )}
-            </NavLink>
-          ))}
+          {navigation
+            .filter(
+              (item) =>
+                !subscription.enabled ||
+                subscription.features[item.feature as Feature],
+            )
+            .map((item) => (
+              <NavLink
+                to={item.to}
+                key={item.to}
+                className={({ isActive }) =>
+                  `nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <item.icon size={18} />
+                <span>{item.label}</span>
+                {item.to === "/trucks" && (
+                  <span className="nav-count">{snapshot.trucks.length}</span>
+                )}
+              </NavLink>
+            ))}
         </nav>
         <div className="nav-section-label intelligence-label">INTELIGENCIA</div>
-        <NavLink
-          to="/assistant"
-          className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
-        >
-          <Sparkles size={18} />
-          <span>Copiloto de flota</span>
-          <span className="new-badge">LAB</span>
-        </NavLink>
+        {(!subscription.enabled || subscription.features.assistant) && (
+          <NavLink
+            to="/assistant"
+            className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+          >
+            <Sparkles size={18} />
+            <span>Copiloto de flota</span>
+            <span className="new-badge">LAB</span>
+          </NavLink>
+        )}
         <div className="sidebar-spacer" />
         <Link to="/assistant" className="sidebar-promo">
           <span className="promo-icon">
@@ -204,6 +255,18 @@ function Workspace() {
           </span>
         </Link>
         <div className="sidebar-bottom">
+          {subscription.enabled && (
+            <button className="nav-link" onClick={subscription.openPlans}>
+              <Wallet size={18} />
+              <span>Mi plan y suscripción</span>
+            </button>
+          )}
+          {commercialEnabled() && !cloud && (
+            <button className="nav-link" onClick={access.portal}>
+              <Building2 size={18} />
+              <span>Planes y registro</span>
+            </button>
+          )}
           {!cloud && (
             <button className="nav-link" onClick={access.openAccount}>
               <Building2 size={18} />
@@ -262,7 +325,12 @@ function Workspace() {
             </button>
             <span className="demo-pill">
               <span />
-              {cloud ? "Modo empresa" : "Modo demo"}
+              {subscription.enabled &&
+              subscription.access?.profile?.status === "trial"
+                ? `Prueba: ${trialDaysLeft(subscription.access.profile.trial_ends_at)} días`
+                : cloud
+                  ? "Modo empresa"
+                  : "Modo demo"}
             </span>
             {canInstall && (
               <button
@@ -289,32 +357,79 @@ function Workspace() {
         <main id="main-content" tabIndex={-1} className="page-content">
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/trucks" element={<Trucks key={location.search} />} />
+            <Route
+              path="/dashboard"
+              element={
+                <FeatureGate feature="dashboard">
+                  <Dashboard />
+                </FeatureGate>
+              }
+            />
+            <Route
+              path="/trucks"
+              element={
+                <FeatureGate feature="trucks">
+                  <Trucks key={location.search} />
+                </FeatureGate>
+              }
+            />
             <Route
               path="/drivers"
-              element={<Drivers key={location.search} />}
+              element={
+                <FeatureGate feature="drivers">
+                  <Drivers key={location.search} />
+                </FeatureGate>
+              }
             />
             <Route
               path="/income"
               element={
-                <Finance kind="income" key={`income${location.search}`} />
+                <FeatureGate feature="income">
+                  <Finance kind="income" key={`income${location.search}`} />
+                </FeatureGate>
               }
             />
             <Route
               path="/expenses"
               element={
-                <Finance kind="expense" key={`expense${location.search}`} />
+                <FeatureGate feature="expenses">
+                  <Finance kind="expense" key={`expense${location.search}`} />
+                </FeatureGate>
               }
             />
             <Route
               path="/profitability"
-              element={<Profitability key={location.search} />}
+              element={
+                <FeatureGate feature="profitability">
+                  <Profitability key={location.search} />
+                </FeatureGate>
+              }
             />
-            <Route path="/assistant" element={<Assistant />} />
+            <Route
+              path="/assistant"
+              element={
+                <FeatureGate feature="assistant">
+                  <Assistant />
+                </FeatureGate>
+              }
+            />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/documents" element={<Documents />} />
-            <Route path="/invoices" element={<Invoices />} />
+            <Route
+              path="/documents"
+              element={
+                <FeatureGate feature="documents">
+                  <Documents />
+                </FeatureGate>
+              }
+            />
+            <Route
+              path="/invoices"
+              element={
+                <FeatureGate feature="gmail">
+                  <Invoices />
+                </FeatureGate>
+              }
+            />
             <Route
               path="*"
               element={

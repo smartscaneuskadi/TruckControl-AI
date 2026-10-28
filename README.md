@@ -2,6 +2,10 @@
 
 Aplicación de gestión inteligente de flotas. **Fase 1: React + TypeScript, 50 camiones de demostración y arquitectura ampliable con Supabase.**
 
+La ampliación SaaS está preparada localmente: planes antes del registro, datos de empresa, verificación de correo/SMS, prueba Full de diez días y administración de clientes, módulos e IA por usuario. Se conservan las **140 pruebas aprobadas**, incluidas las 105 anteriores y las 64 originales.
+
+**Estado actual:** el último destino solicitado es un proyecto nuevo `truckcontrol-ai` en `fixpilot-dev`. Todavía no está creado. La configuración autorizada anteriormente en `merymery_16` se conserva como prototipo separado de FIXPilot. Esta entrega permite revisar el portal comercial sin conectarlo al prototipo; el registro real sigue pendiente del proyecto independiente. La aplicación de una migración adicional de índices quedó bloqueada por el límite de uso de la revisión automática. Véase [administración y estado de activación](docs/SAAS_ADMIN.md).
+
 ## Probar la aplicación
 
 La demostración se publica de forma privada en [TruckControl AI](https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site). Abre el enlace con la cuenta propietaria de Sites; no necesitas terminal, instalación de dependencias ni una cuenta de Supabase.
@@ -54,7 +58,7 @@ Los movimientos cuentan por **fecha de devengo**, incluidos los pendientes de pa
 
 Solo se usan datos ficticios. Los correos iniciales pertenecen a `example.com`. No hay envío de datos a modelos IA ni solicitudes a Supabase durante la demo. El copiloto utiliza reglas locales explicables, no un LLM.
 
-Las migraciones **no se han aplicado a ningún proyecto remoto**. El código de autenticación y adaptador remoto está implementado y probado con servicios simulados; activarlo requiere el proyecto nuevo, sus migraciones, la configuración de Auth y verificaciones reales. Los roles de empleados e invitaciones son trabajo posterior.
+Las cuatro primeras migraciones están aplicadas al prototipo autorizado de merymery_16; una migración adicional de índices está validada localmente y pendiente de aplicación. El destino nuevo sigue pendiente. Antes de activar clientes reales se necesitan sus credenciales propias, ajustes de Auth y los proveedores autorizados de SMS, Google, pagos e IA. Los roles de empleados e invitaciones son trabajo posterior.
 
 La copia JSON es descargable; su importación no forma parte de la Fase 1. No utilices el almacenamiento de demostración para datos empresariales reales. No incluye cifrado, auditoría contable ni copias automáticas de servidor.
 
@@ -72,6 +76,7 @@ npm run check                   # TypeScript, pruebas de dominio/SQL y build PWA
 npx playwright install chromium # Solo para preparar un entorno de pruebas nuevo
 npm run test:e2e                # Escenarios de escritorio y móvil
 npm run test:e2e:companies      # Cuentas/empresas con servicios simulados; build aislado
+npm run test:e2e:saas           # Portal, registro, SMS simulado, planes y administración
 ```
 
 El CI está configurado para ejecutar estas comprobaciones cuando el repositorio sea accesible. La demo no necesita `.env`. `.env.example` reserva únicamente URL y clave publicable del proyecto TruckControl; nunca claves secretas en el cliente. El modelo de servidores y los bloqueos de activación están en [empresas y Gmail](docs/COMPANIES_GMAIL.md).

@@ -6,11 +6,15 @@ import { getSupabaseClient } from "../integrations/supabase/client";
 import { SupabaseFleetRepository } from "../integrations/supabase/repository";
 import { Button, Field } from "../components/ui";
 import { FleetProvider } from "./FleetProvider";
+import { commercialEnabled } from "../domain/subscriptions";
+import type { Plan } from "../domain/subscriptions";
+import { PublicPortal } from "../pages/PublicPortal";
+import { CommercialSession } from "./CommercialSession";
 
 type Organization = { id: string; name: string };
 interface Access {
   configured: boolean;
-  mode: "demo" | "company";
+  mode: "demo" | "company" | "portal";
   user: User | null;
   organizations: Organization[];
   organization: Organization | null;
@@ -19,6 +23,7 @@ interface Access {
   select(id: string): void;
   newCompany(): void;
   signOut(): Promise<void>;
+  portal(): void;
 }
 const Context = createContext<Access | null>(null);
 const companyPreference = () => {
@@ -33,9 +38,11 @@ const companyPreference = () => {
 };
 export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   const [client] = useState(getSupabaseClient);
-  const [mode, setMode] = useState<"demo" | "company">(() =>
-    companyPreference() ? "company" : "demo",
+  const [mode, setMode] = useState<"demo" | "company" | "portal">(() =>
+    companyPreference() ? "company" : commercialEnabled() ? "portal" : "demo",
   );
+  const [entryView, setEntryView] = useState<"login" | "signup">("login");
+  const [entryPlan, setEntryPlan] = useState<Plan["id"]>("full");
   const [account, setAccount] = useState<{
     user: User | null;
     organizations: Organization[];
@@ -131,7 +138,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   }, [client, userId, revision]);
   const organization =
     account.organizations.find((o) => o.id === selected) ?? null;
-  function changeMode(next: "demo" | "company") {
+  function changeMode(next: "demo" | "company" | "portal") {
     setMode(next);
     try {
       sessionStorage.setItem(
@@ -149,6 +156,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     organizations: account.organizations,
     organization,
     openAccount: () => changeMode("company"),
+    portal: () => changeMode("portal"),
     demo: () => changeMode("demo"),
     select: (id) => {
       if (account.organizations.some((o) => o.id === id)) setSelected(id);
@@ -169,7 +177,46 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   };
   return (
     <Context.Provider value={value}>
-      {mode === "company" && (!organization || !account.user || recovery) ? (
+      {mode === "portal" && commercialEnabled() ? (
+        <PublicPortal
+          onDemo={() => {
+            window.location.hash = "/dashboard";
+            changeMode("demo");
+          }}
+          onAccess={(view, plan) => {
+            setEntryView(view);
+            setEntryPlan(plan ?? "full");
+            changeMode("company");
+          }}
+        />
+      ) : mode === "company" && commercialEnabled() ? (
+        <CommercialSession
+          key={account.user?.id ?? "visitor"}
+          user={account.user}
+          initialView={entryView}
+          plan={entryPlan}
+          recovery={recovery}
+          onRecovered={() => setRecovery(false)}
+          onProvisioned={() => setRevision((n) => n + 1)}
+          onBack={() => changeMode("portal")}
+          onDemo={() => changeMode("demo")}
+          onSignOut={value.signOut}
+        >
+          {!organization ? (
+            <main className="boot-screen">
+              <p role="status">Cargando tu empresa…</p>
+              <button
+                className="button secondary"
+                onClick={() => setRevision((n) => n + 1)}
+              >
+                Reintentar
+              </button>
+            </main>
+          ) : (
+            children
+          )}
+        </CommercialSession>
+      ) : mode === "company" && (!organization || !account.user || recovery) ? (
         <AccessScreen
           client={client}
           user={account.user}
@@ -209,7 +256,7 @@ export function FleetAccess({ children }: { children: ReactNode }) {
     <FleetProvider
       key={repository ? `${user!.id}:${organization!.id}` : "local-demo"}
       repository={repository}
-      mode={mode}
+      mode={mode === "company" ? "company" : "demo"}
       onDemo={demo}
     >
       {children}
@@ -351,9 +398,8 @@ function AccessScreen({
         {!client ? (
           <>
             <p>
-              La demo está disponible. El acceso de empresas espera al proyecto
-              independiente de Supabase: la cuenta ha alcanzado su límite de
-              proyectos gratuitos.
+              Esta demostración guarda sus datos en el navegador. El acceso de
+              empresas se habilita desde el portal de TruckControl AI.
             </p>
             <p>
               Tu Gmail se conectará desde tu empresa cuando se active este

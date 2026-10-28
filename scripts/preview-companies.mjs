@@ -12,7 +12,7 @@ const child = spawn(
     "--host",
     "127.0.0.1",
     "--port",
-    "4184",
+    process.env.TRUCKCONTROL_TEST_PREVIEW_PORT ?? "4184",
     "--outDir",
     directory,
   ],

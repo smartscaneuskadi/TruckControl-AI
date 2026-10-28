@@ -11,6 +11,10 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      VITE_COMMERCIAL_MODE: "false"
+      VITE_SUPABASE_URL: ""
+      VITE_SUPABASE_PUBLISHABLE_KEY: ""
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -24,6 +28,9 @@ jobs:
       - run: npm run test:e2e:companies
         env:
           TRUCKCONTROL_COMPANY_TEST_ARTIFACTS: company-test-results
+      - run: npm run test:e2e:saas
+        env:
+          TRUCKCONTROL_SAAS_TEST_ARTIFACTS: saas-test-results
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -31,4 +38,5 @@ jobs:
           path: |
             playwright-report/
             company-test-results/
+            saas-test-results/
           retention-days: 7

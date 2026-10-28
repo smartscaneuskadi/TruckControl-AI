@@ -59,7 +59,7 @@ La migración se valida en PGlite con roles `anon` y `authenticated` y una funci
 
 La fábrica solo admite claves `sb_publishable_`. Las claves secretas nunca pertenecen a variables `VITE_` ni al código público.
 
-El aprovisionamiento de `truckcontrol-ai` en `fixpilot-dev` está bloqueado por la cuota de dos proyectos gratuitos. No existe un proyecto TruckControl remoto ni se ha modificado FIXPilot. Los documentos, las credenciales Gmail y las operaciones de importación se describen en [empresas y Gmail](COMPANIES_GMAIL.md), incluidos los pasos pendientes antes de activar el acceso real.
+El proyecto nuevo `truckcontrol-ai` solicitado actualmente sigue pendiente de creación. El prototipo preparado anteriormente en merymery_16 conserva las migraciones de negocio, Auth y plataforma comercial, con funciones desplegadas; no se ha modificado FIXPilot. La configuración comercial de destino no reutiliza las claves del prototipo. El ciclo de registro, prueba, permisos y pagos se describe en [administración SaaS](SAAS_ADMIN.md).
 
 ## Bots IA
 

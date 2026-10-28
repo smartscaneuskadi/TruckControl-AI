@@ -2,7 +2,11 @@
 
 Las 64 pruebas originales (48 Vitest y 16 Playwright) se conservan sin modificar. La ampliación añade pruebas de permisos, OAuth, documentos, concurrencia, paginación y pantallas de empresa. No usa credenciales empresariales ni efectúa llamadas a servicios IA reales.
 
-Resultado de esta entrega, 28/10/2026: **105 pruebas aprobadas** — 75 Vitest, 22 Playwright de demo y 8 Playwright de empresas con servicios simulados. TypeScript, compilación PWA y `deno check` correctos. Se verificaron los hashes de los seis archivos originales de pruebas antes de guardar la entrega.
+Resultado de la ampliación SaaS, 28/10/2026: **140 pruebas aprobadas** — 98 Vitest, 22 Playwright de demo, 8 Playwright de empresas y 12 Playwright SaaS con servicios simulados. Las 105 pruebas de la entrega anterior se conservan; también siguen intactas las 64 originales. TypeScript, compilación PWA y `deno check` correctos.
+
+En el prototipo autorizado de merymery_16 se comprobó además aislamiento entre dos empresas, suspensión y cuenta administradora en PostgreSQL real, dentro de una transacción revertida. No quedaron usuarios ficticios en Auth. El catálogo público respondió HTTP 200 y administración/Gmail/cobros rechazaron acceso sin sesión con HTTP 401. El asesor de seguridad no señaló incidencias. No se enviaron correos, SMS, facturas a IA ni pagos reales.
+
+La migración adicional de índices pasa las pruebas locales, pero no se aplicó al prototipo: la revisión automática no pudo completarse por límite de uso. El destino nuevo `truckcontrol-ai` solicitado posteriormente todavía no existe. La compilación comercial de revisión muestra planes y demo con las credenciales vacías; no permite enviar un registro real.
 
 ## Pruebas automatizadas
 
@@ -10,7 +14,7 @@ Resultado de esta entrega, 28/10/2026: **105 pruebas aprobadas** — 75 Vitest, 
 
 Vitest cubre cálculos con céntimos, entradas decimales, pérdida y margen sin ingresos, límites mensuales y anuales, conciliación de los 50 camiones, asignaciones, matrículas duplicadas, protección del historial y exportación CSV. También comprueba persistencia entre instancias, rechazo de datos corruptos sin sobrescritura y errores de cuota.
 
-Las pruebas SQL ejecutan las migraciones en PGlite (PostgreSQL WASM) y prueban RLS entre dos organizaciones, permisos anónimos, restricciones de claves externas, importes, borrados y asignaciones. La función `auth.uid()` es un stub de prueba; no se ha conectado ni modificado una base remota.
+Las pruebas SQL ejecutan las migraciones en PGlite (PostgreSQL WASM) y prueban RLS entre dos organizaciones, permisos anónimos, restricciones de claves externas, importes, borrados y asignaciones. La función `auth.uid()` es un stub de prueba; esta batería se ejecuta sin conectarse a una base remota. Las comprobaciones remotas independientes se describen al principio de este documento.
 
 `npm run test:e2e` usa Playwright con dos perfiles de Chromium: escritorio de 1440 px y emulación de Pixel 7. Cubre:
 

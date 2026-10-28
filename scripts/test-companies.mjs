@@ -5,6 +5,7 @@ import { spawnSync } from "node:child_process";
 const run = mkdtempSync(join(tmpdir(), "truckcontrol-company-tests-"));
 const env = {
   ...process.env,
+  VITE_COMMERCIAL_MODE: "false",
   VITE_SUPABASE_URL: "http://127.0.0.1:9999",
   VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_synthetic_browser_fixture",
   TRUCKCONTROL_COMPANY_TEST_DIST: join(run, "dist"),

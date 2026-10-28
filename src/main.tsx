@@ -7,6 +7,7 @@ import { PwaTools } from "./components/PwaTools";
 import "./styles.css";
 import "./styles/professional-theme.css";
 import "./styles/company.css";
+import "./styles/commercial.css";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
