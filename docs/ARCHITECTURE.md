@@ -9,7 +9,9 @@ flowchart TD
   CMD --> DOMAIN[Dominio financiero · céntimos enteros]
   APP --> REPO[Contrato FleetRepository]
   REPO --> LOCAL[LocalFleetRepository · demo del navegador]
-  REPO -. futura implementación .-> SUPA[Supabase · Auth + Postgres + RLS]
+  REPO --> SUPA[SupabaseFleetRepository · Auth + Postgres + RLS]
+  SUPA --> GMAIL[Edge Function · OAuth Gmail por empresa]
+  GMAIL --> REVIEW[Adjuntos privados · revisión de factura]
   UI --> ANALYSIS[Contrato InsightProvider]
   ANALYSIS --> RULES[Reglas locales explicables]
   ANALYSIS -. futura implementación .-> BOTS[Edge Functions · bots con autorización]
@@ -19,18 +21,21 @@ flowchart TD
 - `src/data`: semilla ficticia y adaptador local del contrato de repositorio.
 - `src/app`: carga, estado de la flota, serialización del guardado y navegación con hash. Los enlaces profundos no requieren reescrituras en el servidor.
 - `src/components`, `src/pages`: interfaz adaptable, formularios y presentación. El estado visual solo cambia después de guardar correctamente.
-- `src/integrations/supabase`: fábrica de cliente opcional y contrato de tablas. No se instancia durante la demo. Los tipos son un contrato inicial mantenido a mano, no una extracción de un proyecto remoto.
-- `supabase/migrations`: esquema inicial creado con la CLI y probado con PostgreSQL embebido.
+- `src/integrations/supabase`: cliente opcional, repositorio remoto, documentos y contrato de tablas/RPC. Sin configuración, la demo no instancia un cliente. Los tipos se mantienen junto a las migraciones y deberán regenerarse al existir el proyecto remoto.
+- `supabase/migrations`: esquema creado con la CLI y probado con PostgreSQL embebido.
+- `supabase/functions`: OAuth por empresa, cifrado de tokens, importación Gmail y extracción revisable. La lectura IA requiere activación explícita y está deshabilitada por defecto.
 
 ## Estado y persistencia
 
-`FleetRepository` ofrece `load`, `save` y `reset`. La implementación local guarda un documento versionado en `truckcontrol.demo.v1`. Zod comprueba los registros al cargar y guardar; la validación de dominio comprueba identificadores únicos, matrículas normalizadas, asignaciones únicas y referencias a camiones existentes.
+`FleetRepository` ofrece `load`, `save`, `reset` y, para el adaptador remoto, `execute`. La implementación local guarda un documento versionado en `truckcontrol.demo.v1`. Zod comprueba los registros al cargar y guardar; la validación de dominio comprueba identificadores únicos, matrículas normalizadas, asignaciones únicas y referencias a camiones existentes.
 
 Un conductor asignado no puede borrarse ni ponerse de permiso. Un camión con movimientos no puede eliminarse. La demo permite editar y borrar movimientos explícitamente; no implementa todavía un libro contable inmutable.
 
 Si los datos guardados están dañados o tienen una versión desconocida, la carga no los sobrescribe. Se muestra una recuperación mediante restablecimiento explícito. Si el navegador rechaza un guardado, la interfaz conserva el estado anterior y muestra el error. Hay una exclusión de guardados simultáneos dentro de una pestaña. **No hay bloqueo o reconciliación entre varias pestañas**; usar una sola pestaña de edición durante esta fase.
 
-El documento completo es suficiente para 50 camiones y la demo de 2.100 movimientos. Para producción se debe sustituir por consultas paginadas y escrituras de entidad, con control de concurrencia en servidor. No se debe replicar el guardado completo del snapshot en Supabase.
+El documento completo se conserva para la demo de 50 camiones y 2.100 movimientos. `SupabaseFleetRepository` pagina lecturas y escribe cada entidad con organización, ID y versión anterior. El servidor incrementa la versión; las ediciones obsoletas se rechazan. El adaptador remoto bloquea el guardado completo de snapshots y el restablecimiento de datos de empresa.
+
+`CompanyAccessProvider` controla sesión, recuperación de contraseña y empresa seleccionada; usa PKCE para que los enlaces de Auth no colisionen con el router hash. Cambiar de usuario/empresa remonta `FleetProvider` con un repositorio nuevo y descarta respuestas de la carga anterior. La demo mantiene su clave original y no recibe snapshots de empresa.
 
 ## Economía y fechas
 
@@ -48,11 +53,13 @@ La migración se valida en PGlite con roles `anon` y `authenticated` y una funci
 
 1. Elegir el proyecto de Supabase de destino y revisar su esquema y configuración de Data API.
 2. Aplicar y verificar la migración en desarrollo; ejecutar los asesores de seguridad y rendimiento.
-3. Regenerar los tipos desde ese proyecto, implementar autenticación y un repositorio remoto por entidad.
+3. Regenerar los tipos desde ese proyecto y verificar la autenticación y el repositorio remoto ya implementados.
 4. Probar las políticas con sesiones reales de diferentes propietarios y añadir roles de equipo.
 5. Definir concurrencia, auditoría, copias de seguridad y sincronización antes de incorporar información real.
 
 La fábrica solo admite claves `sb_publishable_`. Las claves secretas nunca pertenecen a variables `VITE_` ni al código público.
+
+El aprovisionamiento de `truckcontrol-ai` en `fixpilot-dev` está bloqueado por la cuota de dos proyectos gratuitos. No existe un proyecto TruckControl remoto ni se ha modificado FIXPilot. Los documentos, las credenciales Gmail y las operaciones de importación se describen en [empresas y Gmail](COMPANIES_GMAIL.md), incluidos los pasos pendientes antes de activar el acceso real.
 
 ## Bots IA
 
@@ -60,6 +67,6 @@ La fábrica solo admite claves `sb_publishable_`. Las claves secretas nunca pert
 
 ## Distribución
 
-Vite construye una SPA estática. `vite-plugin-pwa` genera manifiesto y service worker con caché de HTML, JS, CSS, iconos y fuentes locales. La actualización se propone al usuario para que guarde sus formularios primero. Sites aloja la demo privada mediante `.openai/hosting.json`; el código principal permanece en el repositorio GitHub del usuario.
+Vite construye una SPA estática. `vite-plugin-pwa` genera manifiesto y service worker con caché de HTML, JS, CSS, iconos y fuentes locales. La actualización se propone al usuario para que guarde sus formularios primero. No se almacenan respuestas de Auth, Storage o la API de empresas en el service worker. Sites aloja la demo privada mediante `.openai/hosting.json`. El código está conservado en Git local y en el repositorio de fuente de Sites; la subida al GitHub del usuario sigue bloqueada por falta de acceso desde la conexión actual.
 
 La PWA comparte interfaz entre escritorio y móvil, pero cada navegador mantiene sus datos. Un envoltorio nativo Tauri/Capacitor, firma y distribución en tiendas son pasos posteriores si se requieren instaladores o integraciones con el dispositivo.

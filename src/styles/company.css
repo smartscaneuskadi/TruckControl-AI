@@ -1,0 +1,199 @@
+.access-page {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  align-items: center;
+  gap: 64px;
+  max-width: 1160px;
+  margin: auto;
+  padding: 60px 32px;
+}
+.access-intro h1 {
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.15;
+  letter-spacing: -1.8px;
+  margin: 24px 0;
+}
+.access-intro h1 span {
+  color: #69dfaf;
+}
+.access-intro .eyebrow {
+  color: #9dc8b8;
+}
+.access-intro p:not(.eyebrow) {
+  color: #a9b9cb;
+  line-height: 1.8;
+  max-width: 450px;
+}
+.access-intro .brand-mark {
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+}
+.access-card {
+  padding: 32px;
+}
+.access-card h2 {
+  margin: 18px 0;
+  font-size: 24px;
+}
+.access-card p,
+.integration-card p {
+  line-height: 1.7;
+  color: #b9c8d8;
+}
+.access-form {
+  display: grid;
+  gap: 20px;
+}
+.access-form label,
+.integration-fields label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 0;
+}
+.access-form input,
+.integration-fields input,
+.integration-fields select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #33485f;
+  border-radius: 9px;
+  background: #0c1621;
+  color: #e6eff9;
+  font: inherit;
+}
+.access-form input:focus,
+.integration-fields input:focus,
+.integration-fields select:focus {
+  outline: 2px solid #69dfaf;
+  outline-offset: 2px;
+}
+.access-form small,
+.integration-card small {
+  color: #a7b9cd;
+  font-weight: 400;
+}
+.access-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+.access-message {
+  border-left: 3px solid #69dfaf;
+  padding: 12px;
+  background: #103c2e;
+}
+.integration-card {
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.integration-card h2 {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 16px 0;
+}
+.integration-card .button {
+  margin-top: 14px;
+}
+.integration-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 20px 0;
+}
+.document-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.document-card {
+  padding: 24px;
+  min-width: 0;
+}
+.document-card h2 {
+  overflow-wrap: anywhere;
+  font-size: 16px;
+  margin: 18px 0 12px;
+}
+.document-card p {
+  color: #b2c4d6;
+  line-height: 1.6;
+  font-size: 13px;
+}
+.document-card .badge {
+  float: right;
+}
+.company-select {
+  max-width: 100%;
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px;
+  background: #0c1621;
+  border: 1px solid #33485f;
+  color: #e6eff9;
+  border-radius: 8px;
+}
+.invoice-amounts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 18px 0;
+}
+.invoice-amounts span {
+  display: grid;
+  gap: 8px;
+  color: #a7b9cd;
+  font-size: 12px;
+}
+.invoice-amounts strong {
+  color: #edf5ff;
+  font-size: 17px;
+}
+.invoice-review-note {
+  color: #f5ce85 !important;
+}
+.integration-status {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 1000px) {
+  .access-page {
+    gap: 32px;
+  }
+  .document-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .integration-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 650px) {
+  .access-page {
+    grid-template-columns: 1fr;
+    padding: 32px 18px;
+    gap: 24px;
+  }
+  .access-intro h1 {
+    margin: 16px 0;
+  }
+  .access-card,
+  .integration-card {
+    padding: 22px;
+  }
+  .document-grid,
+  .integration-fields {
+    grid-template-columns: 1fr;
+  }
+  .document-upload input[type="file"] {
+    max-width: 100%;
+  }
+}

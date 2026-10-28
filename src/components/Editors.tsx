@@ -1,5 +1,5 @@
-import { Children, cloneElement, isValidElement, useId, useState } from "react";
-import type { FormEvent, ReactElement, ReactNode } from "react";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { Save, Trash2 } from "lucide-react";
 import { useFleet, errorMessage } from "../app/FleetProvider";
 import type { Editor } from "../app/WorkspaceContext";
@@ -13,30 +13,7 @@ import {
 } from "../domain/models";
 import { parseMoney } from "../domain/finance";
 import { today } from "../lib/format";
-import { Button, Modal } from "./ui";
-
-function Field({
-  label,
-  children,
-  full,
-}: {
-  label: string;
-  children: ReactNode;
-  full?: boolean;
-}) {
-  const id = useId();
-  return (
-    <div className={`field ${full ? "full" : ""}`}>
-      <label htmlFor={id}>{label}</label>
-      {Children.map(children, (child) =>
-        isValidElement(child) &&
-        (child.type === "input" || child.type === "select")
-          ? cloneElement(child as ReactElement<{ id?: string }>, { id })
-          : child,
-      )}
-    </div>
-  );
-}
+import { Button, Field, Modal } from "./ui";
 const text = (data: FormData, key: string) =>
   String(data.get(key) ?? "").trim();
 const integer = (data: FormData, key: string) => {

@@ -2,10 +2,11 @@ import { Component, StrictMode } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
-import { FleetProvider } from "./app/FleetProvider";
+import { CompanyAccessProvider, FleetAccess } from "./app/CompanyAccess";
 import { PwaTools } from "./components/PwaTools";
 import "./styles.css";
 import "./styles/professional-theme.css";
+import "./styles/company.css";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -43,9 +44,11 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
       <PwaTools>
-        <FleetProvider>
-          <App />
-        </FleetProvider>
+        <CompanyAccessProvider>
+          <FleetAccess>
+            <App />
+          </FleetAccess>
+        </CompanyAccessProvider>
       </PwaTools>
     </ErrorBoundary>
   </StrictMode>,

@@ -1,5 +1,12 @@
-import { useEffect, useRef } from "react";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useId,
+  useRef,
+} from "react";
+import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowDownLeft,
@@ -11,6 +18,29 @@ import {
 } from "lucide-react";
 import { monthLabel, number } from "../lib/format";
 import type { FleetSnapshot, Period } from "../domain/models";
+
+export function Field({
+  label,
+  children,
+  full,
+}: {
+  label: string;
+  children: ReactNode;
+  full?: boolean;
+}) {
+  const id = useId();
+  return (
+    <div className={`field ${full ? "full" : ""}`}>
+      <label htmlFor={id}>{label}</label>
+      {Children.map(children, (child) =>
+        isValidElement(child) &&
+        (child.type === "input" || child.type === "select")
+          ? cloneElement(child as ReactElement<{ id?: string }>, { id })
+          : child,
+      )}
+    </div>
+  );
+}
 
 export function Button({
   children,

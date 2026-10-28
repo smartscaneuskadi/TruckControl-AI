@@ -10,10 +10,14 @@ import {
 import { useFleet, errorMessage } from "../app/FleetProvider";
 import { useInstall } from "../components/PwaTools";
 import { downloadFile } from "../lib/export";
-import { Badge, Button, Modal, PageHeading } from "../components/ui";
+import { Badge, Button, Field, Modal, PageHeading } from "../components/ui";
+import { useCompany } from "../app/CompanyAccess";
+import { Link } from "react-router-dom";
 
 export function Settings() {
-  const { snapshot, reset, busy, notify } = useFleet();
+  const { snapshot, reset, refresh, busy, notify } = useFleet();
+  const access = useCompany();
+  const cloud = access.mode === "company";
   const { install, installed } = useInstall();
   const [confirm, setConfirm] = useState(false);
   const [error, setError] = useState("");
@@ -22,7 +26,11 @@ export function Settings() {
       <PageHeading
         eyebrow="TU ESPACIO DE TRABAJO"
         title="Configuración"
-        description="Controla tus datos de demostración y lleva la aplicación contigo."
+        description={
+          cloud
+            ? "Gestiona tu cuenta, tus empresas y sus conexiones."
+            : "Controla tus datos de demostración y lleva la aplicación contigo."
+        }
       />
       <div className="settings-grid">
         <section className="card settings-card">
@@ -48,43 +56,106 @@ export function Settings() {
           <span className="settings-icon">
             <Database size={25} />
           </span>
-          <Badge>Preparado · sin conectar</Badge>
-          <h2>Base para Supabase</h2>
+          <Badge tone={cloud ? "green" : "amber"}>
+            {cloud ? "Cuenta conectada" : "Acceso de empresas"}
+          </Badge>
+          <h2>
+            {cloud
+              ? snapshot.organization.name
+              : "Cada empresa, su propio espacio"}
+          </h2>
           <p>
-            El proyecto incluye el esquema SQL, aislamiento por organización y
-            un cliente configurable. La demo usa el repositorio local y no
-            necesita credenciales.
+            {cloud
+              ? `Sesión de ${access.user?.email}. Tus empresas solo están disponibles desde tu cuenta.`
+              : "Gestiona empresas con datos separados y una conexión Gmail propia. La demostración seguirá guardada en este navegador."}
           </p>
           <div className="config-fact">
             <ShieldCheck size={17} />
-            Esquema con políticas RLS por propietario
+            Permisos por propietario y empresa
           </div>
-          <small>
-            La conexión, el inicio de sesión y la sincronización se incorporarán
-            en una fase posterior.
-          </small>
+          {cloud ? (
+            <>
+              <Field label="Empresa activa">
+                <select
+                  className="company-select"
+                  value={snapshot.organization.id}
+                  onChange={(e) => access.select(e.target.value)}
+                >
+                  {access.organizations.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.name}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <div className="access-links">
+                <Button variant="secondary" onClick={access.newCompany}>
+                  Crear otra empresa
+                </Button>
+                <Button
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() =>
+                    void refresh()
+                      .then(() => notify("Datos actualizados."))
+                      .catch((e) => setError(errorMessage(e)))
+                  }
+                >
+                  Actualizar datos
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() =>
+                    void access
+                      .signOut()
+                      .catch((e) => setError(errorMessage(e)))
+                  }
+                >
+                  Cerrar sesión
+                </Button>
+              </div>
+              <Link to="/invoices" className="button secondary">
+                Gestionar Gmail de esta empresa
+              </Link>
+            </>
+          ) : (
+            <>
+              <p>
+                {access.configured
+                  ? "El acceso de empresas está disponible."
+                  : "Pendiente de activar: Supabase ha bloqueado la creación del proyecto independiente por el límite de proyectos gratuitos."}
+              </p>
+              <Button onClick={access.openAccount}>Acceso de empresas</Button>
+            </>
+          )}
         </section>
         <section className="card settings-card">
           <span className="settings-icon">
             <HardDrive size={25} />
           </span>
-          <Badge tone="blue">Solo este navegador</Badge>
-          <h2>Tus datos de demostración</h2>
+          <Badge tone="blue">
+            {cloud ? "Copia de tu empresa" : "Solo este navegador"}
+          </Badge>
+          <h2>{cloud ? "Exportar mis datos" : "Tus datos de demostración"}</h2>
           <p>
             {snapshot.trucks.length} camiones · {snapshot.drivers.length}{" "}
             conductores · {snapshot.entries.length.toLocaleString("es-ES")}{" "}
             movimientos.
           </p>
           <p>
-            Exporta una copia JSON antes de borrar los datos del navegador. La
-            importación de copias no está incluida en esta fase.
+            {cloud
+              ? "Descarga una copia de los registros de esta empresa. Guárdala en un lugar privado."
+              : "Exporta una copia JSON antes de borrar los datos del navegador."}{" "}
+            La importación de copias no está incluida en esta fase.
           </p>
           <Button
             variant="secondary"
             icon={Download}
             onClick={() =>
               downloadFile(
-                "truckcontrol-demo-backup.json",
+                cloud
+                  ? `truckcontrol-${snapshot.organization.id}.json`
+                  : "truckcontrol-demo-backup.json",
                 JSON.stringify(snapshot, null, 2),
                 "application/json",
               )
@@ -93,24 +164,31 @@ export function Settings() {
             Descargar copia JSON
           </Button>
         </section>
-        <section className="card settings-card reset-card">
-          <span className="settings-icon">
-            <RotateCcw size={25} />
-          </span>
-          <h2>Volver a empezar</h2>
-          <p>
-            Restablece la flota ficticia inicial de 50 camiones. Se eliminarán
-            los registros y las ediciones que hayas hecho en este navegador.
-          </p>
-          <Button
-            variant="secondary"
-            icon={RotateCcw}
-            onClick={() => setConfirm(true)}
-          >
-            Restablecer demostración
-          </Button>
-        </section>
+        {!cloud && (
+          <section className="card settings-card reset-card">
+            <span className="settings-icon">
+              <RotateCcw size={25} />
+            </span>
+            <h2>Volver a empezar</h2>
+            <p>
+              Restablece la flota ficticia inicial de 50 camiones. Se eliminarán
+              los registros y las ediciones que hayas hecho en este navegador.
+            </p>
+            <Button
+              variant="secondary"
+              icon={RotateCcw}
+              onClick={() => setConfirm(true)}
+            >
+              Restablecer demostración
+            </Button>
+          </section>
+        )}
       </div>
+      {error && !confirm && (
+        <p role="alert" className="form-error">
+          {error}
+        </p>
+      )}
       {confirm && (
         <Modal
           title="¿Restablecer la demostración?"

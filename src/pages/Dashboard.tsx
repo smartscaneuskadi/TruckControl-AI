@@ -13,6 +13,7 @@ import {
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useFleet } from "../app/FleetProvider";
+import { useCompany } from "../app/CompanyAccess";
 import { useWorkspace } from "../app/WorkspaceContext";
 import { filterEntries, shiftMonth, summarize, trend } from "../domain/finance";
 import { truckStatuses } from "../domain/models";
@@ -30,6 +31,7 @@ import { TruckTable } from "../components/TruckTable";
 import { FleetInstruments } from "../components/FleetInstruments";
 
 export function Dashboard() {
+  const { mode } = useCompany();
   const { snapshot } = useFleet();
   const { period, setPeriod, edit } = useWorkspace();
   const [truckId, setTruckId] = useState("");
@@ -92,7 +94,11 @@ export function Dashboard() {
         <div className="section-label">
           <span className="live-dot" />
           Resumen de actividad{" "}
-          <span className="toolbar-note">Datos de demostración</span>
+          <span className="toolbar-note">
+            {mode === "demo"
+              ? "Datos de demostración"
+              : snapshot.organization.name}
+          </span>
         </div>
         <div className="inline-actions">
           <label className="fleet-select">

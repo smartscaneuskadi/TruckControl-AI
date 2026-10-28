@@ -18,6 +18,9 @@ import {
   UsersRound,
   Wallet,
   X,
+  FileText,
+  Mail,
+  Building2,
 } from "lucide-react";
 import {
   HashRouter,
@@ -45,6 +48,10 @@ import { Finance } from "../pages/Finance";
 import { Profitability } from "../pages/Profitability";
 import { Assistant } from "../pages/Assistant";
 import { Settings } from "../pages/Settings";
+import { Documents } from "../pages/Documents";
+import { Invoices } from "../pages/Invoices";
+import { useCompany } from "./CompanyAccess";
+import { initials } from "../lib/format";
 
 const navigation = [
   { to: "/dashboard", label: "Resumen general", icon: LayoutDashboard },
@@ -53,6 +60,8 @@ const navigation = [
   { to: "/income", label: "Ingresos", icon: ArrowUpRight },
   { to: "/expenses", label: "Gastos", icon: ArrowDownLeft },
   { to: "/profitability", label: "Rentabilidad", icon: Wallet },
+  { to: "/documents", label: "Documentos", icon: FileText },
+  { to: "/invoices", label: "Facturas Gmail", icon: Mail },
 ];
 
 export function App() {
@@ -65,6 +74,8 @@ export function App() {
 
 function Workspace() {
   const { snapshot } = useFleet();
+  const access = useCompany();
+  const cloud = access.mode === "company";
   const location = useLocation();
   const { install, canInstall } = useInstall();
   const [period, setPeriod] = useState(snapshot.demoMonth);
@@ -149,7 +160,8 @@ function Workspace() {
         <div className="workspace-label">
           <span className="workspace-icon">F</span>
           <span>
-            Flota de demostración<small>Espacio de trabajo</small>
+            {cloud ? snapshot.organization.name : "Flota de demostración"}
+            <small>Espacio de trabajo</small>
           </span>
           <ChevronDown size={14} aria-hidden="true" />
         </div>
@@ -192,6 +204,12 @@ function Workspace() {
           </span>
         </Link>
         <div className="sidebar-bottom">
+          {!cloud && (
+            <button className="nav-link" onClick={access.openAccount}>
+              <Building2 size={18} />
+              <span>Acceso de empresas</span>
+            </button>
+          )}
           <NavLink
             to="/settings"
             className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
@@ -205,10 +223,14 @@ function Workspace() {
           </button>
         </div>
         <div className="profile">
-          <span className="profile-avatar">DF</span>
+          <span className="profile-avatar">
+            {cloud ? initials(snapshot.organization.name) : "DF"}
+          </span>
           <div>
-            <strong>Demo Flota</strong>
-            <span>Operador de demostración</span>
+            <strong>{cloud ? snapshot.organization.name : "Demo Flota"}</strong>
+            <span>
+              {cloud ? "Cuenta de empresa" : "Operador de demostración"}
+            </span>
           </div>
           <ShieldCheck size={17} />
         </div>
@@ -240,7 +262,7 @@ function Workspace() {
             </button>
             <span className="demo-pill">
               <span />
-              Modo demo
+              {cloud ? "Modo empresa" : "Modo demo"}
             </span>
             {canInstall && (
               <button
@@ -259,7 +281,9 @@ function Workspace() {
               <Bell size={19} />
               {insights.length > 0 && <i />}
             </button>
-            <span className="topbar-avatar">DF</span>
+            <span className="topbar-avatar">
+              {cloud ? initials(snapshot.organization.name) : "DF"}
+            </span>
           </div>
         </header>
         <main id="main-content" tabIndex={-1} className="page-content">
@@ -289,6 +313,8 @@ function Workspace() {
             />
             <Route path="/assistant" element={<Assistant />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/documents" element={<Documents />} />
+            <Route path="/invoices" element={<Invoices />} />
             <Route
               path="*"
               element={
@@ -308,7 +334,9 @@ function Workspace() {
             </span>
             <span>
               <ShieldCheck size={13} />
-              Datos ficticios · guardado local
+              {cloud
+                ? "Acceso por empresa · guardado en la nube"
+                : "Datos ficticios · guardado local"}
             </span>
           </footer>
         </main>
@@ -327,7 +355,11 @@ function Workspace() {
       {notifications && (
         <Modal
           title="Avisos de tu flota"
-          subtitle="Calculados con los datos de demostración"
+          subtitle={
+            cloud
+              ? "Calculados con los datos de tu empresa"
+              : "Calculados con los datos de demostración"
+          }
           onClose={() => setNotifications(false)}
         >
           <div className="notification-list">

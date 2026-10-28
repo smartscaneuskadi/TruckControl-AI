@@ -4,12 +4,14 @@ import type { FleetSnapshot } from "../domain/models";
 import { applyCommand } from "../domain/commands";
 import type { FleetCommand } from "../domain/commands";
 import { LocalFleetRepository } from "../data/repository";
+import type { FleetRepository } from "../data/repository";
 
 interface FleetContextValue {
   snapshot: FleetSnapshot;
   busy: boolean;
   execute(command: FleetCommand): Promise<void>;
   reset(): Promise<void>;
+  refresh(): Promise<void>;
   notify(message: string): void;
 }
 const FleetContext = createContext<FleetContextValue | null>(null);
@@ -18,9 +20,20 @@ export const errorMessage = (error: unknown) =>
     ? error.message
     : "Ha ocurrido un error. Inténtalo de nuevo.";
 
-export function FleetProvider({ children }: { children: ReactNode }) {
-  const [repository] = useState(
+export function FleetProvider({
+  children,
+  repository: supplied,
+  mode = "demo",
+  onDemo,
+}: {
+  children: ReactNode;
+  repository?: FleetRepository;
+  mode?: "demo" | "company";
+  onDemo?(): void;
+}) {
+  const [repository] = useState<FleetRepository>(
     () =>
+      supplied ??
       new LocalFleetRepository({
         getItem: (key) => window.localStorage.getItem(key),
         setItem: (key, value) => window.localStorage.setItem(key, value),
@@ -32,6 +45,7 @@ export function FleetProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let active = true;
     repository
@@ -48,7 +62,7 @@ export function FleetProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [repository]);
+  }, [repository, attempt]);
   useEffect(() => {
     if (toast) {
       const timeout = setTimeout(() => setToast(""), 4500);
@@ -63,7 +77,22 @@ export function FleetProvider({ children }: { children: ReactNode }) {
     setBusy(true);
     try {
       const next = applyCommand(current.current, command);
-      await repository.save(next);
+      const saved = repository.execute
+        ? await repository.execute(command)
+        : (await repository.save(next), next);
+      current.current = saved;
+      setSnapshot(saved);
+    } finally {
+      saving.current = false;
+      setBusy(false);
+    }
+  }
+  async function refresh() {
+    if (saving.current) return;
+    saving.current = true;
+    setBusy(true);
+    try {
+      const next = await repository.load();
       current.current = next;
       setSnapshot(next);
     } finally {
@@ -102,20 +131,33 @@ export function FleetProvider({ children }: { children: ReactNode }) {
               className="button primary"
               disabled={busy}
               onClick={() =>
-                reset().catch((err) => setError(errorMessage(err)))
+                mode === "company"
+                  ? (setError(""), setAttempt((n) => n + 1))
+                  : void reset().catch((err) => setError(errorMessage(err)))
               }
             >
-              Restablecer demostración
+              {mode === "company"
+                ? "Reintentar conexión"
+                : "Restablecer demostración"}
             </button>
+            {mode === "company" && onDemo && (
+              <button className="button secondary" onClick={onDemo}>
+                Volver a la demo
+              </button>
+            )}
           </>
         ) : (
-          <p role="status">Preparando tu flota de demostración…</p>
+          <p role="status">
+            {mode === "company"
+              ? "Cargando la empresa…"
+              : "Preparando tu flota de demostración…"}
+          </p>
         )}
       </main>
     );
   return (
     <FleetContext.Provider
-      value={{ snapshot, busy, execute, reset, notify: setToast }}
+      value={{ snapshot, busy, execute, reset, refresh, notify: setToast }}
     >
       {children}
       {toast && (

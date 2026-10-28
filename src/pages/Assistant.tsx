@@ -23,7 +23,7 @@ export function Assistant() {
       <PageHeading
         eyebrow="COPILOTO DE FLOTA"
         title="Más claridad para decidir"
-        description="Avisos explicables que se actualizan con los datos de tu demostración."
+        description="Avisos explicables que se actualizan con los datos de tu flota."
       >
         <PeriodPicker snapshot={snapshot} value={period} onChange={setPeriod} />
       </PageHeading>

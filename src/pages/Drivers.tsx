@@ -9,6 +9,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useFleet } from "../app/FleetProvider";
+import { useCompany } from "../app/CompanyAccess";
 import { useWorkspace } from "../app/WorkspaceContext";
 import { date, daysUntil, initials } from "../lib/format";
 import {
@@ -21,6 +22,7 @@ import {
 } from "../components/ui";
 
 export function Drivers() {
+  const { mode } = useCompany();
   const { snapshot } = useFleet();
   const { edit, viewTruck } = useWorkspace();
   const [params, setParams] = useSearchParams();
@@ -42,7 +44,7 @@ export function Drivers() {
       <PageHeading
         eyebrow="EQUIPO"
         title="Las personas que mueven tu flota"
-        description={`${snapshot.drivers.length} conductores de demostración. Fichas, asignaciones y permisos al día.`}
+        description={`${snapshot.drivers.length} conductores${mode === "demo" ? " de demostración" : " de tu empresa"}. Fichas, asignaciones y permisos al día.`}
       >
         <Button icon={Plus} onClick={() => edit({ kind: "driver" })}>
           Nuevo conductor

@@ -1,4 +1,8 @@
-# Verificación de Fase 1
+# Verificación de TruckControl AI
+
+Las 64 pruebas originales (48 Vitest y 16 Playwright) se conservan sin modificar. La ampliación añade pruebas de permisos, OAuth, documentos, concurrencia, paginación y pantallas de empresa. No usa credenciales empresariales ni efectúa llamadas a servicios IA reales.
+
+Resultado de esta entrega, 28/10/2026: **105 pruebas aprobadas** — 75 Vitest, 22 Playwright de demo y 8 Playwright de empresas con servicios simulados. TypeScript, compilación PWA y `deno check` correctos. Se verificaron los hashes de los seis archivos originales de pruebas antes de guardar la entrega.
 
 ## Pruebas automatizadas
 
@@ -21,9 +25,19 @@ Las pruebas SQL ejecutan las migraciones en PGlite (PostgreSQL WASM) y prueban R
 
 El informe HTML y las trazas de fallo se generan en carpetas ignoradas por Git. GitHub Actions instala Chromium y ejecuta todas las comprobaciones desde cero.
 
+## Pruebas añadidas de empresas y facturas
+
+- `tests/company-security.test.ts`: migraciones completas, roles `anon`, `authenticated` y `service_role`, tablas privadas, Storage privado, aislamiento de documentos, tokens inaccesibles al navegador, estado OAuth de un solo uso, límites IA y aprobación SQL idempotente con base sin IVA.
+- `src/integrations/gmail/handler.test.ts`: servidor HTTP de OAuth, autenticación y pertenencia a empresa, PKCE, finalización con el mismo usuario, cifrado ligado a empresa/usuario, adjuntos duplicados, recuperación de paginación, validación de facturas y ausencia de consumo IA por defecto. Todas las llamadas externas están simuladas.
+- `src/integrations/supabase/repository.test.ts`: SDK real con transporte HTTP simulado; carga de 2.101 movimientos, filtros de empresa, versiones concurrentes y escrituras por entidad sin upsert global.
+- `tests/e2e/company-demo.spec.ts`: factura ficticia sin duplicados al recargar, conservación de la demo al visitar el acceso pendiente y axe en documentos, facturas y acceso.
+- `npm run test:e2e:companies`: construye una copia aislada con URL y clave públicas ficticias, intercepta todo Supabase en Playwright y verifica acceso de dos propietarios, cambio de empresa, cierre de sesión, conservación de la demo, creación de otra empresa y confirmación de correo en escritorio/Android. No publica esa compilación ni envía correos.
+
+La función Edge también se comprueba con `deno check` sin ejecutarla contra servicios externos.
+
 ## Límites de verificación
 
-Los perfiles de escritorio y Android son emulaciones de navegador en Linux, no pruebas en dispositivos físicos Windows/Android. No se ha validado una instalación nativa .exe/.apk, una conexión a Supabase real, acceso multiusuario o sincronización. Axe detecta una parte de los problemas de accesibilidad y no sustituye pruebas manuales con lectores de pantalla.
+Los perfiles de escritorio y Android son emulaciones de navegador en Linux, no pruebas en dispositivos físicos Windows/Android. El flujo de cuentas/empresas se ha validado con servicios simulados; no se ha validado aún Supabase Auth real, PostgREST remoto, OAuth Google real ni sincronización entre dispositivos. Supabase ha bloqueado la creación del proyecto por cuota gratuita. No se han podido ejecutar asesores remotos ni regenerar tipos desde ese proyecto. Tampoco se ha validado un instalador nativo .exe/.apk. Axe detecta solo parte de los problemas de accesibilidad.
 
 ## Recorrido sin terminal
 

@@ -1,6 +1,7 @@
 import type { FleetSnapshot } from "../domain/models";
 import { validateSnapshot } from "../domain/models";
 import { createDemo } from "./demo";
+import type { FleetCommand } from "../domain/commands";
 
 export const STORAGE_KEY = "truckcontrol.demo.v1";
 
@@ -9,6 +10,7 @@ export interface FleetRepository {
   load(): Promise<FleetSnapshot>;
   save(snapshot: FleetSnapshot): Promise<void>;
   reset(): Promise<FleetSnapshot>;
+  execute?(command: FleetCommand): Promise<FleetSnapshot>;
 }
 
 export class LocalFleetRepository implements FleetRepository {
