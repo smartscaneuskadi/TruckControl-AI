@@ -27,6 +27,7 @@ import {
   PeriodPicker,
 } from "../components/ui";
 import { TruckTable } from "../components/TruckTable";
+import { FleetInstruments } from "../components/FleetInstruments";
 
 export function Dashboard() {
   const { snapshot } = useFleet();
@@ -151,6 +152,11 @@ export function Dashboard() {
           icon={TrendingUp}
         />
       </div>
+      <FleetInstruments
+        trucks={trucks}
+        distanceKm={summary.distanceKm}
+        period={period}
+      />
       <div className="dashboard-charts">
         <section className="card financial-chart">
           <div className="card-heading">

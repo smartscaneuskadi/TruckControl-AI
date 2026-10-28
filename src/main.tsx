@@ -5,6 +5,7 @@ import { App } from "./app/App";
 import { FleetProvider } from "./app/FleetProvider";
 import { PwaTools } from "./components/PwaTools";
 import "./styles.css";
+import "./styles/professional-theme.css";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },

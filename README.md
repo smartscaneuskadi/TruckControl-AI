@@ -17,6 +17,7 @@ La opción **Guía de la demo** dentro de la aplicación recuerda estos pasos.
 ## Funciones incluidas
 
 - Panel financiero, evolución de seis meses y disponibilidad actual de la flota.
+- Diseño en verde oscuro, azul marino y negro, con reloj de Madrid, indicador de disponibilidad y cuentakilómetros acumulado según los vehículos seleccionados.
 - 50 camiones, 46 conductores y 2.100 movimientos ficticios iniciales. Se pueden añadir más vehículos; 50 no es un límite artificial.
 - Alta, edición y eliminación de fichas, con protección del historial económico y de las asignaciones.
 - Ingresos y gastos por vehículo, categoría, fecha y estado de cobro o pago.
