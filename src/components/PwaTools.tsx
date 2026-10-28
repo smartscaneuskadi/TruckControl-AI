@@ -68,7 +68,7 @@ export function PwaTools({ children }: { children: ReactNode }) {
       {!online && (
         <div className="offline-banner" role="status">
           <WifiOff size={15} />
-          Sin conexión · trabajando con los datos locales de demostración
+          Sin conexión · abre una copia guardada o continúa con la demo
         </div>
       )}
       {children}

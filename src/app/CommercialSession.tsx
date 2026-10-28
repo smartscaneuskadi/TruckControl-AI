@@ -8,6 +8,7 @@ import { SubscriptionProvider } from "./SubscriptionContext";
 import { Registration, PhoneVerification } from "../pages/Registration";
 import { AdminConsole } from "../pages/AdminConsole";
 import { PlanCards } from "../pages/PublicPortal";
+import { CompanySelection, Invitations } from "../pages/Team";
 import { exampleCatalog, trialDaysLeft } from "../domain/subscriptions";
 import type {
   Catalog,
@@ -18,6 +19,7 @@ import type {
 export function CommercialSession({
   children,
   user,
+  organizationId,
   initialView,
   plan,
   recovery,
@@ -29,6 +31,7 @@ export function CommercialSession({
 }: {
   children: ReactNode;
   user: User | null;
+  organizationId?: string;
   initialView: "login" | "signup";
   plan: Plan["id"];
   recovery: boolean;
@@ -47,7 +50,17 @@ export function CommercialSession({
   useEffect(() => {
     if (!client || !user) return;
     let active = true;
-    void client.rpc("tc_finish_registration", {}).then(({ data, error }) => {
+    void (async () => {
+      const initial = await client.rpc("tc_finish_registration", {});
+      if (
+        initial.error ||
+        !initial.data ||
+        (initial.data as unknown as SubscriptionAccess).is_admin ||
+        !organizationId
+      )
+        return initial;
+      return client.rpc("tc_organization_access", { p_org: organizationId });
+    })().then(({ data, error }) => {
       if (!active) return;
       if (error || !data) {
         setError(
@@ -66,7 +79,7 @@ export function CommercialSession({
     return () => {
       active = false;
     };
-  }, [client, user?.id, revision]);
+  }, [client, user?.id, organizationId, revision]);
   useEffect(() => {
     if (!user) return;
     const timer = setInterval(() => setRevision((n) => n + 1), 60000);
@@ -140,7 +153,7 @@ export function CommercialSession({
         </section>
       </main>
     );
-  if (!access.profile)
+  if (!access.profile || access.requires_phone_verification)
     return (
       <PhoneVerification
         user={user}
@@ -228,7 +241,7 @@ export function Billing({
         location.assign(url.href);
       } else
         setMessage(
-          `Solicitud del plan ${plan === "full" ? "Full" : "Limitado"} guardada. Los precios son orientativos y los cobros están desactivados; no se ha realizado ningún cargo.`,
+          `Solicitud del plan ${plan === "full" ? "Full" : "Inicial"} guardada. Los precios son orientativos y los cobros están desactivados; no se ha realizado ningún cargo.`,
         );
     } catch (e) {
       setError(
@@ -243,6 +256,8 @@ export function Billing({
   const profile = access.profile!;
   return (
     <main className="billing-page">
+      <CompanySelection />
+      <Invitations />
       <div className="billing-nav">
         {onClose && (
           <Button variant="ghost" icon={ArrowLeft} onClick={onClose}>
@@ -271,7 +286,7 @@ export function Billing({
             : profile.status === "trial"
               ? access.active
                 ? `Quedan ${trialDaysLeft(profile.trial_ends_at)} días de prueba Full.`
-                : "Tus diez días de prueba han terminado. Elige un plan para continuar usando la plataforma."
+                : "Tus treinta días de prueba han terminado. Elige un plan para continuar usando la plataforma."
               : `Acceso contratado hasta ${profile.paid_until ? new Date(profile.paid_until).toLocaleDateString("es-ES") : "confirmar el pago"}.`}
         </p>
       </div>

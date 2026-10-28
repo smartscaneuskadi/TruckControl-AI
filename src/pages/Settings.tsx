@@ -13,6 +13,7 @@ import { downloadFile } from "../lib/export";
 import { Badge, Button, Field, Modal, PageHeading } from "../components/ui";
 import { useCompany } from "../app/CompanyAccess";
 import { Link } from "react-router-dom";
+import { OfflineSettings } from "../components/OfflineSettings";
 
 export function Settings() {
   const { snapshot, reset, refresh, busy, notify } = useFleet();
@@ -33,6 +34,7 @@ export function Settings() {
         }
       />
       <div className="settings-grid">
+        <OfflineSettings />
         <section className="card settings-card">
           <span className="settings-icon">
             <MonitorSmartphone size={25} />

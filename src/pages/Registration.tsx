@@ -22,7 +22,7 @@ import { errorMessage } from "../app/FleetProvider";
 
 export function Registration({
   initialView = "login",
-  plan = "full",
+  plan = "limited",
   recovery = false,
   onRecovered,
   onBack,
@@ -146,8 +146,9 @@ export function Registration({
         </div>
         {view === "signup" && !recovery && (
           <p>
-            10 días gratis con acceso Full. Tu prueba comenzará al confirmar
-            correo y teléfono. Después podrás elegir el plan que prefieras.
+            30 días gratis con acceso Full. Tu prueba comenzará al confirmar
+            {catalog.sms_ready ? " correo y teléfono" : " tu correo"}. Después
+            podrás elegir el plan que prefieras.
           </p>
         )}
         <form onSubmit={submit} className="access-form">
@@ -205,14 +206,16 @@ export function Registration({
                 </Field>
                 <Field label="Plan de interés tras la prueba">
                   <select name="plan" defaultValue={plan} disabled={busy}>
-                    {catalog.plans.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name} ·{" "}
-                        {catalog.prices_are_examples ? "ejemplo " : ""}
-                        {money(p.monthly_cents, p.monthly_cents % 100 !== 0)}
-                        /mes
-                      </option>
-                    ))}
+                    {catalog.plans
+                      .filter((p) => p.published !== false)
+                      .map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ·{" "}
+                          {catalog.prices_are_examples ? "ejemplo " : ""}
+                          {money(p.monthly_cents, p.monthly_cents % 100 !== 0)}
+                          /mes
+                        </option>
+                      ))}
                   </select>
                 </Field>
               </>
@@ -264,7 +267,7 @@ export function Registration({
               : recovery
                 ? "Guardar contraseña"
                 : view === "signup"
-                  ? "Solicitar prueba Full de 10 días"
+                  ? "Solicitar prueba Full de 30 días"
                   : view === "reset"
                     ? "Enviar enlace de recuperación"
                     : "Entrar"}
@@ -287,7 +290,7 @@ export function Registration({
               >
                 {view === "signup"
                   ? "Ya tengo cuenta · entrar"
-                  : "Crear cuenta · 10 días gratis"}
+                  : "Crear cuenta · 30 días gratis"}
               </Button>
               <Button
                 variant="ghost"
@@ -418,8 +421,8 @@ export function PhoneVerification({
             <Mail size={22} />
             <p>
               Tu solicitud está guardada. El servicio de verificación por SMS
-              está pendiente de activación. Tu prueba de diez días todavía no ha
-              comenzado.
+              está pendiente de activación. Tu prueba de treinta días todavía no
+              ha comenzado.
             </p>
           </div>
         ) : (

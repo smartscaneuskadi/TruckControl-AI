@@ -16,6 +16,11 @@ const gmailScope = "https://www.googleapis.com/auth/gmail.readonly";
 const bucket = "truckcontrol-documents";
 type Data = Record<string, unknown>;
 export interface GmailGateway {
+  actionAllowed?(
+    organizationId: string,
+    userId: string,
+    action: string,
+  ): Promise<boolean>;
   featureAllowed?(
     organizationId: string,
     userId: string,
@@ -28,6 +33,7 @@ export interface GmailGateway {
   remove(path: string): Promise<void>;
 }
 export interface GmailConfig {
+  enforceCompanyRoles?: boolean;
   enforceEntitlements?: boolean;
   appOrigin: string;
   callbackUrl: string;
@@ -439,6 +445,17 @@ export function createGmailHandler(
       const organizationId = body.organization_id;
       if (!(await gateway.owns(organizationId, user.id)))
         return json({ error: "organization_unavailable" }, 403);
+      if (config.enforceCompanyRoles && !gateway.actionAllowed)
+        return json({ error: "authorization_not_configured" }, 503);
+      if (
+        gateway.actionAllowed &&
+        !(await gateway.actionAllowed(
+          organizationId,
+          user.id,
+          String(body.action),
+        ))
+      )
+        return json({ error: "role_not_allowed" }, 403);
       if (config.enforceEntitlements && !gateway.featureAllowed)
         return json({ error: "authorization_not_configured" }, 503);
       const gmailAllowed =

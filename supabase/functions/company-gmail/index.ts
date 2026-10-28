@@ -12,9 +12,9 @@ const client = createClient(url, serviceKey, {
 });
 const gateway: GmailGateway = {
   async featureAllowed(organizationId, userId, feature) {
-    const { data, error } = await client.rpc("tc_platform_server", {
-      p_action: "user_access",
-      p_data: { organization_id: organizationId, user_id: userId },
+    const { data, error } = await client.rpc("tc_company_server_access", {
+      p_org: organizationId,
+      p_user: userId,
     });
     return !error && Boolean(data?.active && data?.features?.[feature]);
   },
@@ -23,13 +23,22 @@ const gateway: GmailGateway = {
     return error ? null : data.user;
   },
   async owns(organizationId, userId) {
-    const { data, error } = await client
-      .from("organizations")
-      .select("id")
-      .eq("id", organizationId)
-      .eq("owner_id", userId)
-      .maybeSingle();
-    return !error && Boolean(data);
+    const { data, error } = await client.rpc("tc_company_server_access", {
+      p_org: organizationId,
+      p_user: userId,
+    });
+    return !error && Boolean(data?.active);
+  },
+  async actionAllowed(organizationId, userId, action) {
+    const { data, error } = await client.rpc("tc_company_server_access", {
+      p_org: organizationId,
+      p_user: userId,
+    });
+    if (error || !data?.active) return false;
+    if (["start", "complete", "disconnect"].includes(action))
+      return Boolean(data.can_manage);
+    if (action === "sync") return Boolean(data.can_write);
+    return action === "status";
   },
   async server<T>(action: string, data: Record<string, unknown>): Promise<T> {
     const { data: result, error } = await client.rpc("gmail_server", {
@@ -56,6 +65,7 @@ const encryptionKey = Deno.env.get("GMAIL_TOKEN_ENCRYPTION_KEY");
 const key = Deno.env.get("OPENAI_API_KEY");
 const model = Deno.env.get("OPENAI_INVOICE_MODEL");
 const config: GmailConfig = {
+  enforceCompanyRoles: true,
   enforceEntitlements: true,
   appOrigin,
   callbackUrl: `${url}/functions/v1/company-gmail`,

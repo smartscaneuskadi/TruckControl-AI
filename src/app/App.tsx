@@ -21,6 +21,11 @@ import {
   FileText,
   Mail,
   Building2,
+  Container,
+  Route as RouteIcon,
+  Wrench,
+  Fuel,
+  CalendarClock,
 } from "lucide-react";
 import {
   HashRouter,
@@ -50,11 +55,15 @@ import { Assistant } from "../pages/Assistant";
 import { Settings } from "../pages/Settings";
 import { Documents } from "../pages/Documents";
 import { Invoices } from "../pages/Invoices";
+import { Operations } from "../pages/Operations";
+import { Team } from "../pages/Team";
+import type { OperationKind } from "../domain/operations";
 import { useCompany } from "./CompanyAccess";
 import { initials } from "../lib/format";
 import { FeatureGate, useSubscription } from "./SubscriptionContext";
 import { commercialEnabled, trialDaysLeft } from "../domain/subscriptions";
 import type { Feature } from "../domain/subscriptions";
+import { useOffline } from "./OfflineContext";
 
 const navigation = [
   {
@@ -90,6 +99,34 @@ const navigation = [
     feature: "documents",
   },
   { to: "/invoices", label: "Facturas Gmail", icon: Mail, feature: "gmail" },
+  { to: "/trailers", label: "Remolques", icon: Container, feature: "trailers" },
+  {
+    to: "/customers",
+    label: "Clientes",
+    icon: Building2,
+    feature: "customers",
+  },
+  { to: "/trips", label: "Viajes", icon: RouteIcon, feature: "trips" },
+  {
+    to: "/maintenance",
+    label: "Mantenimiento",
+    icon: Wrench,
+    feature: "maintenance",
+  },
+  { to: "/fuel", label: "Combustible", icon: Fuel, feature: "fuel" },
+  {
+    to: "/deadlines",
+    label: "Vencimientos",
+    icon: CalendarClock,
+    feature: "deadlines",
+  },
+  { to: "/alerts", label: "Alertas", icon: Bell, feature: "alerts" },
+  {
+    to: "/team",
+    label: "Equipo de empresa",
+    icon: UsersRound,
+    feature: "team",
+  },
 ];
 
 export function App() {
@@ -101,6 +138,7 @@ export function App() {
 }
 
 function Workspace() {
+  const offline = useOffline();
   const { snapshot, notify } = useFleet();
   const subscription = useSubscription();
   const access = useCompany();
@@ -146,6 +184,19 @@ function Workspace() {
         period,
         setPeriod,
         edit: (value) => {
+          if (offline.offline) {
+            notify(
+              "Los cambios sin conexión están disponibles en los módulos de operaciones. Conecta para editar fichas y contabilidad.",
+            );
+            return;
+          }
+          if (
+            subscription.enabled &&
+            subscription.access?.can_write === false
+          ) {
+            notify("Tu cuenta tiene acceso de consulta.");
+            return;
+          }
           const feature: Feature =
             value.kind === "truck"
               ? "trucks"
@@ -356,6 +407,35 @@ function Workspace() {
         </header>
         <main id="main-content" tabIndex={-1} className="page-content">
           <Routes>
+            <Route
+              path="/team"
+              element={
+                <FeatureGate feature="team">
+                  <Team />
+                </FeatureGate>
+              }
+            />
+            {(
+              [
+                "trailers",
+                "customers",
+                "trips",
+                "maintenance",
+                "fuel",
+                "deadlines",
+                "alerts",
+              ] as OperationKind[]
+            ).map((kind) => (
+              <Route
+                key={kind}
+                path={`/${kind}`}
+                element={
+                  <FeatureGate feature={kind}>
+                    <Operations key={kind} kind={kind} />
+                  </FeatureGate>
+                }
+              />
+            ))}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route
               path="/dashboard"

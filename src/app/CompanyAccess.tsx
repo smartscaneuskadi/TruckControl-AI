@@ -22,10 +22,43 @@ interface Access {
   demo(): void;
   select(id: string): void;
   newCompany(): void;
+  refreshCompanies(selectedId?: string): void;
   signOut(): Promise<void>;
   portal(): void;
 }
 const Context = createContext<Access | null>(null);
+export function CompanyOfflineContext({
+  children,
+  user,
+  organization,
+  onExit,
+}: {
+  children: ReactNode;
+  user: User;
+  organization: Organization;
+  onExit(): void;
+}) {
+  return (
+    <Context.Provider
+      value={{
+        configured: true,
+        mode: "company",
+        user,
+        organization,
+        organizations: [organization],
+        openAccount: onExit,
+        demo: onExit,
+        select: onExit,
+        newCompany: onExit,
+        refreshCompanies: onExit,
+        signOut: async () => onExit(),
+        portal: onExit,
+      }}
+    >
+      {children}
+    </Context.Provider>
+  );
+}
 const companyPreference = () => {
   try {
     return (
@@ -42,7 +75,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     companyPreference() ? "company" : commercialEnabled() ? "portal" : "demo",
   );
   const [entryView, setEntryView] = useState<"login" | "signup">("login");
-  const [entryPlan, setEntryPlan] = useState<Plan["id"]>("full");
+  const [entryPlan, setEntryPlan] = useState<Plan["id"]>("limited");
   const [account, setAccount] = useState<{
     user: User | null;
     organizations: Organization[];
@@ -165,6 +198,10 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
       setSelected(null);
       changeMode("company");
     },
+    refreshCompanies: (selectedId) => {
+      if (selectedId) setSelected(selectedId);
+      setRevision((n) => n + 1);
+    },
     signOut: async () => {
       if (!client) return;
       const { error } = await client.auth.signOut();
@@ -185,14 +222,15 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
           }}
           onAccess={(view, plan) => {
             setEntryView(view);
-            setEntryPlan(plan ?? "full");
+            setEntryPlan(plan ?? "limited");
             changeMode("company");
           }}
         />
       ) : mode === "company" && commercialEnabled() ? (
         <CommercialSession
-          key={account.user?.id ?? "visitor"}
+          key={`${account.user?.id ?? "visitor"}:${organization?.id ?? "no-company"}`}
           user={account.user}
+          organizationId={organization?.id}
           initialView={entryView}
           plan={entryPlan}
           recovery={recovery}
@@ -203,15 +241,20 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
           onSignOut={value.signOut}
         >
           {!organization ? (
-            <main className="boot-screen">
-              <p role="status">Cargando tu empresa…</p>
-              <button
-                className="button secondary"
-                onClick={() => setRevision((n) => n + 1)}
-              >
-                Reintentar
-              </button>
-            </main>
+            <AccessScreen
+              client={client}
+              user={account.user}
+              loading={loading}
+              loaded={account.loaded}
+              error={error}
+              recovery={recovery}
+              onRecovered={() => setRecovery(false)}
+              onCreated={(id) => {
+                setSelected(id);
+                setRevision((n) => n + 1);
+              }}
+              onRetry={() => setRevision((n) => n + 1)}
+            />
           ) : (
             children
           )}
@@ -290,6 +333,7 @@ function AccessScreen({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [newCompanyId] = useState(() => crypto.randomUUID());
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -312,7 +356,11 @@ function AccessScreen({
           throw new Error("Escribe el nombre de tu empresa.");
         const { data, error } = await client
           .from("organizations")
-          .insert({ name: companyName.trim(), owner_id: user.id })
+          .insert({
+            id: newCompanyId,
+            name: companyName.trim(),
+            owner_id: user.id,
+          })
           .select("id")
           .single();
         if (error) throw error;

@@ -217,7 +217,7 @@ export function AdminConsole({
             <section className="card admin-section">
               <div className="admin-section-heading">
                 <h2>Clientes y periodos de prueba</h2>
-                <Badge tone="green">10 días Full tras la verificación</Badge>
+                <Badge tone="green">30 días Full tras la verificación</Badge>
               </div>
               {snapshot.customers.length ? (
                 <div className="admin-table-scroll">
@@ -604,7 +604,7 @@ function CustomerControls({
   return (
     <Modal
       title={`Gestionar ${customer.company_name}`}
-      subtitle="Cambiar permisos no reinicia los diez días de prueba."
+      subtitle="Cambiar permisos no reinicia los treinta días de prueba."
       onClose={() => {
         if (!busy) onClose();
       }}

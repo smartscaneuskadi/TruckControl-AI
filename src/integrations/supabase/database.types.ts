@@ -113,6 +113,33 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_organization_access: { Args: { p_org: string }; Returns: Json };
+      tc_team_control: {
+        Args: { p_org: string | null; p_action: string; p_data?: Json };
+        Returns: Json;
+      };
+      tc_list_records: {
+        Args: { p_org: string; p_after?: string | null };
+        Returns: Json;
+      };
+      tc_save_record: {
+        Args: {
+          p_org: string;
+          p_id: string;
+          p_kind: string;
+          p_payload: Json;
+          p_expected?: number | null;
+        };
+        Returns: Json;
+      };
+      tc_delete_record: {
+        Args: { p_org: string; p_id: string; p_expected: number };
+        Returns: undefined;
+      };
+      tc_book_record: {
+        Args: { p_org: string; p_record: string; p_expected: number };
+        Returns: Json;
+      };
       tc_public_catalog: { Args: Record<string, never>; Returns: Json };
       tc_my_access: { Args: Record<string, never>; Returns: Json };
       tc_finish_registration: { Args: Record<string, never>; Returns: Json };

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { FileCheck2, FileUp, Download, ShieldCheck } from "lucide-react";
 import { useCompany } from "../app/CompanyAccess";
+import { useSubscription } from "../app/SubscriptionContext";
 import { errorMessage, useFleet } from "../app/FleetProvider";
 import { getSupabaseClient } from "../integrations/supabase/client";
 import type { CompanyDocument } from "../integrations/supabase/database.types";
@@ -13,6 +14,9 @@ import { Badge, Button, Empty, PageHeading } from "../components/ui";
 
 export function Documents() {
   const access = useCompany();
+  const subscription = useSubscription();
+  const writable =
+    !subscription.enabled || subscription.access?.can_write !== false;
   const { snapshot, notify } = useFleet();
   const client = getSupabaseClient();
   const cloud = access.mode === "company" && Boolean(client);
@@ -46,7 +50,7 @@ export function Documents() {
   }, [cloud, client, snapshot.organization.id, revision]);
   async function upload(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!client || !cloud || busy) return;
+    if (!client || !cloud || busy || !writable) return;
     const form = e.currentTarget;
     const file = new FormData(form).get("document");
     if (!(file instanceof File) || !file.size) return;
@@ -99,58 +103,60 @@ export function Documents() {
             className="card integration-card document-upload"
             onSubmit={upload}
           >
-            <h2>
-              <FileUp size={23} /> Añadir documento
-            </h2>
-            <div className="integration-fields">
-              <label>
-                Documento PDF o imagen
-                <input
-                  type="file"
-                  name="document"
-                  required
-                  accept="application/pdf,image/jpeg,image/png,image/webp"
-                  disabled={busy}
-                />
-              </label>
-              <label>
-                Camión
-                <select
-                  value={truckId}
-                  onChange={(e) => setTruckId(e.target.value)}
-                  disabled={busy}
-                >
-                  <option value="">Sin vincular</option>
-                  {snapshot.trucks.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.plate}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Conductor
-                <select
-                  value={driverId}
-                  onChange={(e) => setDriverId(e.target.value)}
-                  disabled={busy}
-                >
-                  <option value="">Sin vincular</option>
-                  {snapshot.drivers.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <small>
-              Máximo 10 MB. Los archivos se conservan sin sobrescribir
-              documentos anteriores.
-            </small>
-            <Button type="submit" icon={FileUp} disabled={busy}>
-              {busy ? "Guardando…" : "Guardar documento"}
-            </Button>
+            <fieldset className="operation-fieldset" disabled={!writable}>
+              <h2>
+                <FileUp size={23} /> Añadir documento
+              </h2>
+              <div className="integration-fields">
+                <label>
+                  Documento PDF o imagen
+                  <input
+                    type="file"
+                    name="document"
+                    required
+                    accept="application/pdf,image/jpeg,image/png,image/webp"
+                    disabled={busy}
+                  />
+                </label>
+                <label>
+                  Camión
+                  <select
+                    value={truckId}
+                    onChange={(e) => setTruckId(e.target.value)}
+                    disabled={busy}
+                  >
+                    <option value="">Sin vincular</option>
+                    {snapshot.trucks.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.plate}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Conductor
+                  <select
+                    value={driverId}
+                    onChange={(e) => setDriverId(e.target.value)}
+                    disabled={busy}
+                  >
+                    <option value="">Sin vincular</option>
+                    {snapshot.drivers.map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <small>
+                Máximo 10 MB. Los archivos se conservan sin sobrescribir
+                documentos anteriores.
+              </small>
+              <Button type="submit" icon={FileUp} disabled={busy}>
+                {busy ? "Guardando…" : "Guardar documento"}
+              </Button>
+            </fieldset>
           </form>
           {loading ? (
             <p role="status">Cargando documentos…</p>

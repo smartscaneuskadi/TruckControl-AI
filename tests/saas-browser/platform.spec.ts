@@ -115,11 +115,16 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       features.invoice_ai && Boolean(c?.ai_allowed && c?.ai_opt_in);
     return {
       is_admin: id === admin,
-      active: verified && active,
+      active: (!smsReady || verified) && active,
       features,
-      profile: verified ? c : null,
+      profile: !smsReady || verified ? c : null,
       plan: "full",
-      max_trucks: null,
+      max_trucks: 50,
+      requires_phone_verification: smsReady && !verified,
+      company_role: "owner",
+      can_write: (!smsReady || verified) && active,
+      can_manage: (!smsReady || verified) && active,
+      organization_id: org,
       sms_ready: smsReady,
       prices_are_examples: true,
       payments_enabled: false,
@@ -190,7 +195,8 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       data = catalog;
     else if (
       url.pathname === "/rest/v1/rpc/tc_finish_registration" ||
-      url.pathname === "/rest/v1/rpc/tc_my_access"
+      url.pathname === "/rest/v1/rpc/tc_my_access" ||
+      url.pathname === "/rest/v1/rpc/tc_organization_access"
     )
       data = access(identity ?? customerId);
     else if (url.pathname === "/rest/v1/rpc/tc_admin_control") {
@@ -236,7 +242,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       data = "30000000-0000-4000-8000-000000000082";
     else if (url.pathname === "/rest/v1/organizations")
       data =
-        identity === admin || !verified
+        identity === admin || (smsReady && !verified)
           ? []
           : [
               {
@@ -268,7 +274,9 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       url.pathname === "/rest/v1/drivers" ||
       url.pathname === "/rest/v1/finance_entries" ||
       url.pathname.startsWith("/rest/v1/rpc/get_company_gmail") ||
-      url.pathname.startsWith("/rest/v1/rpc/list_company_invoices")
+      url.pathname.startsWith("/rest/v1/rpc/list_company_invoices") ||
+      url.pathname === "/rest/v1/rpc/tc_list_records" ||
+      url.pathname === "/rest/v1/rpc/tc_team_control"
     )
       data = [];
     else if (url.pathname === "/functions/v1/company-gmail")
@@ -299,10 +307,10 @@ test("muestra los planes antes del registro y solicita la prueba Full sin cobrar
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Cada kilómetro cuenta",
   );
-  await expect(page.locator(".plan-grid")).toContainText("300");
-  await expect(page.locator(".plan-grid")).toContainText("900");
+  await expect(page.locator(".plan-grid")).toContainText("10");
+  await expect(page.locator(".plan-grid")).not.toContainText("900");
   await page
-    .getByRole("button", { name: "Probar Full gratis 10 días", exact: true })
+    .getByRole("button", { name: "Probar Full gratis 30 días", exact: true })
     .click();
   for (const [label, value] of [
     ["Nombre y apellidos", "Persona ficticia"],
@@ -316,7 +324,7 @@ test("muestra los planes antes del registro y solicita la prueba Full sin cobrar
     await page.getByLabel(label, { exact: true }).fill(value);
   await page
     .getByRole("button", {
-      name: "Solicitar prueba Full de 10 días",
+      name: "Solicitar prueba Full de 30 días",
       exact: true,
     })
     .click();
@@ -325,7 +333,7 @@ test("muestra los planes antes del registro y solicita la prueba Full sin cobrar
   expect(signup.body?.data).toMatchObject({
     truckcontrol_registration: {
       company_name: "Empresa ficticia",
-      requested_plan: "full",
+      requested_plan: "limited",
     },
   });
   expect(f.calls.some((c) => c.path.includes("billing"))).toBe(false);
@@ -353,20 +361,19 @@ test("confirma SMS y crea la empresa automáticamente sin duplicar el envío", a
     f.calls.filter((c) => c.path === "/auth/v1/user" && c.body?.phone),
   ).toHaveLength(1);
 });
-test("si SMS no está configurado la prueba permanece pendiente", async ({
+test("sin proveedor SMS activa la prueba con el correo confirmado sin enviar mensajes", async ({
   page,
 }) => {
   const f = await fixtures(page);
   await login(page, "phone-pending@example.com");
-  await expect(
-    page.getByText("Tu prueba de diez días todavía no ha comenzado.", {
-      exact: false,
-    }),
-  ).toBeVisible();
+  await expect(page.locator(".workspace-label")).toContainText(
+    "Empresa ficticia SaaS",
+  );
+  await expect(page.locator(".demo-pill")).toContainText("Prueba:");
   expect(
     f.calls.filter((c) => c.path === "/auth/v1/user" && c.body?.phone),
   ).toHaveLength(0);
-  await expect(page.locator(".sidebar")).toHaveCount(0);
+  await expect(page.locator(".sidebar")).toHaveCount(1);
 });
 test("el administrador gestiona clientes, IA, módulos y precios desde su cuenta", async ({
   page,
@@ -397,7 +404,7 @@ test("el administrador gestiona clientes, IA, módulos y precios desde su cuenta
   await page
     .getByRole("button", { name: "Planes y cobros", exact: true })
     .click();
-  await page.getByRole("button", { name: "Editar plan Limitado" }).click();
+  await page.getByRole("button", { name: "Editar plan Inicial" }).click();
   await page
     .getByRole("dialog")
     .getByLabel("Precio mensual (€)")
@@ -423,7 +430,7 @@ test("una prueba terminada solo permite elegir plan y no accede a la flota", asy
   ).toBeVisible();
   await expect(page.locator(".sidebar")).toHaveCount(0);
   await page
-    .getByRole("button", { name: "Elegir Limitado", exact: true })
+    .getByRole("button", { name: "Elegir Inicial", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText(
     "no se ha realizado ningún cargo",

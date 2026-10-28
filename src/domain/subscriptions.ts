@@ -11,6 +11,14 @@ export const featureLabels = {
   gmail: "Facturas Gmail",
   assistant: "Copiloto",
   invoice_ai: "Lectura IA de facturas",
+  trailers: "Remolques",
+  customers: "Clientes",
+  trips: "Viajes",
+  maintenance: "Mantenimiento",
+  fuel: "Combustible",
+  deadlines: "Vencimientos",
+  alerts: "Alertas",
+  team: "Usuarios de empresa",
 } as const;
 export type Feature = keyof typeof featureLabels;
 export type Features = Record<Feature, boolean>;
@@ -41,7 +49,7 @@ export interface Catalog {
 }
 export const exampleCatalog: Catalog = {
   app_name: "TruckControl AI",
-  trial_days: 10,
+  trial_days: 30,
   prices_are_examples: true,
   payments_enabled: false,
   sms_ready: false,
@@ -49,15 +57,12 @@ export const exampleCatalog: Catalog = {
   plans: [
     {
       id: "limited",
-      name: "Limitado",
-      monthly_cents: 30000,
+      name: "Inicial",
+      monthly_cents: 1000,
       currency: "EUR",
       max_trucks: 50,
       modules: {
         ...demoFeatures,
-        documents: false,
-        gmail: false,
-        assistant: false,
         invoice_ai: false,
       },
       revision: 1,
@@ -65,9 +70,10 @@ export const exampleCatalog: Catalog = {
     {
       id: "full",
       name: "Full",
+      published: false,
       monthly_cents: 90000,
       currency: "EUR",
-      max_trucks: null,
+      max_trucks: 50,
       modules: { ...demoFeatures },
       revision: 1,
     },
@@ -110,6 +116,11 @@ export interface SubscriptionAccess {
   plan: string;
   max_trucks: number | null;
   sms_ready: boolean;
+  requires_phone_verification?: boolean;
+  company_role?: "owner" | "admin" | "operator" | "viewer";
+  can_write?: boolean;
+  can_manage?: boolean;
+  organization_id?: string;
   prices_are_examples: boolean;
   payments_enabled: boolean;
 }

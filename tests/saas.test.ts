@@ -73,7 +73,9 @@ beforeAll(async () => {
     .filter((f) => f.endsWith(".sql"))
     .sort())
     await db.exec(readFileSync(`supabase/migrations/${f}`, "utf8"));
-  await db.exec("update private.tc_settings set enforce_access=true");
+  await db.exec(
+    "update private.tc_settings set enforce_access=true,sms_ready=true",
+  );
   await db.query(
     "insert into auth.users(id,email,email_confirmed_at) values($1,'pedidos@smartscaneuskadi.com',now())",
     [admin],
@@ -99,10 +101,10 @@ describe("plataforma SaaS, prueba y administración", () => {
         }>("tc_public_catalog"),
       "anon",
     );
-    expect(catalog.trial_days).toBe(10);
+    expect(catalog.trial_days).toBe(30);
     expect(catalog.prices_are_examples).toBe(true);
     expect(catalog.payments_enabled).toBe(false);
-    expect(catalog.plans.map((p) => p.monthly_cents)).toEqual([30000, 90000]);
+    expect(catalog.plans.map((p) => p.monthly_cents)).toEqual([1000]);
     await as(
       null,
       () =>
@@ -127,7 +129,7 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect(access.active).toBe(false);
     expect(access.is_admin).toBe(false);
   });
-  it("crea automáticamente empresa y diez días Full tras confirmar ambos canales", async () => {
+  it("crea automáticamente empresa y treinta días Full tras confirmar ambos canales", async () => {
     await db.query(
       "update auth.users set phone='34600000001',phone_confirmed_at=now() where id=$1",
       [clientA],
@@ -157,7 +159,7 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect(
       Date.parse(access.profile.trial_ends_at) -
         Date.parse(access.profile.trial_started_at),
-    ).toBe(10 * 86400000);
+    ).toBe(30 * 86400000);
   });
   it("reserva administración al correo confirmado y no a metadatos de registro", async () => {
     expect((await currentAccess(admin)).is_admin).toBe(true);
@@ -284,7 +286,7 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect(after.active).toBe(true);
     expect(after.profile.trial_ends_at).toBe(before.profile.trial_ends_at);
   });
-  it("impide acceder al finalizar diez días aunque el cliente manipule sus metadatos", async () => {
+  it("impide acceder al finalizar treinta días aunque el cliente manipule sus metadatos", async () => {
     await db.query(
       "update private.tc_customers set trial_started_at=now()-interval '11 days',trial_ends_at=now()-interval '1 day' where user_id=$1",
       [clientA],
@@ -313,7 +315,7 @@ describe("plataforma SaaS, prueba y administración", () => {
         [id],
       )
     ).rows[0];
-    expect(row.quoted_cents).toBe(30000);
+    expect(row.quoted_cents).toBe(1000);
     expect((await currentAccess()).active).toBe(false);
     await as(clientA, () =>
       expect(

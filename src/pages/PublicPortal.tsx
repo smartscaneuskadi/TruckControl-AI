@@ -25,74 +25,76 @@ export function PlanCards({
 }) {
   return (
     <div className="plan-grid">
-      {catalog.plans.map((plan) => (
-        <article
-          className={`card plan-card ${plan.id === "full" ? "featured" : ""}`}
-          key={plan.id}
-        >
-          <div className="plan-card-heading">
-            <h3>{plan.name}</h3>
-            <Badge tone={plan.id === "full" ? "green" : "blue"}>
-              {plan.id === "full" ? "Toda la plataforma" : "Gestión esencial"}
-            </Badge>
-          </div>
-          <p className="plan-price">
-            {money(plan.monthly_cents, plan.monthly_cents % 100 !== 0)}
-            <span>/mes</span>
-          </p>
-          <p>
-            {plan.id === "full"
-              ? "Documentos, Gmail y herramientas avanzadas para tu operación."
-              : "Control de la flota, tu equipo y el resultado de cada camión."}
-          </p>
-          <ul className="plan-features">
-            <li>
-              <Check size={17} />
-              {plan.max_trucks === null
-                ? "Sin límite comercial de camiones"
-                : `Hasta ${plan.max_trucks} camiones`}
-            </li>
-            <li>
-              <Check size={17} />
-              Camiones y conductores
-            </li>
-            <li>
-              <Check size={17} />
-              Ingresos, gastos y rentabilidad
-            </li>
-            {plan.modules.documents && (
-              <li>
-                <Check size={17} />
-                Archivo privado de documentos
-              </li>
-            )}
-            {plan.modules.gmail && (
-              <li>
-                <Check size={17} />
-                Gmail propio de tu empresa
-              </li>
-            )}
-            {plan.modules.invoice_ai && (
-              <li>
-                <Check size={17} />
-                Lectura IA opcional, bajo autorización
-              </li>
-            )}
-          </ul>
-          <Button
-            variant={plan.id === "full" ? "primary" : "secondary"}
-            icon={ArrowRight}
-            disabled={disabled || !catalog.registration_open}
-            onClick={() => onChoose(plan.id)}
+      {catalog.plans
+        .filter((p) => p.published !== false)
+        .map((plan) => (
+          <article
+            className={`card plan-card ${plan.id === "full" ? "featured" : ""}`}
+            key={plan.id}
           >
-            Elegir {plan.name}
-          </Button>
-          <small>
-            La prueba inicial incluye Full durante {catalog.trial_days} días.
-            Sin tarjeta ni cobro automático al registrarte.
-          </small>
-        </article>
-      ))}
+            <div className="plan-card-heading">
+              <h3>{plan.name}</h3>
+              <Badge tone={plan.id === "full" ? "green" : "blue"}>
+                {plan.id === "full" ? "Toda la plataforma" : "Gestión esencial"}
+              </Badge>
+            </div>
+            <p className="plan-price">
+              {money(plan.monthly_cents, plan.monthly_cents % 100 !== 0)}
+              <span>/mes</span>
+            </p>
+            <p>
+              {plan.id === "full"
+                ? "Documentos, Gmail y herramientas avanzadas para tu operación."
+                : "Control de la flota, tu equipo y el resultado de cada camión."}
+            </p>
+            <ul className="plan-features">
+              <li>
+                <Check size={17} />
+                {plan.max_trucks === null
+                  ? "Sin límite comercial de camiones"
+                  : `Hasta ${plan.max_trucks} camiones`}
+              </li>
+              <li>
+                <Check size={17} />
+                Camiones y conductores
+              </li>
+              <li>
+                <Check size={17} />
+                Ingresos, gastos y rentabilidad
+              </li>
+              {plan.modules.documents && (
+                <li>
+                  <Check size={17} />
+                  Archivo privado de documentos
+                </li>
+              )}
+              {plan.modules.gmail && (
+                <li>
+                  <Check size={17} />
+                  Gmail propio de tu empresa
+                </li>
+              )}
+              {plan.modules.invoice_ai && (
+                <li>
+                  <Check size={17} />
+                  Lectura IA opcional, bajo autorización
+                </li>
+              )}
+            </ul>
+            <Button
+              variant={plan.id === "full" ? "primary" : "secondary"}
+              icon={ArrowRight}
+              disabled={disabled || !catalog.registration_open}
+              onClick={() => onChoose(plan.id)}
+            >
+              Elegir {plan.name}
+            </Button>
+            <small>
+              La prueba inicial incluye Full durante {catalog.trial_days} días.
+              Sin tarjeta ni cobro automático al registrarte.
+            </small>
+          </article>
+        ))}
     </div>
   );
 }
@@ -171,10 +173,10 @@ export function PublicPortal({
           <div className="portal-actions">
             <Button
               icon={ArrowRight}
-              onClick={() => onAccess("signup", "full")}
+              onClick={() => onAccess("signup", "limited")}
               disabled={!catalog.registration_open}
             >
-              Probar Full gratis 10 días
+              Probar Full gratis 30 días
             </Button>
             <Button variant="ghost" onClick={onDemo}>
               Explorar la demo
@@ -252,7 +254,7 @@ export function PublicPortal({
           <h2>Empieza con todo. Elige tu plan después.</h2>
           <p>
             Solicita tu cuenta, confirma tu correo y tu teléfono y disfruta de
-            diez días de acceso Full. Tu prueba comienza cuando terminas la
+            treinta días de acceso Full. Tu prueba comienza cuando terminas la
             verificación.
           </p>
           {catalog.prices_are_examples && (
@@ -288,10 +290,10 @@ export function PublicPortal({
         </div>
         <Button
           icon={ArrowRight}
-          onClick={() => onAccess("signup", "full")}
+          onClick={() => onAccess("signup", "limited")}
           disabled={!catalog.registration_open}
         >
-          Solicitar acceso · 10 días gratis
+          Solicitar acceso · 30 días gratis
         </Button>
       </section>
       <footer className="portal-footer">
