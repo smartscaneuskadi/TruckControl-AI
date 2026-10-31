@@ -1,21 +1,31 @@
-# Entrega actual — 31/10/2026
+# Entrega actual — TruckControl AI 0.3.0
 
-Versión fuente: **0.2.0**. **Versión 5 publicada y comprobada por HTTPS** en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. La versión 4 anterior se conserva para recuperación. El índice, CSS, JavaScript y service worker públicos coinciden con el paquete verificado.
+**Versión 6 publicada y verificada por HTTPS:** https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. La versión 5 anterior se conserva para recuperación. Se mantiene el mismo dominio y los datos ficticios existentes.
 
-Repositorio oficial: https://github.com/smartscaneuskadi/TruckControl-AI. Rama publicada de código `main`; rama de desarrollo conservada `feat/dedicated-supabase-project`. [PR #1](https://github.com/smartscaneuskadi/TruckControl-AI/pull/1) integrado mediante merge, sin reescribir historial. Fuente desplegada `7a68a555cfa76b394ecd93240aac0c2e55906411`; merge en principal `e59d8d4590012eac9243f3f0b50a2a74aff6d364`. Código recuperado del respaldo persistente, con todo el historial y las 64 pruebas originales conservados. GitHub permite lectura y escritura; Actions ya ha terminado una ejecución correcta. Las APIs administrativas de Pages y protección de rama devuelven 403 y no se eluden.
+Repositorio oficial: https://github.com/smartscaneuskadi/TruckControl-AI. Código integrado en `main` mediante [PR #2](https://github.com/smartscaneuskadi/TruckControl-AI/pull/2), sin reescribir historial. Rama conservada: `feat/demo-recovery-alerts`. Fuente publicada `b335b28cb0070abe8a28cba3f0a041170d42218c`; merge `476f3a3e2ba92a4c73e5d279e3f3b2446d89d99f`.
 
-Supabase: proyecto independiente **truckcontrol-ai** (`kkkemaycedexymrpaqtp`) en `fixpilot-dev`, eu-west-2, sin plan de pago nuevo. **37 migraciones aplicadas** y tres funciones Edge desplegadas. RLS y aislamiento comprobados con datos ficticios y transacciones revertidas. El asesor de seguridad no señala incidencias. FIXPilot intacto; merymery_16 permanece pausado sin borrar contenido.
+## Qué cambia
 
-Incluye camiones, conductores, remolques, clientes, viajes, gastos, ingresos, rentabilidad, mantenimiento, combustible, vencimientos, alertas, biblioteca documental, informes, paneles SaaS y PWA. Se ha corregido un desbordamiento de Android que desplazaba los controles del menú. El archivo documental respeta permisos independientes para biblioteca y adjuntos Gmail.
+El centro de Alertas permite buscar y filtrar urgentes y próximos vencimientos. La campana incorpora avisos operativos de los módulos autorizados. Las revisiones por kilómetros utilizan lecturas de repostajes ya realizados y una clave estable: al reconocer un aviso, no reaparece solo porque cambie el día. Los avisos manuales se revisan actualizando el registro existente. Reconocer un aviso no renueva permisos ni completa mantenimientos.
 
-**Producción comercial todavía cerrada.** El alta real espera configuración y comprobación de SMTP y redirecciones Auth. Gmail espera credenciales OAuth y validación Google. SMS, proveedores IA y cobros permanecen apagados. El copiloto local, los ejemplos de facturas y los servicios simulados de pruebas no equivalen a esas integraciones reales.
+En **Configuración → Copias y recuperación de la demo** se exportan y restauran fichas y operaciones. La vista previa valida el archivo sin modificar datos; la confirmación conserva un punto anterior. Los cambios de otra pestaña y los fallos de cuota impiden sobrescribir el estado actual. Los PDF e imágenes se conservan aparte y no se incluyen en el JSON. Se siguen leyendo las copias antiguas y se conserva la clave de operaciones heredada. Guía: [DEMO_RECOVERY.md](DEMO_RECOVERY.md).
 
-No se han registrado empresas reales ni enviado correos/SMS, documentos a modelos o pagos. Los datos de demo son locales y ficticios. Android y Windows se verifican con emulación Chromium; faltan pruebas físicas y aceptación final de proveedores.
+Las pruebas de actualización desde la versión anterior comprueban que se conservan rutas editadas, movimientos económicos y clientes/operaciones. Los archivos de la biblioteca permanecen disponibles tras restaurar y recuperar el estado anterior. La demo y sus copias son locales, sin cifrar y exclusivamente para datos ficticios.
 
-La matriz de pruebas está en [TESTING.md](TESTING.md); el registro para reanudar está en [PROGRESS.md](PROGRESS.md). Administración y recuperación: [SAAS_ADMIN.md](SAAS_ADMIN.md), [MAINTENANCE.md](MAINTENANCE.md). La documentación histórica se conserva en `history/20261028/`.
+## Verificación
 
-**Resultado final: 188 pruebas aprobadas** (134 Vitest/SQL + 30 demo + 8 empresas + 16 SaaS), guardia SHA-256, TypeScript y build PWA. [CI del código](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41180430504) y [CI del PR](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41198404303) correctos. También pasó el recorrido del paquete comercial sin credenciales en escritorio/Android: portal, manifiesto/iconos, panel, informes, menú, recarga offline y ausencia de tráfico a proveedores.
+**216 pruebas aprobadas:** 150 unitarias/SQL, 42 de demo en escritorio/Android, 8 de empresas y 16 SaaS. Las 64 originales permanecen intactas; once archivos retenidos se verifican mediante SHA-256. TypeScript, compilación PWA y análisis de dependencias de ejecución correctos; cero vulnerabilidades de ejecución detectadas.
 
-La comprobación HTTP pública verificó TLS, respuestas 200 y coincidencia de archivos con el artefacto. El Chromium del entorno no confía en la CA de interceptación de red y no pudo repetir el recorrido en el dominio público; no se desactivó la validación de certificados. Las pruebas de navegador del paquete se hicieron en el servidor local y en CI. No se presenta esta limitación del entorno como una prueba física de Android/Windows.
+[CI de la rama](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41225009144) y [CI del PR](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41225014197) completados correctamente. También se probó el paquete comercial sin credenciales: portal, demo, exportación/restauración con recarga, punto de recuperación, recarga fría offline y alertas, en ambos perfiles, sin solicitudes a proveedores.
 
-Se crearon copias Git bundle verificadas y ZIP de fuentes, además del TAR de despliegue. Las sumas y la procedencia están en `verification/release-0.2.0.json`. El respaldo GitHub conserva código y documentación; la versión Sites anterior permite recuperación web. Las copias de base de datos comercial y su restauración remota siguen pendientes de un destino y política autorizados antes de admitir datos reales.
+El índice, JavaScript, CSS y service worker públicos coinciden con el paquete construido desde el commit publicado. El manifiesto e iconos PWA responden por HTTPS. Los perfiles de navegador son emulaciones Chromium, no dispositivos físicos. La CA de interceptación del entorno limita el recorrido de Chromium sobre el dominio remoto; no se desactivó la validación TLS. Se verificaron HTTPS y hashes por separado.
+
+## Lo aplazado por el propietario
+
+La apertura comercial y los servicios externos quedan para más adelante: SMTP/redirecciones alojadas de Auth, confirmación real de la cuenta administradora, Google OAuth y su revisión, SMS, modelos IA, pagos, aceptación física y ensayo de restauración comercial en un destino autorizado. No se han activado costes, registrado empresas reales ni enviado documentos a modelos.
+
+Supabase continúa separado en **truckcontrol-ai** (`kkkemaycedexymrpaqtp`, organización `fixpilot-dev`), con 37 migraciones y tres funciones Edge existentes. Esta actualización no modifica la base de datos, Auth, Storage, credenciales ni proveedores. FIXPilot permanece intacto y merymery_16 pausado con su contenido conservado. La activación real sigue cerrada.
+
+La escritura GitHub y el CI funcionan. Los permisos administrativos de Pages/protección de ramas siguen limitados; no se eluden. El alojamiento público continúa en Sites.
+
+Se conservaron Git bundles verificables, ZIP de fuentes, TAR de despliegue, capturas y procedencia. La versión de recuperación web es la 5. Los artefactos y comprobaciones se registran en [release-0.3.0.json](verification/release-0.3.0.json). Documentación de la entrega anterior archivada en `history/20261031/`. Registro persistente: [PROGRESS.md](PROGRESS.md).

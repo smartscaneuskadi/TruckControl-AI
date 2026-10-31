@@ -1,6 +1,6 @@
 # TruckControl AI
 
-Gestión de flotas para empresas de transporte, con React, TypeScript, Supabase y PWA para Android y Windows. La actualización 0.3.0 añade alertas y recuperación de registros; continúa el código y el historial existentes.
+Gestión de flotas para empresas de transporte, con React, TypeScript, Supabase y PWA para Android y Windows. Versión 0.3.0 de demo publicada: alertas y recuperación de registros, conservando el código y el historial existentes.
 
 **Demostración pública:** https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site
 

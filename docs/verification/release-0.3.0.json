@@ -1,0 +1,62 @@
+{
+  "url": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+  "source_commit": "b335b28cb0070abe8a28cba3f0a041170d42218c",
+  "https_verified": true,
+  "index_and_assets_match_archive": true,
+  "checked_assets": [
+    "/assets/index-BnGQLEUy.js",
+    "/assets/index-Dmi35FCZ.css"
+  ],
+  "manifest_and_icons_verified": true,
+  "index_sha256": "51cb89019392cc32c280f28ed675f5cce5450a08458297c019c2c483b8d4b492",
+  "service_worker_sha256": "1ec92b38ad88690ab21023747fb39c11396fd6f150ab791fbc1c96331a5ad7f2",
+  "elapsed_seconds": 2.97,
+  "version": "0.3.0",
+  "sites_version": 6,
+  "sites_deployment_id": "appgdep_6ae6271c9c688191a1d44512fee56e03",
+  "previous_stable_sites_version": 5,
+  "main_merge_commit": "476f3a3e2ba92a4c73e5d279e3f3b2446d89d99f",
+  "github_pr": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/2",
+  "github_ci": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41225009144",
+  "github_pr_ci": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41225014197",
+  "tests": {
+    "unit_sql": 150,
+    "demo_browser": 42,
+    "company_browser": 8,
+    "saas_browser": 16,
+    "total": 216,
+    "original_tests_preserved": 64
+  },
+  "runtime_dependency_vulnerabilities": 0,
+  "release_smoke_profiles": [
+    "Chromium desktop",
+    "Chromium Pixel 7"
+  ],
+  "external_provider_calls_in_release_smoke": 0,
+  "supabase_project": "kkkemaycedexymrpaqtp",
+  "supabase_schema_changes_this_release": 0,
+  "supabase_migrations_unchanged": 37,
+  "credential_changes_this_release": 0,
+  "commercial_production_ready": false,
+  "commercial_activation_deferred_by_user": true,
+  "charges_or_paid_services_activated": false,
+  "limitations": [
+    "Demo backups are local, unencrypted and exclude document binaries",
+    "Only the point before the last restoration is retained locally",
+    "Physical Android/Windows device acceptance pending",
+    "Hosted Auth, Google OAuth and optional external services intentionally deferred",
+    "Managed browser cannot trust interception CA on remote origin; TLS and hashes verified separately without disabling validation",
+    "Commercial database and storage restoration test still pending"
+  ],
+  "artifacts": {
+    "truckcontrol-0.3.0-b335b28-demo.tar.gz": {
+      "sha256": "9087136da94ddd70df210bc37f95fe1bcf652625a9769e5c49bd4999c4b71fb1"
+    },
+    "truckcontrol-0.3.0-final-source.zip": {
+      "sha256": "3132afbf939f6659aeec1a0ebc69100277cef04a98893b711b475a476f8045b8"
+    },
+    "truckcontrol-0.3.0-final.bundle": {
+      "sha256": "ff104a01b84f348aeb75e2e6a5036fc988d9238a461eeea75af1203efb0ca266"
+    }
+  }
+}
