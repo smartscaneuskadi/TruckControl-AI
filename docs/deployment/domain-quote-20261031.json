@@ -1,0 +1,16 @@
+{
+  "checked_at_utc": "2026-10-31T18:20:40.818202+00:00",
+  "domain": "truckcontrolai.com",
+  "registrar": "Porkbun",
+  "availability": "AVAILABLE",
+  "premium": false,
+  "currency": "USD",
+  "registration_years": 1,
+  "registration_cents": 1108,
+  "renewal_cents_today": 1108,
+  "icann_included": true,
+  "taxes": "Confirmed by registrar at checkout",
+  "purchase_url": "https://porkbun.com/checkout/search?q=truckcontrolai.com",
+  "purchase_completed": false,
+  "payment_authorized": false
+}

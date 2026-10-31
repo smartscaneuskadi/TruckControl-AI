@@ -18,10 +18,12 @@ export function PlanCards({
   catalog,
   onChoose,
   disabled = false,
+  existingCustomer = false,
 }: {
   catalog: Catalog;
   onChoose(plan: Plan["id"]): void;
   disabled?: boolean;
+  existingCustomer?: boolean;
 }) {
   return (
     <div className="plan-grid">
@@ -84,7 +86,9 @@ export function PlanCards({
             <Button
               variant={plan.id === "full" ? "primary" : "secondary"}
               icon={ArrowRight}
-              disabled={disabled || !catalog.registration_open}
+              disabled={
+                disabled || (!existingCustomer && !catalog.registration_open)
+              }
               onClick={() => onChoose(plan.id)}
             >
               Elegir {plan.name}

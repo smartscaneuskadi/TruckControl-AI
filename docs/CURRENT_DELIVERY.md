@@ -1,5 +1,7 @@
 # Entrega actual — TruckControl AI 0.3.0
 
+**Lanzamiento 1.0 reanudado:** el propietario ha elegido `truckcontrolai.com`. La demo estable sigue en la versión 6. Hay una rama para la candidata comercial y preparación de renovaciones mensuales, sin cobros ni altas nuevas. El estado de dominio, correo, autorizaciones y reanudación se mantiene en [COMMERCIAL_LAUNCH.md](COMMERCIAL_LAUNCH.md). La referencia anterior a aplazar los proveedores queda sustituida por esta nueva orden; los bloqueos técnicos todavía no se han resuelto.
+
 **Correo real en configuración:** el propietario ha solicitado activar primero confirmación de cuentas y recuperación. Las plantillas y la aplicación controlada de ajustes están preparadas; todavía no hay entrega SMTP verificada. Se espera la autorización oficial de administración y el remitente. Estado detallado: [AUTH_MAIL_SETUP.md](AUTH_MAIL_SETUP.md). La demo estable sigue publicada sin abrir empresas reales.
 
 **Versión 6 publicada y verificada por HTTPS:** https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. La versión 5 anterior se conserva para recuperación. Se mantiene el mismo dominio y los datos ficticios existentes.

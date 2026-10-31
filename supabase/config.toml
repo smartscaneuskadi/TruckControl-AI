@@ -410,3 +410,7 @@ verify_jwt = false
 # Requests verify auth.getUser() and use the user's RLS-bound client.
 [functions.company-assistant]
 verify_jwt = false
+
+# Optional recurring subscriptions. Explicit getUser() and signed webhooks.
+[functions.truckcontrol-subscriptions]
+verify_jwt = false

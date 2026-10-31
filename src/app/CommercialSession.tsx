@@ -9,6 +9,10 @@ import { Registration, PhoneVerification } from "../pages/Registration";
 import { AdminConsole } from "../pages/AdminConsole";
 import { PlanCards } from "../pages/PublicPortal";
 import { CompanySelection, Invitations } from "../pages/Team";
+import {
+  RecurringSubscription,
+  useRecurringSubscription,
+} from "../components/RecurringSubscription";
 import { exampleCatalog, trialDaysLeft } from "../domain/subscriptions";
 import type {
   Catalog,
@@ -205,6 +209,8 @@ export function Billing({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const recurring = useRecurringSubscription(access.profile?.user_id ?? "");
   useEffect(() => {
     if (!client) return;
     let active = true;
@@ -221,6 +227,16 @@ export function Billing({
     setError("");
     setMessage("");
     try {
+      if (
+        catalog.payments_enabled &&
+        !catalog.prices_are_examples &&
+        (!recurring.status?.configured ||
+          !recurring.status.terms_version ||
+          !termsAccepted)
+      )
+        throw new Error(
+          "Para contratar, debe estar disponible la pasarela y debes aceptar las condiciones de renovación mensual.",
+        );
       const { data, error } = await client.rpc("tc_request_plan", {
         p_plan_id: plan,
       });
@@ -228,8 +244,15 @@ export function Billing({
         throw new Error("No se ha podido guardar la solicitud de plan.");
       if (catalog.payments_enabled && !catalog.prices_are_examples) {
         const checkout = await client.functions.invoke<{ url?: string }>(
-          "truckcontrol-billing",
-          { body: { action: "checkout", request_id: data } },
+          "truckcontrol-subscriptions",
+          {
+            body: {
+              action: "checkout",
+              request_id: data,
+              terms_accepted: termsAccepted,
+              terms_version: recurring.status?.terms_version,
+            },
+          },
         );
         if (checkout.error || !checkout.data?.url)
           throw new Error(
@@ -299,9 +322,59 @@ export function Billing({
           </p>
         </div>
       )}
+      <RecurringSubscription
+        status={recurring.status}
+        canResume={catalog.payments_enabled && !catalog.prices_are_examples}
+        onRefresh={recurring.refresh}
+      />
+      {catalog.payments_enabled && !catalog.prices_are_examples && (
+        <div className="card settings-card">
+          {recurring.status?.configured && recurring.status.terms_url ? (
+            <label className="checkbox-field">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+              />
+              <span>
+                Acepto la{" "}
+                <a
+                  href={recurring.status.terms_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  renovación mensual y sus condiciones
+                </a>
+                . Podré cancelar futuras renovaciones. El precio y la primera
+                fecha de cobro se confirman antes de pagar.
+              </span>
+            </label>
+          ) : (
+            <p>
+              La contratación mensual todavía no está disponible. No se
+              realizará ningún cargo.
+            </p>
+          )}
+        </div>
+      )}
       <PlanCards
         catalog={catalog}
-        disabled={busy || profile.status === "suspended"}
+        existingCustomer
+        disabled={
+          busy ||
+          profile.status === "suspended" ||
+          (catalog.payments_enabled &&
+            !catalog.prices_are_examples &&
+            (recurring.loading ||
+              !recurring.status?.configured ||
+              !termsAccepted ||
+              Boolean(
+                recurring.status.subscription &&
+                !["canceled", "incomplete_expired"].includes(
+                  recurring.status.subscription.state,
+                ),
+              )))
+        }
         onChoose={(plan) => void choose(plan)}
       />
       {error && (
