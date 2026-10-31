@@ -89,6 +89,13 @@
 .sidebar {
   overflow-y: auto;
 }
+/* Keep visually hidden table labels inside the viewport. Otherwise a label in
+   a horizontally scrolled table can enlarge Android's layout viewport. */
+.sr-only {
+  left: 0;
+  top: 0;
+  clip-path: inset(50%);
+}
 .sidebar nav {
   flex-shrink: 0;
 }
@@ -103,7 +110,8 @@
   box-shadow: 0 8px 25px #0008;
 }
 .offline-workspace-banner {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 70;
   background: #12382f;
   color: #e6fff6;
@@ -112,6 +120,10 @@
   align-items: center;
   padding: 14px 22px;
   flex-wrap: wrap;
+}
+.offline-mode .sidebar,
+.offline-mode .topbar {
+  top: var(--offline-bar-height, 0px);
 }
 .offline-workspace-banner > div {
   flex: 1;

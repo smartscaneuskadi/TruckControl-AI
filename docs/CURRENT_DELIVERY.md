@@ -1,5 +1,7 @@
 # Estado de entrega — continuación del 28/10/2026
 
+> Registro histórico. El estado de la continuación actual está en [PROGRESS.md](PROGRESS.md). Las referencias a publicación privada, permisos GitHub y migraciones pendientes que aparecen debajo corresponden al 28 de octubre y ya se han actualizado.
+
 ## Recursos preservados
 
 - Código existente: commit 3aaf1f5794448185a69336284248bd6a8a3c24b8, con el historial completo y las ramas anteriores.

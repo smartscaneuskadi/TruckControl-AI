@@ -48,6 +48,17 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
   let verified = true;
   let actor: string | null = null;
   const calls: { path: string; body: Record<string, unknown> | null }[] = [];
+  const records = new Map<
+    string,
+    {
+      id: string;
+      kind: string;
+      data: Record<string, unknown>;
+      version: number;
+      financeEntryId: null;
+    }
+  >();
+  const controls = { conflict: false };
   const pending = {
     id: "10000000-0000-4000-8000-000000000084",
     email: "pending@example.com",
@@ -178,7 +189,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
         session: null,
       };
     else if (url.pathname === "/auth/v1/user")
-      data = { user: getUser(identity ?? actor ?? customerId) };
+      data = getUser(identity ?? actor ?? customerId);
     else if (url.pathname === "/auth/v1/logout") {
       actor = null;
       data = {};
@@ -240,6 +251,25 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       data = access(identity!);
     } else if (url.pathname === "/rest/v1/rpc/tc_request_plan")
       data = "30000000-0000-4000-8000-000000000082";
+    else if (url.pathname === "/rest/v1/rpc/tc_save_record") {
+      const id = String(body?.p_id),
+        old = records.get(id);
+      if (controls.conflict || (old && old.version !== body?.p_expected)) {
+        status = 409;
+        data = { code: "40001", message: "Synthetic concurrent change" };
+      } else {
+        const record = {
+          id,
+          kind: String(body?.p_kind),
+          data: body?.p_payload as Record<string, unknown>,
+          version: old ? old.version + 1 : 1,
+          financeEntryId: null,
+        };
+        records.set(id, record);
+        data = record;
+      }
+    } else if (url.pathname === "/rest/v1/rpc/tc_list_records")
+      data = [...records.values()].sort((a, b) => a.id.localeCompare(b.id));
     else if (url.pathname === "/rest/v1/organizations")
       data =
         identity === admin || (smsReady && !verified)
@@ -287,7 +317,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     }
     await route.fulfill({ status, headers, body: JSON.stringify(data) });
   });
-  return { calls, snapshot, catalog };
+  return { calls, snapshot, catalog, records, controls };
 }
 async function login(page: Page, email: string) {
   await page.goto("/");
@@ -298,6 +328,144 @@ async function login(page: Page, email: string) {
     .fill("synthetic-password-123");
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
 }
+
+test.describe("copia cifrada y sincronización", () => {
+  test.use({ serviceWorkers: "allow" });
+  async function prepare(page: Page) {
+    const f = await fixtures(page);
+    await login(page, "customer@example.com");
+    await expect(page).toHaveURL(/#\/dashboard/);
+    await expect(page.locator(".workspace-label")).toContainText(
+      "Empresa ficticia SaaS",
+    );
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.ready;
+    });
+    const menu = page.getByRole("button", { name: "Abrir menú", exact: true });
+    if (await menu.isVisible()) await menu.click();
+    await page
+      .getByRole("link", { name: "Configuración", exact: true })
+      .click();
+    const phrase = "copia-sintetica-para-pruebas-123";
+    await page
+      .getByLabel("Frase para proteger tu copia", { exact: true })
+      .fill(phrase);
+    await page
+      .getByRole("button", { name: "Activar copia cifrada", exact: true })
+      .click();
+    await expect(
+      page.getByRole("status").filter({ hasText: "Copia cifrada habilitada" }),
+    ).toBeVisible();
+    return { ...f, phrase };
+  }
+  async function openAndEdit(page: Page, phrase: string) {
+    await page
+      .getByRole("button", { name: "Abrir copia sin conexión", exact: true })
+      .click();
+    await page.getByLabel("Frase de desbloqueo", { exact: true }).fill(phrase);
+    await page
+      .getByRole("button", { name: "Abrir copia cifrada", exact: true })
+      .click();
+    await expect(page.locator(".offline-workspace-banner")).toBeVisible();
+    const menu = page.getByRole("button", { name: "Abrir menú", exact: true });
+    if (await menu.isVisible()) await menu.click();
+    await page.getByRole("link", { name: "Clientes", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Añadir registro", exact: true })
+      .click();
+    await page
+      .getByLabel("Nombre o razón social", { exact: true })
+      .fill("Cliente offline ficticio");
+    await page.getByLabel("NIF / CIF", { exact: true }).fill("DEMO-OFFLINE");
+    await page
+      .getByRole("button", { name: "Guardar registro", exact: true })
+      .click();
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    await expect(
+      page.getByRole("cell", { name: "Cliente offline ficticio", exact: true }),
+    ).toBeVisible();
+  }
+  test("recarga sin red, protege datos y conserva cambios ante un conflicto", async ({
+    page,
+    context,
+  }) => {
+    const f = await prepare(page);
+    const stored = await page.evaluate(
+      () =>
+        new Promise<string>((resolve, reject) => {
+          const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
+          r.onsuccess = () => {
+            const tx = r.result.transaction("vaults", "readonly"),
+              q = tx.objectStore("vaults").getAll();
+            tx.oncomplete = () => {
+              resolve(JSON.stringify(q.result));
+              r.result.close();
+            };
+          };
+          r.onerror = () => reject(r.error);
+        }),
+    );
+    expect(stored).not.toContain("customer@example.com");
+    expect(stored).not.toContain("8888 TST");
+    expect(stored).not.toContain(f.phrase);
+    await context.setOffline(true);
+    await page.reload();
+    await openAndEdit(page, f.phrase);
+    expect(f.records.size).toBe(0);
+    await context.setOffline(false);
+    f.controls.conflict = true;
+    await page
+      .getByRole("button", { name: "Sincronizar", exact: true })
+      .click();
+    await expect(page.locator(".offline-sync-error")).toContainText(
+      "Otro dispositivo",
+    );
+    expect(f.records.size).toBe(0);
+    f.controls.conflict = false;
+    await page
+      .getByRole("button", { name: "Sincronizar", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Sincronizar", exact: true }),
+    ).toBeEnabled();
+    await expect(page.locator(".offline-sync-error")).toHaveCount(0);
+    expect(f.records.size).toBe(1);
+    expect(
+      f.calls.filter((c) => c.path.endsWith("/tc_save_record")),
+    ).toHaveLength(2);
+    await page
+      .getByRole("button", { name: "Sincronizar", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Sincronizar", exact: true }),
+    ).toBeEnabled();
+    expect(
+      f.calls.filter((c) => c.path.endsWith("/tc_save_record")),
+    ).toHaveLength(2);
+    await page.getByRole("button", { name: "Bloquear", exact: true }).click();
+    await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+  });
+  test("revocar la cuenta bloquea la copia y evita publicar cambios pendientes", async ({
+    page,
+    context,
+  }) => {
+    const f = await prepare(page);
+    await context.setOffline(true);
+    await page.reload();
+    await openAndEdit(page, f.phrase);
+    await context.setOffline(false);
+    f.snapshot.customers[0].status = "suspended";
+    await page
+      .getByRole("button", { name: "Sincronizar", exact: true })
+      .click();
+    await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+    await expect(page.getByRole("dialog")).toContainText(
+      "ya no permite el acceso",
+    );
+    expect(f.records.size).toBe(0);
+    expect(f.calls.some((c) => c.path.endsWith("/tc_save_record"))).toBe(false);
+  });
+});
 
 test("muestra los planes antes del registro y solicita la prueba Full sin cobrar", async ({
   page,

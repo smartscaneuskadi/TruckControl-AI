@@ -57,6 +57,7 @@ import { Documents } from "../pages/Documents";
 import { Invoices } from "../pages/Invoices";
 import { Operations } from "../pages/Operations";
 import { Team } from "../pages/Team";
+import { Reports } from "../pages/Reports";
 import type { OperationKind } from "../domain/operations";
 import { useCompany } from "./CompanyAccess";
 import { initials } from "../lib/format";
@@ -121,6 +122,12 @@ const navigation = [
     feature: "deadlines",
   },
   { to: "/alerts", label: "Alertas", icon: Bell, feature: "alerts" },
+  {
+    to: "/reports",
+    label: "Informes",
+    icon: FileText,
+    feature: "profitability",
+  },
   {
     to: "/team",
     label: "Equipo de empresa",
@@ -408,6 +415,14 @@ function Workspace() {
         <main id="main-content" tabIndex={-1} className="page-content">
           <Routes>
             <Route
+              path="/reports"
+              element={
+                <FeatureGate feature="profitability">
+                  <Reports />
+                </FeatureGate>
+              }
+            />
+            <Route
               path="/team"
               element={
                 <FeatureGate feature="team">
@@ -529,9 +544,11 @@ function Workspace() {
             </span>
             <span>
               <ShieldCheck size={13} />
-              {cloud
-                ? "Acceso por empresa · guardado en la nube"
-                : "Datos ficticios · guardado local"}
+              {offline.offline
+                ? "Copia cifrada · cambios pendientes de sincronización"
+                : cloud
+                  ? "Acceso por empresa · guardado en la nube"
+                  : "Datos ficticios · guardado local"}
             </span>
           </footer>
         </main>

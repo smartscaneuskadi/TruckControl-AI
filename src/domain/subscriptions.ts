@@ -11,6 +11,7 @@ export const featureLabels = {
   gmail: "Facturas Gmail",
   assistant: "Copiloto",
   invoice_ai: "Lectura IA de facturas",
+  document_ai: "Consulta IA de documentos",
   trailers: "Remolques",
   customers: "Clientes",
   trips: "Viajes",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { LockKeyhole, RefreshCw, WifiOff } from "lucide-react";
@@ -39,6 +39,20 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [revision, setRevision] = useState(0);
+  const shell = useRef<HTMLDivElement>(null),
+    banner = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!payload || !session || !shell.current || !banner.current) return;
+    const resize = () =>
+      shell.current?.style.setProperty(
+        "--offline-bar-height",
+        `${banner.current?.offsetHeight ?? 0}px`,
+      );
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(banner.current);
+    return () => observer.disconnect();
+  }, [Boolean(payload && session)]);
   function lock() {
     session?.lock();
     setSession(null);
@@ -77,15 +91,26 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
   }, [payload, session]);
   useEffect(() => {
     if (!session) return;
-    const timer = setTimeout(
-      () => {
-        session.lock();
-        setSession(null);
-        setPayload(null);
-      },
-      30 * 60 * 1000,
-    );
-    return () => clearTimeout(timer);
+    let timer: ReturnType<typeof setTimeout>;
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(
+        () => {
+          session.lock();
+          setSession(null);
+          setPayload(null);
+        },
+        30 * 60 * 1000,
+      );
+    };
+    resetTimer();
+    document.addEventListener("pointerdown", resetTimer, { passive: true });
+    document.addEventListener("keydown", resetTimer);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("pointerdown", resetTimer);
+      document.removeEventListener("keydown", resetTimer);
+    };
   }, [session]);
   async function unlock() {
     setBusy(true);
@@ -142,11 +167,11 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
       }}
     >
       {offline && payload && session ? (
-        <>
-          <div className="offline-workspace-banner" role="status">
+        <div className="offline-mode" ref={shell}>
+          <div className="offline-workspace-banner" role="status" ref={banner}>
             <WifiOff size={18} />
             <div>
-              <strong>Copia cifrada · cambios pendientes de validar</strong>
+              <strong>Modo sin conexión · copia cifrada</strong>
               <span>
                 Caduca el {payload.expiresAt.slice(0, 10)}. Solo se publican
                 cambios con permisos verificados al conectar.
@@ -192,6 +217,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
                   documents: false,
                   gmail: false,
                   invoice_ai: false,
+                  document_ai: false,
                   team: false,
                 },
                 access: payload.access,
@@ -211,7 +237,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
               </FleetProvider>
             </SubscriptionProvider>
           </CompanyOfflineContext>
-        </>
+        </div>
       ) : (
         children
       )}
@@ -246,7 +272,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
             >
               <p>
                 Usa tu frase de desbloqueo. La copia se bloquea al cerrar esta
-                sesión o tras 30 minutos.
+                sesión o tras 30 minutos de inactividad.
               </p>
               <Field label="Copia guardada">
                 <select

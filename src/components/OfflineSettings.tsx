@@ -176,6 +176,9 @@ export function OfflineSettings() {
           <Button variant="ghost" onClick={offline.lock}>
             Bloquear copia local
           </Button>
+          <Button variant="secondary" onClick={offline.openEntry}>
+            Abrir mi copia sin conexión
+          </Button>
         </>
       ) : (
         <form className="access-form" onSubmit={prepare}>

@@ -1,4 +1,5 @@
 import type { OperationKind } from "./operations";
+import { parseMoney } from "./finance";
 export interface OperationField {
   key: string;
   label: string;
@@ -229,13 +230,19 @@ export function operationFormData(kind: OperationKind, form: FormData) {
     else if (["money", "litres", "number"].includes(f.type ?? "")) {
       if (!raw && f.default === undefined && !f.required) data[f.key] = null;
       else {
-        const n = Number(raw.replace(",", "."));
-        data[f.key] =
-          f.type === "money"
-            ? Math.round(n * 100)
-            : f.type === "litres"
-              ? Math.round(n * 1000)
-              : n;
+        if (f.type === "money")
+          data[f.key] =
+            !raw || /^0+(?:[.,]0{1,2})?$/.test(raw) ? 0 : parseMoney(raw);
+        else if (f.type === "litres") {
+          const value = raw.replace(",", ".");
+          if (!/^\d+(?:\.\d{1,3})?$/.test(value))
+            throw Error("Introduce litros con un máximo de tres decimales.");
+          const [whole, decimals = ""] = value.split(".");
+          const ml = Number(whole) * 1000 + Number(decimals.padEnd(3, "0"));
+          if (!Number.isSafeInteger(ml))
+            throw Error("El volumen supera el rango permitido.");
+          data[f.key] = ml;
+        } else data[f.key] = Number(raw.replace(",", "."));
       }
     } else if (
       ["truck", "driver", "trailer", "customer", "date"].includes(f.type ?? "")

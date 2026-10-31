@@ -12,6 +12,7 @@ import { useWorkspace } from "../app/WorkspaceContext";
 import { LocalInsightProvider } from "../domain/insights";
 import { today } from "../lib/format";
 import { Badge, PageHeading, PeriodPicker } from "../components/ui";
+import { DocumentAssistant } from "../components/DocumentAssistant";
 
 export function Assistant() {
   const { snapshot } = useFleet();
@@ -77,15 +78,16 @@ export function Assistant() {
           </article>
         ))}
       </div>
+      <DocumentAssistant />
       <section className="card future-bots">
         <Bot size={30} />
         <div>
-          <h2>Preparado para la próxima fase</h2>
+          <h2>Asistencia con permisos y revisión</h2>
           <p>
-            La arquitectura incluye un contrato de análisis independiente. Los
-            futuros bots podrán detectar anomalías y sugerir acciones desde
-            funciones de servidor, con autenticación, trazabilidad y aprobación
-            antes de modificar datos.
+            El análisis local detecta vencimientos y cambios económicos. La
+            consulta documental y la lectura de facturas se activan por usuario
+            y por empresa. Los modelos no pueden ejecutar acciones ni registrar
+            gastos sin revisión.
           </p>
         </div>
         <ShieldCheck size={30} />

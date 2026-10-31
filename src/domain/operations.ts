@@ -9,7 +9,9 @@ const km = z.number().int().min(0).max(10_000_000);
 const link = z.uuid().nullable().default(null);
 export const operationSchemas = {
   trailers: z.object({
-    plate: text(16).regex(/^[A-Za-z0-9 -]+$/),
+    plate: text(16)
+      .min(3)
+      .regex(/^[A-Za-z0-9 -]+$/),
     type: z.enum(["tautliner", "refrigerated", "container", "tipper", "other"]),
     status: z.enum(["available", "in_use", "maintenance"]),
     capacityKg: z.number().int().min(0).max(100000),
@@ -20,7 +22,7 @@ export const operationSchemas = {
   customers: z.object({
     name: text(100),
     taxId: text(30),
-    email: z.union([z.email(), z.literal("")]).default(""),
+    email: z.union([z.email().max(254), z.literal("")]).default(""),
     phone: optionalText(30),
     address: optionalText(240),
     notes: optionalText(),
@@ -37,7 +39,7 @@ export const operationSchemas = {
       startOn: dateSchema,
       endOn: dateSchema.nullable().default(null),
       status: z.enum(["planned", "in_transit", "completed", "cancelled"]),
-      distanceKm: km,
+      distanceKm: km.max(1_000_000),
       amountCents: cents,
       notes: optionalText(),
     })
@@ -188,6 +190,25 @@ export function validateOperations(
     const linked = running.map((r) => r.data[key]).filter(Boolean);
     if (new Set(linked).size !== linked.length)
       throw Error("Hay una asignación duplicada en viajes en curso.");
+  }
+  const fuelByTruck = new Map<string, OperationRecord[]>();
+  for (const row of rows.filter((r) => r.kind === "fuel")) {
+    const key = String(row.data.truckId);
+    const group = fuelByTruck.get(key) ?? [];
+    group.push(row);
+    fuelByTruck.set(key, group);
+  }
+  for (const group of fuelByTruck.values()) {
+    group.sort(
+      (a, b) =>
+        String(a.data.date).localeCompare(String(b.data.date)) ||
+        Number(a.data.odometerKm) - Number(b.data.odometerKm),
+    );
+    for (let i = 1; i < group.length; i++)
+      if (
+        Number(group[i].data.odometerKm) < Number(group[i - 1].data.odometerKm)
+      )
+        throw Error("El kilometraje no sigue el historial del camión.");
   }
   return rows;
 }

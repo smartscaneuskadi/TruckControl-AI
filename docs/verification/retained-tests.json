@@ -1,0 +1,16 @@
+{
+  "base_commit": "961b4f6c8faf993bd40266afb24e24feb9c27d45",
+  "files": {
+    "src/data/repository.test.ts": "cc929e0376239e1d33184b2ad9dc750c8d62af64e097a20dde3a42f4a2605cc2",
+    "src/domain/finance.test.ts": "b4584dad96f5afaa627eb7af231f597fa361db1196148adc0ca9cf6d127e5d46",
+    "src/domain/commands.test.ts": "6baf1a3f2abeb63548129c5e91a85c217bcc08bda6221c9cd4e298c960b5d58f",
+    "src/integrations/gmail/handler.test.ts": "3ba52b339ad8a5195d9069bf30dcf8bdb355d95a1681b321dcae10eeef230f33",
+    "src/integrations/supabase/repository.test.ts": "daaaaece7979cdeb1f61e5108a871b62664fbf93bd3aa37f95a9646ed472ee14",
+    "src/lib/export.test.ts": "cf1c50f4f1b059437776e85d60a78c0bcced9e05ab17c70d4413605b361eea77",
+    "tests/database.test.ts": "f4eeb9abc44997a99493121e2527e0889affd47a50758cb8643461c19d6333eb",
+    "tests/company-security.test.ts": "33b43ceac4c29d18d810d68257a6ea21d013e91fc8347505924678c736b4d7c7",
+    "tests/e2e/company-demo.spec.ts": "7ae49af4e52ededf16b626fd4d2ff399a84ff415966d567a8d62cbbb57a2fd08",
+    "tests/e2e/fleet.spec.ts": "dbbd1442b435f9232dc9d5e974141e6c0163cfe7f111986d4489c509bea141b8",
+    "tests/company-browser/access.spec.ts": "29678114b9909d029a129b28c8c7c1dda6786484ad9adc86183f8800571fa2a7"
+  }
+}
