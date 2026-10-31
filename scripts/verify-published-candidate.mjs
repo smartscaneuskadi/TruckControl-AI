@@ -73,6 +73,20 @@ try {
           .isDisabled())
       )
         throw new Error("Registration unexpectedly available");
+      await page.screenshot({ path: `${dir}/${name}-published-portal.png` });
+      await page
+        .getByRole("heading", {
+          name: "Empieza con todo. Elige tu plan después.",
+          exact: true,
+        })
+        .scrollIntoViewIfNeeded();
+      if (
+        !(await page
+          .getByRole("button", { name: "Elegir Inicial", exact: true })
+          .isDisabled())
+      )
+        throw new Error("Plan registration unexpectedly available");
+      await page.screenshot({ path: `${dir}/${name}-published-plans.png` });
       await page
         .getByRole("button", { name: "Explorar la demo", exact: true })
         .click();
@@ -81,10 +95,7 @@ try {
         .waitFor();
       if (await page.evaluate(() => document.body.scrollWidth > innerWidth))
         throw new Error("Layout exceeds viewport");
-      await page.screenshot({
-        path: `${dir}/${name}-published.png`,
-        fullPage: true,
-      });
+      await page.screenshot({ path: `${dir}/${name}-published.png` });
       results.push({
         profile: name,
         sourceCommit: metadata.sourceCommit,

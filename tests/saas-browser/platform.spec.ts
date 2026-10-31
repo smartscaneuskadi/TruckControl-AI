@@ -868,7 +868,6 @@ test.describe("contratación y renovación mensual", () => {
     ).toBe(true);
     await page.screenshot({
       path: testInfo.outputPath("monthly-subscription.png"),
-      fullPage: true,
     });
   });
 });

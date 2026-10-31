@@ -100,6 +100,5 @@ test("el acceso de la candidata es accesible en móvil y escritorio", async ({
   ).toBe(true);
   await page.screenshot({
     path: info.outputPath("candidate-portal.png"),
-    fullPage: true,
   });
 });

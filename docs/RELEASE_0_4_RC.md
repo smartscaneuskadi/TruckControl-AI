@@ -12,7 +12,7 @@ Esta es una candidata de demostración para revisar el lanzamiento 1.0. La demo 
 
 ## Pruebas y límites
 
-La batería conserva las 64 pruebas originales y suma 180 unitarias/SQL, 7 de configuración de correo, 42 de demo, 8 de empresas, 28 SaaS y 6 de candidata. El CI debe completarse para el commit final antes de publicar; no se considera aprobada una comprobación omitida. Los perfiles Android y Windows son emulaciones Chromium.
+La batería conserva las 64 pruebas originales y suma 180 unitarias/SQL, 7 de configuración de correo, 42 de demo, 8 de empresas, 28 SaaS y 6 de candidata. El CI del commit publicado ha pasado las 271 pruebas; una comprobación omitida no se cuenta como aprobada. Los perfiles Android y Windows son emulaciones Chromium.
 
 Además, el proyecto real de Supabase pasó verificaciones con rollback y el nuevo endpoint devuelve los rechazos de autenticación, origen, método y firma esperados. Registro, pagos, Gmail y modelos IA siguen desactivados; no se enviaron facturas o documentos a proveedores. No se han realizado cobros.
 
