@@ -67,6 +67,7 @@ import { useOffline } from "./OfflineContext";
 import { useOperations } from "./OperationsProvider";
 import { operationalAlerts } from "../domain/operations";
 import { useCurrentDay } from "../lib/use-current-day";
+import { isCandidateRelease } from "../domain/release";
 
 const navigation = [
   {
@@ -421,7 +422,9 @@ function Workspace() {
                 ? `Prueba: ${trialDaysLeft(subscription.access.profile.trial_ends_at)} días`
                 : cloud
                   ? "Modo empresa"
-                  : "Modo demo"}
+                  : isCandidateRelease
+                    ? "Candidata · datos ficticios"
+                    : "Modo demo"}
             </span>
             {canInstall && (
               <button

@@ -19,6 +19,7 @@ import type {
 } from "../domain/subscriptions";
 import { money } from "../lib/format";
 import { errorMessage } from "../app/FleetProvider";
+import { isCandidateRelease } from "../domain/release";
 
 export function Registration({
   initialView = "login",
@@ -121,6 +122,20 @@ export function Registration({
       setBusy(false);
     }
   }
+  if (isCandidateRelease)
+    return (
+      <main className="registration-page">
+        <section className="card registration-card">
+          <h1>Acceso comercial en preparación</h1>
+          <p>
+            Esta candidata permite explorar la aplicación con datos ficticios.
+            Las cuentas de clientes se abrirán después de verificar correo,
+            dominio y seguridad.
+          </p>
+          <Button onClick={onBack}>Volver a la entrada</Button>
+        </section>
+      </main>
+    );
   return (
     <main className="registration-page">
       <Button variant="ghost" icon={ArrowLeft} onClick={onBack}>

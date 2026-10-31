@@ -10,6 +10,8 @@ playwright-report/
 test-results/
 company-test-results/
 saas-test-results/
+candidate-test-results/
+public-test-results/
 .DS_Store
 .openai/artifacts/
 __pycache__/

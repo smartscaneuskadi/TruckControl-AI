@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import type { RecurringStatus } from "../../src/components/RecurringSubscription";
 import { exampleCatalog, featureLabels } from "../../src/domain/subscriptions";
 import type {
   AdminSnapshot,
@@ -58,7 +59,19 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       financeEntryId: null;
     }
   >();
-  const controls = { conflict: false };
+  const controls = {
+    conflict: false,
+    recurring: {
+      configured: false,
+      management_available: false,
+      terms_version: null,
+      terms_url: null,
+      subscription: null,
+      invoices: [],
+    } as RecurringStatus,
+    recurringFailure: false,
+    checkoutUrl: "https://checkout.stripe.com/c/pay/synthetic",
+  };
   const pending = {
     id: "10000000-0000-4000-8000-000000000084",
     email: "pending@example.com",
@@ -311,7 +324,27 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       data = [];
     else if (url.pathname === "/functions/v1/company-gmail")
       data = { oauth_ready: false, ai_enabled: false };
-    else {
+    else if (url.pathname === "/functions/v1/truckcontrol-subscriptions") {
+      if (body?.action === "status") data = controls.recurring;
+      else if (controls.recurringFailure) {
+        status = 503;
+        data = { error: "synthetic_provider_unavailable" };
+      } else if (
+        body?.action === "checkout" &&
+        controls.recurring.configured &&
+        body.terms_accepted === true &&
+        body.terms_version === controls.recurring.terms_version &&
+        catalog.payments_enabled &&
+        !catalog.prices_are_examples
+      )
+        data = { url: controls.checkoutUrl };
+      else if (body?.action === "cancel" || body?.action === "resume")
+        data = { requested: true };
+      else {
+        status = 400;
+        data = { error: "synthetic_request_rejected" };
+      }
+    } else {
       status = 400;
       data = { message: "Unexpected synthetic request" };
     }
@@ -635,4 +668,207 @@ test("el portal y la administración son accesibles en escritorio y Android", as
   expect(
     await page.evaluate(() => document.body.scrollWidth <= innerWidth),
   ).toBe(true);
+});
+
+test.describe("contratación y renovación mensual", () => {
+  async function ready(page: Page, subscription = false) {
+    const f = await fixtures(page);
+    f.catalog.registration_open = false;
+    f.catalog.payments_enabled = true;
+    f.catalog.prices_are_examples = false;
+    f.controls.recurring = {
+      configured: true,
+      management_available: true,
+      terms_version: "synthetic-approved-v1",
+      terms_url: "http://127.0.0.1:4194/legal/subscription",
+      subscription: subscription
+        ? {
+            state: "active",
+            plan_id: "limited",
+            monthly_cents: 1000,
+            currency: "EUR",
+            period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
+            cancel_at_period_end: false,
+          }
+        : null,
+      invoices: [],
+    };
+    await login(page, "expired@example.com");
+    await expect(
+      page.getByRole("heading", { name: "Elige cómo quieres continuar" }),
+    ).toBeVisible();
+    return f;
+  }
+  test("exige aceptar la versión vigente y permite contratar con el registro público cerrado", async ({
+    page,
+  }) => {
+    const f = await ready(page);
+    const choose = page.getByRole("button", {
+      name: "Elegir Inicial",
+      exact: true,
+    });
+    const terms = page.getByRole("checkbox", {
+      name: /Acepto la renovación mensual/,
+    });
+    await expect(choose).toBeDisabled();
+    await terms.check();
+    await expect(choose).toBeEnabled();
+    f.controls.recurring.terms_version = "synthetic-approved-v2";
+    await page
+      .getByRole("button", {
+        name: "Comprobar estado de mi cuenta",
+        exact: true,
+      })
+      .click();
+    await expect(terms).not.toBeChecked();
+    await expect(choose).toBeDisabled();
+    expect(
+      f.calls.filter(
+        (c) =>
+          c.path.endsWith("truckcontrol-subscriptions") &&
+          c.body?.action === "checkout",
+      ),
+    ).toHaveLength(0);
+    await page.route("https://checkout.stripe.com/**", (route) =>
+      route.fulfill({
+        contentType: "text/html",
+        body: "<h1>Pago simulado sin proveedor</h1>",
+      }),
+    );
+    await terms.check();
+    await choose.click();
+    await expect(page).toHaveURL(
+      /^https:\/\/checkout\.stripe\.com\/c\/pay\/synthetic/,
+    );
+    const checkout = f.calls.find(
+      (c) =>
+        c.path.endsWith("truckcontrol-subscriptions") &&
+        c.body?.action === "checkout",
+    );
+    expect(checkout?.body).toMatchObject({
+      terms_accepted: true,
+      terms_version: "synthetic-approved-v2",
+    });
+    expect(checkout?.body).not.toHaveProperty("user_id");
+    expect(checkout?.body).not.toHaveProperty("amount_cents");
+  });
+  test("mantiene la contratación bloqueada si la pasarela no está configurada", async ({
+    page,
+  }) => {
+    const f = await ready(page);
+    f.controls.recurring.configured = false;
+    await page
+      .getByRole("button", {
+        name: "Comprobar estado de mi cuenta",
+        exact: true,
+      })
+      .click();
+    await expect(
+      page.getByText("La contratación mensual todavía no está disponible.", {
+        exact: false,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Elegir Inicial", exact: true }),
+    ).toBeDisabled();
+    expect(f.calls.filter((c) => c.body?.action === "checkout")).toHaveLength(
+      0,
+    );
+  });
+  test("cancelar solicita confirmación y espera el estado del servidor sin activar acceso", async ({
+    page,
+  }) => {
+    const f = await ready(page, true);
+    await page
+      .getByRole("button", { name: "Cancelar renovación", exact: true })
+      .click();
+    const dialog = page.getByRole("dialog", {
+      name: "Cancelar la renovación mensual",
+    });
+    await expect(dialog).toBeVisible();
+    expect(f.calls.filter((c) => c.body?.action === "cancel")).toHaveLength(0);
+    await dialog
+      .getByRole("button", { name: "Confirmar cambio", exact: true })
+      .click();
+    await expect(dialog).not.toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Cancelar renovación", exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Elige cómo quieres continuar" }),
+    ).toBeVisible();
+    expect(f.calls.filter((c) => c.body?.action === "cancel")).toHaveLength(1);
+    expect(
+      f.calls.find((c) => c.body?.action === "cancel")?.body?.operation_id,
+    ).toMatch(/^[0-9a-f-]{36}$/);
+    f.controls.recurring.subscription!.cancel_at_period_end = true;
+    await page
+      .getByRole("button", { name: "Actualizar suscripción", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Reactivar renovación", exact: true }),
+    ).toBeVisible();
+  });
+  test("un fallo de cancelación se explica dentro del diálogo y conserva los datos", async ({
+    page,
+  }) => {
+    const f = await ready(page, true);
+    f.controls.recurringFailure = true;
+    await page
+      .getByRole("button", { name: "Cancelar renovación", exact: true })
+      .click();
+    const dialog = page.getByRole("dialog", {
+      name: "Cancelar la renovación mensual",
+    });
+    await dialog
+      .getByRole("button", { name: "Confirmar cambio", exact: true })
+      .click();
+    await expect(dialog.getByRole("alert")).toContainText(
+      "No se ha podido confirmar el cambio",
+    );
+    await dialog.getByRole("button", { name: "Volver", exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Cancelar renovación", exact: true }),
+    ).toBeVisible();
+    expect(f.controls.recurring.subscription!.cancel_at_period_end).toBe(false);
+    expect(f.calls.some((c) => c.path.includes("delete"))).toBe(false);
+  });
+  test("rechaza un destino de pago ajeno y mantiene al usuario dentro de su cuenta", async ({
+    page,
+  }) => {
+    const f = await ready(page);
+    f.controls.checkoutUrl = "https://foreign.invalid/pay";
+    await page
+      .getByRole("checkbox", { name: /Acepto la renovación mensual/ })
+      .check();
+    await page
+      .getByRole("button", { name: "Elegir Inicial", exact: true })
+      .click();
+    await expect(page.getByRole("alert")).toContainText(
+      "No se ha recibido una página de pago válida",
+    );
+    await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:4194\//);
+  });
+  test("la nueva gestión mensual es accesible y se adapta a ambas pantallas", async ({
+    page,
+  }, testInfo) => {
+    await ready(page, true);
+    await expect(
+      page.getByRole("region", { name: "Suscripción mensual" }),
+    ).toBeVisible();
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth),
+    ).toBe(true);
+    await page.screenshot({
+      path: testInfo.outputPath("monthly-subscription.png"),
+      fullPage: true,
+    });
+  });
 });

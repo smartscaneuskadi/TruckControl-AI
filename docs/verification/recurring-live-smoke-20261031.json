@@ -1,0 +1,47 @@
+{
+  "project_ref": "kkkemaycedexymrpaqtp",
+  "function": "truckcontrol-subscriptions",
+  "provider_requests": false,
+  "results": [
+    {
+      "case": "anonymous",
+      "status": 401,
+      "expected": 401,
+      "passed": true,
+      "response": {
+        "error": "authentication_required"
+      },
+      "seconds": 0.975
+    },
+    {
+      "case": "foreign_origin",
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "response": {
+        "error": "origin_not_allowed"
+      },
+      "seconds": 0.179
+    },
+    {
+      "case": "method",
+      "status": 405,
+      "expected": 405,
+      "passed": true,
+      "response": {
+        "error": "method_not_allowed"
+      },
+      "seconds": 0.103
+    },
+    {
+      "case": "forged_webhook",
+      "status": 400,
+      "expected": 400,
+      "passed": true,
+      "response": {
+        "error": "invalid_signature"
+      },
+      "seconds": 0.807
+    }
+  ]
+}

@@ -209,8 +209,14 @@ export function Billing({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [acceptedTermsVersion, setAcceptedTermsVersion] = useState<
+    string | null
+  >(null);
   const recurring = useRecurringSubscription(access.profile?.user_id ?? "");
+  const termsAccepted = Boolean(
+    recurring.status?.terms_version &&
+    acceptedTermsVersion === recurring.status.terms_version,
+  );
   useEffect(() => {
     if (!client) return;
     let active = true;
@@ -250,7 +256,7 @@ export function Billing({
               action: "checkout",
               request_id: data,
               terms_accepted: termsAccepted,
-              terms_version: recurring.status?.terms_version,
+              terms_version: acceptedTermsVersion,
             },
           },
         );
@@ -259,7 +265,11 @@ export function Billing({
             "Tu solicitud está guardada. El procesador de pagos todavía no está disponible.",
           );
         const url = new URL(checkout.data.url);
-        if (url.origin !== "https://checkout.stripe.com")
+        if (
+          url.origin !== "https://checkout.stripe.com" ||
+          url.username ||
+          url.password
+        )
           throw new Error("No se ha recibido una página de pago válida.");
         location.assign(url.href);
       } else
@@ -334,7 +344,13 @@ export function Billing({
               <input
                 type="checkbox"
                 checked={termsAccepted}
-                onChange={(e) => setTermsAccepted(e.target.checked)}
+                onChange={(e) =>
+                  setAcceptedTermsVersion(
+                    e.target.checked
+                      ? (recurring.status?.terms_version ?? null)
+                      : null,
+                  )
+                }
               />
               <span>
                 Acepto la{" "}
@@ -395,7 +411,14 @@ export function Billing({
           solo.
         </span>
       </div>
-      <Button variant="secondary" disabled={busy} onClick={onRefresh}>
+      <Button
+        variant="secondary"
+        disabled={busy}
+        onClick={() => {
+          recurring.refresh();
+          onRefresh();
+        }}
+      >
         Comprobar estado de mi cuenta
       </Button>
     </main>

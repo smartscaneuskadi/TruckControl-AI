@@ -131,7 +131,7 @@ export function RecurringSubscription({
       onRefresh();
     } catch {
       setError(
-        "No se ha podido confirmar el cambio. Tu suscripción conserva su estado anterior; reintenta o contacta con soporte.",
+        "No se ha podido confirmar el cambio. Actualiza el estado de la suscripción antes de volver a intentarlo o contacta con soporte.",
       );
     } finally {
       setBusy(false);
@@ -234,6 +234,11 @@ export function RecurringSubscription({
               ? "No se programarán nuevas renovaciones después del periodo actual. Se conserva el acceso que ya hayas pagado."
               : `Se retomarán los cobros mensuales de ${money(subscription!.monthly_cents)} bajo las condiciones de tu suscripción.`}
           </p>
+          {error && (
+            <p role="alert" className="form-error">
+              {error}
+            </p>
+          )}
           <div className="access-links">
             <Button disabled={busy} onClick={() => void manage(confirm)}>
               {busy ? "Enviando…" : "Confirmar cambio"}

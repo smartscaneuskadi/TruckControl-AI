@@ -118,6 +118,39 @@ afterAll(async () => {
   await db?.close();
 });
 describe("aislamiento y ciclo de renovación en PostgreSQL", () => {
+  it("la política restrictiva impide exponer recibos aunque aparezcan permisos y políticas permisivas por error", async () => {
+    await prepare();
+    await event();
+    await db.exec(`grant select on private.tc_billing_subscriptions,private.tc_subscription_invoices to authenticated;
+      create policy synthetic_permissive on private.tc_billing_subscriptions for select to authenticated using(true);
+      create policy synthetic_permissive on private.tc_subscription_invoices for select to authenticated using(true);`);
+    try {
+      for (const user of [a, b]) {
+        expect(
+          (
+            await as(
+              "authenticated",
+              () => db.query("select * from private.tc_billing_subscriptions"),
+              user,
+            )
+          ).rows,
+        ).toEqual([]);
+        expect(
+          (
+            await as(
+              "authenticated",
+              () => db.query("select * from private.tc_subscription_invoices"),
+              user,
+            )
+          ).rows,
+        ).toEqual([]);
+      }
+    } finally {
+      await db.exec(`drop policy synthetic_permissive on private.tc_billing_subscriptions;
+        drop policy synthetic_permissive on private.tc_subscription_invoices;
+        revoke select on private.tc_billing_subscriptions,private.tc_subscription_invoices from authenticated;`);
+    }
+  });
   it("no libera por reloj local un checkout que podría haberse completado con webhook retrasado", async () => {
     await prepare();
     await call("saved", {

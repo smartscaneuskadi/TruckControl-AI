@@ -13,6 +13,7 @@ import { getSupabaseClient } from "../integrations/supabase/client";
 import { exampleCatalog } from "../domain/subscriptions";
 import type { Catalog, Plan } from "../domain/subscriptions";
 import { money } from "../lib/format";
+import { isCandidateRelease } from "../domain/release";
 
 export function PlanCards({
   catalog,
@@ -109,7 +110,11 @@ export function PublicPortal({
   onAccess(view: "login" | "signup", plan?: Plan["id"]): void;
   onDemo(): void;
 }) {
-  const [catalog, setCatalog] = useState<Catalog>(exampleCatalog);
+  const [catalog, setCatalog] = useState<Catalog>(
+    isCandidateRelease
+      ? { ...exampleCatalog, registration_open: false, payments_enabled: false }
+      : exampleCatalog,
+  );
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     const client = getSupabaseClient();
@@ -124,7 +129,12 @@ export function PublicPortal({
         setFailed(true);
         return;
       }
-      setCatalog(data as unknown as Catalog);
+      const next = data as unknown as Catalog;
+      setCatalog(
+        isCandidateRelease
+          ? { ...next, registration_open: false, payments_enabled: false }
+          : next,
+      );
     });
     return () => {
       active = false;
@@ -162,6 +172,22 @@ export function PublicPortal({
           </Button>
         </nav>
       </header>
+      {isCandidateRelease && (
+        <section
+          className="candidate-notice"
+          aria-label="Estado de la versión candidata"
+        >
+          <Badge tone="amber">VERSIÓN CANDIDATA</Badge>
+          <h2>Prueba los módulos con datos ficticios</h2>
+          <p>
+            La apertura comercial espera la verificación del dominio y del
+            correo. Explora la demo desde este móvil u ordenador.
+          </p>
+          <Button variant="secondary" onClick={onDemo}>
+            Abrir demostración
+          </Button>
+        </section>
+      )}
       <section className="portal-hero">
         <div>
           <Badge tone="green">INTELIGENCIA PARA TU FLOTA</Badge>

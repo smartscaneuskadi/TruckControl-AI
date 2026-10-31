@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
+import { isCandidateRelease } from "../../domain/release";
 
 /** Public client for TruckControl's dedicated project. Never use FIXPilot keys. */
 export function createFutureSupabaseClient(
@@ -7,6 +8,10 @@ export function createFutureSupabaseClient(
   publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
     string | undefined,
 ) {
+  if (isCandidateRelease)
+    throw new Error(
+      "La versión candidata utiliza exclusivamente datos ficticios locales.",
+    );
   if (!url || !publishableKey)
     throw new Error("La conexión de empresas todavía no está activada.");
   if (!publishableKey.startsWith("sb_publishable_"))
@@ -45,6 +50,7 @@ export function createFutureSupabaseClient(
 
 let client: ReturnType<typeof createFutureSupabaseClient> | null | undefined;
 export function getSupabaseClient() {
+  if (isCandidateRelease) return null;
   if (client === undefined) {
     const { VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY } = import.meta
       .env;
