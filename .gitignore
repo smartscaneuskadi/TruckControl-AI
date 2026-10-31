@@ -12,3 +12,5 @@ company-test-results/
 saas-test-results/
 .DS_Store
 .openai/artifacts/
+__pycache__/
+*.pyc

@@ -1,5 +1,7 @@
 # Entrega actual — TruckControl AI 0.3.0
 
+**Correo real en configuración:** el propietario ha solicitado activar primero confirmación de cuentas y recuperación. Las plantillas y la aplicación controlada de ajustes están preparadas; todavía no hay entrega SMTP verificada. Se espera la autorización oficial de administración y el remitente. Estado detallado: [AUTH_MAIL_SETUP.md](AUTH_MAIL_SETUP.md). La demo estable sigue publicada sin abrir empresas reales.
+
 **Versión 6 publicada y verificada por HTTPS:** https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. La versión 5 anterior se conserva para recuperación. Se mantiene el mismo dominio y los datos ficticios existentes.
 
 Repositorio oficial: https://github.com/smartscaneuskadi/TruckControl-AI. Código integrado en `main` mediante [PR #2](https://github.com/smartscaneuskadi/TruckControl-AI/pull/2), sin reescribir historial. Rama conservada: `feat/demo-recovery-alerts`. Fuente publicada `b335b28cb0070abe8a28cba3f0a041170d42218c`; merge `476f3a3e2ba92a4c73e5d279e3f3b2446d89d99f`.

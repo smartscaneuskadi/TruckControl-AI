@@ -57,3 +57,15 @@ PUBLICADO 0.3.0: versión Sites 6, URL estable https://truckcontrol-ai-fase-1.ea
 CI final confirmado: 150 unitarias/SQL + 42 demo + 8 empresas + 16 SaaS = 216. Ejecuciones 41225009144 y 41225014197 correctas; logs consultados. PR #2 integrado mediante merge `476f3a3e2ba92a4c73e5d279e3f3b2446d89d99f`. La rama de desarrollo se conserva. El preview local de esta fase se detuvo y los navegadores QA se cerraron.
 
 El propietario dejó los proveedores y la apertura comercial para más adelante. Se mantienen los bloqueos/configuraciones de la entrega anterior, sin nuevos cambios en Supabase, FIXPilot, credenciales, servicios de pago ni datos reales. Para reanudar: leer CURRENT_DELIVERY, DEMO_RECOVERY y release-0.3.0.json; no recrear el proyecto, no repetir migraciones ni sobrescribir trabajos de terceros.
+
+## Activación del correo real solicitada
+
+El propietario pidió configurar el correo real y aclaró expresamente «Confirmación de cuentas y recuperación de contraseñas». Rama `feat/transactional-email-setup`, con un Git bundle previo. La demo Sites versión 6 permanece publicada.
+
+Se comprobó que el proyecto independiente está ACTIVE_HEALTHY y que el dominio smartscaneuskadi.com utiliza Google Workspace (MX y SPF públicos). No se modificó DNS. No hay credenciales de administración/SMTP configuradas en el entorno. Las herramientas Supabase no incluyen configuración de Auth alojado. La CLI confirmó ausencia de autorización. Se inició el flujo oficial CLI, nombre `truckcontrol-ai-mail-setup`; la sesión está esperando el código temporal que el titular recibe al autorizar. Metadatos de esa sesión únicamente en `/workspace/artifacts/truckcontrol-mail-setup/`, nunca en Git. No iniciar otro flujo mientras este siga pendiente.
+
+Pendientes respuestas del titular: remitente (pedidos@smartscaneuskadi.com o dirección propia) y código temporal de autorización CLI. No pedir contraseñas ni tokens API por chat. No se han enviado correos ni creado identidades, empresas o servicios de pago.
+
+Preparado: plantillas de confirmación/recuperación en español, redirección local HTTPS y script de plan/comprobación/aplicación parcial de ajustes Auth. El script limita proyecto y organización, conserva SMTP/secretos, no abre registros y comprueba la lectura posterior. Siete pruebas Python pasan. Cambio Free de junio 2026 verificado: se omiten plantillas alojadas hasta que exista SMTP propio. Ver `AUTH_MAIL_SETUP.md`.
+
+Siguiente paso: reanudar la autorización oficial pendiente, comprobar configuración de TruckControl y aplicar primero los ajustes seguros. Si SMTP sigue vacío, solicitar únicamente la conexión segura del proveedor elegida por el titular. No afirmar entrega real hasta probar un envío autorizado y los dos flujos. Mantener cerrados el alta empresarial, pagos, SMS y modelos IA; no tocar FIXPilot.
