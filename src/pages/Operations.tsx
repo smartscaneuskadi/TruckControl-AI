@@ -234,7 +234,7 @@ export function Operations({ kind }: { kind: OperationKind }) {
               <div className="section-heading">
                 <h2>Requieren seguimiento</h2>
                 <Badge tone={alerts.length ? "amber" : "green"}>
-                  {alerts.length} avisos
+                  {filteredAlerts.length} de {alerts.length} avisos
                 </Badge>
               </div>
               <div className="alert-filters">

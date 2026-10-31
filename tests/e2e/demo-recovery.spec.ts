@@ -42,6 +42,53 @@ async function accept(page: Page) {
     page.getByRole("heading", { name: "Configuración", exact: true }),
   ).toBeVisible();
 }
+test("la actualización conserva las ediciones de la demo publicada anterior", async ({
+  page,
+}) => {
+  await exportBackup(page);
+  const legacy = await page.evaluate(() => {
+    const core = JSON.parse(localStorage.getItem("truckcontrol.demo.v1")!);
+    const operations = core.demoOperationsV1;
+    core.trucks[0].route = "Ruta ficticia conservada de la versión anterior";
+    core.entries[0].concept =
+      "Movimiento ficticio conservado de la versión anterior";
+    operations.find((r: { kind: string }) => r.kind === "customers").data.name =
+      "Cliente ficticio de versión anterior";
+    delete core.demoOperationsV1;
+    const raw = JSON.stringify(operations);
+    localStorage.setItem("truckcontrol.demo.operations.v1", raw);
+    localStorage.setItem("truckcontrol.demo.v1", JSON.stringify(core));
+    return raw;
+  });
+  await page.reload();
+  await expect(
+    page.getByRole("button", {
+      name: "Descargar copia de registros",
+      exact: true,
+    }),
+  ).toBeEnabled();
+  const restored = await page.evaluate(() =>
+    JSON.parse(localStorage.getItem("truckcontrol.demo.v1")!),
+  );
+  expect(restored.trucks[0].route).toBe(
+    "Ruta ficticia conservada de la versión anterior",
+  );
+  expect(restored.entries[0].concept).toBe(
+    "Movimiento ficticio conservado de la versión anterior",
+  );
+  expect(restored.demoOperationsV1).toEqual(JSON.parse(legacy));
+  expect(
+    await page.evaluate(() =>
+      localStorage.getItem("truckcontrol.demo.operations.v1"),
+    ),
+  ).toBe(legacy);
+  await page.goto("/#/customers");
+  await expect(
+    page
+      .getByRole("row")
+      .filter({ hasText: "Cliente ficticio de versión anterior" }),
+  ).toBeVisible();
+});
 test("exporta, previsualiza, restaura y recupera fichas y operaciones conservando los archivos", async ({
   page,
 }) => {

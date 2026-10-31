@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createDemo } from "./demo";
-import { demoOperations } from "./operations";
+import { demoOperations, DemoOperationRepository } from "./operations";
 import { LocalFleetRepository } from "./repository";
 import {
   createDemoBackup,
@@ -38,6 +38,26 @@ function fixture() {
   };
 }
 describe("copias y recuperación del espacio de demostración", () => {
+  it("actualiza una demo anterior conservando sus ediciones y la clave heredada", async () => {
+    const { storage, fleet, operations } = fixture();
+    fleet.trucks[0].route = "Ruta heredada editada";
+    operations.find((r) => r.kind === "customers")!.data.name =
+      "Cliente heredado editado";
+    storage.setItem(STORAGE_KEY, JSON.stringify(fleet));
+    const legacy = JSON.stringify(operations);
+    storage.setItem(demoOperationKey, legacy);
+    vi.stubGlobal("localStorage", storage);
+    try {
+      expect(await new DemoOperationRepository().load(fleet)).toEqual(
+        operations,
+      );
+      expect(await new LocalFleetRepository(storage).load()).toEqual(fleet);
+      expect(readDemoOperations(storage, fleet)).toEqual(operations);
+      expect(storage.getItem(demoOperationKey)).toBe(legacy);
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
   it("exporta y valida fichas y operaciones sin presentar los archivos como incluidos", () => {
     const { backup } = fixture();
     expect(parseDemoBackupText(JSON.stringify(backup))).toEqual({
