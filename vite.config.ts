@@ -1,6 +1,54 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { readFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+
+const releaseChannel = process.env.VITE_RELEASE_CHANNEL || "demo";
+if (!["demo", "candidate", "production"].includes(releaseChannel))
+  throw new Error("Canal de publicación no reconocido.");
+if (
+  releaseChannel === "candidate" &&
+  (process.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_PUBLISHABLE_KEY)
+)
+  throw new Error(
+    "La candidata se construye sin conexión a datos de clientes.",
+  );
+const appPackage = JSON.parse(
+  readFileSync(new URL("./package.json", import.meta.url), "utf8"),
+);
+function releaseMetadata() {
+  let sourceCommit: string | null = null,
+    sourceDirty: boolean | null = null;
+  try {
+    sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    sourceDirty = Boolean(
+      execFileSync("git", ["status", "--porcelain"], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+      }).trim(),
+    );
+  } catch {
+    /* Local source archives may not contain Git metadata. */
+  }
+  return {
+    app: "TruckControl AI",
+    version: appPackage.version,
+    channel: releaseChannel,
+    sourceCommit,
+    sourceDirty,
+    companyConnectionBundled: Boolean(
+      releaseChannel !== "candidate" &&
+      process.env.VITE_SUPABASE_URL &&
+      process.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    ),
+    registrationForcedClosed: releaseChannel === "candidate",
+    builtAt: new Date().toISOString(),
+  };
+}
 
 const publicBase = process.env.VITE_BASE_PATH || "/";
 if (
@@ -13,6 +61,29 @@ export default defineConfig({
   base: publicBase,
   plugins: [
     react(),
+    {
+      name: "truckcontrol-release-provenance",
+      generateBundle() {
+        this.emitFile({
+          type: "asset",
+          fileName: "release.json",
+          source: JSON.stringify(releaseMetadata(), null, 2) + "\n",
+        });
+      },
+      transformIndexHtml() {
+        return [
+          { tag: "meta", attrs: { name: "referrer", content: "no-referrer" } },
+          ...(releaseChannel !== "production"
+            ? [
+                {
+                  tag: "meta",
+                  attrs: { name: "robots", content: "noindex,nofollow" },
+                },
+              ]
+            : []),
+        ];
+      },
+    },
     VitePWA({
       registerType: "prompt",
       includeAssets: ["favicon.svg", "icons/*.png"],
@@ -21,7 +92,10 @@ export default defineConfig({
         name: "TruckControl AI",
         short_name: "TruckControl",
         lang: "es",
-        description: "Gestión inteligente de flotas · Demostración",
+        description:
+          releaseChannel === "candidate"
+            ? "Gestión de flotas · Candidata con datos ficticios"
+            : "Gestión inteligente de flotas · Demostración",
         start_url: publicBase,
         scope: publicBase,
         display: "standalone",

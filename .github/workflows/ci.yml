@@ -38,6 +38,10 @@ jobs:
       - run: npm run test:e2e:saas
         env:
           TRUCKCONTROL_SAAS_TEST_ARTIFACTS: saas-test-results
+      - run: npm run test:e2e:candidate
+        env:
+          TRUCKCONTROL_CANDIDATE_TEST_ARTIFACTS: candidate-test-results
+      - run: npm run verify:published
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
@@ -46,4 +50,6 @@ jobs:
             playwright-report/
             company-test-results/
             saas-test-results/
+            candidate-test-results/
+            public-test-results/
           retention-days: 7

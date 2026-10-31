@@ -14,6 +14,20 @@
       "name": "truckcontrol_financial_source_permissions",
       "sha256": "79a3d21f5cb72ae072cc408ddf9488afbb76a1f2493c4043ef534fd124c844cb",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261031181317_recurring_subscriptions.sql",
+      "version": "20261031205146",
+      "name": "truckcontrol_recurring_subscriptions",
+      "sha256": "d35d62d5ab2eeb371b45d30e2a9859741ef3b57e513b32e9a0bff0d503134dd0",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261031205953_explicit_server_only_billing_policies.sql",
+      "version": "20261031210121",
+      "name": "truckcontrol_explicit_server_only_billing_policies",
+      "sha256": "e14d552c66d146581af1955391ac7ebdbb21d1c9a5d5074ead28802988184f49",
+      "already_applied": true
     }
   ]
 }

@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
+import { isCandidateRelease } from "../../domain/release";
 
 /** Public client for TruckControl's dedicated project. Never use FIXPilot keys. */
 export function createFutureSupabaseClient(
@@ -7,6 +8,10 @@ export function createFutureSupabaseClient(
   publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
     string | undefined,
 ) {
+  if (isCandidateRelease)
+    throw new Error(
+      "La versión candidata utiliza exclusivamente datos ficticios locales.",
+    );
   if (!url || !publishableKey)
     throw new Error("La conexión de empresas todavía no está activada.");
   if (!publishableKey.startsWith("sb_publishable_"))
@@ -14,10 +19,23 @@ export function createFutureSupabaseClient(
       "El cliente público requiere una clave publicable sb_publishable_. Nunca uses claves secretas o service_role.",
     );
   const parsed = new URL(url);
+  const loopback = (host: string) =>
+    ["localhost", "127.0.0.1", "[::1]"].includes(host);
+  const local =
+    loopback(parsed.hostname) &&
+    (typeof window === "undefined" || loopback(window.location.hostname));
   if (
-    parsed.protocol !== "https:" &&
-    !["localhost", "127.0.0.1"].includes(parsed.hostname)
+    parsed.username ||
+    parsed.password ||
+    parsed.search ||
+    parsed.hash ||
+    parsed.pathname !== "/" ||
+    (!local && parsed.origin !== "https://kkkemaycedexymrpaqtp.supabase.co")
   )
+    throw new Error(
+      "TruckControl solo puede conectarse a su proyecto independiente autorizado.",
+    );
+  if (parsed.protocol !== "https:" && !(local && parsed.protocol === "http:"))
     throw new Error("Supabase requiere HTTPS fuera del entorno local.");
   return createClient<Database>(url, publishableKey, {
     auth: {
@@ -32,6 +50,7 @@ export function createFutureSupabaseClient(
 
 let client: ReturnType<typeof createFutureSupabaseClient> | null | undefined;
 export function getSupabaseClient() {
+  if (isCandidateRelease) return null;
   if (client === undefined) {
     const { VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY } = import.meta
       .env;

@@ -1,33 +1,27 @@
-# Entrega actual — TruckControl AI 0.3.0
+# TruckControl AI 0.4.0-rc.1 — candidata publicada
 
-**Correo real en configuración:** el propietario ha solicitado activar primero confirmación de cuentas y recuperación. Las plantillas y la aplicación controlada de ajustes están preparadas; todavía no hay entrega SMTP verificada. Se espera la autorización oficial de administración y el remitente. Estado detallado: [AUTH_MAIL_SETUP.md](AUTH_MAIL_SETUP.md). La demo estable sigue publicada sin abrir empresas reales.
+**Candidata pública:** https://truckcontrol-ai-candidata.earlymug513.chatgpt.site. Pulsa **Abrir demostración**. Su versión alojada es la 1 y utiliza exclusivamente datos ficticios; las cuentas comerciales y los cobros están cerrados.
 
-**Versión 6 publicada y verificada por HTTPS:** https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. La versión 5 anterior se conserva para recuperación. Se mantiene el mismo dominio y los datos ficticios existentes.
+**Demo anterior conservada:** https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site, versión 6, sin cambios en su índice ni en su alojamiento. Ambas direcciones tienen almacenamiento local independiente. La entrega anterior se conserva en `history/20261031/CURRENT_DELIVERY-0.3.0.md`.
 
-Repositorio oficial: https://github.com/smartscaneuskadi/TruckControl-AI. Código integrado en `main` mediante [PR #2](https://github.com/smartscaneuskadi/TruckControl-AI/pull/2), sin reescribir historial. Rama conservada: `feat/demo-recovery-alerts`. Fuente publicada `b335b28cb0070abe8a28cba3f0a041170d42218c`; merge `476f3a3e2ba92a4c73e5d279e3f3b2446d89d99f`.
+## Código y publicación
 
-## Qué cambia
+Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI. Trabajo de aplicación en [PR #5](https://github.com/smartscaneuskadi/TruckControl-AI/pull/5), rama `feat/commercial-release-candidate`. La fuente publicada está en `deploy/commercial-candidate`, commit `e7a43948bff9bf3b3c5c37c890324ce6dc94852c`; solo cambia la identidad de alojamiento respecto al código revisado.
 
-El centro de Alertas permite buscar y filtrar urgentes y próximos vencimientos. La campana incorpora avisos operativos de los módulos autorizados. Las revisiones por kilómetros utilizan lecturas de repostajes ya realizados y una clave estable: al reconocer un aviso, no reaparece solo porque cambie el día. Los avisos manuales se revisan actualizando el registro existente. Reconocer un aviso no renueva permisos ni completa mantenimientos.
-
-En **Configuración → Copias y recuperación de la demo** se exportan y restauran fichas y operaciones. La vista previa valida el archivo sin modificar datos; la confirmación conserva un punto anterior. Los cambios de otra pestaña y los fallos de cuota impiden sobrescribir el estado actual. Los PDF e imágenes se conservan aparte y no se incluyen en el JSON. Se siguen leyendo las copias antiguas y se conserva la clave de operaciones heredada. Guía: [DEMO_RECOVERY.md](DEMO_RECOVERY.md).
-
-Las pruebas de actualización desde la versión anterior comprueban que se conservan rutas editadas, movimientos económicos y clientes/operaciones. Los archivos de la biblioteca permanecen disponibles tras restaurar y recuperar el estado anterior. La demo y sus copias son locales, sin cifrar y exclusivamente para datos ficticios.
+La candidata está separada de la demo estable. El paquete publicado coincide con el commit limpio, incluye procedencia en `release.json` y se ha comprobado que los ocho recursos HTTPS verificados coinciden con el paquete: índice, JavaScript, CSS, service worker, manifiesto, metadatos e iconos. La compilación candidata rechaza incluir conexión Supabase y sus formularios de credenciales permanecen cerrados.
 
 ## Verificación
 
-**216 pruebas aprobadas:** 150 unitarias/SQL, 42 de demo en escritorio/Android, 8 de empresas y 16 SaaS. Las 64 originales permanecen intactas; once archivos retenidos se verifican mediante SHA-256. TypeScript, compilación PWA y análisis de dependencias de ejecución correctos; cero vulnerabilidades de ejecución detectadas.
+**271 pruebas aprobadas en el CI del código publicado:** 180 unitarias/SQL, 7 de correo y 84 recorridos de navegador (42 demo, 8 empresas, 28 SaaS y 6 candidata). Se conservan las 64 originales y sus hashes. [CI de despliegue](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41242229327), [CI del PR](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41242180084).
 
-[CI de la rama](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41225009144) y [CI del PR](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41225014197) completados correctamente. También se probó el paquete comercial sin credenciales: portal, demo, exportación/restauración con recarga, punto de recuperación, recarga fría offline y alertas, en ambos perfiles, sin solicitudes a proveedores.
+Se probaron consentimiento ligado a versión, cancelación, impagos, duplicados, aislamiento, recuperación local y sincronización, accesibilidad y arranque sin red. Los perfiles Windows/Android son emulaciones Chromium, no dispositivos físicos. La URL pública también ha pasado los perfiles de Windows y Android en GitHub, con validación TLS activa, comprobando procedencia, registro cerrado, planes y entrada a la demo. [CI de la URL real](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41242941858).
 
-El índice, JavaScript, CSS y service worker públicos coinciden con el paquete construido desde el commit publicado. El manifiesto e iconos PWA responden por HTTPS. Los perfiles de navegador son emulaciones Chromium, no dispositivos físicos. La CA de interceptación del entorno limita el recorrido de Chromium sobre el dominio remoto; no se desactivó la validación TLS. Se verificaron HTTPS y hashes por separado.
+Supabase independiente `truckcontrol-ai` (`kkkemaycedexymrpaqtp`, organización `fixpilot-dev`): **39 migraciones**, cuatro funciones Edge y almacenamiento privado. La nueva `truckcontrol-subscriptions` está ACTIVE v1. PostgreSQL real pasó el ensayo de facturación y el de capacidad: 50 camiones permitidos, rechazo del 51 y aislamiento de 2.100 apuntes entre dos empresas. Se revirtieron todos los registros sintéticos; no se afirma un SLA de rendimiento a partir de ese ensayo. La interfaz pública rechaza autenticación, origen, método y firma inválidos. El asesor de seguridad no informa incidencias. Registro y pagos siguen apagados. FIXPilot permanece intacto.
 
-## Lo aplazado por el propietario
+## Apertura comercial pendiente
 
-La apertura comercial y los servicios externos quedan para más adelante: SMTP/redirecciones alojadas de Auth, confirmación real de la cuenta administradora, Google OAuth y su revisión, SMS, modelos IA, pagos, aceptación física y ensayo de restauración comercial en un destino autorizado. No se han activado costes, registrado empresas reales ni enviado documentos a modelos.
+Esta publicación es una candidata de demostración; **todavía no es el lanzamiento 1.0 para empresas reales**. Faltan dominio comprado/DNS, correo real y administrador verificado, autorización y configuración de proveedores, presupuesto de IA, condiciones/fiscalidad, recuperación comercial y aceptación física cuando haya dispositivos disponibles. El envío real de correo y la pasarela no se declaran verificados con pruebas simuladas. No se han activado cargos.
 
-Supabase continúa separado en **truckcontrol-ai** (`kkkemaycedexymrpaqtp`, organización `fixpilot-dev`), con 37 migraciones y tres funciones Edge existentes. Esta actualización no modifica la base de datos, Auth, Storage, credenciales ni proveedores. FIXPilot permanece intacto y merymery_16 pausado con su contenido conservado. La activación real sigue cerrada.
+El dominio sigue pendiente de compra. Se ha propuesto Migadu Micro (19 USD/año) y Brevo gratuito para correo, sin contratar nada. La selección del proyecto de OpenAI del formulario oficial sigue pendiente; todavía no hay clave ni consumo autorizado.
 
-La escritura GitHub y el CI funcionan. Los permisos administrativos de Pages/protección de ramas siguen limitados; no se eluden. El alojamiento público continúa en Sites.
-
-Se conservaron Git bundles verificables, ZIP de fuentes, TAR de despliegue, capturas y procedencia. La versión de recuperación web es la 5. Los artefactos y comprobaciones se registran en [release-0.3.0.json](verification/release-0.3.0.json). Documentación de la entrega anterior archivada en `history/20261031/`. Registro persistente: [PROGRESS.md](PROGRESS.md).
+[Instalación Android y Windows](INSTALLATION.md) · [Detalle de la candidata](RELEASE_0_4_RC.md) · [Lanzamiento comercial](COMMERCIAL_LAUNCH.md) · [Registro persistente](PROGRESS.md).

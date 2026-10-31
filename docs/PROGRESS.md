@@ -69,3 +69,39 @@ Pendientes respuestas del titular: remitente (pedidos@smartscaneuskadi.com o dir
 Preparado: plantillas de confirmación/recuperación en español, redirección local HTTPS y script de plan/comprobación/aplicación parcial de ajustes Auth. El script limita proyecto y organización, conserva SMTP/secretos, no abre registros y comprueba la lectura posterior. Siete pruebas Python pasan. Cambio Free de junio 2026 verificado: se omiten plantillas alojadas hasta que exista SMTP propio. Ver `AUTH_MAIL_SETUP.md`.
 
 Siguiente paso: reanudar la autorización oficial pendiente, comprobar configuración de TruckControl y aplicar primero los ajustes seguros. Si SMTP sigue vacío, solicitar únicamente la conexión segura del proveedor elegida por el titular. No afirmar entrega real hasta probar un envío autorizado y los dos flujos. Mantener cerrados el alta empresarial, pagos, SMS y modelos IA; no tocar FIXPilot.
+# 2026-10-31 — orden de lanzamiento comercial y dominio definitivo
+
+- Se conserva la demo pública v6 y se verifica otra copia completa del historial Git en `/workspace/artifacts/truckcontrol-commercial-baseline-20261031.bundle`.
+- GitHub: PR #4 de preparación de correo integrado en `main` (`81152d9`), CI previo correcto; nueva rama `feat/commercial-release-candidate`.
+- Supabase: revisión del proyecto independiente, inventario de 37 migraciones y asesor de seguridad sin incidencias. Sin cambios en FIXPilot ni apertura de registro. Los índices sin uso informados en la base todavía vacía se conservan.
+- Porkbun confirma `truckcontrolai.com` disponible/no premium por 11,08 USD para un año; renovación hoy 11,08 USD/año, impuestos por confirmar en checkout. Se conserva evidencia pública sin cookies ni datos de sesión. El propietario solicita enlace de pago; compra no realizada.
+- Preparación aditiva de suscripción mensual con consentimiento versionado, precio del servidor, reserva única, renovación por factura verificada, cancelación, historial propio y deduplicación. Nueva migración creada por CLI; pendiente de aplicación y de despliegue. Cobros permanecen apagados.
+- Cliente Supabase rechaza proyectos ajenos al destino autorizado y URL ambiguas, manteniendo las pruebas locales.
+- 179 pruebas unitarias/SQL y 7 de correo aprobadas; hashes de las 64 pruebas originales verificados; TypeScript y compilación correctos. Falta aceptación de navegador de la nueva interfaz y CI final.
+- El propietario autoriza abrir el selector seguro de OpenAI sin consumo. Se inicia el flujo oficial después de guardar este punto; aún no hay clave ni autorización de gasto variable.
+- Reanudación y bloqueos: `docs/COMMERCIAL_LAUNCH.md`. No se declara una versión comercial terminada ni entrega SMTP verificada.
+# 2026-10-31 — candidata 0.4, seguridad y publicación separada
+
+- CI de `4ceb74a` aprobado en GitHub. Se conserva PR #5 y todo el historial, sin sustituir la demo v6.
+- Aplicadas una sola vez dos migraciones aditivas de facturación: versiones remotas `20261031205146` y `20261031210121`. Inventario actualizado a 39; no ejecutar `db push` sobre la historia reconciliada.
+- `truckcontrol-subscriptions` ACTIVE v1. Sus 4 comprobaciones HTTP reales rechazan anónimos, otro origen, método y firma falsos. Sin llamadas Stripe, altas ni cargos.
+- PostgreSQL real: recibos por cuenta, duplicados, suspensiones y cancelación con rollback. Cero usuarios/empresas/documentos reales; registro y pagos apagados. Asesor de seguridad sin incidencias tras hacer explícitas las políticas restrictivas.
+- Aceptación de 28 recorridos SaaS y 6 de candidata en perfiles Chromium de escritorio/Android. Corregidos contraste, aceptación de condiciones vinculada a versión y error visible dentro del diálogo. Se conservan las 64 pruebas iniciales.
+- Nuevo paquete `0.4.0-rc.1`, canal candidato aislado, sin conexión de empresa ni formularios de credenciales. Procedencia en `release.json`; instalación PWA y arranque sin red probados.
+- Alojamiento candidato creado una sola vez: identidad persistida en `docs/deployment/candidate-hosting.json`. Pendiente de publicar el commit final tras CI. La demo estable conserva su ID y su audiencia.
+- OpenAI: todavía no ha llegado selección confirmada de proyecto del formulario; no hay clave ni autorización de consumo. Dominio todavía no registrado. Propuesta de correo enviada para decisión de coste (Migadu 19 USD/año + Brevo gratuito), sin contratación.
+- Próximo paso: guardar, terminar CI, publicar candidata separada y comprobar su URL. Detalle y limitaciones comerciales: `COMMERCIAL_LAUNCH.md` y `RELEASE_0_4_RC.md`.
+
+# 2026-10-31 — publicación verificada de la candidata
+
+- URL pública: https://truckcontrol-ai-candidata.earlymug513.chatgpt.site. Versión 1, fuente `e7a43948bff9bf3b3c5c37c890324ce6dc94852c`.
+- CI de esa fuente: 271 pruebas aprobadas (180 unitarias/SQL, 7 de correo y 84 de navegador). Las 64 originales permanecen conservadas.
+- Ocho archivos HTTPS públicos coinciden con el paquete probado. Índice de la demo estable v6 sin cambios. Sin conexión de empresa en la candidata ni consumo de proveedores.
+- Publicación y procedencia registradas en `docs/verification/release-0.4.0-rc.1.json`. Se activa la comprobación de la URL real desde CI; pendiente de su resultado.
+- El scroll móvil permite ver relojes, cuentakilómetros y planes. Las capturas usan ventanas visibles para evitar el espacio vacío de la captura completa de un contenedor con scroll.
+
+# 2026-10-31 — URL real y capacidad verificadas
+
+- CI `41242941858` correcto: la URL pública pasa Chrome de escritorio y perfil Android, con TLS activo, fuente coincidente, planes/altas cerrados y entrada a la demo. No se desactiva la comprobación de certificados.
+- PostgreSQL real permite 50 camiones, rechaza el 51 y aísla 2.100 apuntes de dos empresas. Todo se revierte y quedan cero filas sintéticas; no es una promesa de SLA. Fuente: `docs/verification/fleet-capacity-rollback.sql`.
+- Informe `release-0.4.0-rc.1.json` y entrega actual actualizados. No hay servicios de pago activados ni datos reales en la candidata.

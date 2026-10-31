@@ -1,0 +1,13 @@
+{
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "slug": "truckcontrol-ai-candidata",
+  "expected_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+  "audience": "public",
+  "purpose": "Separate candidate; stable demo project and audience preserved",
+  "created_at": "2026-10-31T20:56:05.847544+00:00",
+  "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+  "published_commit": "e7a43948bff9bf3b3c5c37c890324ce6dc94852c",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0820192a9ff88191b11caf73f39d91aa",
+  "published_version_number": 1,
+  "deployment_id": "appgdep_6ae659bb6444819186d21272cfe43404"
+}

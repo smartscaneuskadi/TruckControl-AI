@@ -149,6 +149,14 @@
     {
       "version": "20261031071642",
       "name": "truckcontrol_document_module_boundaries"
+    },
+    {
+      "version": "20261031205146",
+      "name": "truckcontrol_recurring_subscriptions"
+    },
+    {
+      "version": "20261031210121",
+      "name": "truckcontrol_explicit_server_only_billing_policies"
     }
   ]
 }

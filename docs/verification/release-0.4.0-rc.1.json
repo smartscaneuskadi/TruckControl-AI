@@ -1,0 +1,126 @@
+{
+  "version": "0.4.0-rc.1",
+  "release_kind": "candidate_demo",
+  "commercial_ready": false,
+  "url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+  "stable_demo": {
+    "url": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+    "https_status": 200,
+    "index_sha256": "51cb89019392cc32c280f28ed675f5cce5450a08458297c019c2c483b8d4b492",
+    "unchanged": true
+  },
+  "source_commit": "e7a43948bff9bf3b3c5c37c890324ce6dc94852c",
+  "source_branch": "deploy/commercial-candidate",
+  "hosting_project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "saved_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0820192a9ff88191b11caf73f39d91aa",
+  "hosting_version": 1,
+  "deployment_id": "appgdep_6ae659bb6444819186d21272cfe43404",
+  "source_dirty": false,
+  "company_connection_bundled": false,
+  "registration_forced_closed": true,
+  "artifact_sha256": "cdaea7ce2b00c018962d2583f3cdfe4beab1a210b86eff52343e05ec867245f6",
+  "https_checks": [
+    {
+      "path": "/",
+      "https_status": 200,
+      "sha256": "538d5adbbca2edd594bf559f4e18d5533428986ed9d5d9373732bfb6502cda4f",
+      "matches_build": true,
+      "bytes": 1037
+    },
+    {
+      "path": "/release.json",
+      "https_status": 200,
+      "sha256": "f175ef2f6c7515ca7f056cfba3360c0f4290cb5c01c19e91be55dff27b3cca06",
+      "matches_build": true,
+      "bytes": 284
+    },
+    {
+      "path": "/manifest.webmanifest",
+      "https_status": 200,
+      "sha256": "67be7b0df43c0c690eb2732e9a6d27910981ccb74dafbb07c01bfae0bffc4311",
+      "matches_build": true,
+      "bytes": 516
+    },
+    {
+      "path": "/sw.js",
+      "https_status": 200,
+      "sha256": "3fccbd275a88587b19dc8ab510988064c6cb80baa460ed56c5ca089f81636ba3",
+      "matches_build": true,
+      "bytes": 1928
+    },
+    {
+      "path": "/icons/icon-192.png",
+      "https_status": 200,
+      "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+      "matches_build": true,
+      "bytes": 942
+    },
+    {
+      "path": "/icons/icon-512.png",
+      "https_status": 200,
+      "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+      "matches_build": true,
+      "bytes": 2766
+    },
+    {
+      "path": "/assets/index-DLTjns-m.js",
+      "https_status": 200,
+      "sha256": "f8b948b34280b94444870f7f947cba30bffa70fcc27cbdcccf6b6b8bfdb72768",
+      "matches_build": true,
+      "bytes": 610569
+    },
+    {
+      "path": "/assets/index-XUXO6L7o.css",
+      "https_status": 200,
+      "sha256": "594f66a981466d4a1da81b90542de38809e3ee920ae75a3c59d01cee0837604f",
+      "matches_build": true,
+      "bytes": 78582
+    }
+  ],
+  "ci": {
+    "run_url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41242229327",
+    "status": "success",
+    "unit_sql": 180,
+    "python_mail": 7,
+    "browser": 84,
+    "total": 271,
+    "original_tests_retained": 64
+  },
+  "supabase": {
+    "project_ref": "kkkemaycedexymrpaqtp",
+    "migrations": 39,
+    "edge_functions": 4,
+    "new_edge_status": "ACTIVE",
+    "new_edge_version": 1,
+    "synthetic_data_rolled_back": true,
+    "security_advisor_notices": 0,
+    "registration_open": false,
+    "payments_enabled": false,
+    "capacity_verification": {
+      "trucks_allowed": 50,
+      "truck_51_rejected": true,
+      "ledger_rows": 2100,
+      "tenants": 2,
+      "synthetic_data_rolled_back": true,
+      "fixture": "docs/verification/fleet-capacity-rollback.sql",
+      "performance_sla_claimed": false
+    }
+  },
+  "public_browser_qa": {
+    "status": "success",
+    "run_url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41242941858",
+    "profiles": [
+      "windows",
+      "android"
+    ],
+    "https_certificate_validation": true,
+    "physical_devices": false
+  },
+  "limitations": [
+    "Domain not purchased; final DNS and SMTP pending",
+    "OpenAI project selection and usage budget pending; no key created",
+    "Provider credentials, OAuth review and live payment tests pending",
+    "Legal/fiscal approval and commercial recovery pending",
+    "Android/Windows physical acceptance pending when available"
+  ]
+}
