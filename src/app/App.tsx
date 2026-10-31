@@ -45,7 +45,6 @@ import { GlobalSearch } from "../components/GlobalSearch";
 import { useInstall } from "../components/PwaTools";
 import { Badge, Button, Modal } from "../components/ui";
 import { LocalInsightProvider } from "../domain/insights";
-import { today } from "../lib/format";
 import { Dashboard } from "../pages/Dashboard";
 import { Trucks } from "../pages/Trucks";
 import { Drivers } from "../pages/Drivers";
@@ -65,6 +64,9 @@ import { FeatureGate, useSubscription } from "./SubscriptionContext";
 import { commercialEnabled, trialDaysLeft } from "../domain/subscriptions";
 import type { Feature } from "../domain/subscriptions";
 import { useOffline } from "./OfflineContext";
+import { useOperations } from "./OperationsProvider";
+import { operationalAlerts } from "../domain/operations";
+import { useCurrentDay } from "../lib/use-current-day";
 
 const navigation = [
   {
@@ -149,6 +151,8 @@ function Workspace() {
   const { snapshot, notify } = useFleet();
   const subscription = useSubscription();
   const access = useCompany();
+  const operations = useOperations();
+  const day = useCurrentDay();
   const cloud = access.mode === "company";
   const location = useLocation();
   const { install, canInstall } = useInstall();
@@ -160,9 +164,38 @@ function Workspace() {
   const [menu, setMenu] = useState(false);
   const [help, setHelp] = useState(false);
   const truck = snapshot.trucks.find((truck) => truck.id === truckId);
-  const insights = new LocalInsightProvider()
-    .analyze(snapshot, period, today())
-    .filter((insight) => insight.level !== "success");
+  const operationsReady =
+    !operations.loading &&
+    !operations.error &&
+    (!subscription.enabled || subscription.features.alerts);
+  const operational = operationsReady
+    ? operationalAlerts(snapshot, operations.rows, day).filter(
+        (a) => !subscription.enabled || subscription.features[a.source],
+      )
+    : [];
+  const insights = [
+    ...operational.map((a) => ({
+      id: `operation:${a.key}`,
+      level: a.urgent ? ("warning" as const) : ("info" as const),
+      title: a.title,
+      description:
+        a.reason === "kilometres"
+          ? `Kilometraje registrado: ${a.currentKm} km. Revisión prevista desde ${a.thresholdKm} km.`
+          : `Fecha: ${a.dueOn}. ${a.dueOn < day ? "Vencido" : a.dueOn === day ? "Vence hoy" : "Próximo vencimiento"}.`,
+      href: "/alerts",
+    })),
+    ...new LocalInsightProvider()
+      .analyze(snapshot, period, day)
+      .filter((i) => i.level !== "success")
+      .filter(
+        (i) => !operationsReady || !["inspections", "licenses"].includes(i.id),
+      )
+      .filter(
+        (i) =>
+          !subscription.enabled ||
+          subscription.features[i.href.split(/[/?]/)[1] as Feature],
+      ),
+  ];
   const currentPage =
     navigation.find((item) => item.to === location.pathname)?.label ??
     (location.pathname === "/assistant"
@@ -575,7 +608,7 @@ function Workspace() {
           onClose={() => setNotifications(false)}
         >
           <div className="notification-list">
-            {insights.map((insight) => (
+            {insights.slice(0, 20).map((insight) => (
               <Link
                 key={insight.id}
                 to={insight.href}
@@ -590,6 +623,11 @@ function Workspace() {
               </Link>
             ))}
             {!insights.length && <p>No hay avisos pendientes.</p>}
+            {insights.length > 20 && (
+              <Link to="/alerts" onClick={() => setNotifications(false)}>
+                Ver el centro de alertas
+              </Link>
+            )}
           </div>
         </Modal>
       )}

@@ -26,6 +26,8 @@ Las copias Git/Sites protegen código, no sustituyen una copia de PostgreSQL y S
 
 ## Incidentes
 
+La demo dispone de una [restauración local de fichas y operaciones](DEMO_RECOVERY.md) con vista previa, confirmación y un punto de recuperación. La importación no incluye binarios ni sustituye una restauración de PostgreSQL/Storage. Las operaciones heredadas se incorporan a la clave de flota sin borrar la copia antigua. Verificar esta migración de formato con los casos de compatibilidad, falta de espacio y datos de otra pestaña antes de publicar.
+
 Si falla una entrega web, volver a la última versión Sites verificada y conservar el commit y los logs de la versión fallida. Si falla una migración, detener el despliegue dependiente y corregir mediante una migración adicional revisada; no resetear la base ni borrar el historial. Si se revoca una cuenta, bloquearla en el servidor y revisar sesiones; las copias offline previamente autorizadas pueden seguir siendo legibles hasta su caducidad sin conexión.
 
 No registrar tokens, cuerpos de documentos ni datos personales en logs. Los errores de usuario deben ser genéricos. Las credenciales expuestas se rotan por el mecanismo oficial del proveedor. Conservar `docs/PROGRESS.md` actualizado con commit, recursos, pruebas y bloqueos para reanudar sin rehacer trabajo.

@@ -1,6 +1,6 @@
 # TruckControl AI
 
-Gestión de flotas para empresas de transporte, con React, TypeScript, Supabase y PWA para Android y Windows. Versión 0.2.0 de demostración; continuación del código y del historial existentes.
+Gestión de flotas para empresas de transporte, con React, TypeScript, Supabase y PWA para Android y Windows. La actualización 0.3.0 añade alertas y recuperación de registros; continúa el código y el historial existentes.
 
 **Demostración pública:** https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site
 
@@ -13,6 +13,10 @@ Abre la URL y pulsa **Explorar la demo** si aparece el portal de planes. En **Ca
 Explora **Remolques**, **Clientes**, **Viajes**, **Mantenimiento**, **Combustible**, **Vencimientos**, **Alertas** e **Informes**. Un viaje finalizado se puede contabilizar con confirmación humana, una sola vez. Los informes permiten exportar CSV. En **Facturas Gmail** se puede revisar y aprobar una factura ficticia sin abrir ningún correo real.
 
 En **Documentos** puedes subir un PDF o una imagen ficticia, asociarlos a un vehículo o conductor y descargarlos. Esta biblioteca de prueba es local y no está cifrada. La biblioteca comercial utiliza almacenamiento privado de Supabase y permisos por empresa.
+
+En **Configuración → Copias y recuperación de la demo** puedes descargar fichas y operaciones, revisar una copia antes de restaurarla y recuperar el estado anterior. Los PDF e imágenes se descargan por separado. Las copias son locales, sin cifrar y solo para datos ficticios. Consulta la [guía de recuperación](docs/DEMO_RECOVERY.md).
+
+El centro de **Alertas** permite buscar y filtrar urgentes y próximos vencimientos. La campana también muestra seguimiento de remolques, mantenimiento y permisos. Una revisión por kilometraje utiliza las lecturas de repostajes ya realizados; reconocerla no la hace reaparecer al día siguiente ni completa automáticamente el trabajo.
 
 - **Android:** abre el enlace en Chrome → menú ⋮ → **Instalar aplicación** o **Añadir a pantalla de inicio**.
 - **Windows:** abre el enlace en Edge o Chrome → icono de instalación en la barra de direcciones → **Instalar**.

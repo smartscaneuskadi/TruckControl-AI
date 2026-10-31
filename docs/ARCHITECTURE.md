@@ -32,6 +32,10 @@ La edición de fichas de camiones/conductores y contabilidad, las descargas priv
 
 La demo usa claves y base IndexedDB separadas, datos ficticios y almacenamiento local sin cifrar. No utiliza proveedores remotos. Su biblioteca admite 50 MB en total y no sobrescribe archivos anteriores.
 
+Las fichas y las operaciones de demo se integran en una sola escritura local, conservando la clave heredada de operaciones. Las copias de registros se validan antes de mostrar una vista previa y requieren confirmación. Antes de restaurar se guarda un punto de recuperación; si falla una escritura o la vista previa está obsoleta, no se reemplazan los registros actuales. Los documentos binarios se conservan aparte y no se incluyen en el JSON. Véase [recuperación de demo](DEMO_RECOVERY.md).
+
+Las alertas combinan ITV, permisos, remolques, vencimientos personalizados, mantenimiento y avisos del equipo. El recordatorio por kilometraje tiene una clave estable ligada al trabajo y al umbral, y utiliza el mayor kilometraje de ficha o repostajes ya realizados. Revisar un aviso no equivale a renovar un permiso o finalizar un mantenimiento. La campana filtra los módulos autorizados y prioriza urgentes; la fecha de trabajo se actualiza al volver a la pestaña y cada minuto.
+
 ## Integraciones
 
 `company-gmail`: OAuth por empresa, PKCE, estado de un uso, finalización ligada al mismo usuario, cifrado de refresh token, lectura limitada, deduplicación y aprobación humana de facturas.

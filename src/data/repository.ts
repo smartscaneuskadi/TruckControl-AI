@@ -2,8 +2,11 @@ import type { FleetSnapshot } from "../domain/models";
 import { validateSnapshot } from "../domain/models";
 import { createDemo } from "./demo";
 import type { FleetCommand } from "../domain/commands";
+import { STORAGE_KEY } from "./demo-keys";
+import { readDemoOperations, writeDemoWorkspace } from "./demo-workspace";
+import { demoOperations } from "./operations";
 
-export const STORAGE_KEY = "truckcontrol.demo.v1";
+export { STORAGE_KEY } from "./demo-keys";
 
 /** Boundary for future Supabase repositories; the UI never accesses storage directly. */
 export interface FleetRepository {
@@ -37,8 +40,9 @@ export class LocalFleetRepository implements FleetRepository {
 
   async save(snapshot: FleetSnapshot) {
     const valid = validateSnapshot(snapshot);
+    const operations = readDemoOperations(this.storage, valid);
     try {
-      this.storage.setItem(STORAGE_KEY, JSON.stringify(valid));
+      writeDemoWorkspace(this.storage, valid, operations);
     } catch {
       throw new Error(
         "No se ha podido guardar. Comprueba el espacio y los permisos de almacenamiento del navegador.",
@@ -48,7 +52,13 @@ export class LocalFleetRepository implements FleetRepository {
 
   async reset() {
     const snapshot = validateSnapshot(this.seed());
-    await this.save(snapshot);
+    try {
+      writeDemoWorkspace(this.storage, snapshot, demoOperations(snapshot));
+    } catch {
+      throw new Error(
+        "No se ha podido restablecer. Los datos anteriores se conservan.",
+      );
+    }
     return snapshot;
   }
 }

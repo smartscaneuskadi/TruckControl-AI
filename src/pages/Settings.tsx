@@ -14,9 +14,12 @@ import { Badge, Button, Field, Modal, PageHeading } from "../components/ui";
 import { useCompany } from "../app/CompanyAccess";
 import { Link } from "react-router-dom";
 import { OfflineSettings } from "../components/OfflineSettings";
+import { DemoBackupTools } from "../components/DemoBackupTools";
+import { useOperations } from "../app/OperationsProvider";
 
 export function Settings() {
   const { snapshot, reset, refresh, busy, notify } = useFleet();
+  const operations = useOperations();
   const access = useCompany();
   const cloud = access.mode === "company";
   const { install, installed } = useInstall();
@@ -148,7 +151,9 @@ export function Settings() {
             {cloud
               ? "Descarga una copia de los registros de esta empresa. Guárdala en un lugar privado."
               : "Exporta una copia JSON antes de borrar los datos del navegador."}{" "}
-            La importación de copias no está incluida en esta fase.
+            {cloud
+              ? "La copia no incluye documentos ni operaciones; es una exportación de fichas y movimientos, no una restauración de servidor."
+              : "Para incluir operaciones y restaurar una copia, utiliza Copias y recuperación de la demo."}
           </p>
           <Button
             variant="secondary"
@@ -166,6 +171,7 @@ export function Settings() {
             Descargar copia JSON
           </Button>
         </section>
+        {!cloud && <DemoBackupTools />}
         {!cloud && (
           <section className="card settings-card reset-card">
             <span className="settings-icon">
@@ -179,6 +185,7 @@ export function Settings() {
             <Button
               variant="secondary"
               icon={RotateCcw}
+              disabled={busy || operations.busy}
               onClick={() => setConfirm(true)}
             >
               Restablecer demostración
@@ -199,9 +206,10 @@ export function Settings() {
           }}
         >
           <p>
-            Se sustituirán todos los registros locales por una nueva flota
-            ficticia de 50 camiones. Descarga una copia JSON si quieres
-            conservar el estado actual.
+            Se sustituirán las fichas, movimientos y operaciones por la flota
+            ficticia inicial de 50 camiones. Los PDF e imágenes de la biblioteca
+            se conservan. Descarga una copia de registros si quieres conservar
+            el estado actual.
           </p>
           {error && (
             <p role="alert" className="form-error">
@@ -212,16 +220,17 @@ export function Settings() {
             <div className="push-right inline-actions">
               <Button
                 variant="secondary"
-                disabled={busy}
+                disabled={busy || operations.busy}
                 onClick={() => setConfirm(false)}
               >
                 Cancelar
               </Button>
               <Button
                 variant="danger"
-                disabled={busy}
+                disabled={busy || operations.busy}
                 onClick={() => {
                   void reset()
+                    .then(() => operations.refresh())
                     .then(() => {
                       setConfirm(false);
                       notify("Flota de demostración restablecida.");

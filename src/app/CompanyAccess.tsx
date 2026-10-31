@@ -10,6 +10,7 @@ import { commercialEnabled } from "../domain/subscriptions";
 import type { Plan } from "../domain/subscriptions";
 import { PublicPortal } from "../pages/PublicPortal";
 import { CommercialSession } from "./CommercialSession";
+import { demoRestoreViewKey } from "../data/demo-keys";
 
 type Organization = { id: string; name: string };
 interface Access {
@@ -69,10 +70,23 @@ const companyPreference = () => {
     return false;
   }
 };
+const restoredDemoPreference = () => {
+  try {
+    return sessionStorage.getItem(demoRestoreViewKey) === "yes";
+  } catch {
+    return false;
+  }
+};
 export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   const [client] = useState(getSupabaseClient);
   const [mode, setMode] = useState<"demo" | "company" | "portal">(() =>
-    companyPreference() ? "company" : commercialEnabled() ? "portal" : "demo",
+    companyPreference()
+      ? "company"
+      : restoredDemoPreference()
+        ? "demo"
+        : commercialEnabled()
+          ? "portal"
+          : "demo",
   );
   const [entryView, setEntryView] = useState<"login" | "signup">("login");
   const [entryPlan, setEntryPlan] = useState<Plan["id"]>("limited");
@@ -174,6 +188,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   function changeMode(next: "demo" | "company" | "portal") {
     setMode(next);
     try {
+      sessionStorage.removeItem(demoRestoreViewKey);
       sessionStorage.setItem(
         "truckcontrol-company-mode",
         next === "company" ? "yes" : "no",

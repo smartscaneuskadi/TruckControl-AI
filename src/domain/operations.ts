@@ -156,6 +156,9 @@ export function validateOperations(
   if (new Set(rows.map((r) => r.id)).size !== rows.length)
     throw Error("Hay registros duplicados.");
   const plates = new Set<string>();
+  const truckIds = new Set(fleet.trucks.map((t) => t.id));
+  const driverIds = new Set(fleet.drivers.map((d) => d.id));
+  const recordKinds = new Map(rows.map((r) => [r.id, r.kind]));
   for (const row of rows) {
     if (row.kind === "trailers") {
       const plate = normalizePlate(String(row.data.plate));
@@ -163,24 +166,15 @@ export function validateOperations(
         throw Error("Ya existe un remolque con esa matrícula.");
       plates.add(plate);
     }
-    if (
-      row.data.truckId &&
-      !fleet.trucks.some((t) => t.id === row.data.truckId)
-    )
+    if (row.data.truckId && !truckIds.has(String(row.data.truckId)))
       throw Error("El camión no pertenece a esta empresa.");
-    if (
-      row.data.driverId &&
-      !fleet.drivers.some((d) => d.id === row.data.driverId)
-    )
+    if (row.data.driverId && !driverIds.has(String(row.data.driverId)))
       throw Error("El conductor no pertenece a esta empresa.");
     for (const [key, kind] of [
       ["trailerId", "trailers"],
       ["customerId", "customers"],
     ] as const)
-      if (
-        row.data[key] &&
-        !rows.some((r) => r.id === row.data[key] && r.kind === kind)
-      )
+      if (row.data[key] && recordKinds.get(String(row.data[key])) !== kind)
         throw Error("La vinculación no pertenece a esta empresa.");
   }
   const running = rows.filter(
@@ -265,6 +259,12 @@ export interface OperationalAlert {
   dueOn: string;
   truckId: string | null;
   urgent: boolean;
+  source:
+    "trucks" | "drivers" | "trailers" | "deadlines" | "maintenance" | "alerts";
+  sourceId: string;
+  reason: "date" | "kilometres";
+  currentKm?: number;
+  thresholdKm?: number;
 }
 export function operationalAlerts(
   fleet: FleetSnapshot,
@@ -280,20 +280,49 @@ export function operationalAlerts(
     title: string,
     dueOn: string,
     truckId: string | null,
+    source: OperationalAlert["source"],
+    sourceId: string,
+    priority = false,
   ) => {
-    if (dueOn <= through)
+    if (priority || dueOn <= through)
       out.push({
         key: `${key}:${dueOn}`,
         title,
         dueOn,
         truckId,
-        urgent: dueOn < now,
+        urgent: priority || dueOn < now,
+        source,
+        sourceId,
+        reason: "date",
       });
   };
   for (const t of fleet.trucks)
-    add(`truck:${t.id}`, `ITV · ${t.plate}`, t.inspectionDueOn, t.id);
+    add(
+      `truck:${t.id}`,
+      `ITV · ${t.plate}`,
+      t.inspectionDueOn,
+      t.id,
+      "trucks",
+      t.id,
+    );
   for (const d of fleet.drivers)
-    add(`driver:${d.id}`, `Permiso · ${d.name}`, d.licenseExpiresOn, null);
+    add(
+      `driver:${d.id}`,
+      `Permiso · ${d.name}`,
+      d.licenseExpiresOn,
+      null,
+      "drivers",
+      d.id,
+    );
+  const odometers = new Map(fleet.trucks.map((t) => [t.id, t.odometerKm]));
+  for (const r of rows)
+    if (r.kind === "fuel" && String(r.data.date) <= now) {
+      const id = String(r.data.truckId);
+      odometers.set(
+        id,
+        Math.max(odometers.get(id) ?? 0, Number(r.data.odometerKm)),
+      );
+    }
   for (const r of rows) {
     const d = r.data;
     if (r.kind === "trailers") {
@@ -302,12 +331,16 @@ export function operationalAlerts(
         `ITV remolque · ${d.plate}`,
         String(d.inspectionDueOn),
         null,
+        "trailers",
+        r.id,
       );
       add(
         `trailer-insurance:${r.id}`,
         `Seguro remolque · ${d.plate}`,
         String(d.insuranceDueOn),
         null,
+        "trailers",
+        r.id,
       );
     }
     if (r.kind === "deadlines" && d.status === "active") {
@@ -320,6 +353,9 @@ export function operationalAlerts(
           dueOn: String(d.dueOn),
           truckId: d.truckId as string | null,
           urgent: String(d.dueOn) < now,
+          source: "deadlines",
+          sourceId: r.id,
+          reason: "date",
         });
     }
     if (r.kind === "maintenance" && d.status !== "completed")
@@ -328,6 +364,8 @@ export function operationalAlerts(
         String(d.description),
         String(d.scheduledOn),
         String(d.truckId),
+        "maintenance",
+        r.id,
       );
     if (r.kind === "maintenance" && d.status === "completed") {
       if (d.nextDueOn)
@@ -336,15 +374,30 @@ export function operationalAlerts(
           `Próxima revisión · ${d.description}`,
           String(d.nextDueOn),
           String(d.truckId),
+          "maintenance",
+          r.id,
         );
       const truck = fleet.trucks.find((t) => t.id === d.truckId);
-      if (d.nextDueKm && truck && truck.odometerKm >= Number(d.nextDueKm))
-        add(
-          `service-km:${r.id}`,
-          `Revisión por kilometraje · ${truck.plate}`,
-          now,
-          truck.id,
-        );
+      const currentKm = truck ? odometers.get(truck.id)! : 0;
+      if (
+        d.nextDueKm !== null &&
+        d.nextDueKm !== undefined &&
+        truck &&
+        currentKm >= Number(d.nextDueKm)
+      )
+        out.push({
+          // Stable across calendar days; changing the threshold creates a new reminder.
+          key: `service-km:${r.id}:${d.nextDueKm}`,
+          title: `Revisión por kilometraje · ${truck.plate}`,
+          dueOn: now,
+          truckId: truck.id,
+          urgent: true,
+          source: "maintenance",
+          sourceId: r.id,
+          reason: "kilometres",
+          currentKm,
+          thresholdKm: Number(d.nextDueKm),
+        });
     }
     if (r.kind === "alerts" && d.status === "open")
       add(
@@ -352,6 +405,9 @@ export function operationalAlerts(
         String(d.title),
         String(d.dueOn),
         d.truckId as string | null,
+        "alerts",
+        r.id,
+        d.priority === "urgent",
       );
   }
   const acknowledged = new Set(
@@ -361,7 +417,12 @@ export function operationalAlerts(
   );
   return out
     .filter((r) => !acknowledged.has(r.key))
-    .sort((a, b) => a.dueOn.localeCompare(b.dueOn));
+    .sort(
+      (a, b) =>
+        Number(b.urgent) - Number(a.urgent) ||
+        a.dueOn.localeCompare(b.dueOn) ||
+        a.key.localeCompare(b.key),
+    );
 }
 export function fuelConsumption(rows: OperationRecord[], truckId: string) {
   const full = rows
