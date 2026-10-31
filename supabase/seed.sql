@@ -1,0 +1,2 @@
+-- Intentionally empty. The Phase 1 demo seeds the local repository only.
+-- No real companies, users or financial records are inserted into Supabase.

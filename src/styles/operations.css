@@ -1,0 +1,193 @@
+.operation-register,
+.operations-alerts,
+.operations-summary {
+  margin-top: 20px;
+  min-width: 0;
+}
+.operation-register .table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px;
+}
+.operation-register h2,
+.operations-alerts h2,
+.operations-summary h2 {
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+.operation-register .table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.operation-register table {
+  min-width: 750px;
+  width: 100%;
+  border-collapse: collapse;
+}
+.operation-register th,
+.operation-register td {
+  padding: 15px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.operation-register th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.operation-register td {
+  max-width: 240px;
+  overflow-wrap: anywhere;
+}
+.operation-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  white-space: nowrap;
+}
+.operation-actions .button {
+  padding: 8px;
+  font-size: 12px;
+}
+.operation-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.operation-fieldset:disabled {
+  opacity: 0.78;
+}
+.operations-alerts,
+.operations-summary {
+  padding: 24px;
+}
+.operation-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 0;
+  border-top: 1px solid var(--border);
+}
+.operation-alert > div {
+  flex: 1;
+  min-width: 0;
+}
+.operation-alert strong,
+.operation-alert span {
+  display: block;
+}
+.operation-alert span {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.sidebar {
+  overflow-y: auto;
+}
+/* Keep visually hidden table labels inside the viewport. Otherwise a label in
+   a horizontally scrolled table can enlarge Android's layout viewport. */
+.sr-only {
+  left: 0;
+  top: 0;
+  clip-path: inset(50%);
+}
+
+.form-error,
+p.form-error {
+  color: #ffd1ca;
+  background: #3a1b23;
+  border: 1px solid #8b4550;
+}
+.sidebar nav {
+  flex-shrink: 0;
+}
+.sidebar-promo {
+  margin-top: 12px;
+}
+.offline-entry-button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 50;
+  box-shadow: 0 8px 25px #0008;
+}
+.offline-workspace-banner {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  background: #12382f;
+  color: #e6fff6;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 22px;
+  flex-wrap: wrap;
+}
+.offline-mode .sidebar,
+.offline-mode .topbar {
+  top: var(--offline-bar-height, 0px);
+}
+.offline-workspace-banner > div {
+  flex: 1;
+  min-width: 200px;
+}
+.offline-workspace-banner strong,
+.offline-workspace-banner span {
+  display: block;
+}
+.offline-workspace-banner span {
+  font-size: 12px;
+  margin-top: 4px;
+}
+.offline-sync-error {
+  position: relative;
+  z-index: 70;
+  background: #402620;
+  color: #ffe9e4;
+  padding: 16px 24px;
+  margin: 0;
+}
+.checkbox-line {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  margin: 10px 0;
+}
+.checkbox-line input {
+  width: auto;
+  flex-shrink: 0;
+}
+@media (max-width: 640px) {
+  .operation-register .table-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .operation-alert {
+    flex-wrap: wrap;
+  }
+  .operations-alerts,
+  .operations-summary {
+    padding: 18px;
+  }
+  .operation-alert .button {
+    margin-left: auto;
+  }
+}
+@media print {
+  .operation-actions,
+  .operation-register .search-field {
+    display: none;
+  }
+  .operation-register .table-scroll {
+    overflow: visible;
+  }
+  .operation-register table {
+    min-width: 0;
+  }
+}

@@ -1,0 +1,786 @@
+.public-portal,
+.admin-page,
+.billing-page {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  padding: 0 32px 48px;
+  color: #e5eff9;
+}
+.portal-header,
+.admin-header {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid #24394b;
+}
+.portal-brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: #edf5fc;
+  text-decoration: none;
+  font-size: 21px;
+  font-weight: 750;
+  letter-spacing: -0.6px;
+}
+.portal-brand b {
+  color: #69dfaf;
+}
+.portal-brand small {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #a0b8c9;
+  margin-top: 5px;
+}
+.portal-header nav,
+.portal-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.portal-header nav > a {
+  color: #b6ccdc;
+  text-decoration: none;
+  font-size: 14px;
+}
+.portal-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 64px;
+  align-items: center;
+  padding: 80px 0 70px;
+}
+.portal-hero h1 {
+  font-size: clamp(38px, 4.6vw, 62px);
+  line-height: 1.12;
+  letter-spacing: -2.5px;
+  margin: 28px 0;
+}
+.portal-hero h1 span {
+  color: #70dcb1;
+}
+.portal-hero p {
+  font-size: 17px;
+  line-height: 1.85;
+  color: #b1c2d2;
+}
+.portal-actions {
+  margin: 30px 0 24px;
+}
+.portal-proof {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9fc7b9;
+  font-size: 12px;
+}
+.fleet-hero-card {
+  padding: 28px;
+  border: 1px solid #2f5360;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse at top, #14382e 0, transparent 55%),
+    linear-gradient(135deg, #122438, #0c1621);
+  box-shadow: 0 30px 100px #0005;
+}
+.fleet-hero-card > div:first-child {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+.public-portal .eyebrow,
+.registration-page .eyebrow,
+.admin-page .eyebrow,
+.billing-page .eyebrow {
+  color: #a8d0bf;
+}
+.hero-gauge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin: 30px auto 5px;
+  color: #61d8a6;
+  width: 220px;
+  height: 170px;
+}
+.hero-gauge > svg {
+  width: 210px;
+  height: 170px;
+  opacity: 0.5;
+}
+.hero-gauge strong {
+  position: absolute;
+  font-size: 46px;
+  color: #e7f7ef;
+  bottom: 23px;
+  font-variant-numeric: tabular-nums;
+}
+.hero-gauge strong span {
+  display: block;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+.fleet-hero-card > p {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #a8c8bb;
+}
+.hero-odometer {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  margin: 24px auto;
+}
+.hero-odometer > span {
+  background: linear-gradient(#06111c, #172432);
+  border: 1px solid #385666;
+  padding: 8px 10px;
+  border-radius: 5px;
+  box-shadow: inset 0 -2px 5px #0008;
+  font-size: 29px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.hero-odometer small {
+  color: #a8c6bb;
+  margin-left: 5px;
+}
+.hero-route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #bbd1d9;
+  border-top: 1px solid #28404f;
+  padding-top: 22px;
+}
+.hero-route i {
+  width: 7px;
+  height: 7px;
+  background: #6bd8ac;
+  border-radius: 50%;
+}
+.route-line {
+  flex: 1;
+  border-top: 1px dashed #4f8d83;
+}
+.portal-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 80px;
+}
+.portal-benefits article {
+  padding: 28px;
+}
+.portal-benefits svg {
+  color: #72dcb6;
+}
+.portal-benefits h2 {
+  font-size: 17px;
+  letter-spacing: -0.3px;
+  margin: 20px 0 12px;
+}
+.portal-benefits p {
+  color: #aebfd0;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.portal-section-heading {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 38px;
+}
+.portal-section-heading h2,
+.portal-section-heading h1 {
+  font-size: clamp(28px, 3vw, 38px);
+  letter-spacing: -1.3px;
+  line-height: 1.25;
+  margin: 20px 0;
+}
+.portal-section-heading p {
+  color: #b4c6d6;
+  line-height: 1.8;
+}
+.portal-section-heading .eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+}
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 32px;
+  min-width: 0;
+  border: 1px solid #2d455a;
+}
+.plan-card.featured {
+  border-color: #3a9b78;
+  background:
+    radial-gradient(ellipse at top right, #12382d77, transparent 65%), #101f2d;
+}
+.plan-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.plan-card h3 {
+  font-size: 24px;
+  margin: 0;
+}
+.plan-card .plan-price {
+  font-size: 48px;
+  line-height: 1.2;
+  font-weight: 750;
+  letter-spacing: -1.8px;
+  color: #f0f7fe;
+  margin: 6px 0;
+}
+.plan-price > span {
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #a9bdd0;
+  margin-left: 8px;
+}
+.plan-card > p:not(.plan-price) {
+  color: #b9cada;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+}
+.plan-features {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 17px;
+  margin: 6px 0 18px;
+  flex: 1;
+  font-size: 13px;
+}
+.plan-features li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.plan-features svg {
+  flex-shrink: 0;
+  color: #7cdeb5;
+}
+.plan-card small {
+  color: #a8bdce;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.pricing-note,
+.portal-notice {
+  font-size: 12px;
+  color: #adc2d1;
+  line-height: 1.8;
+  text-align: center;
+  max-width: 900px;
+  margin: 26px auto;
+}
+.portal-notice {
+  color: #f0d194;
+}
+.portal-start {
+  margin: 70px 0 30px;
+  padding: 30px;
+  display: flex;
+  gap: 30px;
+  justify-content: space-between;
+  align-items: center;
+}
+.portal-start h2 {
+  font-size: 23px;
+  margin: 0 0 12px;
+}
+.portal-start p {
+  color: #b5c6d5;
+  font-size: 13px;
+}
+.portal-footer {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #a4b9c9;
+  padding-top: 25px;
+}
+.portal-footer button {
+  color: #b7cbd8;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.registration-page {
+  width: min(860px, 100%);
+  margin: auto;
+  padding: 32px 24px 60px;
+  color: #e7f0fb;
+}
+.registration-card {
+  padding: 32px;
+  margin-top: 20px;
+}
+.registration-heading {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin: 0 0 24px;
+}
+.registration-heading h1 {
+  font-size: 29px;
+  letter-spacing: -1px;
+  margin: 8px 0;
+}
+.registration-heading .eyebrow {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.registration-card > p {
+  color: #b9cbdc;
+  line-height: 1.8;
+}
+.registration-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.registration-security,
+.billing-security {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a9c6bc;
+  margin: 26px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid #2b4152;
+}
+.registration-security svg,
+.billing-security svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.verification-done {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: #8ce2bd !important;
+}
+.setup-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #112b3b;
+  border: 1px solid #365e77;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 24px 0;
+  color: #bdd6e6;
+}
+.setup-notice p {
+  line-height: 1.8;
+  font-size: 13px;
+  margin: 0;
+}
+.setup-notice svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: #8fcbb8;
+}
+.admin-header {
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 18px 0;
+}
+.admin-account {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  color: #bdcfe0;
+}
+.admin-account > span {
+  overflow-wrap: anywhere;
+}
+.admin-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 40px 0 25px;
+}
+.admin-intro h1 {
+  font-size: 33px;
+  letter-spacing: -1.2px;
+  margin: 14px 0;
+}
+.admin-intro p {
+  color: #aec2d4;
+  font-size: 13px;
+}
+.admin-intro .eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+.admin-stats > div {
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+}
+.admin-stats span {
+  color: #b4c8d9;
+  font-size: 12px;
+}
+.admin-stats strong {
+  font-size: 33px;
+}
+.admin-tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 30px 0;
+}
+.admin-section {
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.admin-section > h2,
+.admin-section-heading h2 {
+  font-size: 21px;
+  letter-spacing: -0.5px;
+  margin: 0 0 18px;
+}
+.admin-section > p {
+  color: #b8cada;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.admin-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.admin-table-scroll {
+  overflow-x: auto;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+.admin-table th {
+  color: #b1c9db;
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  padding: 14px 12px;
+  border-bottom: 1px solid #395264;
+}
+.admin-table td {
+  padding: 20px 12px;
+  border-bottom: 1px solid #223d50;
+}
+.admin-table small {
+  display: block;
+  color: #a8bfd0;
+  font-size: 10px;
+  margin-top: 10px;
+}
+.admin-table .button {
+  white-space: nowrap;
+}
+.module-grid {
+  display: grid;
+  gap: 16px;
+}
+.module-toggle {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid #2b4254;
+}
+.module-toggle strong {
+  display: block;
+  font-size: 14px;
+}
+.module-toggle small {
+  color: #aac3d5;
+  font-size: 12px;
+  line-height: 1.7;
+  display: block;
+  margin-top: 8px;
+}
+.module-toggle input {
+  width: 21px;
+  height: 21px;
+  accent-color: #37b681;
+  flex-shrink: 0;
+}
+.check-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 15px 0;
+  color: #cedbe7;
+}
+.check-row input {
+  width: 19px;
+  height: 19px;
+  accent-color: #37b681;
+  flex-shrink: 0;
+}
+.admin-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin: 25px 0;
+}
+.admin-plan-grid article {
+  border: 1px solid #324f66;
+  padding: 24px;
+  border-radius: 12px;
+}
+.admin-plan-grid h3 {
+  font-size: 24px;
+  margin: 22px 0 16px;
+}
+.admin-plan-grid p {
+  color: #a9c3d7;
+  font-size: 13px;
+}
+.admin-activity {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.admin-activity li {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid #2a4153;
+  font-size: 12px;
+}
+.admin-activity span {
+  color: #b0c8d9;
+  overflow-wrap: anywhere;
+}
+.admin-activity time {
+  color: #a6bfd2;
+  text-align: right;
+}
+.billing-page {
+  max-width: 1080px;
+  padding-top: 30px;
+}
+.billing-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+.billing-security {
+  margin-bottom: 25px;
+}
+.subscription-cta {
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid #377d66;
+  background: #113329;
+  border-radius: 10px;
+  color: #bfdfd0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+@media (max-width: 950px) {
+  .portal-hero {
+    gap: 28px;
+  }
+  .portal-hero h1 {
+    font-size: 43px;
+  }
+  .portal-benefits {
+    gap: 12px;
+  }
+  .portal-benefits article {
+    padding: 21px;
+  }
+  .hero-odometer > span {
+    font-size: 24px;
+    padding: 8px;
+  }
+  .admin-intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .admin-account {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 650px) {
+  .public-portal,
+  .admin-page,
+  .billing-page {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .portal-header {
+    min-height: 85px;
+    gap: 12px;
+  }
+  .portal-brand {
+    font-size: 16px;
+    gap: 8px;
+  }
+  .portal-header nav {
+    gap: 10px;
+  }
+  .portal-header nav > a {
+    display: none;
+  }
+  .portal-hero {
+    grid-template-columns: 1fr;
+    padding: 48px 0;
+    gap: 34px;
+  }
+  .portal-hero h1 {
+    font-size: 39px;
+    letter-spacing: -1.6px;
+  }
+  .portal-hero p {
+    font-size: 15px;
+  }
+  .portal-hero .badge {
+    font-size: 9px;
+  }
+  .fleet-hero-card {
+    max-width: 100%;
+    padding: 24px;
+  }
+  .portal-benefits {
+    grid-template-columns: 1fr;
+    margin-bottom: 50px;
+  }
+  .portal-benefits article {
+    padding: 25px;
+  }
+  .plan-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .plan-card {
+    padding: 25px;
+  }
+  .plan-card .plan-price {
+    font-size: 42px;
+  }
+  .portal-section-heading h2,
+  .portal-section-heading h1 {
+    font-size: 29px;
+    letter-spacing: -1px;
+  }
+  .portal-start {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 25px;
+    margin-top: 45px;
+  }
+  .portal-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .registration-page {
+    padding: 20px 16px 40px;
+  }
+  .registration-card {
+    padding: 24px;
+  }
+  .registration-heading {
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .registration-heading h1 {
+    font-size: 25px;
+  }
+  .registration-fields {
+    grid-template-columns: 1fr;
+  }
+  .registration-heading .settings-icon {
+    display: none;
+  }
+  .admin-header {
+    align-items: flex-start;
+  }
+  .admin-account {
+    font-size: 11px;
+  }
+  .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .admin-stats > div {
+    padding: 20px;
+  }
+  .admin-intro h1 {
+    font-size: 29px;
+  }
+  .admin-section {
+    padding: 22px;
+  }
+  .admin-plan-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-activity li {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .admin-activity time {
+    text-align: left;
+  }
+  .billing-nav {
+    flex-wrap: wrap;
+  }
+  .module-toggle {
+    padding: 17px 0;
+  }
+  .module-toggle small {
+    font-size: 11px;
+  }
+}

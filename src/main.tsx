@@ -1,0 +1,63 @@
+import { Component, StrictMode } from "react";
+import type { ErrorInfo, ReactNode } from "react";
+import { createRoot } from "react-dom/client";
+import { App } from "./app/App";
+import { CompanyAccessProvider, FleetAccess } from "./app/CompanyAccess";
+import { PwaTools } from "./components/PwaTools";
+import { OperationsProvider } from "./app/OperationsProvider";
+import { OfflineApplication } from "./app/OfflineApplication";
+import "./styles.css";
+import "./styles/professional-theme.css";
+import "./styles/company.css";
+import "./styles/commercial.css";
+import "./styles/operations.css";
+
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("TruckControl UI error", error.message, info.componentStack);
+  }
+  render() {
+    if (this.state.failed)
+      return (
+        <main className="boot-screen">
+          <h1>No se ha podido mostrar la aplicación.</h1>
+          <p>
+            Tus datos locales se conservan. Recarga la página para intentarlo de
+            nuevo.
+          </p>
+          <button
+            className="button primary"
+            onClick={() => window.location.reload()}
+          >
+            Recargar aplicación
+          </button>
+        </main>
+      );
+    return this.props.children;
+  }
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <ErrorBoundary>
+      <PwaTools>
+        <OfflineApplication>
+          <CompanyAccessProvider>
+            <FleetAccess>
+              <OperationsProvider>
+                <App />
+              </OperationsProvider>
+            </FleetAccess>
+          </CompanyAccessProvider>
+        </OfflineApplication>
+      </PwaTools>
+    </ErrorBoundary>
+  </StrictMode>,
+);

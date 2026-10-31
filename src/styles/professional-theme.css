@@ -1,0 +1,1454 @@
+/* Professional console theme. The original layout and responsive behavior remain
+   in styles.css; this layer supplies the requested dark visual identity. */
+:root {
+  color-scheme: dark;
+  color: #e5eef8;
+  background: #080e16;
+  --green: #31cf91;
+  --lime: #80efb7;
+  --ink: #080e16;
+  --muted: #a2b4c6;
+  --border: #25384c;
+  --panel: #101e2d;
+  --panel-raised: #15273b;
+  --text: #e5eef8;
+  --text-muted: #a2b4c6;
+  --accent-blue: #71b4ff;
+  --accent-green: #78edb2;
+}
+body {
+  background: #080e16;
+  color: var(--text);
+}
+.app-main {
+  background:
+    radial-gradient(ellipse at 85% 0, #11302855, transparent 650px), #0b131e;
+}
+::selection {
+  color: #fff;
+  background: #235c87;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline-color: #7abaff;
+}
+.app-main :is(h1, h2, h3, strong),
+.modal :is(h1, h2, h3, strong) {
+  color: #e9f2fc;
+}
+.app-main :is(p, small),
+.modal :is(p, small) {
+  color: var(--text-muted);
+}
+.app-main .muted,
+.modal .muted {
+  color: var(--text-muted);
+}
+.app-main :is(.eyebrow, .section-label) {
+  color: #b4d8ce;
+}
+.app-main
+  :is(
+    .toolbar-note,
+    .period-picker > span,
+    .filter-label,
+    .checkbox-label,
+    .category-label
+  ) {
+  color: #a8bed2;
+}
+.app-main .toolbar-note {
+  border-color: #365267;
+}
+.live-dot {
+  background: #67e5aa;
+}
+.page-heading {
+  margin-bottom: 29px;
+}
+.page-heading h1 {
+  font-size: clamp(25px, 2.25vw, 33px);
+  letter-spacing: -1.1px;
+}
+.page-heading p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.button {
+  min-height: 40px;
+  border-radius: 7px;
+}
+.button.primary {
+  background: #145d43;
+  color: #f2fff7;
+  border-color: #27815d;
+  box-shadow: 0 3px 12px #0003;
+}
+.button.primary:hover {
+  background: #1b7051;
+  border-color: #39ac7b;
+}
+.button.secondary {
+  background: #14283d;
+  color: #d9edff;
+  border-color: #35516b;
+  box-shadow: none;
+}
+.button.secondary:hover {
+  background: #1b3652;
+  border-color: #527da0;
+}
+.button.ghost {
+  background: transparent;
+  color: #b3c8da;
+}
+.button.ghost:hover {
+  background: #1b2e42;
+  color: #fff;
+}
+.button.danger {
+  background: #a43844;
+  border-color: #d26b75;
+  color: #fff;
+}
+.icon-button {
+  color: #a6bfd4;
+}
+.icon-button:hover {
+  background: #1a3047;
+  border-color: #3c5872;
+  color: #e4f4ff;
+}
+.text-button:hover,
+.link-button:hover {
+  color: #a4f5cd;
+}
+.link-button {
+  color: #85e7b9;
+}
+.skip-link {
+  color: #eaf6ff;
+  background: #18344a;
+}
+
+/* Navigation */
+.sidebar {
+  background: #070c12;
+  border-right: 1px solid #1c2d3e;
+  color: #afc3d5;
+}
+.brand {
+  color: #f0f8ff;
+}
+.brand-mark,
+.brand-ai {
+  color: #78eab3;
+}
+.brand small {
+  color: #aac2ce;
+}
+.workspace-label {
+  background: #101e2a;
+  border-color: #263b4b;
+  color: #dbeaf7;
+}
+.workspace-label small {
+  color: #a5bacb;
+}
+.workspace-label > svg {
+  color: #9bb8ce;
+}
+.workspace-icon {
+  background: #183128;
+  border-color: #2d5b46;
+  color: #aff4cd;
+}
+.nav-section-label {
+  color: #a1b7c9;
+}
+.nav-link {
+  color: #b0c3d4;
+  border: 1px solid transparent;
+}
+.nav-link:hover {
+  background: #122335;
+  color: #fff;
+}
+.nav-link.active {
+  background: linear-gradient(100deg, #10432e, #113528);
+  border-color: #296647;
+  color: #b5f6d1;
+  box-shadow: inset 3px 0 #51dd9b;
+}
+.nav-count {
+  background: #162a3c;
+  color: #c1d6e7;
+  border-color: #2e475d;
+}
+.nav-link.active .nav-count {
+  background: #0d2a20;
+  color: #c2f7d8;
+  border-color: #3d7558;
+}
+.new-badge {
+  background: #13283f;
+  color: #a9d5ff;
+  border-color: #2a496b;
+}
+.nav-link.active .new-badge {
+  background: #102e23;
+  color: #c2f7d8;
+}
+.sidebar-promo {
+  background: linear-gradient(140deg, #102c24, #101f31);
+  border-color: #274a3d;
+}
+.promo-icon {
+  background: #1b4935;
+  color: #a1f2c7;
+}
+.sidebar-promo strong {
+  color: #dcf6e8;
+}
+.sidebar-promo p {
+  color: #adc9c4;
+}
+.sidebar-promo > span:last-child {
+  color: #9fefc9;
+}
+.profile {
+  border-color: #24374a;
+}
+.profile-avatar {
+  background: #1b4133;
+  color: #b6f4ce;
+}
+.profile strong {
+  color: #e1edf8;
+}
+.profile div > span,
+.profile > svg {
+  color: #9fb6ca;
+}
+.mobile-close {
+  color: #c0d5e6;
+}
+.sidebar-backdrop {
+  background: #02060cc4;
+}
+
+/* Header and data surfaces */
+.topbar {
+  background: #0c1724ed;
+  border-color: #263a4e;
+  backdrop-filter: blur(12px);
+}
+.breadcrumb,
+.breadcrumb > svg {
+  color: #9cb3c9;
+}
+.breadcrumb strong {
+  color: #e0edf8;
+}
+.global-search-button {
+  background: #101f2f;
+  border-color: #2b4156;
+  color: #acbfd1;
+}
+.global-search-button kbd {
+  background: #192e43;
+  border-color: #3a526b;
+  color: #c2d6e8;
+}
+.demo-pill {
+  color: #b2c8d6;
+}
+.demo-pill > span {
+  background: #74e6a7;
+}
+.notification-button i {
+  background: #7fb9ff;
+  border-color: #0c1724;
+}
+.topbar-avatar {
+  background: #163149;
+  color: #c1e3ff;
+  border: 1px solid #325675;
+}
+.period-picker select,
+.fleet-select select,
+.list-toolbar select {
+  background: #101f2f;
+  border-color: #344f67;
+  color: #d5e6f5;
+}
+.card {
+  background: var(--panel);
+  border-color: var(--border);
+  box-shadow: 0 4px 18px #00000014;
+}
+.card-heading h2,
+.insights-card .card-heading h2 {
+  color: #e6f0fa;
+}
+.card-heading p {
+  color: #a7bbcf;
+}
+.subtle-icon {
+  color: #9db6cb;
+}
+.metric {
+  background: linear-gradient(145deg, #142638, #101c2a);
+  border-color: #2a4158;
+  border-top: 2px solid #36755e;
+  box-shadow: 0 5px 18px #0002;
+}
+.metric:nth-child(2),
+.metric:nth-child(4) {
+  border-top-color: #426fa0;
+}
+.app-main .metric-top,
+.app-main .metric-bottom {
+  color: #b1c4d7;
+}
+.metric-icon {
+  background: #182f44;
+  border-color: #34536b;
+  color: #9fd0f4;
+}
+.app-main .metric > strong {
+  color: #f0f7ff;
+  font-size: clamp(23px, 2.2vw, 32px);
+}
+.metric.highlight {
+  background: linear-gradient(135deg, #103d2c, #102f25);
+  border-color: #2d7655;
+  border-top-color: #4ad492;
+}
+.app-main .metric.highlight .metric-top,
+.app-main .metric.highlight .metric-bottom {
+  color: #bfdfcf;
+}
+.app-main .metric.highlight > strong {
+  color: #a5f4c7;
+}
+.metric.highlight .metric-icon {
+  background: #1b513a;
+  border-color: #357a55;
+  color: #b6f6d5;
+}
+.change.positive,
+.app-main .positive {
+  color: #84edb6;
+}
+.change.negative,
+.app-main .negative {
+  color: #ffadb3;
+}
+.count-badge {
+  background: #183329;
+  border-color: #31604a;
+  color: #b2eacc;
+}
+.search-field {
+  background: #0d1b29;
+  color: #a9bfd1;
+  border-color: #344d65;
+}
+.search-field input {
+  color: #e2effa;
+}
+.search-field input::placeholder {
+  color: #a2b8ca;
+}
+.search-field button {
+  color: #bdd5e8;
+}
+.search-field:focus-within {
+  outline-color: #71b4ff;
+}
+.summary-filter {
+  background: #101f2e;
+  border-color: #2b4156;
+  color: #bbd0e1;
+}
+.app-main .summary-filter strong {
+  color: #edf5ff;
+}
+.summary-filter.active {
+  background: #103a2a;
+  border-color: #38845d;
+  color: #c3f4d8;
+}
+.summary-filter.active strong {
+  color: #b8f6d3;
+}
+.checkbox-label input {
+  accent-color: #3ab783;
+}
+.pagination {
+  color: #b0c4d7;
+  border-color: #293e53;
+}
+.pagination .icon-button {
+  border-color: #36516b;
+}
+.empty-state {
+  color: #a6bfd4;
+}
+.app-main .empty-state h3 {
+  color: #d9eaf7;
+}
+.page-footer {
+  color: #a7bed1;
+  border-color: #263a4e;
+}
+.footer-divider {
+  color: #789bb7;
+}
+.accounting-note {
+  color: #acc3d5;
+}
+
+/* Finance charts and tables */
+.chart-legend {
+  color: #b9cddd;
+}
+.legend-income,
+.income-bar {
+  background: #32b37c;
+}
+.legend-expense,
+.expense-bar {
+  background: #457fc3;
+}
+.chart-column.selected .income-bar {
+  background: #70e6ab;
+}
+.chart-column.selected .expense-bar {
+  background: #78b1f3;
+}
+.chart-y,
+.chart-x {
+  color: #a9bfd3;
+}
+.chart-column.selected .chart-x {
+  color: #aaf2cd;
+}
+.chart-lines i {
+  border-color: #2c4054;
+}
+.chart-caption {
+  color: #a8bfd2;
+  border-color: #2a4054;
+}
+.donut-track {
+  stroke: #253b50;
+}
+.donut-segment.on_route {
+  stroke: #37c888;
+}
+.donut-segment.available {
+  stroke: #5899ef;
+}
+.donut-segment.maintenance {
+  stroke: #e9b263;
+}
+.donut-total {
+  fill: #edf6ff;
+}
+.donut-label {
+  fill: #b1c9dc;
+}
+.fleet-legend > div {
+  color: #b5cadc;
+}
+.app-main .fleet-legend strong {
+  color: #ecf4ff;
+}
+.fleet-legend small {
+  color: #a7bfd3;
+}
+.status-color.on_route {
+  background: #37c888;
+}
+.status-color.available {
+  background: #5899ef;
+}
+.status-color.maintenance {
+  background: #e9b263;
+}
+.data-table thead {
+  background: #0c1825;
+}
+.app-main .data-table th {
+  background: #0c1825;
+  color: #b9ccde;
+  border-color: #2a4054;
+}
+.app-main .data-table td {
+  color: #c2d1df;
+  border-color: #23384b;
+}
+.data-table tbody tr:hover {
+  background: #162c40;
+}
+.app-main .data-table td small {
+  color: #a5bfd3;
+}
+.app-main .data-table .strong,
+.app-main .vehicle-cell .strong {
+  color: #e9f3fd;
+}
+.app-main .data-table td.positive,
+.app-main .data-table .profit.positive {
+  color: #8beab9;
+}
+.app-main .data-table td.negative,
+.app-main .data-table .profit.negative {
+  color: #ffadb3;
+}
+.app-main .data-table .route-cell {
+  color: #b2c9dc !important;
+}
+.vehicle-symbol {
+  background: #173244;
+  color: #9ac9f0;
+  border-color: #2a526f;
+}
+.app-main .avatar {
+  background: #1b3c4d;
+  color: #c5e8ff;
+}
+.badge {
+  background: #1b2e41;
+  color: #d2e3f2;
+  border-color: #39506a;
+}
+.badge.green {
+  background: #103d2b;
+  border-color: #2f7b54;
+  color: #a0f0c3;
+}
+.badge.amber {
+  background: #3e2e16;
+  border-color: #816232;
+  color: #ffdc9d;
+}
+.badge.red {
+  background: #432831;
+  border-color: #8a4c5d;
+  color: #ffc3cd;
+}
+.badge.blue {
+  background: #173551;
+  border-color: #406e9b;
+  color: #b7ddff;
+}
+.table-caption {
+  background: #0e1b28;
+  color: #a7bfd3;
+  border-color: #293f52;
+}
+.category-label {
+  color: #bdd1e2;
+}
+.insight-icon {
+  background: #173f2c;
+  color: #96ecc0;
+}
+.insight-item {
+  border-color: #2a4054;
+}
+.app-main .insight-item strong {
+  color: #e1eef9;
+}
+.insight-item div > span,
+.insight-item > svg {
+  color: #b0c6da;
+}
+.insight-level {
+  background: #5dd69c;
+}
+.insight-level.warning {
+  background: #eec27e;
+}
+.copilot-link {
+  color: #a0ebc5;
+  border-color: #2a4054;
+}
+.rules-note {
+  color: #aac0d2;
+}
+.method-card {
+  background: #102d27;
+  border-color: #315848;
+}
+.app-main .method-card h3 {
+  color: #b4e9cf;
+}
+.app-main .method-card p {
+  color: #bdd4ca;
+}
+
+/* Entity screens */
+.app-main .driver-card h2 {
+  color: #ebf3fc;
+}
+.app-main .driver-card .avatar.color-0 {
+  background: #174b35;
+  color: #c1f8d8;
+}
+.app-main .driver-card .avatar.color-1 {
+  background: #193d60;
+  color: #c2e5ff;
+}
+.app-main .driver-card .avatar.color-2 {
+  background: #49391e;
+  color: #ffe4ad;
+}
+.app-main .driver-card .avatar.color-3 {
+  background: #363153;
+  color: #ded4ff;
+}
+.driver-license,
+.driver-contact {
+  color: #adc4d8;
+}
+.driver-assignment {
+  color: #b1c8dc;
+  border-color: #2c4358;
+}
+.app-main .driver-assignment strong,
+.driver-assignment button {
+  color: #b8e7ff;
+}
+.license-date {
+  color: #b8cbdc;
+}
+.license-date.negative {
+  color: #ffcf8f;
+}
+.settings-icon {
+  background: #173c30;
+  color: #a3edc5;
+}
+.app-main .settings-card h2 {
+  color: #dff1ff;
+}
+.settings-card > small,
+.config-fact {
+  color: #aed4c9;
+}
+.reset-card .settings-icon {
+  background: #3b2c20;
+  color: #f6d3a0;
+}
+.assistant-banner {
+  background: linear-gradient(115deg, #0e372b, #122c44);
+  border-color: #2f6257;
+}
+.assistant-orb {
+  background: #1e513c;
+  border-color: #3d8560;
+  color: #b1f6d3;
+}
+.app-main .assistant-banner h2 {
+  color: #d3f7e4;
+}
+.app-main .assistant-banner p {
+  color: #b5d6d2;
+}
+.analysis-icon {
+  background: #174630;
+  color: #a0efc2;
+}
+.analysis-icon.warning {
+  background: #47351b;
+  color: #f8d194;
+}
+.analysis-icon.info {
+  background: #183a5a;
+  color: #b5dcff;
+}
+.app-main .analysis-card h2 {
+  color: #edf5ff;
+}
+.analysis-card .link-button {
+  color: #9cf0c6;
+}
+.future-bots {
+  color: #9cd2f6;
+}
+.app-main .future-bots h2 {
+  color: #d5edff;
+}
+
+/* Dialogs and notifications */
+dialog.modal {
+  background: #101d2b;
+  border-color: #3b5570;
+  color: #d7e6f4;
+  box-shadow: 0 30px 110px #000b;
+}
+dialog::backdrop {
+  background: #01070dd6;
+}
+.modal .modal-heading h2 {
+  color: #edf6ff;
+}
+.modal .modal-heading p {
+  color: #afc5d9;
+}
+.field > label,
+.field > span {
+  color: #c4d9eb;
+}
+.field input,
+.field select {
+  background: #0a1623;
+  border-color: #3b5873;
+  color: #e7f2fc;
+}
+.field input::placeholder {
+  color: #a7bfd2;
+}
+.field-note,
+.field small {
+  color: #adc4d7;
+}
+.modal-actions {
+  border-color: #2d455d;
+}
+.modal .form-error {
+  background: #44252f;
+  border-color: #8e4c5a;
+  color: #ffd0d7;
+}
+.confirm-box {
+  background: #382c20;
+  border-color: #7d6041;
+}
+.confirm-box p {
+  color: #ead3b9;
+}
+.delete-action {
+  color: #ffb1b9 !important;
+}
+.truck-detail-hero {
+  background: linear-gradient(115deg, #123a2a, #142e44);
+}
+.detail-truck-icon {
+  color: #90d9b4;
+}
+.truck-detail-hero .eyebrow {
+  color: #aed2c6;
+}
+.modal .truck-detail-hero h3 {
+  color: #e1f3ff;
+}
+.detail-info > div {
+  color: #95c2e2;
+}
+.detail-info span {
+  color: #a6bed1;
+}
+.modal .detail-info strong {
+  color: #e2f0fa;
+}
+.modal .detail-info strong.negative {
+  color: #ffd08b;
+}
+.detail-section-heading > span {
+  color: #b0c8dc;
+}
+.detail-metrics {
+  border-color: #314e66;
+}
+.detail-metrics > div {
+  border-color: #314e66;
+}
+.detail-metrics span {
+  color: #bad0e1;
+}
+.modal .detail-metrics strong {
+  color: #e8f6ff;
+}
+.detail-metrics small {
+  color: #b6d4c5;
+}
+.detail-profit {
+  background: #143b2b;
+}
+.detail-transactions > div {
+  border-color: #2a4156;
+}
+.modal .detail-transactions strong {
+  color: #d5e8f9;
+}
+.detail-transactions small {
+  color: #a8c1d5;
+}
+.entry-icon {
+  background: #263448;
+  color: #b4d7f4;
+}
+.entry-icon.income {
+  background: #16462f;
+  color: #b5f2d2;
+}
+.modal .help-steps {
+  color: #c2d5e8;
+}
+.install-instructions > svg {
+  color: #9dd4fa;
+}
+.global-search-input {
+  background: #091724;
+  color: #9dc7e8;
+  border-color: #3d6385;
+}
+.global-search-input input {
+  background: transparent;
+  color: #eef8ff;
+}
+.global-results > button {
+  background: #101d2b;
+  border-color: #2b435a;
+  color: #a6c7e4;
+}
+.global-results > button:hover {
+  background: #193449;
+}
+.global-results small {
+  color: #aac2d8;
+}
+.notification-list > a {
+  background: #14283b;
+  border-color: #355169;
+}
+.notification-list svg {
+  color: #a2d3fa;
+}
+.toast {
+  background: #0e3b2a;
+  color: #e2ffed;
+  border: 1px solid #398663;
+}
+.toast-check,
+.toast > button {
+  color: #a5f3c7;
+}
+.offline-banner {
+  background: #3a2d18;
+  color: #ffe0a5;
+  border-bottom: 1px solid #8e6e39;
+}
+.update-banner {
+  background: #102f43;
+  color: #d3ebff;
+  border-color: #3d6e93;
+}
+.boot-screen {
+  background: #080e16;
+  color: #ebf4ff;
+}
+.boot-screen h1 {
+  color: #e8f5ff;
+}
+.boot-screen h1 span {
+  color: #80efb7;
+}
+.boot-screen p {
+  color: #b2c8da;
+}
+
+/* Instrument panel */
+.fleet-instruments {
+  margin: 4px 0 24px;
+}
+.instruments-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 14px;
+}
+.console-kicker {
+  display: block;
+  color: #83cbb2;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  font-weight: 650;
+  margin-bottom: 5px;
+}
+.instruments-heading h2 {
+  color: #e1eef9;
+  font-size: 17px;
+  letter-spacing: -0.4px;
+}
+.console-source {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #b2c7d9;
+  font-size: 11px;
+}
+.console-source > span {
+  background: #4ed799;
+  height: 5px;
+  width: 5px;
+  border-radius: 50%;
+}
+.instrument-console {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1.1fr;
+  gap: 16px;
+}
+.instrument-module {
+  position: relative;
+  border: 1px solid #2b4459;
+  border-radius: 10px;
+  padding: 17px 18px 13px;
+  min-width: 0;
+  overflow: hidden;
+  background: linear-gradient(140deg, #132536, #0d1b29);
+  box-shadow: 0 5px 20px #0003;
+}
+.clock-module {
+  border-top: 2px solid #4377a9;
+}
+.odometer-module {
+  border-top: 2px solid #399c70;
+  background: linear-gradient(135deg, #113627, #0f2730);
+}
+.gauge-module {
+  border-top: 2px solid #346f9b;
+}
+.instrument-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #88c2ed;
+}
+.instrument-label h3 {
+  font-size: 11px;
+  color: #d1e3f3;
+  font-weight: 600;
+  letter-spacing: 0.05px;
+}
+.instrument-tag {
+  margin-left: auto;
+  font-size: 8px;
+  letter-spacing: 1px;
+  border: 1px solid #365b78;
+  background: #132e45;
+  color: #b8ddf7;
+  padding: 3px 5px;
+  border-radius: 3px;
+}
+.clock-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px 0 8px;
+}
+.analog-clock {
+  width: 132px;
+  max-width: 50%;
+  flex-shrink: 0;
+}
+.dial-bezel {
+  fill: #0a1420;
+  stroke: #3c5d78;
+  stroke-width: 1.3;
+}
+.dial-face {
+  fill: #102338;
+  stroke: #1e3c54;
+  stroke-width: 1;
+}
+.dial-tick {
+  stroke: #587e9b;
+  stroke-width: 0.8;
+}
+.dial-tick.major {
+  stroke: #b7d7ee;
+  stroke-width: 1.5;
+}
+.clock-hour-label {
+  fill: #aac7df;
+  font-size: 10px;
+  font-family: "DM Sans", sans-serif;
+}
+.clock-hand {
+  stroke-linecap: round;
+}
+.hour-hand {
+  stroke: #eef8ff;
+  stroke-width: 4;
+}
+.minute-hand {
+  stroke: #9cf0c9;
+  stroke-width: 2.5;
+}
+.clock-second-hand {
+  stroke: #6fb1ff;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+.dial-pivot {
+  fill: #c3f5e1;
+  stroke: #133c34;
+  stroke-width: 2;
+}
+.clock-readout {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.clock-readout time {
+  color: #f1f9ff;
+  font-family: "Cascadia Mono", ui-monospace, monospace;
+  font-size: clamp(16px, 1.4vw, 22px);
+  letter-spacing: 0.6px;
+  font-variant-numeric: tabular-nums;
+}
+.clock-readout > span {
+  color: #9fcae5;
+  font-size: 10px;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+.app-main .clock-readout small {
+  color: #b4cadc;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.instrument-footnote {
+  color: #a6bed2;
+  font-size: 10px;
+  border-top: 1px solid #294357;
+  padding-top: 10px;
+  margin-top: auto;
+  line-height: 1.5;
+}
+.odometer-readout {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0 9px;
+}
+.odometer-digits {
+  display: flex;
+  gap: 3px;
+  min-width: 0;
+}
+.odometer-digits > span {
+  display: grid;
+  place-items: center;
+  width: clamp(19px, 2vw, 30px);
+  height: 43px;
+  border: 1px solid #41665f;
+  border-radius: 4px;
+  font-family: "Cascadia Mono", ui-monospace, monospace;
+  font-size: clamp(18px, 1.8vw, 26px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: #e0ffee;
+  background: linear-gradient(#071c19 47%, #2d4e44 49%, #0c2820 53%);
+  box-shadow:
+    inset 0 2px 5px #0008,
+    0 1px 0 #7ba18c33;
+}
+.odometer-unit {
+  color: #aed8c5;
+  font-size: 11px;
+}
+.app-main .odometer-description {
+  color: #b4d0c6;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.7;
+}
+.service-distance {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-top: 1px solid #31544c;
+  margin-top: 16px;
+  padding-top: 12px;
+}
+.distance-icon {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border: 1px solid #316f68;
+  border-radius: 7px;
+  background: #133e38;
+  color: #93dec2;
+}
+.service-distance > div > span {
+  display: block;
+  color: #b3d1c7;
+  font-size: 10px;
+}
+.app-main .service-distance strong {
+  display: block;
+  color: #d8fcec;
+  font-size: 18px;
+  font-family: "Manrope", sans-serif;
+  letter-spacing: -0.3px;
+  margin-top: 3px;
+}
+.app-main .service-distance small {
+  color: #b1d4c8;
+  font-size: 10px;
+  font-family: "DM Sans", sans-serif;
+}
+.distance-period {
+  color: #b4d0c9;
+  font-size: 10px;
+  text-align: right;
+  margin-left: auto;
+  max-width: 97px;
+  line-height: 1.6;
+  text-transform: capitalize;
+}
+.instrument-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  color: #a3edcc;
+  font-size: 10px;
+  margin-top: 12px;
+  font-weight: 600;
+}
+.instrument-link:hover {
+  text-decoration: underline;
+}
+.availability-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 6px;
+}
+.availability-dial {
+  width: 165px;
+  max-width: 58%;
+  flex-shrink: 0;
+}
+.gauge-track {
+  fill: none;
+  stroke: #29445a;
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+.gauge-value {
+  fill: none;
+  stroke: #4bdd9a;
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+.gauge-tick {
+  stroke: #587b98;
+  stroke-width: 1;
+}
+.gauge-tick.major {
+  stroke: #b4d0e3;
+  stroke-width: 1.5;
+}
+.gauge-scale {
+  fill: #afc8df;
+  font-size: 10px;
+}
+.gauge-needle {
+  stroke: #7dbbff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.gauge-pivot {
+  fill: #cae6ff;
+  stroke: #1e4b70;
+  stroke-width: 3;
+}
+.gauge-number {
+  fill: #b7f6d4;
+  font-family: "Manrope", sans-serif;
+  font-size: 24px;
+  font-weight: 750;
+}
+.gauge-percent {
+  font-size: 13px;
+  font-weight: 500;
+}
+.gauge-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.app-main .gauge-summary > strong {
+  color: #f1f8ff;
+  font-family: "Manrope", sans-serif;
+  font-size: 26px;
+  line-height: 1.2;
+}
+.gauge-summary strong > span {
+  color: #a1bdd4;
+  font-size: 16px;
+  font-weight: 500;
+}
+.gauge-summary > span {
+  color: #c1d8ea;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.app-main .gauge-summary small {
+  color: #9fbbd0;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.gauge-module .instrument-footnote {
+  margin-top: 10px;
+}
+
+@media (max-width: 1300px) and (min-width: 1051px) {
+  .clock-display {
+    flex-direction: column;
+    margin: 9px 0 12px;
+    gap: 0;
+  }
+  .analog-clock {
+    width: 110px;
+    max-width: 100%;
+  }
+  .clock-readout {
+    text-align: center;
+    gap: 3px;
+  }
+  .clock-readout time {
+    font-size: 19px;
+  }
+  .availability-display {
+    flex-direction: column;
+  }
+  .availability-dial {
+    max-width: 100%;
+    width: 145px;
+  }
+  .gauge-summary {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .gauge-summary small {
+    display: none;
+  }
+}
+@media (max-width: 1050px) {
+  .instrument-console {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .clock-module {
+    order: 1;
+  }
+  .gauge-module {
+    order: 2;
+  }
+  .odometer-module {
+    order: 3;
+    grid-column: 1/-1;
+  }
+  .odometer-readout {
+    margin-top: 18px;
+  }
+  .odometer-digits > span {
+    width: 30px;
+    font-size: 26px;
+  }
+  .service-distance {
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .instrument-link {
+    justify-content: center;
+  }
+}
+@media (max-width: 760px) {
+  .topbar {
+    background: #0c1724f2;
+  }
+  .mobile-menu {
+    color: #c3dff3;
+  }
+  .heading-actions .button {
+    min-height: 40px;
+  }
+  .instruments-heading {
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .instruments-heading h2 {
+    font-size: 16px;
+  }
+  .console-kicker {
+    font-size: 9px;
+    letter-spacing: 1.3px;
+  }
+  .console-source {
+    font-size: 9px;
+    max-width: 100px;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+  .instrument-console {
+    gap: 12px;
+  }
+  .instrument-module {
+    padding: 14px 12px 12px;
+  }
+  .instrument-label {
+    gap: 5px;
+    align-items: flex-start;
+  }
+  .instrument-label > svg {
+    width: 14px;
+    margin-top: 1px;
+  }
+  .instrument-label h3 {
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .instrument-tag {
+    display: none;
+  }
+  .clock-display {
+    flex-direction: column;
+    gap: 0;
+    margin-top: 2px;
+  }
+  .analog-clock {
+    width: 115px;
+    max-width: 100%;
+  }
+  .clock-readout {
+    text-align: center;
+    gap: 3px;
+  }
+  .clock-readout time {
+    font-size: 19px;
+  }
+  .clock-readout > span {
+    font-size: 9px;
+  }
+  .app-main .clock-readout small {
+    font-size: 9px;
+  }
+  .instrument-footnote {
+    font-size: 9px;
+    text-align: center;
+    padding-top: 10px;
+  }
+  .availability-display {
+    flex-direction: column;
+    margin-top: 8px;
+    gap: 0;
+  }
+  .availability-dial {
+    width: 143px;
+    max-width: 100%;
+  }
+  .gauge-summary {
+    text-align: center;
+    gap: 2px;
+  }
+  .app-main .gauge-summary > strong {
+    font-size: 21px;
+  }
+  .gauge-summary strong > span {
+    font-size: 13px;
+  }
+  .gauge-summary > span {
+    font-size: 9px;
+  }
+  .gauge-summary small {
+    display: none;
+  }
+  .odometer-module {
+    padding: 16px;
+  }
+  .odometer-digits > span {
+    width: 29px;
+    font-size: 26px;
+    height: 42px;
+  }
+  .service-distance {
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .distance-period {
+    font-size: 10px;
+    max-width: 90px;
+  }
+  .clock-module .instrument-footnote {
+    margin-top: 10px;
+  }
+  .app-main .metric > strong {
+    font-size: 25px;
+  }
+}
+@media (max-width: 400px) {
+  .instrument-label h3 {
+    font-size: 10px;
+  }
+  .instrument-module {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .odometer-module {
+    padding: 15px 12px;
+  }
+  .odometer-digits {
+    gap: 2px;
+  }
+  .odometer-digits > span {
+    width: 27px;
+  }
+  .clock-readout time {
+    font-size: 17px;
+  }
+  .app-main .metric > strong {
+    font-size: 23px;
+  }
+}
+@media print {
+  :root {
+    color-scheme: light;
+  }
+  body,
+  .app-main,
+  .card,
+  .metric,
+  .metric.highlight,
+  .method-card {
+    background: white !important;
+    color: #182b3d;
+    box-shadow: none;
+  }
+  .app-main :is(h1, h2, h3, p, span, strong, small, td, th) {
+    color: #182b3d !important;
+  }
+  .fleet-instruments {
+    display: none;
+  }
+}

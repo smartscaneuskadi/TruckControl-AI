@@ -1,0 +1,19 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migrations": [
+    {
+      "file": "supabase/migrations/20261028223227_truckcontrol_document_assistant_permissions.sql",
+      "version": "20261028223227",
+      "name": "truckcontrol_document_assistant_permissions",
+      "sha256": "0dff7604702bcf56a24f66809d93f8b904dc66f42ea8b43feb68b265685f3bbc",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261030212927_truckcontrol_financial_source_permissions.sql",
+      "version": "20261030212927",
+      "name": "truckcontrol_financial_source_permissions",
+      "sha256": "79a3d21f5cb72ae072cc408ddf9488afbb76a1f2493c4043ef534fd124c844cb",
+      "already_applied": true
+    }
+  ]
+}

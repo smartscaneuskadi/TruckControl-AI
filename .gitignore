@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.local
+*.tsbuildinfo
+coverage/
+playwright-report/
+test-results/
+company-test-results/
+saas-test-results/
+.DS_Store
+.openai/artifacts/
