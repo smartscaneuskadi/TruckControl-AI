@@ -5,11 +5,11 @@ La revisión actual conserva las 64 pruebas originales. Once archivos anteriores
 ## Comprobaciones locales
 
 - **134 pruebas Vitest/SQL** en 18 archivos: dominio, precisión monetaria/mililitros, kilometraje, repositorios, Gmail, SaaS, roles y operaciones, aislamiento documental, asistente y cifrado offline. TypeScript y compilación PWA correctos.
-- Suite demo: perfiles Chromium escritorio 1440 px y Pixel 7. La batería anterior pasó 27/28 y detectó una región desplazable sin foco en informes; tras corregirla pasaron sus seis casos de operaciones, navegación y accesibilidad. Tras añadir la biblioteca, pasaron sus dos casos y los seis de documentos/facturas anteriores. El recorrido de biblioteca valida formato, asociación, persistencia, descarga exacta, borrado confirmado y ausencia de envíos externos. Los 30 casos de demo quedan cubiertos, sin contar reintentos como casos adicionales.
+- **30 pruebas de demo**, perfiles Chromium escritorio 1440 px y Pixel 7, todas aprobadas en CI. Navegación, flota, cálculos, contabilización idempotente y accesibilidad; incluye biblioteca con validación de formato, asociación, persistencia, descarga exacta, borrado confirmado y ausencia de envíos externos. Se corrigieron desbordamiento del menú Android, foco del área de informes y contraste de mensajes de error.
 - **8 pruebas de empresas**: cuentas, cambio de empresa, cierre de sesión, creación y confirmación con servicios simulados, en ambos perfiles.
 - **16 pruebas SaaS**: planes, registro, SMS simulado, administración, preferencias IA, copia cifrada, recarga sin red, conflictos, reintentos sin duplicados y bloqueo tras suspensión, en ambos perfiles.
 
-El resultado consolidado final de CI debe revisarse en la ejecución vinculada al commit publicado. Los logs locales y artefactos Playwright se conservan fuera del árbol fuente; los fallos generan traza y captura. No sumar reintentos como pruebas diferentes.
+**Resultado consolidado de CI: 188 aprobadas (134 + 30 + 8 + 16).** [Ejecución del código publicado](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41180430504) y [ejecución del PR](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41198404303), ambas correctas. Se consultaron los logs del job: 18 archivos/134 pruebas Vitest, 30 demo, 8 empresas y 16 SaaS. Los artefactos Playwright incluyen trazas y capturas cuando hay fallos. Los reintentos no se cuentan como pruebas distintas.
 
 ## Seguridad comprobada
 
@@ -38,3 +38,5 @@ Axe cubre parte de WCAG A/AA. La primera carga offline requiere una visita previ
 ## Repetición automatizada
 
 `npm run check` ejecuta guardia de pruebas retenidas, TypeScript, Vitest y compilación. `npm run test:e2e`, `npm run test:e2e:companies` y `npm run test:e2e:saas` completan los recorridos de navegador. Las dos últimas construyen artefactos aislados y usan exclusivamente credenciales ficticias interceptadas. GitHub Actions ejecuta estas comprobaciones con permisos de solo lectura y acciones fijadas por SHA.
+
+El paquete público se comprobó por HTTP con verificación TLS: índice, CSS, JavaScript y service worker idénticos a los archivos construidos desde el commit publicado; manifiesto e iconos correctos. El recorrido local del paquete de publicación pasó en ambos perfiles y confirmó recarga sin red. Se conservan capturas de panel y portal. Chromium remoto encontró una CA de interceptación no reconocida; no se ignoraron errores de certificados ni se afirmó haber completado un recorrido físico en el dominio público.

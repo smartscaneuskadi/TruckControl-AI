@@ -1,0 +1,59 @@
+{
+  "url": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+  "source_commit": "7a68a555cfa76b394ecd93240aac0c2e55906411",
+  "https": true,
+  "index_and_assets_match_archive": true,
+  "checked_assets": [
+    "/assets/index-DBh9aZWn.js",
+    "/assets/index-Bd4ezRuv.css"
+  ],
+  "manifest_valid": true,
+  "elapsed_seconds": 1.17,
+  "index_sha256": "b84baada550f668d66b52dbbc76e88ada68983e64502767c0a3c5549b20aed1f",
+  "service_worker_sha256": "cd2171a70c2830b0a4e9c33a3d60e9647e7ce8ed463066f9f7fcc7e1020f9cf4",
+  "http_headers": {
+    "content-type": "text/html",
+    "cache-control": "public, max-age=0, must-revalidate"
+  },
+  "version": "0.2.0",
+  "sites_version": 5,
+  "sites_deployment_id": "appgdep_6ae5d64603708191bf34f178553be47d",
+  "main_merge_commit": "e59d8d4590012eac9243f3f0b50a2a74aff6d364",
+  "github_pr": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/1",
+  "github_ci": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41180430504",
+  "github_pr_ci": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41198404303",
+  "tests": {
+    "unit_sql": 134,
+    "demo_browser": 30,
+    "company_browser": 8,
+    "saas_browser": 16,
+    "total": 188,
+    "original_tests_preserved": 64
+  },
+  "supabase_project": "kkkemaycedexymrpaqtp",
+  "supabase_migrations": 37,
+  "security_advisor_notices": 0,
+  "commercial_production_ready": false,
+  "real_registration_enabled": false,
+  "charges_or_paid_services_activated": false,
+  "limitations": [
+    "Hosted Auth SMTP and redirect configuration and real email verification pending",
+    "Google OAuth credentials and public provider verification pending",
+    "SMS, AI model use and payments disabled",
+    "Browser tests emulate Windows/Android; physical device acceptance pending",
+    "Live browser verification limited by environment interception CA; HTTPS verified separately without disabling certificate verification",
+    "Remote backup restoration in an authorized isolated destination pending",
+    "GitHub Pages and branch protection administrative endpoints return integration permission 403"
+  ],
+  "artifacts": {
+    "truckcontrol-0.2.0-demo.tar.gz": {
+      "sha256": "6e4b4d944b6dc0821c83f01e4b2c5e260b57d6b3720b608f539f00884f7f2d38"
+    },
+    "truckcontrol-0.2.0-source.zip": {
+      "sha256": "0f98f5585a97d95e8dd1347ccee326243f258e7580806dc49fa6aa0432078312"
+    },
+    "truckcontrol-0.2.0.bundle": {
+      "sha256": "fd3d8aa7a8abb4d82c1a1506fb1c272c4bab463d7146a6f0823f6e1f154d1695"
+    }
+  }
+}
