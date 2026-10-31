@@ -253,8 +253,9 @@ export function PublicPortal({
           <p className="eyebrow">ELIGE CÓMO QUIERES AVANZAR</p>
           <h2>Empieza con todo. Elige tu plan después.</h2>
           <p>
-            Solicita tu cuenta, confirma tu correo y tu teléfono y disfruta de
-            treinta días de acceso Full. Tu prueba comienza cuando terminas la
+            Solicita tu cuenta, confirma tu correo
+            {catalog.sms_ready ? " y tu teléfono" : ""} y disfruta de treinta
+            días de acceso Full. Tu prueba comienza cuando terminas la
             verificación.
           </p>
           {catalog.prices_are_examples && (

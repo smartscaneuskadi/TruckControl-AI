@@ -596,7 +596,7 @@ function Workspace() {
       {help && (
         <Modal
           title="Prueba TruckControl AI"
-          subtitle="Fase 1 · 50 camiones de demostración"
+          subtitle="50 camiones · datos ficticios de demostración"
           onClose={() => setHelp(false)}
         >
           <ol className="help-steps">

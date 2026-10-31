@@ -145,6 +145,10 @@
     {
       "version": "20261030212927",
       "name": "truckcontrol_financial_source_permissions"
+    },
+    {
+      "version": "20261031071642",
+      "name": "truckcontrol_document_module_boundaries"
     }
   ]
 }

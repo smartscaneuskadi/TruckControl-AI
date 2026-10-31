@@ -1,23 +1,21 @@
-# Próximas fases
+# Estado y continuación
 
-## Fase 1 · Base funcional
+## Implementado y comprobado
 
-React + TypeScript, PWA, flota inicial de 50 camiones ficticios, conductores, control económico, rentabilidad, almacenamiento local y reglas de análisis. Migración de Supabase y contratos listos para ampliar. Sin información empresarial real.
+Base React/TypeScript y PWA, diseño oscuro profesional, panel y fichas de 50 camiones ficticios, conductores, finanzas, rentabilidad, remolques, clientes, viajes, mantenimiento, combustible, documentación, vencimientos, alertas, exportaciones e informes. Contabilización de operaciones con confirmación humana y sin duplicados. Biblioteca de prueba funcional sin transmitir archivos.
 
-## Fase 2 · Datos compartidos
+Código SaaS: registro, prueba de 30 días, plan inicial de ejemplo de 10 €/mes, administrador global, roles y equipo por empresa, RLS, archivos privados, versiones concurrentes y restricciones de módulos. Supabase independiente operativo; no se toca FIXPilot. Las comprobaciones reales de aislamiento se ejecutan con datos sintéticos y rollback.
 
-Implementados en código: Supabase Auth, empresas propias, repositorio remoto, documentos privados, versiones, Gmail OAuth, registro comercial, prueba Full de diez días y control administrativo de planes, módulos e IA por usuario. El prototipo en merymery_16 se conserva; el proyecto nuevo `truckcontrol-ai` solicitado actualmente está pendiente. FIXPilot permanece intacto.
+Offline: copia comercial cifrada opcional y cola de operaciones, límites temporales, bloqueo por inactividad, conflictos conservados y revalidación antes de sincronizar. Los documentos privados y apuntes contables no se editan offline.
 
-Pendiente: validar Auth, Storage, asesores y RLS en el nuevo proyecto real; configurar Google OAuth y su consentimiento; miembros y roles de equipo, auditoría y copias de seguridad. Los trabajos programados y la IA de pago requieren autorización antes de activarse. Véase [empresas y Gmail](COMPANIES_GMAIL.md).
+## Apertura comercial pendiente de proveedores
 
-## Fase 3 · Operaciones
+Configurar SMTP, URL y redirecciones de Auth y comprobar correo real y cuenta administradora. Configurar y verificar Google OAuth por empresa, con revisión de Google cuando corresponda. Ejecutar aceptación con cuentas autorizadas en dos dispositivos físicos y recuperación de una copia en un destino de prueba autorizado. No abrir el registro real antes de estas comprobaciones.
 
-Viajes y órdenes de transporte, documentos y vencimientos, mantenimiento planificado, importación revisable, presupuestos, indicadores de consumo y costes por ruta. Tratamiento explícito de impuestos, amortizaciones y asignación de costes generales.
+SMS y modelos IA son opcionales: necesitan credenciales, política de datos, pruebas y autorización de costes. La facturación recurrente requiere terminar el contrato de renovación, pasarela y pruebas de cobro; los pagos siguen apagados.
 
-## Fase 4 · IA asistida
+## Operación continua
 
-Bots de análisis financiero, detección de anomalías y recomendaciones de mantenimiento mediante proveedores independientes y Edge Functions. Evaluación de calidad, observabilidad y aprobación de escrituras. No usar credenciales privilegiadas en aplicaciones cliente.
+El CI comprueba código y navegadores en GitHub. La conexión permite escribir y gestionar PR; la administración de Pages y protección de ramas sigue denegada por permisos de integración. Se conserva Sites como alojamiento público y sus versiones para recuperación. No se habilita alojamiento de pago.
 
-## Distribución nativa, si se requiere
-
-Mantener la PWA para Windows y Android. Añadir Tauri para Windows y Capacitor para Android si hacen falta instaladores, tiendas o funciones del dispositivo; incluir firma, permisos, actualización y pruebas en equipos físicos.
+Las alertas son visibles dentro de la aplicación; el envío automático por correo/SMS/push requiere proveedor y programación autorizados. Los bots remotos amplían las reglas locales, no se anuncian como activos sin proveedor. No hay instaladores nativos ni publicación en tiendas; la distribución actual es PWA por HTTPS.

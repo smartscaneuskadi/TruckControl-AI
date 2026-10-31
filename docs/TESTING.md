@@ -1,48 +1,40 @@
-# Verificación de TruckControl AI
+# Verificación — versión 0.2.0
 
-Las 64 pruebas originales (48 Vitest y 16 Playwright) se conservan sin modificar. La ampliación añade pruebas de permisos, OAuth, documentos, concurrencia, paginación y pantallas de empresa. No usa credenciales empresariales ni efectúa llamadas a servicios IA reales.
+La revisión actual conserva las 64 pruebas originales. Once archivos anteriores se comprueban por SHA-256 con `npm run verify:retained`; el manifiesto indica el commit de referencia. No se modifican las pruebas retenidas para hacerlas pasar.
 
-Resultado de la ampliación SaaS, 28/10/2026: **140 pruebas aprobadas** — 98 Vitest, 22 Playwright de demo, 8 Playwright de empresas y 12 Playwright SaaS con servicios simulados. Las 105 pruebas de la entrega anterior se conservan; también siguen intactas las 64 originales. TypeScript, compilación PWA y `deno check` correctos.
+## Comprobaciones locales
 
-En el prototipo autorizado de merymery_16 se comprobó además aislamiento entre dos empresas, suspensión y cuenta administradora en PostgreSQL real, dentro de una transacción revertida. No quedaron usuarios ficticios en Auth. El catálogo público respondió HTTP 200 y administración/Gmail/cobros rechazaron acceso sin sesión con HTTP 401. El asesor de seguridad no señaló incidencias. No se enviaron correos, SMS, facturas a IA ni pagos reales.
+- **134 pruebas Vitest/SQL** en 18 archivos: dominio, precisión monetaria/mililitros, kilometraje, repositorios, Gmail, SaaS, roles y operaciones, aislamiento documental, asistente y cifrado offline. TypeScript y compilación PWA correctos.
+- Suite demo: perfiles Chromium escritorio 1440 px y Pixel 7. La batería anterior pasó 27/28 y detectó una región desplazable sin foco en informes; tras corregirla pasaron sus seis casos de operaciones, navegación y accesibilidad. Tras añadir la biblioteca, pasaron sus dos casos y los seis de documentos/facturas anteriores. El recorrido de biblioteca valida formato, asociación, persistencia, descarga exacta, borrado confirmado y ausencia de envíos externos. Los 30 casos de demo quedan cubiertos, sin contar reintentos como casos adicionales.
+- **8 pruebas de empresas**: cuentas, cambio de empresa, cierre de sesión, creación y confirmación con servicios simulados, en ambos perfiles.
+- **16 pruebas SaaS**: planes, registro, SMS simulado, administración, preferencias IA, copia cifrada, recarga sin red, conflictos, reintentos sin duplicados y bloqueo tras suspensión, en ambos perfiles.
 
-La migración adicional de índices pasa las pruebas locales, pero no se aplicó al prototipo: la revisión automática no pudo completarse por límite de uso. El destino nuevo `truckcontrol-ai` solicitado posteriormente todavía no existe. La compilación comercial de revisión muestra planes y demo con las credenciales vacías; no permite enviar un registro real.
+El resultado consolidado final de CI debe revisarse en la ejecución vinculada al commit publicado. Los logs locales y artefactos Playwright se conservan fuera del árbol fuente; los fallos generan traza y captura. No sumar reintentos como pruebas diferentes.
 
-## Pruebas automatizadas
+## Seguridad comprobada
 
-`npm run check` ejecuta TypeScript, Vitest y la compilación de producción, incluido el service worker.
+Las migraciones completas se ejecutan en PGlite con los roles `anon`, `authenticated` y `service_role`. Se verifican RLS entre empresas, claves externas compuestas, 50 camiones y rechazo del 51, roles de consulta, revocación, escrituras concurrentes, contabilización idempotente y bloqueo de `source_record_id` desde el navegador. Las cuentas de registro no pueden elevar privilegios mediante metadatos.
 
-Vitest cubre cálculos con céntimos, entradas decimales, pérdida y margen sin ingresos, límites mensuales y anuales, conciliación de los 50 camiones, asignaciones, matrículas duplicadas, protección del historial y exportación CSV. También comprueba persistencia entre instancias, rechazo de datos corruptos sin sobrescritura y errores de cuota.
+Los adjuntos de facturas se distinguen del archivo general: Gmail sin biblioteca no permite leer permisos de conductores ni otros documentos. Storage exige metadatos registrados visibles; los huérfanos y archivos de otra empresa quedan excluidos. La suspensión revoca también la descarga.
 
-Las pruebas SQL ejecutan las migraciones en PGlite (PostgreSQL WASM) y prueban RLS entre dos organizaciones, permisos anónimos, restricciones de claves externas, importes, borrados y asignaciones. La función `auth.uid()` es un stub de prueba; esta batería se ejecuta sin conectarse a una base remota. Las comprobaciones remotas independientes se describen al principio de este documento.
+El asistente documental se prueba con fetch simulado: rechaza identidad/origen inválidos, configuración incompleta, documentos ajenos y cuota agotada antes de llamar al modelo; limita las referencias y no habilita herramientas ni almacenamiento del proveedor. No se transmite información a un servicio IA real.
 
-`npm run test:e2e` usa Playwright con dos perfiles de Chromium: escritorio de 1440 px y emulación de Pixel 7. Cubre:
+Se prueba AES-GCM y PBKDF2, frase errónea, manipulación, ámbito de empresa/proyecto/usuario, caducidad y límites de cola. Los recorridos de navegador comprueban el almacenamiento cifrado real en IndexedDB y la revalidación antes de enviar cambios.
 
-- Crear ingreso y gasto, conciliar el beneficio y recargar sin perder cambios.
-- Crear conductor y camión, asignarlos y editar una ficha.
-- Rechazar duplicados y proteger vehículos con historial.
-- Filtrar pagos, descargar CSV y usar la búsqueda global.
-- Navegar en móvil, paginar y abrir los detalles de avisos.
-- Cargar y navegar sin conexión después de registrar el service worker.
-- Recuperar almacenamiento dañado y confirmar el restablecimiento.
-- Comprobaciones automáticas WCAG A/AA del panel con axe y ausencia de solicitudes a Supabase.
+El análisis `npm audit --omit=dev` no señala vulnerabilidades de dependencias de ejecución a 31/10/2026. El escaneo de patrones no encontró secretos de proveedores ni claves privadas en el código preparado. Esto no sustituye una auditoría externa.
 
-El informe HTML y las trazas de fallo se generan en carpetas ignoradas por Git. GitHub Actions instala Chromium y ejecuta todas las comprobaciones desde cero.
+## Supabase remoto
 
-## Pruebas añadidas de empresas y facturas
+En `kkkemaycedexymrpaqtp` se verificaron con SQL y rollback: aprovisionamiento de dos empresas ficticias con correo confirmado, prueba de 30 días, roles, invitaciones/aceptación, revocación, referencias cruzadas, cuota de 50 y aislamiento. No se enviaron correos ni SMS. Se comprobó que la columna de origen financiero no se puede escribir con el rol del navegador.
 
-- `tests/company-security.test.ts`: migraciones completas, roles `anon`, `authenticated` y `service_role`, tablas privadas, Storage privado, aislamiento de documentos, tokens inaccesibles al navegador, estado OAuth de un solo uso, límites IA y aprobación SQL idempotente con base sin IVA.
-- `src/integrations/gmail/handler.test.ts`: servidor HTTP de OAuth, autenticación y pertenencia a empresa, PKCE, finalización con el mismo usuario, cifrado ligado a empresa/usuario, adjuntos duplicados, recuperación de paginación, validación de facturas y ausencia de consumo IA por defecto. Todas las llamadas externas están simuladas.
-- `src/integrations/supabase/repository.test.ts`: SDK real con transporte HTTP simulado; carga de 2.101 movimientos, filtros de empresa, versiones concurrentes y escrituras por entidad sin upsert global.
-- `tests/e2e/company-demo.spec.ts`: factura ficticia sin duplicados al recargar, conservación de la demo al visitar el acceso pendiente y axe en documentos, facturas y acceso.
-- `npm run test:e2e:companies`: construye una copia aislada con URL y clave públicas ficticias, intercepta todo Supabase en Playwright y verifica acceso de dos propietarios, cambio de empresa, cierre de sesión, conservación de la demo, creación de otra empresa y confirmación de correo en escritorio/Android. No publica esa compilación ni envía correos.
+`verification/document-boundaries-rollback.sql` reproduce la comprobación documental con datos sintéticos. Se ejecutó correctamente y dejó cero usuarios sintéticos. No toca claves de proveedores. El asesor remoto de seguridad devuelve cero incidencias. El alta real sigue cerrada y no hay empresas, usuarios ni archivos reales.
 
-La función Edge también se comprueba con `deno check` sin ejecutarla contra servicios externos.
+## Alcance de las pruebas
 
-## Límites de verificación
+Los perfiles Android/Windows son emulaciones de Chromium en Linux, no dispositivos físicos. Auth, Google, SMS, modelo IA y pagos usan simulaciones en los recorridos de navegador. Faltan entrega real de correo, redirecciones alojadas, OAuth Google público, llamadas a modelos autorizados, aceptación en dispositivos físicos y restauración remota en un destino aislado. No se ha validado APK/EXE porque la distribución es PWA.
 
-Los perfiles de escritorio y Android son emulaciones de navegador en Linux, no pruebas en dispositivos físicos Windows/Android. El flujo de cuentas/empresas se ha validado con servicios simulados; no se ha validado aún Supabase Auth real, PostgREST remoto, OAuth Google real ni sincronización entre dispositivos. Supabase ha bloqueado la creación del proyecto por cuota gratuita. No se han podido ejecutar asesores remotos ni regenerar tipos desde ese proyecto. Tampoco se ha validado un instalador nativo .exe/.apk. Axe detecta solo parte de los problemas de accesibilidad.
+Axe cubre parte de WCAG A/AA. La primera carga offline requiere una visita previa correcta. La revocación inmediata no puede conocerse sin red y una copia autorizada tiene una caducidad limitada: véase arquitectura.
 
-## Recorrido sin terminal
+## Repetición automatizada
 
-Abre la demo privada indicada en el README. Selecciona un vehículo y un mes; anota su beneficio. Registra 500,25 € de ingreso y 100,10 € de gasto para ese mismo vehículo y periodo. Su beneficio debe subir 400,15 €. Recarga para comprobar persistencia. Descarga el informe desde Rentabilidad y prueba la búsqueda por matrícula. Restablece la demo desde Configuración cuando termines.
+`npm run check` ejecuta guardia de pruebas retenidas, TypeScript, Vitest y compilación. `npm run test:e2e`, `npm run test:e2e:companies` y `npm run test:e2e:saas` completan los recorridos de navegador. Las dos últimas construyen artefactos aislados y usan exclusivamente credenciales ficticias interceptadas. GitHub Actions ejecuta estas comprobaciones con permisos de solo lectura y acciones fijadas por SHA.

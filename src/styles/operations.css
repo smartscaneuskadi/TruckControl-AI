@@ -96,6 +96,13 @@
   top: 0;
   clip-path: inset(50%);
 }
+
+.form-error,
+p.form-error {
+  color: #ffd1ca;
+  background: #3a1b23;
+  border: 1px solid #8b4550;
+}
 .sidebar nav {
   flex-shrink: 0;
 }
