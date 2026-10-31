@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { Link } from "react-router-dom";
 import {
   Bell,
   Check,
@@ -33,6 +34,7 @@ import {
 } from "../domain/operations";
 import type { OperationKind, OperationRecord } from "../domain/operations";
 import { money, number, today } from "../lib/format";
+import { useCurrentDay } from "../lib/use-current-day";
 import { exportCsv } from "../lib/export";
 
 const descriptions: Record<OperationKind, string> = {
@@ -50,6 +52,9 @@ export function Operations({ kind }: { kind: OperationKind }) {
   const operations = useOperations(),
     fleet = useFleet(),
     subscription = useSubscription();
+  const day = useCurrentDay();
+  const [alertFilter, setAlertFilter] = useState("all"),
+    [alertSearch, setAlertSearch] = useState("");
   const [search, setSearch] = useState(""),
     [page, setPage] = useState(1),
     [editor, setEditor] = useState<OperationRecord | "new" | null>(null);
@@ -122,27 +127,48 @@ export function Operations({ kind }: { kind: OperationKind }) {
   }
   const alerts =
     kind === "alerts"
-      ? operationalAlerts(fleet.snapshot, operations.rows, today())
+      ? operationalAlerts(fleet.snapshot, operations.rows, day).filter(
+          (a) => !subscription.enabled || subscription.features[a.source],
+        )
       : [];
+  const filteredAlerts = alerts.filter(
+    (a) =>
+      (alertFilter === "all" ||
+        (alertFilter === "urgent" ? a.urgent : !a.urgent)) &&
+      a.title
+        .toLocaleLowerCase("es")
+        .includes(alertSearch.toLocaleLowerCase("es")),
+  );
   async function acknowledge(alert: (typeof alerts)[number]) {
     try {
+      const manual =
+        alert.source === "alerts"
+          ? operations.rows.find(
+              (r) => r.kind === "alerts" && r.id === alert.sourceId,
+            )
+          : null;
       await operations.execute({
         type: "save",
-        expected: null,
-        value: parseOperation({
-          id: crypto.randomUUID(),
-          kind: "alerts",
-          data: {
-            title: alert.title,
-            dueOn: alert.dueOn,
-            truckId: alert.truckId,
-            priority: alert.urgent ? "urgent" : "normal",
-            status: "acknowledged",
-            sourceKey: alert.key,
-          },
-          version: 1,
-          financeEntryId: null,
-        }),
+        expected: manual?.version ?? null,
+        value: manual
+          ? parseOperation({
+              ...manual,
+              data: { ...manual.data, status: "acknowledged" },
+            })
+          : parseOperation({
+              id: crypto.randomUUID(),
+              kind: "alerts",
+              data: {
+                title: alert.title,
+                dueOn: alert.dueOn,
+                truckId: alert.truckId,
+                priority: alert.urgent ? "urgent" : "normal",
+                status: "acknowledged",
+                sourceKey: alert.key,
+              },
+              version: 1,
+              financeEntryId: null,
+            }),
       });
       fleet.notify("Aviso marcado como revisado.");
     } catch (e) {
@@ -211,18 +237,56 @@ export function Operations({ kind }: { kind: OperationKind }) {
                   {alerts.length} avisos
                 </Badge>
               </div>
+              <div className="alert-filters">
+                <Field label="Mostrar avisos">
+                  <select
+                    value={alertFilter}
+                    onChange={(e) => setAlertFilter(e.target.value)}
+                  >
+                    <option value="all">Todos los pendientes</option>
+                    <option value="urgent">Urgentes y vencidos</option>
+                    <option value="upcoming">Próximos vencimientos</option>
+                  </select>
+                </Field>
+                <SearchField
+                  label="Buscar avisos por nombre o matrícula"
+                  value={alertSearch}
+                  onChange={setAlertSearch}
+                />
+              </div>
+              <p className="muted">
+                Calculados con las fichas y operaciones autorizadas. Marcar como
+                revisado conserva el historial; no renueva permisos ni completa
+                trabajos.
+              </p>
               {!alerts.length ? (
                 <p>No hay vencimientos próximos pendientes de revisión.</p>
+              ) : !filteredAlerts.length ? (
+                <p>No hay avisos que coincidan con estos filtros.</p>
               ) : (
-                alerts.map((alert) => (
+                filteredAlerts.map((alert) => (
                   <div className="operation-alert" key={alert.key}>
                     <Bell size={18} />
                     <div>
                       <strong>{alert.title}</strong>
                       <span>
-                        {alert.dueOn} ·{" "}
-                        {alert.urgent ? "Vencido" : "Próximo vencimiento"}
+                        {alert.reason === "kilometres"
+                          ? `${number(alert.currentKm!)} km · revisión desde ${number(alert.thresholdKm!)} km`
+                          : `${alert.dueOn} · ${alert.dueOn < day ? "Vencido" : alert.dueOn === day ? "Vence hoy" : "Próximo vencimiento"}`}
                       </span>
+                      <Badge tone={alert.urgent ? "red" : "blue"}>
+                        {alert.urgent ? "Urgente" : "Seguimiento"}
+                      </Badge>
+                      <Link to={`/${alert.source}`}>
+                        Ver{" "}
+                        {alert.source === "trucks"
+                          ? "camiones"
+                          : alert.source === "drivers"
+                            ? "conductores"
+                            : operationLabels[alert.source].toLocaleLowerCase(
+                                "es",
+                              )}
+                      </Link>
                     </div>
                     {writable && (
                       <Button

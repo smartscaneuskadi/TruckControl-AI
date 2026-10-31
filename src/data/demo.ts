@@ -8,6 +8,7 @@ import { shiftMonth } from "../domain/finance";
 
 const demoId = (group: number, index: number) =>
   `${String(group).padStart(8, "0")}-0000-4000-8000-${String(index).padStart(12, "0")}`;
+export const demoOrganizationId = demoId(1, 1);
 const names = [
   "Alex",
   "Nora",
@@ -123,7 +124,7 @@ export function createDemo(reference = new Date()): FleetSnapshot {
   }
   return {
     schemaVersion: 1,
-    organization: { id: demoId(1, 1), name: "Flota de demostración" },
+    organization: { id: demoOrganizationId, name: "Flota de demostración" },
     demoMonth: month,
     trucks,
     drivers,

@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "../integrations/supabase/database.types";
 import type { FleetSnapshot } from "../domain/models";
+import { validateSnapshot } from "../domain/models";
+import { STORAGE_KEY } from "./demo-keys";
 import {
   applyOperation,
   parseOperation,
@@ -13,6 +15,11 @@ import type {
 } from "../domain/operations";
 import { today } from "../lib/format";
 import type { VaultSession } from "./offline-vault";
+import {
+  readDemoOperations,
+  hasEmbeddedOperations,
+  writeDemoOperations,
+} from "./demo-workspace";
 
 export interface OperationRepository {
   load(fleet: FleetSnapshot): Promise<OperationRecord[]>;
@@ -30,7 +37,7 @@ export class OfflineOperationRepository implements OperationRepository {
     return (await this.session.enqueue(command)).operations;
   }
 }
-export const demoOperationKey = "truckcontrol.demo.operations.v1";
+export { demoOperationKey } from "./demo-keys";
 function future(days: number) {
   const date = new Date(`${today()}T12:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);
@@ -116,15 +123,23 @@ export function demoOperations(fleet: FleetSnapshot): OperationRecord[] {
 }
 export class DemoOperationRepository implements OperationRepository {
   async load(fleet: FleetSnapshot) {
-    const raw = localStorage.getItem(demoOperationKey);
-    if (raw !== null) return validateOperations(JSON.parse(raw), fleet);
-    const rows = validateOperations(demoOperations(fleet), fleet);
-    localStorage.setItem(demoOperationKey, JSON.stringify(rows));
+    const current = localStorage.getItem(STORAGE_KEY);
+    const actualFleet =
+      current === null ? fleet : validateSnapshot(JSON.parse(current));
+    if (actualFleet.organization.id !== fleet.organization.id)
+      throw Error(
+        "El espacio de demostración ha cambiado. Recarga para continuar.",
+      );
+    const rows =
+      readDemoOperations(localStorage, actualFleet) ??
+      validateOperations(demoOperations(actualFleet), actualFleet);
+    if (!hasEmbeddedOperations(localStorage))
+      writeDemoOperations(localStorage, rows);
     return rows;
   }
   async execute(command: OperationCommand, fleet: FleetSnapshot) {
     const next = applyOperation(await this.load(fleet), command, fleet);
-    localStorage.setItem(demoOperationKey, JSON.stringify(next));
+    writeDemoOperations(localStorage, next);
     return next;
   }
   async markBooked(id: string, entryId: string, fleet: FleetSnapshot) {
@@ -133,7 +148,7 @@ export class DemoOperationRepository implements OperationRepository {
         ? { ...r, financeEntryId: entryId, version: r.version + 1 }
         : r,
     );
-    localStorage.setItem(demoOperationKey, JSON.stringify(rows));
+    writeDemoOperations(localStorage, rows);
     return rows;
   }
 }

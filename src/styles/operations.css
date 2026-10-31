@@ -81,6 +81,51 @@
 .operation-alert span {
   display: block;
 }
+.alert-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  margin: 20px 0;
+}
+.alert-filters .field {
+  min-width: 200px;
+}
+.alert-filters .search-field {
+  flex: 1;
+}
+.operation-alert .badge {
+  display: inline-flex;
+  margin: 8px 12px 0 0;
+}
+.operation-alert a {
+  color: #9beac8;
+  font-size: 12px;
+}
+.demo-backup-form {
+  display: grid;
+  gap: 14px;
+  margin: 22px 0;
+}
+.demo-backup-form input[type="file"] {
+  width: 100%;
+  max-width: 100%;
+}
+.backup-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 24px 0;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.backup-confirmation input {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  accent-color: #31d89c;
+}
 .operation-alert span {
   font-size: 12px;
   color: var(--muted);
