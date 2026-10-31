@@ -153,7 +153,7 @@ enabled = true
 # in emails.
 site_url = "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["http://127.0.0.1:4173", "http://localhost:5173"]
+additional_redirect_urls = ["https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site/", "http://127.0.0.1:4173", "http://localhost:5173"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to the local API URL (http://127.0.0.1:<port>/auth/v1).
@@ -225,6 +225,17 @@ otp_expiry = 3600
 # pass = "env(SENDGRID_API_KEY)"
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
+
+# Local template configuration. Hosted Auth requires a separately authorized
+# Management API update and a configured custom SMTP provider. Do not push the
+# full local configuration over an existing hosted project.
+[auth.email.template.confirmation]
+subject = "Confirma tu cuenta de TruckControl AI"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Recupera tu acceso a TruckControl AI"
+content_path = "./supabase/templates/recovery.html"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
