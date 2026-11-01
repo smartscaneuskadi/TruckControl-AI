@@ -1,5 +1,7 @@
 # TruckControl AI — entrega vigente, 0.5.3-rc.1
 
+**Continuación para clientes:** el propietario autoriza publicar el acceso real y facilita los datos legales de ELEVADANCOR S.L. El correo nativo de confirmación/recuperación ya pasa con Resend; 48 migraciones y company-auth v3. El paquete conectado supera 16 recorridos Android/Windows y ambos temas; 364 unitarias/SQL y 32 Python. El despliegue y la verificación del propietario siguen en curso; la URL mantiene candidata 8 hasta completarlos. [Guía y controles](CLIENT_LAUNCH.md). Esta actualización prevalece sobre el estado anterior descrito debajo.
+
 **Recepción de facturas e IA comprobadas el 01/11/2026.** La clave Resend guardada en Vault funciona contra su API real. Tres correos ficticios llegan por el webhook firmado a dos empresas independientes, con originales privados y sin crear gastos automáticamente. [Informe verificable](verification/resend-live-acceptance-20261101.json).
 
 ## Aplicación publicada
