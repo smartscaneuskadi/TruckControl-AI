@@ -3,14 +3,14 @@
   "slug": "truckcontrol-ai-candidata",
   "expected_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
   "audience": "public",
-  "purpose": "Separate candidate; stable demo project and audience preserved",
+  "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "ba7a226f976a0eb52b8e28f2407d78384edced53",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_37b135d97b1481919488d6d012b35456",
-  "published_version_number": 8,
-  "deployment_id": "appgdep_6ae77f9666388191a9fa987bed562089",
-  "previous_deployment_id": "appgdep_6ae744aeaf4c81918fcd5a1b0b52c9cb",
+  "published_commit": "bcffa56f0b3a3f851af4e9f433223b49bad7ed9c",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_d7260142a7348191becab426ffd540ac",
+  "published_version_number": 9,
+  "deployment_id": "appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e",
+  "previous_deployment_id": "appgdep_6ae77f9666388191a9fa987bed562089",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -30,12 +30,12 @@
       }
     ]
   },
-  "deployed_at": "2026-11-01T18:06:28.481881+00:00",
+  "deployed_at": "2026-11-01T22:31:27.540781+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 41334469182,
+  "source_ci_run": 41356880182,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -54,5 +54,17 @@
     "version": 7,
     "source_commit": "2c104916604da3e4e217de0a610771b6a0d0f626",
     "reason": "CI caught transient theme contrast; never deployed; replaced by corrected v8"
-  }
+  },
+  "preserved_candidate": {
+    "version": 8,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_37b135d97b1481919488d6d012b35456",
+    "source_commit": "ba7a226f976a0eb52b8e28f2407d78384edced53",
+    "deployment_id": "appgdep_6ae77f9666388191a9fa987bed562089"
+  },
+  "primary_url": "https://truckcontrolai.com",
+  "expected_channel": "production",
+  "expected_registration_open": true,
+  "source_ci_commit": "60398b60c7136abb8f7608471677fcc7f478f6d9",
+  "production_source_manifest_only_diff": true,
+  "owner_verified_at": "2026-11-01T22:42:43.543501+00:00"
 }
