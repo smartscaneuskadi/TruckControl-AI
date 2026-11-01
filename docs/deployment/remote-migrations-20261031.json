@@ -1,6 +1,6 @@
 {
   "project_id": "kkkemaycedexymrpaqtp",
-  "checked_at": "2026-10-31",
+  "checked_at": "2026-11-01T11:21:11.793521+00:00",
   "migrations": [
     {
       "version": "20261028132655",
@@ -157,6 +157,10 @@
     {
       "version": "20261031210121",
       "name": "truckcontrol_explicit_server_only_billing_policies"
+    },
+    {
+      "version": "20261101111403",
+      "name": "truckcontrol_commercial_offer_ten_days_vat"
     }
   ]
 }

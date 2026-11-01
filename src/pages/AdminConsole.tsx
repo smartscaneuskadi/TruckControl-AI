@@ -14,7 +14,12 @@ import {
 import { Badge, Button, Empty, Field, Modal } from "../components/ui";
 import { getSupabaseClient } from "../integrations/supabase/client";
 import type { Json } from "../integrations/supabase/database.types";
-import { accountLabel, featureLabels } from "../domain/subscriptions";
+import {
+  accountLabel,
+  featureLabels,
+  exampleCatalog,
+  subscriptionPrice,
+} from "../domain/subscriptions";
 import type {
   AdminSnapshot,
   Customer,
@@ -23,6 +28,7 @@ import type {
 } from "../domain/subscriptions";
 import { money } from "../lib/format";
 import { parseMoney } from "../domain/finance";
+import { useAppearance } from "../app/AppearanceContext";
 
 export function AdminConsole({
   email,
@@ -33,6 +39,7 @@ export function AdminConsole({
   onSignOut(): Promise<void>;
   onDemo(): void;
 }) {
+  const appearance = useAppearance();
   const client = getSupabaseClient();
   const [snapshot, setSnapshot] = useState<AdminSnapshot | null>(null);
   const [tab, setTab] = useState("customers");
@@ -123,6 +130,9 @@ export function AdminConsole({
           </span>
         </div>
         <div className="admin-account">
+          <Button variant="secondary" onClick={appearance.open}>
+            Apariencia
+          </Button>
           <ShieldCheck size={18} />
           <span>{email}</span>
           <Button
@@ -217,7 +227,9 @@ export function AdminConsole({
             <section className="card admin-section">
               <div className="admin-section-heading">
                 <h2>Clientes y periodos de prueba</h2>
-                <Badge tone="green">30 días Full tras la verificación</Badge>
+                <Badge tone="green">
+                  {exampleCatalog.trial_days} días Full tras la verificación
+                </Badge>
               </div>
               {snapshot.customers.length ? (
                 <div className="admin-table-scroll">
@@ -371,6 +383,14 @@ export function AdminConsole({
                         mes
                       </h3>
                       <p>
+                        + 21 % IVA · Total:{" "}
+                        {money(
+                          subscriptionPrice(p.monthly_cents).totalCents,
+                          true,
+                        )}
+                        /mes
+                      </p>
+                      <p>
                         {p.max_trucks === null
                           ? "Sin límite comercial de camiones"
                           : `Hasta ${p.max_trucks} camiones`}
@@ -461,7 +481,7 @@ export function AdminConsole({
                         <tr>
                           <th>Empresa</th>
                           <th>Plan</th>
-                          <th>Importe acordado</th>
+                          <th>Total acordado</th>
                           <th>Estado</th>
                           <th>Pago</th>
                         </tr>
@@ -475,7 +495,15 @@ export function AdminConsole({
                               )?.company_name ?? "Cliente"}
                             </td>
                             <td>{r.plan_id}</td>
-                            <td>{money(r.quoted_cents, true)}</td>
+                            <td>
+                              {money(r.quoted_cents, true)}
+                              {r.net_cents != null && r.vat_cents != null && (
+                                <small>
+                                  Base {money(r.net_cents, true)} + IVA{" "}
+                                  {money(r.vat_cents, true)}
+                                </small>
+                              )}
+                            </td>
                             <td>
                               {r.status === "paid"
                                 ? "Confirmado"
@@ -604,7 +632,7 @@ function CustomerControls({
   return (
     <Modal
       title={`Gestionar ${customer.company_name}`}
-      subtitle="Cambiar permisos no reinicia los treinta días de prueba."
+      subtitle="Cambiar permisos no reinicia el período de prueba."
       onClose={() => {
         if (!busy) onClose();
       }}
@@ -727,7 +755,7 @@ function PlanControls({
             disabled={busy}
           />
         </Field>
-        <Field label="Precio mensual (€)">
+        <Field label="Precio mensual sin IVA (€)">
           <input
             name="price"
             required
@@ -738,6 +766,10 @@ function PlanControls({
             disabled={busy}
           />
         </Field>
+        <p>
+          Al precio mensual se añade el 21 % de IVA. Los cambios se aplican a
+          nuevas solicitudes.
+        </p>
         <Field label="Límite de camiones">
           <input
             type="number"

@@ -274,7 +274,7 @@ export function Billing({
         location.assign(url.href);
       } else
         setMessage(
-          `Solicitud del plan ${plan === "full" ? "Full" : "Inicial"} guardada. Los precios son orientativos y los cobros están desactivados; no se ha realizado ningún cargo.`,
+          `Solicitud del plan ${plan === "full" ? "Full" : "Básico"} guardada. Los cobros están desactivados; no se ha realizado ningún cargo.`,
         );
     } catch (e) {
       setError(
@@ -319,7 +319,7 @@ export function Billing({
             : profile.status === "trial"
               ? access.active
                 ? `Quedan ${trialDaysLeft(profile.trial_ends_at)} días de prueba Full.`
-                : "Tus treinta días de prueba han terminado. Elige un plan para continuar usando la plataforma."
+                : "Tu prueba gratuita ha terminado. Elige un plan para continuar usando la plataforma."
               : `Acceso contratado hasta ${profile.paid_until ? new Date(profile.paid_until).toLocaleDateString("es-ES") : "confirmar el pago"}.`}
         </p>
       </div>

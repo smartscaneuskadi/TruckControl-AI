@@ -1,0 +1,102 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "local_migration": "20261101110905_commercial_offer_ten_days_vat.sql",
+  "remote_migration": "20261101111403",
+  "remote_migrations": 40,
+  "catalog": {
+    "plans": [
+      {
+        "id": "limited",
+        "name": "Básico",
+        "modules": {
+          "fuel": true,
+          "team": true,
+          "gmail": true,
+          "trips": true,
+          "alerts": true,
+          "income": true,
+          "trucks": true,
+          "drivers": true,
+          "expenses": true,
+          "trailers": true,
+          "assistant": true,
+          "customers": true,
+          "dashboard": true,
+          "deadlines": true,
+          "documents": true,
+          "invoice_ai": false,
+          "document_ai": true,
+          "maintenance": true,
+          "profitability": true
+        },
+        "currency": "EUR",
+        "revision": 3,
+        "max_trucks": 50,
+        "vat_rate_bps": 2100,
+        "monthly_cents": 30000,
+        "monthly_vat_cents": 6300,
+        "monthly_total_cents": 36300
+      },
+      {
+        "id": "full",
+        "name": "Full",
+        "modules": {
+          "fuel": true,
+          "team": true,
+          "gmail": true,
+          "trips": true,
+          "alerts": true,
+          "income": true,
+          "trucks": true,
+          "drivers": true,
+          "expenses": true,
+          "trailers": true,
+          "assistant": true,
+          "customers": true,
+          "dashboard": true,
+          "deadlines": true,
+          "documents": true,
+          "invoice_ai": true,
+          "document_ai": true,
+          "maintenance": true,
+          "profitability": true
+        },
+        "currency": "EUR",
+        "revision": 3,
+        "max_trucks": 50,
+        "vat_rate_bps": 2100,
+        "monthly_cents": 70000,
+        "monthly_vat_cents": 14700,
+        "monthly_total_cents": 84700
+      }
+    ],
+    "app_name": "TruckControl AI",
+    "sms_ready": false,
+    "trial_days": 10,
+    "payments_enabled": false,
+    "registration_open": false,
+    "prices_are_examples": false
+  },
+  "native_verification": {
+    "verification": "offer_checked_and_rolled_back",
+    "payments_enabled": false,
+    "registration_open": false,
+    "customers_remaining": 0,
+    "subscriptions_remaining": 0,
+    "synthetic_users_remaining": 0
+  },
+  "security_advisors": {
+    "lints": []
+  },
+  "source_commit": "a8ce35c7b2181cc56ec37f29e3e7727e7487dc14",
+  "initial_ci": {
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41300964493",
+    "tests_passed": 293,
+    "original_64_retained": true
+  },
+  "deployment_source_ci": {
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41301206585",
+    "conclusion": "success"
+  },
+  "provider_requests": 0
+}

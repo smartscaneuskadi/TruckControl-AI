@@ -1,0 +1,3 @@
+
+# Preserve original manufacturer artwork bytes.
+public/brands/*.svg -text -whitespace

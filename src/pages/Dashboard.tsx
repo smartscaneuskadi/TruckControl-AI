@@ -29,6 +29,15 @@ import {
 } from "../components/ui";
 import { TruckTable } from "../components/TruckTable";
 import { FleetInstruments } from "../components/FleetInstruments";
+import { FleetBrands } from "../components/VehicleBrand";
+import {
+  FleetWelcome,
+  FleetIllustration,
+  FleetQuickStats,
+  MonthlyGoal,
+  FleetRouteMap,
+  FuelSnapshot,
+} from "../components/DashboardExperience";
 
 export function Dashboard() {
   const { mode } = useCompany();
@@ -90,6 +99,8 @@ export function Dashboard() {
           Registrar ingreso
         </Button>
       </PageHeading>
+      <FleetWelcome />
+      <FleetBrands trucks={snapshot.trucks} />
       <div className="overview-toolbar">
         <div className="section-label">
           <span className="live-dot" />
@@ -125,6 +136,8 @@ export function Dashboard() {
       <div className="metrics-grid">
         <Metric
           label="Ingresos totales"
+          tone="green"
+          series={chart.map((point) => point.incomeCents)}
           value={money(summary.incomeCents)}
           subtitle="Ingresos del periodo"
           icon={ArrowUpRight}
@@ -136,12 +149,16 @@ export function Dashboard() {
         />
         <Metric
           label="Gastos totales"
+          tone="blue"
+          series={chart.map((point) => point.expenseCents)}
           value={money(summary.expenseCents)}
           subtitle={`${money(summary.pendingExpenseCents)} pendientes de pago`}
           icon={ArrowDownLeft}
         />
         <Metric
           label="Beneficio operativo"
+          tone="gold"
+          series={chart.map((point) => point.incomeCents - point.expenseCents)}
           value={money(summary.profitCents)}
           subtitle="Ingresos menos gastos"
           icon={Wallet}
@@ -149,6 +166,14 @@ export function Dashboard() {
         />
         <Metric
           label="Margen de beneficio"
+          tone="purple"
+          series={chart
+            .filter((point) => point.incomeCents > 0)
+            .map(
+              (point) =>
+                ((point.incomeCents - point.expenseCents) / point.incomeCents) *
+                100,
+            )}
           value={percent(summary.margin)}
           subtitle={
             summary.incomeCents
@@ -163,6 +188,12 @@ export function Dashboard() {
         distanceKm={summary.distanceKm}
         period={period}
       />
+      <FleetQuickStats />
+      <div className="experience-grid">
+        <MonthlyGoal />
+        <FleetRouteMap />
+      </div>
+      <FuelSnapshot />
       <div className="dashboard-charts">
         <section className="card financial-chart">
           <div className="card-heading">
@@ -272,6 +303,7 @@ export function Dashboard() {
               </div>
             ))}
           </div>
+          <FleetIllustration />
         </section>
       </div>
       <div className="dashboard-bottom">

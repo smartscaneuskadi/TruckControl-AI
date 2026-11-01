@@ -48,18 +48,28 @@ export interface Catalog {
   registration_open: boolean;
   plans: Plan[];
 }
+export const subscriptionVatBasisPoints = 2100;
+/** Prices are net euro cents; round VAT once before adding it to the base. */
+export function subscriptionPrice(netCents: number) {
+  if (!Number.isSafeInteger(netCents) || netCents < 0 || netCents > 100000000)
+    throw new Error("Precio mensual no válido");
+  const vatCents = Math.floor(
+    (netCents * subscriptionVatBasisPoints + 5000) / 10000,
+  );
+  return { netCents, vatCents, totalCents: netCents + vatCents };
+}
 export const exampleCatalog: Catalog = {
   app_name: "TruckControl AI",
-  trial_days: 30,
-  prices_are_examples: true,
+  trial_days: 10,
+  prices_are_examples: false,
   payments_enabled: false,
   sms_ready: false,
   registration_open: true,
   plans: [
     {
       id: "limited",
-      name: "Inicial",
-      monthly_cents: 1000,
+      name: "Básico",
+      monthly_cents: 30000,
       currency: "EUR",
       max_trucks: 50,
       modules: {
@@ -71,8 +81,8 @@ export const exampleCatalog: Catalog = {
     {
       id: "full",
       name: "Full",
-      published: false,
-      monthly_cents: 90000,
+      published: true,
+      monthly_cents: 70000,
       currency: "EUR",
       max_trucks: 50,
       modules: { ...demoFeatures },
@@ -130,6 +140,9 @@ export interface PaymentRequest {
   user_id: string;
   plan_id: Plan["id"];
   quoted_cents: number;
+  net_cents?: number | null;
+  vat_rate_bps?: number | null;
+  vat_cents?: number | null;
   plan_revision: number;
   currency: string;
   status: string;

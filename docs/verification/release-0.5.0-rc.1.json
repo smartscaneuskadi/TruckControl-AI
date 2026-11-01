@@ -1,0 +1,70 @@
+{
+  "version": "0.5.0-rc.1",
+  "source_commit": "304b63ffb3742eaeacd662995c7483837eb5e11f",
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "version_number": 4,
+  "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_e73d18a1b358819183c2e34b16a2e65a",
+  "deployment_id": "appgdep_6ae72d93048c8191be302c43dbace95f",
+  "deployed_at": "2026-11-01T12:16:35.374323+00:00",
+  "source_ci": {
+    "run": 41305222529,
+    "passed": true,
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41305222529"
+  },
+  "tests": {
+    "unit_sql": 198,
+    "python": 23,
+    "demo_browser": 58,
+    "company_browser": 10,
+    "saas_browser": 30,
+    "candidate_browser": 8,
+    "original_64_retained": true
+  },
+  "public_https": {
+    "origins": [
+      "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "https://truckcontrolai.com",
+      "https://www.truckcontrolai.com"
+    ],
+    "matched_files": 60,
+    "total_files": 60,
+    "tls_verification": true,
+    "stable_demo_unchanged": true
+  },
+  "public_browser_current_version": {
+    "command": "npm run verify:published",
+    "expected_source_commit": "304b63ffb3742eaeacd662995c7483837eb5e11f",
+    "themes": [
+      "light",
+      "cockpit"
+    ],
+    "profiles_per_origin": [
+      "windows",
+      "android"
+    ],
+    "total_profile_flows": 6,
+    "checks_url": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/8/checks",
+    "report_artifact": "public-test-results/verification.json",
+    "source_ci_public_checks_used_previous_v3": true
+  },
+  "visual_profiles": [
+    "Windows Chromium",
+    "Android Chromium",
+    "tablet 820px",
+    "mobile 320px"
+  ],
+  "themes": [
+    "light",
+    "cockpit",
+    "system"
+  ],
+  "local_package_axe_aa_violations": 0,
+  "physical_devices": false,
+  "auth_provider_tests": "synthetic; no real signup",
+  "gps_connected": false,
+  "map_provider_interaction": "local Chromium CA trust prevented live iframe acceptance; provider HTML HTTPS 200",
+  "commercial_registration_open": false,
+  "payments_enabled": false,
+  "stable_demo_version": 6,
+  "archive_gzip_sha256": "8efaa446dbb4022fc30d219997dd5dee04b4d8004e67b8b7c466cf77762a84d7"
+}

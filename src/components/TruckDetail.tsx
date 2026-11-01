@@ -5,7 +5,6 @@ import {
   Gauge,
   MapPin,
   Pencil,
-  Truck as TruckIcon,
   UserRound,
 } from "lucide-react";
 import { useFleet } from "../app/FleetProvider";
@@ -22,6 +21,7 @@ import {
   percent,
 } from "../lib/format";
 import { Badge, Button, Modal } from "./ui";
+import { VehicleBrand } from "./VehicleBrand";
 
 export function TruckDetail({
   truck,
@@ -45,9 +45,7 @@ export function TruckDetail({
       wide
     >
       <div className="truck-detail-hero">
-        <span className="detail-truck-icon">
-          <TruckIcon size={48} strokeWidth={1.5} />
-        </span>
+        <VehicleBrand brand={truck.brand} large />
         <div>
           <span className="eyebrow">VEHÍCULO DE DEMOSTRACIÓN</span>
           <h3>{truck.plate}</h3>

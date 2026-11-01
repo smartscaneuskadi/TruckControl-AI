@@ -1,0 +1,637 @@
+/* Emerald and navy identity with brighter work surfaces and local vehicle badges. */
+:root {
+  color: #eff6fa;
+  background: #102a3b;
+  --ink: #102a3b;
+  --green: #46d6a5;
+  --lime: #b4f5d7;
+  --muted: #b8d0dd;
+  --border: #416477;
+  --panel: #1b3a4e;
+  --panel-raised: #254a60;
+  --text: #eff6fa;
+  --text-muted: #bad0de;
+  --accent-blue: #a1d2ff;
+  --accent-green: #a5f3cf;
+}
+body {
+  background: #102a3b;
+  color: var(--text);
+}
+.app-main {
+  background:
+    radial-gradient(ellipse at 100% 0, #30658070, transparent 900px),
+    radial-gradient(ellipse at 0 30%, #24614d55, transparent 800px), #102a3b;
+}
+.sidebar {
+  background: linear-gradient(172deg, #123e36 0%, #103337 45%, #122b40 100%);
+  border-right-color: #4b817466;
+  box-shadow: 8px 0 32px #061c241f;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: #275e50;
+  border: 1px solid #669d87;
+  color: #d6ffe9;
+}
+.nav-section-label {
+  color: #bad6ce;
+  letter-spacing: 1.4px;
+}
+.nav-link {
+  color: #d0e2e7;
+}
+.nav-link:hover {
+  background: #315b586e;
+}
+.nav-link.active {
+  background: linear-gradient(105deg, #21664f, #23554f);
+  border-color: #5b9c80;
+  color: #edfff4;
+  box-shadow:
+    inset 3px 0 #a7edc4,
+    0 4px 16px #061e2724;
+}
+.workspace-label {
+  background: #204d48;
+  border-color: #487b6f;
+}
+.workspace-icon,
+.profile-avatar {
+  background: #326853;
+  color: #ecfff2;
+  border-color: #6a9e81;
+}
+.sidebar-promo {
+  background: linear-gradient(130deg, #235c48, #224967);
+  border-color: #618c82;
+}
+.profile,
+.sidebar-bottom {
+  border-color: #3f6c6b;
+}
+.topbar {
+  background: #14394ded;
+  border-bottom-color: #5e82945e;
+  box-shadow: 0 6px 28px #06223429;
+}
+.breadcrumb,
+.breadcrumb > svg,
+.demo-pill {
+  color: #c3dae6;
+}
+.global-search-button {
+  background: #20455b;
+  border-color: #517789;
+  color: #d4e5ee;
+}
+.global-search-button kbd {
+  background: #2c556d;
+  color: #e6f4fc;
+  border-color: #6a8c9f;
+}
+.page-heading {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #61849655;
+}
+.page-heading .eyebrow {
+  letter-spacing: 1.7px;
+  color: #b1ead0;
+}
+.page-heading p {
+  font-size: 13px;
+}
+.card {
+  background: linear-gradient(145deg, #204258, #19394c);
+  border-color: #45697b;
+  border-radius: 13px;
+  box-shadow:
+    0 8px 24px #051e2f26,
+    inset 0 1px #daeff409;
+}
+.metric {
+  background: linear-gradient(145deg, #245249, #1e4250);
+  border-color: #558776;
+  border-top-color: #8bdfb7;
+}
+.metric:nth-child(2) {
+  background: linear-gradient(145deg, #285372, #20435c);
+  border-color: #527c98;
+  border-top-color: #9dcdf3;
+}
+.metric:nth-child(4) {
+  background: linear-gradient(145deg, #2b4d70, #203f58);
+  border-color: #587d9b;
+  border-top-color: #9dcdf3;
+}
+.metric.highlight {
+  background: linear-gradient(135deg, #1b6049, #194d43);
+  border-color: #61a184;
+  border-top-color: #b0efce;
+}
+.app-main .metric > strong {
+  color: #f3faff;
+  font-size: clamp(25px, 2.4vw, 36px);
+  letter-spacing: -1.1px;
+}
+.app-main .metric.highlight > strong {
+  color: #d5ffe8;
+}
+.app-main .metric-top,
+.app-main .metric-bottom {
+  color: #c6dce5;
+}
+.metric-icon {
+  background: #315c70;
+  border-color: #6a92a4;
+  color: #d0ecff;
+}
+.metric.highlight .metric-icon {
+  background: #32795b;
+  border-color: #83b497;
+  color: #edfff2;
+}
+.button {
+  border-radius: 9px;
+}
+.button.primary {
+  background: #167456;
+  border-color: #70bda0;
+  color: #f7fffa;
+  box-shadow: 0 4px 14px #062e2929;
+}
+.button.primary:hover {
+  background: #1b8062;
+  border-color: #a3debf;
+}
+.button.secondary {
+  background: #244f6c;
+  border-color: #698fa5;
+  color: #eff8ff;
+}
+.button.secondary:hover {
+  background: #315f7d;
+  border-color: #96bed2;
+}
+.button.ghost {
+  color: #d0e4ef;
+}
+.button.ghost:hover {
+  background: #2a5065;
+}
+:is(button, a, input, select):focus-visible {
+  outline-color: #c0edff;
+  outline-offset: 3px;
+}
+.badge.green {
+  background: #295d4c;
+  border-color: #71a88b;
+  color: #deffe9;
+}
+.badge.blue {
+  background: #2a5274;
+  border-color: #7599bb;
+  color: #e1f2ff;
+}
+.search-field,
+.fleet-select select,
+.period-picker select,
+.list-toolbar select {
+  background: #1d4055;
+  border-color: #688b9e;
+  color: #e0eff8;
+}
+.app-main .positive {
+  color: #bbf6cf;
+}
+.data-table thead,
+.app-main .data-table th {
+  background: #153a50;
+  color: #d4e9f5;
+  border-color: #4b7186;
+}
+.app-main .data-table td {
+  color: #dae7ef;
+  border-color: #41657977;
+}
+.data-table tbody tr:hover {
+  background: #315a70;
+}
+.app-main .data-table td small {
+  color: #b9d2df;
+}
+.table-caption {
+  background: #153b4d;
+  border-color: #55788b;
+  color: #c3dce8;
+}
+.income-bar,
+.legend-income {
+  background: linear-gradient(#8be2b5, #329b7e);
+}
+.expense-bar,
+.legend-expense {
+  background: linear-gradient(#92c9f5, #4e86b5);
+}
+.chart-lines i {
+  border-color: #7395a340;
+}
+.chart-caption {
+  border-color: #5779897d;
+  color: #c2dae6;
+}
+.fleet-status {
+  background: linear-gradient(150deg, #204d47, #1c3e53);
+}
+.donut-track {
+  stroke: #41616e;
+}
+.donut-segment.on_route {
+  stroke: #87dfb0;
+}
+.donut-segment.available {
+  stroke: #8dc5f4;
+}
+.status-color.on_route {
+  background: #87dfb0;
+}
+.status-color.available {
+  background: #8dc5f4;
+}
+.instrument-module {
+  background: linear-gradient(145deg, #23485f, #1a3a4f);
+  border-color: #608395;
+  box-shadow: 0 8px 22px #041f2d26;
+  border-radius: 12px;
+}
+.odometer-module {
+  background: linear-gradient(145deg, #245c49, #1a4247);
+  border-color: #74a08a;
+}
+.clock-module,
+.gauge-module {
+  border-top-color: #a0c7e2;
+}
+.instrument-label {
+  color: #b7e0fb;
+}
+.instrument-label h3 {
+  color: #eff8fc;
+}
+.instrument-footnote {
+  color: #c0d7e4;
+  border-color: #67899866;
+}
+.dial-bezel {
+  fill: #23465a;
+  stroke: #8babbb;
+}
+.dial-face {
+  fill: #17384c;
+  stroke: #577f96;
+}
+.dial-tick {
+  stroke: #8aabbc;
+}
+.dial-tick.major {
+  stroke: #e3f3fc;
+}
+.clock-hour-label {
+  fill: #d4e8f4;
+}
+.clock-readout time {
+  font-size: clamp(18px, 1.6vw, 24px);
+}
+.odometer-digits > span {
+  background: linear-gradient(#164635 46%, #477361 49%, #1b4f3d 53%);
+  border-color: #8fbaa0;
+  color: #effff1;
+  box-shadow: inset 0 2px 5px #052e2b55;
+}
+.gauge-track {
+  stroke: #4d7286;
+}
+.gauge-value {
+  stroke: #a9e6c4;
+}
+.gauge-tick {
+  stroke: #a9c5d6;
+}
+.gauge-tick.major {
+  stroke: #ebf6fc;
+}
+.gauge-needle {
+  stroke: #eefbff;
+}
+.insights-card,
+.assistant-banner {
+  background: linear-gradient(135deg, #245849, #20465f);
+}
+dialog.modal {
+  background: #19394d;
+  border-color: #80a5b8;
+}
+.field input,
+.field select,
+.field textarea {
+  background: #123348;
+  border-color: #7292a6;
+  color: #f0f8fc;
+}
+.truck-detail-hero {
+  background: linear-gradient(115deg, #28664d, #285776);
+  border-color: #82ad9a;
+}
+
+/* Manufacturer badges are served from this application and cached with its shell. */
+.vehicle-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+  border-radius: 11px;
+  background: #f1f5f7;
+  border: 1px solid #d5e2e8;
+  box-shadow: 0 3px 9px #061f2c1c;
+}
+.vehicle-brand img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.vehicle-brand--mercedes-benz {
+  background: linear-gradient(145deg, #31556b, #17374c);
+  border-color: #85a5b8;
+  padding: 9px;
+}
+.vehicle-brand--man {
+  padding: 7px 4px;
+  overflow: hidden;
+}
+.vehicle-brand--man img {
+  transform: scale(1.7);
+}
+.vehicle-brand--other {
+  background: #305b71;
+  border-color: #7393a5;
+  color: #d2ebfb;
+}
+.vehicle-cell .vehicle-brand {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  padding: 4px;
+}
+.vehicle-cell .vehicle-brand--mercedes-benz {
+  padding: 7px;
+}
+.vehicle-brand--large {
+  width: 76px;
+  height: 76px;
+  border-radius: 16px;
+  padding: 9px;
+}
+.vehicle-brand--large.vehicle-brand--mercedes-benz {
+  padding: 15px;
+}
+.fleet-manufacturers {
+  display: grid;
+  grid-template-columns: 205px minmax(0, 1fr);
+  align-items: center;
+  gap: 22px;
+  margin: 0 0 24px;
+  padding: 18px 20px;
+  border: 1px solid #6f9b9066;
+  border-radius: 13px;
+  background: linear-gradient(105deg, #1f5146, #1b3e54 62%, #244b67);
+  box-shadow:
+    inset 0 1px #dbfff20d,
+    0 8px 25px #051f3022;
+}
+.manufacturers-intro .eyebrow {
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  color: #b9f0d2;
+}
+.manufacturers-intro h2 {
+  font-size: 17px;
+  margin: 6px 0;
+  letter-spacing: -0.35px;
+}
+.app-main .manufacturers-intro p {
+  margin: 0;
+  font-size: 10px;
+  color: #c5dce3;
+  line-height: 1.5;
+}
+.manufacturer-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.manufacturer-tile {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  background: #15364977;
+  border: 1px solid #8bb1b133;
+  border-radius: 11px;
+}
+.manufacturer-tile > div {
+  min-width: 0;
+}
+.manufacturer-tile strong {
+  display: block;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.manufacturer-tile span:not(.vehicle-brand) {
+  display: block;
+  font-size: 10px;
+  color: #c0d7e4;
+  margin-top: 3px;
+}
+
+/* The public entry uses the same forest green and navy palette as the workspace. */
+.public-portal {
+  background: radial-gradient(
+    ellipse at top right,
+    #2a5b6e55,
+    transparent 800px
+  );
+}
+.portal-header {
+  border-bottom-color: #799a9d55;
+}
+.portal-header nav > a,
+.portal-hero p {
+  color: #ccdee7;
+}
+.portal-hero h1 span {
+  color: #b0f0ce;
+}
+.fleet-hero-card {
+  background:
+    radial-gradient(ellipse at top, #397e5d55, transparent 70%),
+    linear-gradient(140deg, #205448, #1a3c55);
+  border-color: #79ab9a;
+  box-shadow: 0 20px 60px #041e302e;
+}
+.hero-gauge {
+  color: #b5edcd;
+}
+.hero-gauge > svg {
+  opacity: 0.8;
+}
+.hero-route {
+  border-color: #719b9766;
+}
+.hero-odometer > span {
+  background: linear-gradient(#1b4d3b 46%, #5c8871 49%, #245b46 53%);
+  color: #f0fff3;
+  border-color: #8bb89a;
+}
+.hero-manufacturers {
+  margin-top: 22px;
+  padding-top: 17px;
+  border-top: 1px solid #8ab2ab55;
+}
+.hero-manufacturers > span {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 1.7px;
+  color: #c7e6dc;
+  margin-bottom: 12px;
+}
+.hero-manufacturers > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.hero-manufacturers > div > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.hero-manufacturers .vehicle-brand {
+  width: 33px;
+  height: 33px;
+  border-radius: 8px;
+  padding: 4px;
+}
+.hero-manufacturers .vehicle-brand--mercedes-benz {
+  padding: 6px;
+}
+.hero-manufacturers > div > div > span:last-child {
+  font-size: 9px;
+  color: #e2f1f6;
+}
+.candidate-notice {
+  background: linear-gradient(115deg, #264e49, #254860);
+  border-color: #8aab9a;
+}
+.public-portal .candidate-notice p {
+  color: #dfedea;
+}
+.public-portal .plan-card {
+  background: linear-gradient(150deg, #244d68, #1d4054);
+  border-color: #7699ad;
+}
+.public-portal .plan-card.featured {
+  background: linear-gradient(150deg, #25634e, #214c50);
+  border-color: #a2c5a9;
+}
+.public-portal .plan-price,
+.public-portal .plan-total {
+  color: #edfff6;
+}
+.public-portal .plan-tax,
+.public-portal .plan-card p,
+.public-portal .plan-card small {
+  color: #d0e3eb;
+}
+.public-portal .plan-card .plan-total {
+  color: #dcffe9;
+  font-weight: 700;
+}
+.public-portal .plan-features {
+  color: #dfedf4;
+}
+.public-portal .portal-notice {
+  color: #d5e8f0;
+}
+
+@media (max-width: 1180px) {
+  .fleet-manufacturers {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .manufacturers-intro p {
+    font-size: 11px;
+  }
+  .manufacturers-intro h2 {
+    display: inline;
+    margin-right: 10px;
+  }
+  .manufacturers-intro .eyebrow {
+    display: block;
+    margin-bottom: 5px;
+  }
+}
+@media (max-width: 640px) {
+  .fleet-manufacturers {
+    padding: 15px 12px;
+    margin-bottom: 20px;
+    gap: 13px;
+  }
+  .manufacturer-tiles {
+    gap: 7px;
+  }
+  .manufacturer-tile {
+    flex-direction: column;
+    gap: 7px;
+    padding: 11px 4px;
+    text-align: center;
+  }
+  .manufacturer-tile strong {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  .manufacturer-tile span:not(.vehicle-brand) {
+    font-size: 10px;
+  }
+  .manufacturer-tile .vehicle-brand {
+    width: 43px;
+    height: 43px;
+  }
+  .page-heading {
+    padding-bottom: 15px;
+  }
+  .page-heading h1 {
+    letter-spacing: -0.7px;
+  }
+  .hero-manufacturers > div > div {
+    flex-direction: column;
+    gap: 5px;
+  }
+  .hero-manufacturers .vehicle-brand {
+    width: 39px;
+    height: 39px;
+  }
+  .hero-manufacturers > div > div > span:last-child {
+    font-size: 10px;
+  }
+  .app-main .metric > strong {
+    font-size: 27px;
+  }
+}

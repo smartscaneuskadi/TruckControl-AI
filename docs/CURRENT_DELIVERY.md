@@ -1,31 +1,33 @@
-# TruckControl AI 0.4.0-rc.1 — candidata publicada
+# TruckControl AI 0.5.0-rc.1 — dos temas profesionales
 
-**Candidata pública en el dominio definitivo:** https://truckcontrolai.com. También responde https://www.truckcontrolai.com y se conserva https://truckcontrol-ai-candidata.earlymug513.chatgpt.site. Pulsa **Abrir demostración**. Su versión alojada sigue siendo la 1 y utiliza exclusivamente datos ficticios; las cuentas comerciales y los cobros están cerrados.
+La nueva versión permite elegir **Fleet Light**, **Fleet Cockpit** o seguir el dispositivo desde **Configuración → Apariencia**. También se abre desde el botón de sol/luna de la cabecera y de los formularios. Incluye vistas previas, reducción de movimiento, fotografías locales, indicadores financieros reales, objetivos personales y un mapa de referencia sin posiciones GPS inventadas. [Guía de apariencia](THEMES.md).
 
-**Demo anterior conservada:** https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site, versión 6, sin cambios en su índice ni en su alojamiento. Las direcciones tienen almacenamiento local independiente. La entrega anterior se conserva en `history/20261031/CURRENT_DELIVERY-0.3.0.md`.
+**Publicada y accesible:** https://truckcontrolai.com, https://www.truckcontrolai.com y https://truckcontrol-ai-candidata.earlymug513.chatgpt.site. Candidata **4**, fuente `304b63ffb3742eaeacd662995c7483837eb5e11f`, desplegada el 01/11/2026 a las 12:16 UTC después de aprobar el CI de esa fuente exacta. Las tres direcciones sirven los veinte archivos del paquete verificado: sesenta coincidencias SHA-256 por HTTPS. Sigue utilizando datos ficticios, con cuentas comerciales y cobros cerrados. [Identidad y versión](deployment/candidate-hosting.json).
 
-## Código y publicación
+La demo estable anterior se conserva sin cambios: https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site, versión 6. Las versiones guardadas de la candidata permiten volver atrás. La entrega anterior se conserva en [el historial](history/20261101/CURRENT_DELIVERY-before-themes.md).
 
-Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI. Trabajo de aplicación en [PR #5](https://github.com/smartscaneuskadi/TruckControl-AI/pull/5), rama `feat/commercial-release-candidate`. La fuente publicada está en `deploy/commercial-candidate`, commit `e7a43948bff9bf3b3c5c37c890324ce6dc94852c`; solo cambia la identidad de alojamiento respecto al código revisado.
+## Código y verificación
 
-La candidata está separada de la demo estable. El paquete publicado coincide con el commit limpio e incluye procedencia en `release.json`. Los ocho recursos comprobados en cada dominio nuevo (dieciséis en total) coinciden con el paquete: índice, JavaScript, CSS, service worker, manifiesto, metadatos e iconos. Para resolver el 404 inicial del enrutador se republicó la misma versión guardada 1, sin cambiar fuente ni audiencia; despliegue `appgdep_6ae7123d2f2c8191b0a9b4c047f60837`. Ambos hostnames y certificados están ACTIVE. La compilación candidata rechaza incluir conexión Supabase y sus formularios de credenciales permanecen cerrados.
+Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI. Revisión en [PR #8](https://github.com/smartscaneuskadi/TruckControl-AI/pull/8), rama `feat/pricing-ten-day-trial`. El checkout de despliegue conserva la identidad separada de la candidata en `deploy/pricing-candidate-20261101`. La rama principal mantiene el manifiesto reservado de la demo estable.
 
-## Verificación
+**327 comprobaciones del código aprobadas en el CI de la fuente publicada:** 198 unitarias/SQL, 23 Python y 106 recorridos de navegador (58 demo, 10 empresas, 30 SaaS y 8 candidata). Las 64 pruebas iniciales permanecen intactas, mediante once archivos con hashes verificados. [CI de la fuente publicada](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41305222529).
 
-**271 pruebas aprobadas en el CI del código publicado:** 180 unitarias/SQL, 7 de correo y 84 recorridos de navegador (42 demo, 8 empresas, 28 SaaS y 6 candidata). Se conservan las 64 originales y sus hashes. [CI de despliegue](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41242229327), [CI del PR](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41242180084).
+Ese CI también aprobó seis perfiles de la candidata anterior por HTTPS. El CI del inventario de publicación comprueba ambos temas de la versión 4 en los tres orígenes; su resultado se consulta en los checks de PR #8 y en el artefacto `public-test-results/verification.json`. El paquete nuevo ya pasó ocho revisiones locales de tema/perfil —Windows, Android, tablet y 320 px—, sin incidencias Axe AA ni desbordamientos.
 
-Se probaron consentimiento ligado a versión, cancelación, impagos, duplicados, aislamiento, recuperación local y sincronización, accesibilidad y arranque sin red. Los perfiles Windows/Android son emulaciones Chromium, no dispositivos físicos. La URL pública también ha pasado los perfiles de Windows y Android en GitHub, con validación TLS activa, comprobando procedencia, registro cerrado, planes y entrada a la demo. [CI de la URL real](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41242941858).
+Las pruebas de navegador usan perfiles Chromium Android/Windows. No equivalen a pruebas físicas ni a verificación de proveedores reales. La sincronización del tema con el perfil está implementada y ensayada con Auth simulado; en la candidata anónima se guarda solo en ese navegador.
 
-Supabase independiente `truckcontrol-ai` (`kkkemaycedexymrpaqtp`, organización `fixpilot-dev`): **39 migraciones**, cuatro funciones Edge y almacenamiento privado. La nueva `truckcontrol-subscriptions` está ACTIVE v1. PostgreSQL real pasó el ensayo de facturación y el de capacidad: 50 camiones permitidos, rechazo del 51 y aislamiento de 2.100 apuntes entre dos empresas. Se revirtieron todos los registros sintéticos; no se afirma un SLA de rendimiento a partir de ese ensayo. La interfaz pública rechaza autenticación, origen, método y firma inválidos. El asesor de seguridad no informa incidencias. Registro y pagos siguen apagados. FIXPilot permanece intacto.
+## Supabase y oferta vigente
 
-El mantenimiento de DNS añade dieciséis pruebas de PKCE, permisos, conservación y concurrencia: pasan las **23 pruebas Python** y la comprobación de los once archivos originales. El CI de [PR #7](https://github.com/smartscaneuskadi/TruckControl-AI/pull/7) comprueba los tres orígenes públicos en perfiles Windows/Android. [Operación y recuperación del dominio](DOMAIN_DNS_OPERATIONS.md).
+Proyecto independiente `truckcontrol-ai`, referencia `kkkemaycedexymrpaqtp`, organización `fixpilot-dev`. Hay **40 migraciones remotas**; la oferta nueva se aplicó una sola vez y se verificó mediante transacciones sintéticas revertidas. La apariencia utiliza metadatos propios de Auth y no necesita una migración nueva ni cambios de RLS. FIXPilot no se modifica.
 
-## Apertura comercial pendiente
+Prueba Full gratuita de **10 días**. **Básico 300 €/mes + IVA 21 % = 363 €**. **Full 700 €/mes + IVA 21 % = 847 €**. Los períodos y presupuestos anteriores se conservan. Las altas reales y los cobros siguen cerrados. La candidata se compila sin URL ni credencial Supabase.
 
-Esta publicación es una candidata de demostración; **todavía no es el lanzamiento 1.0 para empresas reales**. Faltan correo real y administrador verificado, autorización y configuración de proveedores, presupuesto de IA, condiciones/fiscalidad, recuperación comercial y aceptación física cuando haya dispositivos disponibles. El envío real de correo y la pasarela no se declaran verificados con pruebas simuladas. El agente no ha ejecutado nuevos cargos.
+## Probar e instalar
 
-**Dominio y DNS/HTTPS configurados directamente mediante el acceso oficial de Porkbun.** El plan conjunto de veinte registros está aplicado y comprobado; se editaron cuatro, añadieron dieciséis y conservaron los otros siete, sin borrar ninguno. [Informe de activación](deployment/dns-activation-20261101.json). La cuenta concedió solo DNS/lectura; no se han hecho compras.
+Abre https://truckcontrolai.com y pulsa **Abrir demostración**. En Configuración elige Apariencia y aplica el tema. Si hay una actualización PWA pendiente, guarda antes el formulario y pulsa Actualizar. [Instalación Android y Windows](INSTALLATION.md).
 
-**Migadu Micro anual pagado y dominio activo según el titular.** Los CNAME publicados coinciden con el export original, pero sus tres destinos DKIM bajo migadu.com fallan validación DNSSEC en Google y Cloudflare. [Diagnóstico](deployment/migadu-dkim-dnssec-20261101.json) y [solicitud para soporte](deployment/migadu-dnssec-support.txt). Buzones, SMTP, envío y recepción reales no se han verificado. No repetir pago, alta, autorización de Porkbun ni petición de registros. Brevo gratuito sigue propuesto para correo automático. La selección de OpenAI continúa pendiente, sin clave ni consumo autorizado. Continuidad: [DOMAIN_AND_MAIL.md](DOMAIN_AND_MAIL.md).
+## Límites para el lanzamiento comercial
 
-[Instalación Android y Windows](INSTALLATION.md) · [Detalle de la candidata](RELEASE_0_4_RC.md) · [Lanzamiento comercial](COMMERCIAL_LAUNCH.md) · [Registro persistente](PROGRESS.md).
+Faltan entrega SMTP/Migadu comprobada, confirmación y recuperación reales, alta verificada del administrador, aceptación con dos empresas reales autorizadas, recuperación comercial, información legal y aceptación en dispositivos físicos disponibles. El titular ya abrió el ticket Migadu sobre DKIM/DNSSEC; no se repite la solicitud.
+
+Gmail OAuth, modelos IA y pagos requieren sus propias conexiones, pruebas y autorizaciones. Permanecen desactivados. El mapa es cartografía de referencia cargada voluntariamente y avisa de que no hay fuente GPS. No se activan gastos, se exponen credenciales ni se usan datos empresariales reales por publicar esta candidata.

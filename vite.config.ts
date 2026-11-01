@@ -9,6 +9,13 @@ if (!["demo", "candidate", "production"].includes(releaseChannel))
   throw new Error("Canal de publicación no reconocido.");
 if (
   releaseChannel === "candidate" &&
+  process.env.VITE_COMMERCIAL_MODE !== "true"
+)
+  throw new Error(
+    "La candidata debe mostrar el portal de planes. Usa npm run build:candidate.",
+  );
+if (
+  releaseChannel === "candidate" &&
   (process.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_PUBLISHABLE_KEY)
 )
   throw new Error(
@@ -86,7 +93,7 @@ export default defineConfig({
     },
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["favicon.svg", "icons/*.png"],
+      includeAssets: ["favicon.svg", "icons/*.png", "brands/*", "images/*"],
       manifest: {
         id: publicBase,
         name: "TruckControl AI",
@@ -99,8 +106,8 @@ export default defineConfig({
         start_url: publicBase,
         scope: publicBase,
         display: "standalone",
-        theme_color: "#080e16",
-        background_color: "#080e16",
+        theme_color: "#103b38",
+        background_color: "#102a3b",
         icons: [
           {
             src: `${publicBase}icons/icon-192.png`,
@@ -125,7 +132,9 @@ export default defineConfig({
       workbox: {
         navigateFallback: `${publicBase}index.html`,
         cleanupOutdatedCaches: true,
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,webmanifest,woff2}"],
+        globPatterns: [
+          "**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,webmanifest,woff2}",
+        ],
       },
     }),
   ],

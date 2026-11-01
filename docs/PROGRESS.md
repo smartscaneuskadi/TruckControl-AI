@@ -142,3 +142,35 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - El titular comunica Migadu activo. Los CNAME coinciden con el export; los TXT de sus destinos bajo migadu.com devuelven SERVFAIL/DNSSEC en Google y Cloudflare (EDE 6, wildcard proof). Diagnóstico y solicitud de soporte preparados; no se desactiva DNSSEC ni se declara entrega real. Buzones y SMTP todavía pendientes.
 - Dieciséis pruebas nuevas del mantenimiento DNS/PKCE pasan junto a las siete de correo (23 Python). Los hashes de los once archivos de las 64 pruebas iniciales siguen intactos. La comprobación de URL pública se amplía a los tres orígenes en Windows/Android, con TLS activo; pendiente del CI del commit final.
 - No se han hecho compras, enviado mensajes, abierto registros ni modificado Supabase/FIXPilot. La URL definitiva sirve la candidata ficticia, no un lanzamiento comercial 1.0 abierto.
+
+# 2026-11-01 — nueva oferta comercial aprobada
+
+- El propietario fija diez días gratuitos Full, Básico 300 €/mes y Full 700 €/mes, más IVA del 21 %: 363 € y 847 € totales. Ambos planes visibles; se conservan identificadores internos y capacidad inicial de 50 camiones. Oferta detallada en COMMERCIAL_OFFER.md.
+- Portal, registro, administración y solicitudes usan los importes nuevos y un desglose de IVA en céntimos. La migración nueva cambia solo las altas futuras; conserva pruebas históricas de treinta días y presupuestos anteriores sin inventar su tratamiento fiscal. Registro comercial y pagos siguen cerrados.
+- Se conservan las 64 pruebas originales. Se añaden comprobaciones de redondeo de IVA, presupuestos idempotentes, rechazo de importes inconsistentes y conservación de contratos. Publicación pendiente de CI y validación.
+- La captura 303201 confirma el ticket Migadu abierto por el titular; aún sin respuesta del proveedor en la captura. No volver a pedir que lo abra. El último diagnóstico público mantiene SERVFAIL/DNSSEC en los tres destinos DKIM; conexión de Migadu y SMTP siguen pendientes.
+
+# 2026-11-01 — identidad verde y azul más luminosa
+
+- El propietario solicita más verde oscuro, azul, luminosidad y los logotipos de Scania, Mercedes-Benz y MAN. Se añaden activos oficiales locales, un resumen de fabricantes y distintivos en tablas/fichas, sin cambiar datos ni permisos.
+- Paleta forestal y marina, paneles más luminosos, mejores bordes/contraste y relojes/odómetros conservados. Vista previa real en escritorio y perfil Android: cero errores JavaScript, logos cargados, sin desbordamiento horizontal y cero incidencias Axe AA en portal y panel.
+- Se detecta que el paquete anterior abría directamente la demo. Se conserva la candidata 1 mientras se verifica la corrección: build:candidate fija la entrada de planes y Vite impide crear candidatas sin ella. No se declara corregido un paquete inmutable solo por reenviarlo con el mismo commit. La publicación nueva utilizará una fuente distinta y comprobada.
+- La oferta de diez días, 300 € / 700 € más IVA del 21 % ya está aplicada una sola vez en Supabase (40 migraciones), con desglose y ensayos reales transaccionales revertidos. Altas y cobros permanecen cerrados. La demo estable v6 y los paquetes anteriores se conservan.
+
+
+# 2026-11-01 — dos temas profesionales y preferencia por usuario
+
+- Fleet Light y Fleet Cockpit reutilizan los componentes existentes y una capa central de variables. Se añade modo del dispositivo, vistas previas y opción de reducir o desactivar movimiento. El selector puede abrirse sobre un formulario sin perder el borrador; los diálogos tienen identificadores únicos.
+- Preferencias cosméticas validadas y separadas por cuenta, demo y dispositivo. Auth actualiza únicamente el campo propio `truckcontrol_appearance`, revalidando la identidad; las preferencias pendientes se sincronizan al reconectar. El perfil se refresca al enfocar la app. No se usan metadatos de usuario para conceder permisos.
+- Cabecera alpina, fotografías optimizadas con procedencia, tarjetas con series económicas existentes, estadísticas operativas, objetivo personal con progreso calculado y repostajes reales. El mapa OpenStreetMap se carga voluntariamente, sin enviar datos de flota; se declara que no hay fuente GPS conectada.
+- Pasan 198 unitarias/SQL, 23 Python, 56 recorridos de la demo, 10 de empresas y 8 de candidata; administración ampliada y revisión de las zonas inferiores en curso. Se conservan los once archivos de las 64 pruebas iniciales. Los fallos de contraste detectados en el tema claro y el desbordamiento móvil se corrigen antes de publicar.
+- La candidata pública actual es la versión 3, fuente 736ef9e3, con CI 41302653156 aprobado y los nuevos precios. La versión de dos temas aún requiere CI de su fuente exacta y un paquete guardado nuevo. La demo estable v6 permanece reservada e intacta. Copia del trabajo en los artefactos de esta entrega.
+
+
+# 2026-11-01 — candidata 4 publicada: Fleet Light y Fleet Cockpit
+
+- Fuente exacta `304b63ffb3742eaeacd662995c7483837eb5e11f`, versión 0.5.0-rc.1, CI 41305222529 aprobado: 198 unitarias/SQL, 23 Python, 58 demo, 10 empresas, 30 SaaS y 8 candidata. El CI también valida seis perfiles de la candidata anterior; la revisión pública de ambos temas de la v4 se activa con su inventario nuevo.
+- Las 19 pantallas, pestañas y formularios de administración, portal, perfiles entre Android/Windows, modo del sistema, movimiento reducido, conservación de borradores y funcionamiento offline pasan. Revisión del paquete en cuatro tamaños y dos temas: cero incidencias Axe AA y cero desbordamientos. Se corrigió el caso de 320 px antes de guardarlo como versión 4.
+- Despliegue `appgdep_6ae72d93048c8191be302c43dbace95f` completado a las 12:16:35 UTC. Sesenta archivos HTTPS coinciden con el paquete entre los tres orígenes; índice de la demo estable v6 idéntico al anterior. Fuentes, ZIP, bundle, archivo publicado y capturas quedan conservados.
+- El iframe de OpenStreetMap se consulta solo por decisión del usuario. Su HTML responde 200 con TLS verificado; la prueba interactiva local quedó limitada por el almacén de certificados de Chromium del entorno (ERR_CERT_AUTHORITY_INVALID). No se desactiva TLS ni se declara GPS activo. Los datos y las pruebas de la aplicación permanecen disponibles sin ese proveedor.
+- No se modifican datos reales, permisos ni proyectos Supabase por el diseño. No se abre registro, SMTP, Gmail, IA remota ni cobros. La aprobación comercial 1.0 sigue dependiendo de los controles documentados.
