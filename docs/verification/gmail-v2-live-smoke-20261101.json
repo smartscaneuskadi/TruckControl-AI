@@ -1,0 +1,61 @@
+{
+  "project_ref": "kkkemaycedexymrpaqtp",
+  "function_version": 2,
+  "real_google_requests": false,
+  "results": [
+    {
+      "case": "canonical-preflight",
+      "status": 204,
+      "expected": 204,
+      "passed": true,
+      "allow_origin": "https://truckcontrolai.com",
+      "location": null,
+      "cache_control": "no-store"
+    },
+    {
+      "case": "www-preflight",
+      "status": 204,
+      "expected": 204,
+      "passed": true,
+      "allow_origin": "https://www.truckcontrolai.com",
+      "location": null,
+      "cache_control": "no-store"
+    },
+    {
+      "case": "untrusted-origin",
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "allow_origin": "https://truckcontrolai.com",
+      "location": null,
+      "cache_control": "no-store"
+    },
+    {
+      "case": "anonymous-action",
+      "status": 401,
+      "expected": 401,
+      "passed": true,
+      "allow_origin": "https://truckcontrolai.com",
+      "location": null,
+      "cache_control": "no-store"
+    },
+    {
+      "case": "invalid-callback",
+      "status": 400,
+      "expected": 400,
+      "passed": true,
+      "allow_origin": "https://truckcontrolai.com",
+      "location": null,
+      "cache_control": "no-store"
+    },
+    {
+      "case": "legacy-get",
+      "status": 303,
+      "expected": 303,
+      "passed": true,
+      "allow_origin": "https://truckcontrolai.com",
+      "location": "https://truckcontrolai.com/#/invoices?gmail_error=invalid_state",
+      "cache_control": "no-store"
+    }
+  ]
+}

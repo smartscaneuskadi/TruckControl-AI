@@ -35,6 +35,20 @@
       "name": "truckcontrol_commercial_offer_ten_days_vat",
       "sha256": "06a096bf714f3e84319718c35ee06fca00f58f2b0adb9fb69e082d291e7c2f72",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101125037_gmail_oauth_return_origins.sql",
+      "version": "20261101140631",
+      "name": "gmail_oauth_return_origins",
+      "sha256": "1b715aa8bbd100c2c83d403db695074ae5739e2f92fc767855069f7bf028e9a5",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101125406_gmail_provider_vault_config.sql",
+      "version": "20261101140639",
+      "name": "gmail_provider_vault_config",
+      "sha256": "e60e50b07522372e3fa88eb78a70de975af9507f03a078077548190b7e0850b2",
+      "already_applied": true
     }
   ]
 }

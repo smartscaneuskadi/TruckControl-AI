@@ -198,3 +198,41 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - El CI público 41312325569 falla al localizar el callback con PWA activa. Diagnóstico HTTPS: el alojamiento redirige gmail-callback.html a gmail-callback conservando parámetros; la página existe y sus hashes son correctos, pero el fallback de Workbox solo excluía .html. La prueba local anterior no reproducía esa normalización.
 - Se restaura la candidata guardada 4 mediante appgdep_6ae7431bd3308191a62308c84320b52f a las 13:48:22 UTC, manteniendo todos los paquetes y Git. No se altera la demo estable v6 ni Supabase. No se declara correcta la candidata 5 por sus hashes si el recorrido funcional falla.
 - Corrección rc.2: excluir ambas rutas, usar URI Google canónica sin extensión y añadir una prueba de la redirección 308 con el service worker activo. Nueva publicación pendiente de controles del código y del recorrido público.
+
+# 2026-11-01 — candidata 6 corregida publicada
+
+- El titular confirma también el cliente web Google creado. Proyecto 468881730124, Gmail API y consentimiento Externo/Pruebas completados; no repetirlos. Valores seguros y aprobación separada de las dos migraciones/backend todavía pendientes.
+- CI de la fuente exacta c80add77165d6953cd4a9cc43066c435874e7f4f aprobado, run 41313197695: 229 unitarias/SQL, 23 Python, 58 demo, 22 empresas, 30 SaaS y 12 candidata, más seis recorridos de la v4 restaurada (380 comprobaciones). La prueba nueva reproduce el 308 de .html a la ruta canónica con PWA instalada.
+- Candidata guardada 6, versión 0.5.1-rc.2, desplegada por appgdep_6ae744aeaf4c81918fcd5a1b0b52c9cb a las 13:55:11 UTC. 69/69 archivos HTTPS coinciden con TLS verificado y la demo estable v6 conserva su hash. La revisión pública de este inventario vuelve a exigir el callback canónico con PWA activa, sin saltarse la comprobación que detectó el fallo anterior.
+- No hay OAuth real comprobado, secretos de Google recibidos en chat, cambios Supabase de esta fase, cobros o consumo IA activados. La recuperación y el fallo v5 se conservan en el historial e informes; no se declara v5 funcional por coincidir sus archivos.
+
+# 2026-11-01 — backend Gmail v2 y Vault aplicados
+
+- El propietario indica «Sigue» tras solicitar la autorización concreta de las dos migraciones y el backend revisado. Se comprueba de nuevo inventario, tablas y seguridad; se aplican únicamente esas migraciones por apply_migration. Versiones remotas 20261101140631 y 20261101140639, ahora 42 en total. No se repite el borrador rechazado ni se desactiva control alguno.
+- AES de 32 bytes generado dentro de Vault, sin mostrarlo. Configuración accesible solo por service_role, función pública invoker y helper definer privado; anon/authenticated no pueden ejecutarlas. RLS activo en estados, pendientes, conexiones y tokens. Dos campos Google preparados con pending para entrada directa del titular.
+- company-gmail ACTIVE v2, hash 66667a913adbf7661a81bcbc0cc3573d9812682993838ddaa7f1163b1395d6e8. Cuatro archivos desplegados coinciden exactamente con el código revisado. Preflight apex/www 204 con origen correcto, origen ajeno 403, acción anónima 401, callback inválido 400, GET sin estado 303 al dominio propio; todos con no-store.
+- SQL real con dos empresas ficticias: anon/authenticated sin configuración, RPC interno solo servidor, estado ligado a usuario/empresa/origen, repetición y origen ajeno rechazados, propietario de otra empresa y consulta denegados, suspensión invalida el estado. Rollback confirmado: cero usuarios/empresas sintéticos, enforce_access=true y altas/cobros cerrados. Asesor de seguridad sin incidencias.
+- No se reciben claves Google por chat ni se realizan llamadas Gmail/OpenAI reales. Falta que el titular complete únicamente los dos valores Google en Vault y la prueba OAuth real con cuentas verificadas. La candidata 6 y demo estable permanecen sin cambios; las 64 pruebas originales se conservan. IA, pagos y alta pública siguen cerrados.
+
+# 2026-11-01 — inspección de Google y acceso privado a Vault
+
+- TinyFish disponible. El titular autoriza hasta 1 USD del saldo existente para el navegador, sin recargas ni suscripciones, y confirma guardados los accesos privados de Google y Supabase.
+- La inspección directa accede a TruckControlAI `468881730124`, pero encuentra «No OAuth clients to display». Sustituye la confirmación previa de cliente web creado. No se crea un duplicado: el siguiente paso será verificar de nuevo y crear un solo cliente web cuando Vault sea accesible.
+- La segunda tarea se detiene en la pantalla de acceso de Supabase con hCaptcha. No se eluden controles, crean clientes ni actualizan secretos. Se ofrece reabrir el acceso privado para el titular, sin solicitar contraseñas o claves por chat.
+- Comprobación SQL posterior: los dos valores Google siguen iguales y el ID es inválido; AES conserva su fecha, anon/authenticated no pueden leer configuración, service_role sí. Cuarenta y dos migraciones, cero usuarios Auth y cero conexiones Gmail; asesores de seguridad vacíos. [Informe](verification/google-oauth-provider-inspection-20261101.json).
+- Dos tareas finalizadas, catorce pasos en total; no se acredita un OAuth real ni se cambia la publicación. IA, pagos y alta pública permanecen cerrados.
+
+# 2026-11-01 — perfil exclusivo y asistente Google
+
+- El titular confirma haber visto el proyecto y la lista de secretos antes de guardar. El perfil anterior sigue sin restaurar Supabase; se prueba un único perfil exclusivo, que también vuelve al acceso con hCaptcha. Se detienen los reintentos sin eludir el control ni pedir credenciales por chat.
+- La tarea Google independiente informa de identidad de aplicación «TruckControl AI Gmail», público externo y usuario de prueba preparados, pero termina por límite antes de crear el cliente web. El indicador final de modo Pruebas no confirma su descripción narrativa; verificarlo al retomar. No se promueve a producción ni se declara el cliente creado.
+- Cincuenta pasos acumulados, 445 segundos de tareas y 0,80 USD en pasos. Automatización pausada; solicitud de ampliar de 1 a 2 USD acumulados todavía pendiente. Sin recargas, suscripciones, IA ni cobros.
+- SQL posterior confirma ID Google inválido y ambos campos iguales, AES intacto, configuración inaccesible a anon/authenticated, 42 migraciones, cero usuarios Auth y cero conexiones Gmail. La candidata, demo y FIXPilot no cambian. [Punto de continuación](verification/gmail-provider-setup-checkpoint-20261101.json).
+
+# 2026-11-01 — correo de proveedores generales, 0.5.2-rc.1
+
+- El titular pide seguir con tareas independientes y admitir correo general. Se añaden importación EML/PDF/imágenes y un receptor de reenvíos firmado, con dirección por empresa; Outlook, Gmail o un dominio propio pueden aportar documentos sin OAuth. No se presentan IMAP, Microsoft OAuth o recepción real como activados.
+- La bandeja conserva Gmail, el permiso histórico y los cálculos financieros. Los importes de las importaciones nuevas quedan vacíos y pendientes de revisión. No se activa IA ni se contabiliza un correo por recibirlo. El ejemplo ficticio permite probar la importación en la candidata sin datos empresariales.
+- Migración CLI local `20261101172906_company_mail_ingestion.sql`: procedencia, buzones, recibos, RLS, RPC exclusivo del servidor, permisos por rol/empresa, cuota, reserva y repetición. No se ha aplicado todavía en este punto; el remoto mantiene 42 migraciones. Función nueva `company-mail` pendiente de despliegue revisado, sin sustituir Gmail v2.
+- Pasan 256 pruebas unitarias/SQL, incluidas 27 nuevas; las 64 originales conservan los hashes de once archivos. Pasan 23 pruebas Python, compilación Deno y auditoría de dependencias de producción con cero vulnerabilidades. Pasan además 64 recorridos demo, 22 de empresas, 30 SaaS y 14 de candidata en Android/Windows; los dos nuevos comprueban importación ficticia sin red y sin contactar proveedores. La publicación nueva sigue pendiente. Se corrige un desbordamiento de los botones de previsualización en Android antes de publicar.
+- Se prepara la [prueba SQL remota con rollback](verification/company-mail-rollback.sql) sin desactivar licencias, RLS, registro o pagos y sin llamadas a correo/IA. [Contrato y guía](GENERAL_EMAIL.md). No se consumen más pasos de TinyFish ni se contratan servicios.

@@ -1,0 +1,70 @@
+{
+  "checked_at": "2026-11-01T17:12:19.791754+00:00",
+  "google_project_number": "468881730124",
+  "supabase_ref": "kkkemaycedexymrpaqtp",
+  "browser": {
+    "dedicated_profile_access_passed": false,
+    "dedicated_profile_redirected_to_sign_in": true,
+    "hcaptcha_present": true,
+    "owner_reported_project_visible_before_save": true,
+    "persistence_failure_root_cause_proven": false,
+    "further_identical_supabase_retries_stopped": true,
+    "runs_completed": 5,
+    "total_steps": 50,
+    "total_run_duration_seconds": 445,
+    "active_runs": 0
+  },
+  "google": {
+    "project_verified": true,
+    "branding_setup_reported_complete": true,
+    "branding_name_reported": "TruckControl AI Gmail",
+    "external_audience_and_test_user_setup_reported": true,
+    "testing_mode_final_verification_passed": false,
+    "testing_mode_report_inconsistent": true,
+    "oauth_web_client_created": false,
+    "public_client_id_available": false,
+    "origin_verified": false,
+    "callback_verified": false,
+    "client_secret_returned": false,
+    "real_oauth_verified": false
+  },
+  "budget": {
+    "approved_total_usd": 1,
+    "agent_steps_cost_usd": "0.80",
+    "browser_rate_usd_per_minute": "0.002",
+    "additional_limit_request_total_usd": 2,
+    "additional_limit_approved": false,
+    "automation_paused": true,
+    "top_up_or_subscription_activated": false
+  },
+  "database_verification": {
+    "client_id_matches_google_project": false,
+    "google_fields_equal": true,
+    "encryption_key_unchanged": true,
+    "anon_can_read_runtime_config": false,
+    "authenticated_can_read_runtime_config": false,
+    "migration_count": 42,
+    "auth_user_count": 0,
+    "gmail_connection_count": 0,
+    "credentials_updated": false
+  },
+  "retained_tests": {
+    "original_count": 64,
+    "protected_files": 11,
+    "hash_verification": "passed"
+  },
+  "continuation": [
+    "Obtain explicit authorization before exceeding the current 1 USD limit",
+    "Use the existing Google project and completed branding flow; verify External/Testing status",
+    "Open the existing API credentials create-client route if Auth Platform navigation redirects; create only one Web client if still absent",
+    "Use https://truckcontrolai.com as origin and https://truckcontrolai.com/gmail-callback as exact return",
+    "Keep client secret out of chat, repository, screenshots and downloads; prepare a supported private destination before secret transfer",
+    "Validate stored configuration using booleans and permissions; real OAuth requires separately verified app accounts"
+  ],
+  "production_or_demo_changed": false,
+  "fixpilot_changed": false,
+  "ai_activated": false,
+  "payments_activated": false,
+  "public_registration_opened": false,
+  "commercial_production_ready": false
+}

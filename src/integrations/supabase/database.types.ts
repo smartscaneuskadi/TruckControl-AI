@@ -46,6 +46,7 @@ export interface CompanyInvoice {
   review_note: string;
   finance_entry_id: string | null;
   created_at: string;
+  import_source?: "gmail" | "email_upload" | "file_upload" | "forwarded_email";
 }
 export interface CompanyGmail {
   email: string;

@@ -414,3 +414,8 @@ verify_jwt = false
 # Optional recurring subscriptions. Explicit getUser() and signed webhooks.
 [functions.truckcontrol-subscriptions]
 verify_jwt = false
+
+# Uploads explicitly verify getUser() and company permissions. Inbound deliveries
+# require HMAC over the exact request, an active company inbox and replay lease.
+[functions.company-mail]
+verify_jwt = false
