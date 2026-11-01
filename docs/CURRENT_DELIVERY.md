@@ -4,7 +4,7 @@
 
 Facturas explica cómo conectar Gmail por empresa, importar documentos y revisarlos. El retorno Google utiliza **https://truckcontrolai.com/gmail-callback**, elimina el código de la URL y mantiene estado/ticket de un uso ligados a usuario, rol y empresa. La selección de empresa se restaura solo entre las autorizadas. Desconectar revoca primero el permiso Google y conserva el estado si el proveedor falla.
 
-**Google preparado por el titular:** proyecto TruckControlAI `468881730124`, Gmail API habilitada, consentimiento Externo/Pruebas y cliente web creados. No se han recibido secretos en el chat. **Pendientes:** respuesta a la solicitud específica de aprobación de las dos migraciones/backend, introducir los valores directamente en el almacén seguro y probar OAuth real. [Configuración y aceptación](MAIL_SETUP.md).
+**Google preparado por el titular:** proyecto TruckControlAI `468881730124`, Gmail API habilitada, consentimiento Externo/Pruebas y cliente web creados. No se han recibido secretos en el chat. **Backend actualizado:** las dos migraciones están aplicadas y Gmail v2 está activo. **Pendientes:** introducir ID/secreto directamente en Vault y probar OAuth real. [Configuración y aceptación](MAIL_SETUP.md).
 
 La candidata usa datos ficticios y no incorpora credenciales Supabase ni conexión a datos de clientes. Registro, IA remota y cobros permanecen cerrados. Conectar Gmail no activa IA ni crea gastos automáticamente. Gmail real aún no está verificado.
 
@@ -22,11 +22,11 @@ Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI. [PR #9](https:
 
 La revisión pública del inventario nuevo vuelve a exigir el callback canónico con PWA activa, ambos temas, cierre de altas y procedencia, en Android/Windows y los tres orígenes. Resultado vigente en los [checks del PR #9](https://github.com/smartscaneuskadi/TruckControl-AI/pull/9/checks) y `public-test-results/verification.json`; no se infiere del CI que revisó v4. [Informe rc.2](verification/release-0.5.1-rc.2.json).
 
-Google/Auth se simulan en las pruebas locales de conexión. Los navegadores emulan dispositivos; no equivalen a OAuth, SMTP ni Android/Windows físicos. La inspección remota de esta fase fue de solo lectura. La revisión automática rechazó una prueba remota anterior antes de ejecutarla; se sustituyó por revisión y solicitud concreta de aprobación, sin desactivar controles.
+Google/Auth se simulan en las pruebas locales de conexión. Los navegadores emulan dispositivos; no equivalen a OAuth, SMTP ni Android/Windows físicos. Tras revisar el PR y la instrucción «Sigue» del propietario, se aplicaron únicamente las dos migraciones aprobadas. La prueba remota con dos empresas ficticias y rollback pasa sin desactivar controles. La prueba anterior rechazada permanece como historial, sin ejecutarse.
 
 ## Supabase, planes y diseño
 
-Proyecto único `truckcontrol-ai`, referencia `kkkemaycedexymrpaqtp`, organización `fixpilot-dev`. **40 migraciones**, cero usuarios/clientes/tokens Gmail en la inspección, controles de acceso activos y asesores de seguridad vacíos. Gmail remoto sigue en versión 1. Las dos migraciones nuevas y el backend revisado **no se han aplicado**. FIXPilot queda separado.
+Proyecto único `truckcontrol-ai`, referencia `kkkemaycedexymrpaqtp`, organización `fixpilot-dev`. **42 migraciones**, cero usuarios/clientes/tokens Gmail tras revertir las pruebas, controles de acceso y RLS activos y asesores de seguridad vacíos. Gmail remoto está **ACTIVE, versión 2**, con los cuatro archivos de código idénticos a la revisión y seis comprobaciones HTTP aprobadas. La clave AES se generó en servidor y solo `service_role` puede acceder a la configuración. [Verificación remota](verification/gmail-backend-activation-20261101.json). FIXPilot queda separado.
 
 Prueba Full de **10 días**, Básico **300 €/mes + IVA 21 % = 363 €**, Full **700 €/mes + IVA 21 % = 847 €**. Se conservan períodos y contratos históricos. No se activan cobros ni servicios de pago.
 
@@ -36,4 +36,4 @@ Fleet Light, Fleet Cockpit, modo del dispositivo y movimiento reducido permanece
 
 Abre https://truckcontrolai.com, pulsa **Explorar la demo** y visita Facturas para revisar el ejemplo ficticio. Si la PWA ofrece actualizar, guarda el formulario antes de pulsar Actualizar. [Instalación Android y Windows](INSTALLATION.md).
 
-Para clientes reales faltan las credenciales y aprobación del backend, OAuth y aislamiento con dos empresas autorizadas, verificación Google de alcances restringidos, SMTP/recuperación reales, administrador verificado, recuperación comercial, información legal y aceptación física disponible. IA y pagos requieren sus conexiones y autorizaciones independientes. Esta candidata no acredita lanzamiento comercial 1.0.
+Para clientes reales faltan los dos valores Google en Vault, OAuth y aislamiento con dos empresas autorizadas, verificación Google de alcances restringidos, SMTP/recuperación reales, administrador verificado, recuperación comercial, información legal y aceptación física disponible. IA y pagos requieren sus conexiones y autorizaciones independientes. Esta candidata no acredita lanzamiento comercial 1.0.

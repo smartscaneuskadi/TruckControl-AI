@@ -5,7 +5,7 @@
   "google_project_number": "468881730124",
   "branch": "feat/company-mail-onboarding",
   "remote_migrations_inspected": 40,
-  "new_migrations_applied": 0,
+  "new_migrations_applied": 2,
   "gmail_deployed_version_at_inspection": 1,
   "google_oauth_verified": false,
   "planned_google_redirect_uri": "https://truckcontrolai.com/gmail-callback",
@@ -13,17 +13,33 @@
     "action": "live transactional DDL dry run with Vault secret generation and temporary access-enforcement disable",
     "result": "rejected before execution; no changes performed",
     "reason": "requires reviewed migration workflow and explicit approval",
-    "safe_followup": "review the two migrations in GitHub, keep access enforcement and RLS enabled, obtain approval before applying and deploying the Gmail backend"
+    "safe_followup": "review the two migrations in GitHub, keep access enforcement and RLS enabled, obtain approval before applying and deploying the Gmail backend",
+    "resolved_by": "Reviewed PR #9 merged with passing CI; owner instructed Sigue; applied only its two migrations through apply_migration, with access enforcement and RLS unchanged"
   },
-  "pending_migrations": [
-    "20261101125037_gmail_oauth_return_origins.sql",
-    "20261101125406_gmail_provider_vault_config.sql"
-  ],
+  "pending_migrations": [],
   "registration_opened": false,
   "ai_enabled": false,
   "payments_enabled": false,
   "fixpilot_modified": false,
   "google_gmail_api_enabled": true,
   "google_consent": "External / Testing; owner confirmed",
-  "google_oauth_client_created": true
+  "google_oauth_client_created": true,
+  "updated_at": "2026-11-01",
+  "owner_continue_authorized": true,
+  "owner_continue_context": "Sigue after the explicit reviewed-migration/backend request",
+  "remote_migrations_current": 42,
+  "gmail_deployed_version_current": 2,
+  "applied_migrations": [
+    {
+      "version": "20261101140631",
+      "name": "gmail_oauth_return_origins"
+    },
+    {
+      "version": "20261101140639",
+      "name": "gmail_provider_vault_config"
+    }
+  ],
+  "secure_values": "awaiting owner entry directly in Vault",
+  "real_oauth_verified": false,
+  "verification_report": "../verification/gmail-backend-activation-20261101.json"
 }

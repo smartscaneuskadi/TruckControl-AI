@@ -1,0 +1,107 @@
+{
+  "checked_at": "2026-11-01",
+  "project_ref": "kkkemaycedexymrpaqtp",
+  "approval": {
+    "owner_message": "Sigue",
+    "context": "Continue after explicit request to apply the two reviewed PR #9 Gmail migrations and backend",
+    "scope": "Reviewed migrations and company-gmail deployment; no disabled access control, new services or paid API activation"
+  },
+  "migrations": [
+    {
+      "version": "20261101140631",
+      "name": "gmail_oauth_return_origins"
+    },
+    {
+      "version": "20261101140639",
+      "name": "gmail_provider_vault_config"
+    }
+  ],
+  "migration_checksums": [
+    {
+      "path": "supabase/migrations/20261101125037_gmail_oauth_return_origins.sql",
+      "sha256": "1b715aa8bbd100c2c83d403db695074ae5739e2f92fc767855069f7bf028e9a5"
+    },
+    {
+      "path": "supabase/migrations/20261101125406_gmail_provider_vault_config.sql",
+      "sha256": "e60e50b07522372e3fa88eb78a70de975af9507f03a078077548190b7e0850b2"
+    }
+  ],
+  "database": {
+    "settings": {
+      "enforce_access": true,
+      "payments_enabled": false,
+      "registration_open": false
+    },
+    "gmail_rls": {
+      "gmail_tokens": true,
+      "gmail_connections": true,
+      "gmail_oauth_states": true,
+      "gmail_oauth_pending": true
+    },
+    "auth_users": 0,
+    "migrations": 42,
+    "gmail_tokens": 0,
+    "aes_key_ready": true,
+    "private_definer": true,
+    "runtime_invoker": true,
+    "private_anon_execute": false,
+    "private_user_execute": false,
+    "return_origin_column": true,
+    "runtime_anon_execute": false,
+    "runtime_user_execute": false,
+    "client_values_pending": 2,
+    "runtime_server_execute": true
+  },
+  "edge": {
+    "name": "company-gmail",
+    "version": 2,
+    "status": "ACTIVE",
+    "verify_jwt": false,
+    "ezbr_sha256": "66667a913adbf7661a81bcbc0cc3573d9812682993838ddaa7f1163b1395d6e8",
+    "source_matches": [
+      {
+        "name": "company-gmail/index.ts",
+        "matches": true
+      },
+      {
+        "name": "company-gmail/handler.ts",
+        "matches": true
+      },
+      {
+        "name": "_shared/invoice.ts",
+        "matches": true
+      },
+      {
+        "name": "company-gmail/config.ts",
+        "matches": true
+      }
+    ]
+  },
+  "native_rollback_test": [
+    {
+      "verification": "gmail_onboarding_passed_and_rolled_back",
+      "synthetic_users_remaining": 0,
+      "synthetic_companies_remaining": 0,
+      "enforce_access": true,
+      "registration_open": false,
+      "payments_enabled": false
+    }
+  ],
+  "security_advisors": {
+    "lints": []
+  },
+  "google": {
+    "project_number": "468881730124",
+    "gmail_api": "owner confirmed enabled",
+    "consent": "External / Testing; owner confirmed",
+    "web_client": "owner confirmed created",
+    "secure_values": "two pending placeholders; awaiting owner entry directly in Vault",
+    "real_oauth_verified": false
+  },
+  "real_google_requests_performed": false,
+  "registration_opened": false,
+  "payments_activated": false,
+  "ai_activated": false,
+  "fixpilot_modified": false
+}
+
