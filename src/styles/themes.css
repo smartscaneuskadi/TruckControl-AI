@@ -801,9 +801,8 @@ dialog.modal,
 .button,
 .nav-link {
   transition:
-    background-color 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 .income-bar,
 .expense-bar {
