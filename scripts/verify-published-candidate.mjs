@@ -203,7 +203,7 @@ try {
           };
           page.on("request", providerRequest);
           await page.goto(
-            `${target.origin}/gmail-callback.html?state=invalid&code=synthetic-public-test`,
+            `${target.origin}/gmail-callback?state=invalid&code=synthetic-public-test`,
             { waitUntil: "networkidle" },
           );
           await page

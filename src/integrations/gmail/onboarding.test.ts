@@ -73,7 +73,7 @@ function post(
 describe("Google vuelve al mismo origen y conserva sus límites de acceso", () => {
   it("intercambia el código desde el dominio propio, exige estado de un uso y devuelve solo el ticket", async () => {
     const f = fixture();
-    const brandedCallback = `${canonical}/gmail-callback.html`;
+    const brandedCallback = `${canonical}/gmail-callback`;
     const handler = createGmailHandler(
       f.gateway,
       { appOrigin: canonical, callbackUrl: brandedCallback, oauth },
@@ -119,7 +119,7 @@ describe("Google vuelve al mismo origen y conserva sus límites de acceso", () =
       f.gateway,
       {
         appOrigin: canonical,
-        callbackUrl: `${canonical}/gmail-callback.html`,
+        callbackUrl: `${canonical}/gmail-callback`,
         resolveOAuth,
       },
       f.fetcher,

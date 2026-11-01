@@ -8,7 +8,7 @@
   "new_migrations_applied": 0,
   "gmail_deployed_version_at_inspection": 1,
   "google_oauth_verified": false,
-  "planned_google_redirect_uri": "https://truckcontrolai.com/gmail-callback.html",
+  "planned_google_redirect_uri": "https://truckcontrolai.com/gmail-callback",
   "automatic_review": {
     "action": "live transactional DDL dry run with Vault secret generation and temporary access-enforcement disable",
     "result": "rejected before execution; no changes performed",
@@ -22,5 +22,8 @@
   "registration_opened": false,
   "ai_enabled": false,
   "payments_enabled": false,
-  "fixpilot_modified": false
+  "fixpilot_modified": false,
+  "google_gmail_api_enabled": true,
+  "google_consent": "External / Testing; owner confirmed",
+  "google_oauth_client_created": false
 }

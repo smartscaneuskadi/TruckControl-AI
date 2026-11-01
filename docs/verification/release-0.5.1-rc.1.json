@@ -69,5 +69,10 @@
   "ai_enabled": false,
   "stable_demo_version": 6,
   "archive_gzip_sha256": "3e82df0e757ba1decbb6c31d4fbb75e83e82fcc71ac4c59a5236c304564dd306",
-  "initial_edge_propagation": "one stale service worker response resolved; final 69/69 hashes matched without republishing or disabling TLS"
+  "initial_edge_propagation": "one stale service worker response resolved; final 69/69 hashes matched without republishing or disabling TLS",
+  "publication_status": "rolled back to v4 after failed live PWA callback verification",
+  "live_callback_failed_ci": 41312325569,
+  "rollback_deployment_id": "appgdep_6ae7431bd3308191a62308c84320b52f",
+  "rollback_at": "2026-11-01T13:48:22.189823+00:00",
+  "known_issue": "Sites redirects gmail-callback.html to gmail-callback, which the v5 service worker treated as SPA navigation"
 }

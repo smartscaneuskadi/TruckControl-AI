@@ -1,3 +1,11 @@
+# Estado actual — corrección del retorno Gmail
+
+**Candidata 4 restaurada el 01/11/2026 a las 13:48 UTC.** La comprobación pública de la candidata 5 detectó que el alojamiento redirige `.html` a una ruta sin extensión, que su service worker confundía con la SPA. Se restaura la versión anterior antes de continuar; no se pierde código, documentos ni la demo estable v6. La corrección 0.5.1-rc.2 cubre ambas rutas y utiliza `https://truckcontrolai.com/gmail-callback` como URI Google. La nueva prueba reproduce la redirección real con la PWA activa.
+
+El titular confirma **Gmail API habilitada** y consentimiento **Externo / Pruebas** en el proyecto `468881730124`. Pendientes: cliente OAuth web y valores seguros; aprobación de las dos migraciones/función Gmail solicitada por separado. Ninguna migración de esta fase se ha aplicado. IA, registro y pagos siguen cerrados.
+
+El registro inferior describe la publicación 5 anterior, conservada como historial; el inventario de despliegue indica la versión 4 restaurada mientras se valida la corrección.
+
 # TruckControl AI 0.5.1-rc.1 — correo por empresa preparado
 
 **Candidata 5 publicada:** https://truckcontrolai.com, https://www.truckcontrolai.com y https://truckcontrol-ai-candidata.earlymug513.chatgpt.site. Fuente `ee3cb94e4e0089729d746522cecb1e03b4ad67b3`, desplegada el 01/11/2026 a las 13:33:51 UTC después de aprobar el CI de esa fuente exacta. Los 23 archivos coinciden por SHA-256 en las tres direcciones: **69 verificaciones HTTPS**. [Identidad de publicación](deployment/candidate-hosting.json).
