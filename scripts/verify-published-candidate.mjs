@@ -187,6 +187,97 @@ try {
           });
           checkedThemes.push(theme);
         }
+        let universalMailChecked = false;
+        if (config.expected_universal_mail === true) {
+          await page.goto(`${target.origin}/#/invoices`, {
+            waitUntil: "networkidle",
+          });
+          await page
+            .getByRole("heading", {
+              name: "Del correo a tus gastos",
+              exact: true,
+            })
+            .waitFor();
+          await page.evaluate(async () => {
+            await navigator.serviceWorker.ready;
+          });
+          await page.reload({ waitUntil: "networkidle" });
+          await page.waitForFunction(() =>
+            Boolean(navigator.serviceWorker.controller),
+          );
+          const before = await page.evaluate(
+            () =>
+              JSON.parse(localStorage.getItem("truckcontrol.demo.v1")).entries
+                .length,
+          );
+          let providerRequests = 0;
+          const providerRequest = (request) => {
+            if (new URL(request.url()).hostname.endsWith(".supabase.co"))
+              providerRequests++;
+          };
+          page.on("request", providerRequest);
+          await context.setOffline(true);
+          try {
+            await page
+              .getByRole("button", { name: "Explorar la demo", exact: true })
+              .click();
+            await page.goto(`${target.origin}/#/invoices`);
+            await page
+              .getByRole("heading", {
+                name: "Del correo a tus gastos",
+                exact: true,
+              })
+              .waitFor();
+            await page
+              .getByRole("button", {
+                name: "Probar correo ficticio",
+                exact: true,
+              })
+              .click();
+            await page
+              .getByRole("heading", {
+                name: "Adjuntos listos para revisar",
+                exact: true,
+              })
+              .waitFor();
+            await page
+              .getByRole("button", {
+                name: "Importar adjuntos de prueba",
+                exact: true,
+              })
+              .click();
+            const imported = page
+              .locator(".document-card")
+              .filter({
+                has: page.getByText("Archivo de correo", { exact: true }),
+              });
+            await imported
+              .getByRole("button", { name: "Revisar factura", exact: true })
+              .waitFor();
+            const after = await page.evaluate(
+              () =>
+                JSON.parse(localStorage.getItem("truckcontrol.demo.v1")).entries
+                  .length,
+            );
+            if (
+              after !== before ||
+              providerRequests !== 0 ||
+              (await page.evaluate(
+                () => document.body.scrollWidth > innerWidth,
+              ))
+            )
+              throw new Error(
+                "Published universal email intake changed finances, contacted a provider or overflowed the viewport",
+              );
+            await page.screenshot({
+              path: `${dir}/${name}-universal-mail-offline.png`,
+            });
+            universalMailChecked = true;
+          } finally {
+            await context.setOffline(false);
+            page.off("request", providerRequest);
+          }
+        }
         let gmailCallbackChecked = false;
         if (config.expected_gmail_callback === true) {
           await page.evaluate(async () => {
@@ -238,6 +329,7 @@ try {
           sourceCommit: metadata.sourceCommit,
           themes: checkedThemes,
           gmailCallback: gmailCallbackChecked,
+          universalMailOffline: universalMailChecked,
           passed: true,
         });
         console.log(

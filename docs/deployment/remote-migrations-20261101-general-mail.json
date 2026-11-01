@@ -1,0 +1,179 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "checked_at": "2026-11-01T17:59:39.066Z",
+  "count": 43,
+  "migrations": [
+    {
+      "version": "20261028132655",
+      "name": "phase1_fleet"
+    },
+    {
+      "version": "20261028134500",
+      "name": "company_documents_gmail_1_tables"
+    },
+    {
+      "version": "20261028134514",
+      "name": "company_documents_gmail_2_permissions"
+    },
+    {
+      "version": "20261028134518",
+      "name": "company_documents_gmail_3_documents"
+    },
+    {
+      "version": "20261028173307",
+      "name": "truckcontrol_mail_runtime_01"
+    },
+    {
+      "version": "20261028180014",
+      "name": "truckcontrol_mail_runtime_03"
+    },
+    {
+      "version": "20261028180023",
+      "name": "truckcontrol_mail_final_01"
+    },
+    {
+      "version": "20261028180122",
+      "name": "truckcontrol_platform_01"
+    },
+    {
+      "version": "20261028180128",
+      "name": "truckcontrol_platform_02"
+    },
+    {
+      "version": "20261028180138",
+      "name": "truckcontrol_platform_03"
+    },
+    {
+      "version": "20261028180146",
+      "name": "truckcontrol_platform_04"
+    },
+    {
+      "version": "20261028180156",
+      "name": "truckcontrol_platform_05"
+    },
+    {
+      "version": "20261028180202",
+      "name": "truckcontrol_platform_06"
+    },
+    {
+      "version": "20261028180256",
+      "name": "truckcontrol_platform_07"
+    },
+    {
+      "version": "20261028180304",
+      "name": "truckcontrol_platform_08"
+    },
+    {
+      "version": "20261028180310",
+      "name": "truckcontrol_platform_09"
+    },
+    {
+      "version": "20261028180317",
+      "name": "truckcontrol_platform_10"
+    },
+    {
+      "version": "20261028180323",
+      "name": "truckcontrol_platform_11"
+    },
+    {
+      "version": "20261028180332",
+      "name": "truckcontrol_platform_12"
+    },
+    {
+      "version": "20261028180339",
+      "name": "truckcontrol_platform_13"
+    },
+    {
+      "version": "20261028180351",
+      "name": "truckcontrol_hardening_01"
+    },
+    {
+      "version": "20261028180358",
+      "name": "truckcontrol_indexes_01"
+    },
+    {
+      "version": "20261028181354",
+      "name": "truckcontrol_terms_30_days_initial_10_eur"
+    },
+    {
+      "version": "20261028182849",
+      "name": "truckcontrol_mail_action_credentials"
+    },
+    {
+      "version": "20261028182912",
+      "name": "truckcontrol_mail_action_connect"
+    },
+    {
+      "version": "20261028182945",
+      "name": "truckcontrol_mail_action_disconnect"
+    },
+    {
+      "version": "20261028183056",
+      "name": "truckcontrol_mail_action_router"
+    },
+    {
+      "version": "20261028183103",
+      "name": "truckcontrol_mail_sync_runtime"
+    },
+    {
+      "version": "20261028183112",
+      "name": "truckcontrol_registration_thirty_days_optional_sms"
+    },
+    {
+      "version": "20261028183122",
+      "name": "truckcontrol_public_catalog_thirty_days"
+    },
+    {
+      "version": "20261028183131",
+      "name": "truckcontrol_access_phone_policy_truck_quota"
+    },
+    {
+      "version": "20261028221630",
+      "name": "truckcontrol_company_roles"
+    },
+    {
+      "version": "20261028221719",
+      "name": "truckcontrol_fleet_operations"
+    },
+    {
+      "version": "20261028222330",
+      "name": "truckcontrol_scoped_service_permissions"
+    },
+    {
+      "version": "20261028223227",
+      "name": "truckcontrol_document_assistant_permissions"
+    },
+    {
+      "version": "20261030212927",
+      "name": "truckcontrol_financial_source_permissions"
+    },
+    {
+      "version": "20261031071642",
+      "name": "truckcontrol_document_module_boundaries"
+    },
+    {
+      "version": "20261031205146",
+      "name": "truckcontrol_recurring_subscriptions"
+    },
+    {
+      "version": "20261031210121",
+      "name": "truckcontrol_explicit_server_only_billing_policies"
+    },
+    {
+      "version": "20261101111403",
+      "name": "truckcontrol_commercial_offer_ten_days_vat"
+    },
+    {
+      "version": "20261101140631",
+      "name": "gmail_oauth_return_origins"
+    },
+    {
+      "version": "20261101140639",
+      "name": "gmail_provider_vault_config"
+    },
+    {
+      "version": "20261101175756",
+      "name": "company_mail_ingestion"
+    }
+  ]
+}

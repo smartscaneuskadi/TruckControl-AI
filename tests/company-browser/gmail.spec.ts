@@ -136,7 +136,7 @@ test("el regreso de Google finaliza en la empresa que inició la conexión y lim
   await page.reload();
   await expect(page.getByLabel("Empresa activa")).toHaveValue(orgA2);
   await page.goto(`/#/invoices?gmail_ticket=${ticket}`);
-  await expect(page.locator("main h1")).toHaveText("De tu Gmail a tus gastos");
+  await expect(page.locator("main h1")).toHaveText("Del correo a tus gastos");
   await expect(
     page.getByText("company-a2@example.com", { exact: true }),
   ).toBeVisible();

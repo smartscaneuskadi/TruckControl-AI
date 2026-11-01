@@ -1,0 +1,64 @@
+{
+  "checked_at": "2026-11-01T17:58:20.774898+00:00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "tls_verification": true,
+  "provider_called": false,
+  "results": [
+    {
+      "name": "canonical preflight",
+      "status": 204,
+      "expected": 204,
+      "no_store": true,
+      "passed": true,
+      "cors_origin": "https://truckcontrolai.com"
+    },
+    {
+      "name": "www preflight",
+      "status": 204,
+      "expected": 204,
+      "no_store": true,
+      "passed": true,
+      "cors_origin": "https://www.truckcontrolai.com"
+    },
+    {
+      "name": "foreign origin",
+      "status": 403,
+      "expected": 403,
+      "no_store": true,
+      "error": "origin_not_allowed",
+      "passed": true
+    },
+    {
+      "name": "anonymous import",
+      "status": 401,
+      "expected": 401,
+      "no_store": true,
+      "error": "authentication_required",
+      "passed": true
+    },
+    {
+      "name": "method rejected",
+      "status": 405,
+      "expected": 405,
+      "no_store": true,
+      "error": "method_not_allowed",
+      "passed": true
+    },
+    {
+      "name": "receiver disabled",
+      "status": 503,
+      "expected": 503,
+      "no_store": true,
+      "error": "mail_receiver_not_configured",
+      "passed": true
+    },
+    {
+      "name": "browser cannot relay",
+      "status": 403,
+      "expected": 403,
+      "no_store": true,
+      "error": "server_delivery_required",
+      "passed": true
+    }
+  ]
+}
