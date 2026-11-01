@@ -12,6 +12,7 @@ import {
   verifierFor,
 } from "../_shared/invoice.ts";
 import type { GmailOAuthConfig } from "./config.ts";
+import type { AiRuntime } from "../_shared/ai-runtime.ts";
 
 const gmailScope = "https://www.googleapis.com/auth/gmail.readonly";
 const bucket = "truckcontrol-documents";
@@ -41,7 +42,11 @@ export interface GmailConfig {
   callbackUrl: string;
   oauth?: GmailOAuthConfig;
   resolveOAuth?: () => Promise<GmailOAuthConfig | undefined>;
-  ai?: { key: string; model: string };
+  ai?: AiRuntime;
+  resolveAI?(
+    organizationId: string,
+    userId: string,
+  ): Promise<AiRuntime | undefined>;
 }
 interface State {
   organization_id: string;
@@ -348,8 +353,11 @@ export function createGmailHandler(
               continue;
             }
             let invoice = emptyInvoice();
+            const ai = config.resolveAI
+              ? await config.resolveAI(organizationId, userId)
+              : config.ai;
             if (
-              config.ai &&
+              ai &&
               bytes.length <= 6 * 1024 * 1024 &&
               (!gateway.featureAllowed ||
                 (await gateway.featureAllowed(
@@ -358,16 +366,18 @@ export function createGmailHandler(
                   "invoice_ai",
                 )))
             ) {
-              const reserved = await gateway.server<boolean>("reserve_ai", {
-                organization_id: organizationId,
-              });
+              const reserved =
+                ai.atomicQuota ||
+                (await gateway.server<boolean>("reserve_ai", {
+                  organization_id: organizationId,
+                }));
               if (reserved)
                 try {
                   invoice = await extractInvoice(
                     bytes,
                     type,
-                    config.ai,
-                    fetcher,
+                    ai,
+                    ai.fetcher ?? fetcher,
                   );
                 } catch {
                   invoice.review_note =
@@ -514,11 +524,15 @@ export function createGmailHandler(
       )
         return json({ error: "module_not_available" }, 403);
       const oauth = await getOAuth();
-      if (body.action === "status")
+      if (body.action === "status") {
+        const ai = config.resolveAI
+          ? await config.resolveAI(organizationId, user.id)
+          : config.ai;
         return json({
           oauth_ready: Boolean(oauth),
           ai_enabled:
-            Boolean(config.ai) &&
+            gmailAllowed &&
+            Boolean(ai) &&
             (!gateway.featureAllowed ||
               (await gateway.featureAllowed(
                 organizationId,
@@ -526,6 +540,7 @@ export function createGmailHandler(
                 "invoice_ai",
               ))),
         });
+      }
       if (!oauth) return json({ error: "gmail_not_configured" }, 503);
       if (body.action === "start") {
         const state = randomToken();

@@ -41,6 +41,9 @@ jobs:
       - run: npm run test:e2e:candidate
         env:
           TRUCKCONTROL_CANDIDATE_TEST_ARTIFACTS: candidate-test-results
+      - run: npm run test:e2e:production
+        env:
+          TRUCKCONTROL_PRODUCTION_TEST_ARTIFACTS: production-test-results
       - run: npm run verify:published
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
@@ -52,4 +55,5 @@ jobs:
             saas-test-results/
             candidate-test-results/
             public-test-results/
+            production-test-results/
           retention-days: 7

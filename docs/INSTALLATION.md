@@ -26,6 +26,8 @@ Si ya tenías la PWA instalada, guarda cualquier formulario y pulsa **Actualizar
 
 Explora camiones, conductores, remolques, clientes, viajes, combustible, mantenimiento, documentación, ingresos, gastos, rentabilidad, alertas e informes. Los cambios de demostración se guardan en ese navegador. En **Configuración → Copias y recuperación de la demo** se puede conservar el estado antes de probar cambios. Utiliza solo archivos ficticios.
 
+En **Correo y facturas → Probar correo ficticio** puedes revisar e importar el PDF de un mensaje de ejemplo. Completa los datos y confirma la factura para registrar su gasto. La candidata permite esta prueba sin Gmail y sin red después de la primera carga. Los adjuntos ficticios se vacían al salir de la pantalla; los gastos confirmados se conservan y no se duplican al repetir el ejemplo. La importación de archivos reales requiere una cuenta de empresa autorizada; el reenvío automático todavía necesita un receptor configurado. [Alcance del correo](GENERAL_EMAIL.md).
+
 Tras la primera carga, la candidata permite volver a entrar y explorar la demo sin red. La conexión Gmail, la lectura remota de documentos, la autenticación y las operaciones de empresa requieren los proveedores y la configuración comercial. La copia offline de empresa es un servicio separado, cifrado y con revalidación de permisos; no queda activada por instalar la PWA.
 
 La candidata muestra el registro comercial cerrado. No solicita contraseñas reales ni tarjeta; no sustituye la apertura de producción bajo `truckcontrolai.com`.

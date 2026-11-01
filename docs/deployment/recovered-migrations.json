@@ -56,6 +56,41 @@
       "name": "company_mail_ingestion",
       "sha256": "70f9b448157b2f620591e18e236afc37804feec49177c8b524b267a0e3b80daa",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101191806_ai_provider_and_receiver_runtime.sql",
+      "version": "20261101194201",
+      "name": "ai_provider_and_receiver_runtime",
+      "sha256": "11f01bb635d107c849caf3068a6c5267cdb45acaf874cbd4e8387634ddc6c777",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101203215_resend_admin_setup.sql",
+      "version": "20261101204442",
+      "name": "resend_admin_setup",
+      "sha256": "6e07b0305b89e71510548f6b3fafb59d65aac59bf1871b57c12a6d9716d29b28",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101205354_resend_webhook_key_compatibility.sql",
+      "version": "20261101205705",
+      "name": "resend_webhook_key_compatibility",
+      "sha256": "1234808c2ea40fb6977f23b9d5bac51049142c87e24a67f2eb4176404e6320c1",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101214649_client_auth_mail.sql",
+      "version": "20261101215459",
+      "name": "client_auth_mail",
+      "sha256": "f2e7cc65f11a944087d1d72f633fa775f153e6e962ed088708b755b2a8368521",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101220448_registration_legal_consent.sql",
+      "version": "20261101221144",
+      "name": "registration_legal_consent",
+      "sha256": "79ec43005390babfddb3308fc80d61d12d27e0413551e900268ddd37fc671ae2",
+      "already_applied": true
     }
   ]
 }

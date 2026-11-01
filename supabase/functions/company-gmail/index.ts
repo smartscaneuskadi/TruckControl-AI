@@ -2,6 +2,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { bucket, createGmailHandler } from "./handler.ts";
 import type { GmailConfig, GmailGateway } from "./handler.ts";
 import { createGmailConfigResolver } from "./config.ts";
+import { createAiRuntimeResolver } from "../_shared/ai-runtime.ts";
 
 const url = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -73,8 +74,26 @@ const resolveOAuth = createGmailConfigResolver(
   Date.now,
   "468881730124",
 );
-const key = Deno.env.get("OPENAI_API_KEY");
-const model = Deno.env.get("OPENAI_INVOICE_MODEL");
+const aiRuntime = createAiRuntimeResolver(
+  {
+    async config() {
+      const { data, error } = await client.rpc(
+        "company_provider_runtime_config",
+        { p_scope: "ai" },
+      );
+      return error ? null : data;
+    },
+    async budget(action, data) {
+      const { data: result, error } = await client.rpc(
+        "company_ai_budget_server",
+        { p_action: action, p_data: data },
+      );
+      if (error) throw Error("AI budget unavailable");
+      return result;
+    },
+  },
+  [Deno.env.get("OPENAI_API_KEY"), Deno.env.get("truckcontrol_openai_api_key")],
+);
 const config: GmailConfig = {
   enforceCompanyRoles: true,
   enforceEntitlements: true,
@@ -86,10 +105,8 @@ const config: GmailConfig = {
   ],
   callbackUrl: `${appOrigin}/gmail-callback`,
   resolveOAuth,
-  // Opt-in only; presence of an API key never enables billable processing.
-  ai:
-    Deno.env.get("INVOICE_AI_ENABLED") === "true" && key && model
-      ? { key, model }
-      : undefined,
+  // Presence of a key does not authorize spending or override company consent.
+  resolveAI: (organization_id, user_id) =>
+    aiRuntime.resolve({ organization_id, user_id, kind: "invoice" }),
 };
 Deno.serve(createGmailHandler(gateway, config));

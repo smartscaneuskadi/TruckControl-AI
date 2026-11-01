@@ -14,6 +14,9 @@ if (
   );
   process.exit(0);
 }
+const production = config.expected_channel === "production";
+const registrationOpen =
+  production && config.expected_registration_open === true;
 const expected = new URL(config.expected_url);
 const canonicalTarget = new URL(config.current_live_url);
 if (
@@ -77,27 +80,33 @@ try {
       try {
         const page = await context.newPage();
         await page.goto(target.origin, { waitUntil: "networkidle" });
-        await page
-          .getByRole("region", { name: "Estado de la versión candidata" })
-          .waitFor();
+        if (!production)
+          await page
+            .getByRole("region", { name: "Estado de la versión candidata" })
+            .waitFor();
+        else
+          await page
+            .getByRole("heading", { level: 1 })
+            .filter({ hasText: "Cada kilómetro" })
+            .waitFor();
         const metadata = await page.evaluate(async () =>
           (await fetch("release.json", { cache: "no-store" })).json(),
         );
         if (
           metadata.sourceCommit !== config.published_commit ||
           metadata.sourceDirty !== false ||
-          metadata.channel !== "candidate" ||
-          metadata.companyConnectionBundled !== false ||
-          metadata.registrationForcedClosed !== true
+          metadata.channel !== (production ? "production" : "candidate") ||
+          metadata.companyConnectionBundled !== production ||
+          metadata.registrationForcedClosed !== !production
         )
           throw new Error("Published provenance or isolation mismatch");
         if (
-          !(await page
+          (await page
             .getByRole("button", {
               name: `Probar Full gratis ${offer.trial_days} días`,
               exact: true,
             })
-            .isDisabled())
+            .isDisabled()) === registrationOpen
         )
           throw new Error("Registration unexpectedly available");
         await page.screenshot({ path: `${dir}/${name}-published-portal.png` });
@@ -114,9 +123,9 @@ try {
             has: page.getByRole("heading", { name: plan.name, exact: true }),
           });
           if (
-            !(await card
+            (await card
               .getByRole("button", { name: `Elegir ${plan.name}`, exact: true })
-              .isDisabled())
+              .isDisabled()) === registrationOpen
           )
             throw new Error("Plan registration unexpectedly available");
           const base = new Intl.NumberFormat("es-ES", {
@@ -149,7 +158,9 @@ try {
           .getByRole("button", { name: "Explorar la demo", exact: true })
           .click();
         await page
-          .getByText("Candidata · datos ficticios", { exact: true })
+          .getByText(production ? "Modo demo" : "Candidata · datos ficticios", {
+            exact: true,
+          })
           .waitFor();
         if (await page.evaluate(() => document.body.scrollWidth > innerWidth))
           throw new Error("Layout exceeds viewport");
@@ -246,11 +257,9 @@ try {
                 exact: true,
               })
               .click();
-            const imported = page
-              .locator(".document-card")
-              .filter({
-                has: page.getByText("Archivo de correo", { exact: true }),
-              });
+            const imported = page.locator(".document-card").filter({
+              has: page.getByText("Archivo de correo", { exact: true }),
+            });
             await imported
               .getByRole("button", { name: "Revisar factura", exact: true })
               .waitFor();
@@ -333,7 +342,7 @@ try {
           passed: true,
         });
         console.log(
-          `Published candidate ${target.hostname} ${name}: HTTPS, source, closed registration and demo passed`,
+          `Published ${production ? "production" : "candidate"} ${target.hostname} ${name}: HTTPS, source, expected registration policy and demo passed`,
         );
       } finally {
         await context.close();

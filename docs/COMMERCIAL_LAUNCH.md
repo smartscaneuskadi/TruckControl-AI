@@ -1,12 +1,14 @@
 # Lanzamiento comercial 1.0 — trabajo en curso
 
+**Actualización vigente, 01/11/2026 21:34 UTC:** Resend está conectado por API, dominio de facturas y webhook verificados, tres correos ficticios recibidos y lectura IA opcional probada. 46 migraciones; funciones mail v10/receptor v3. Se conserva candidata 8 y demo estable; registro y pagos cerrados. [Entrega vigente](CURRENT_DELIVERY.md) e [informe](verification/resend-live-acceptance-20261101.json). Las etapas anteriores de esta guía son historial, no motivos para repetir permisos o credenciales. Pendientes comerciales: SMTP Auth/recuperación, administrador real verificado, protección de contraseñas filtradas, legales, recuperación y dispositivos físicos.
+
 Oferta vigente del propietario: **10 días Full gratis; Básico 300 €/mes + IVA del 21 % (363 € total); Full 700 €/mes + IVA del 21 % (847 € total)**. Ambos planes se muestran para el lanzamiento. La configuración sustituye los precios y treinta días de propuestas anteriores; no activa cobros ni acorta períodos ya concedidos. Detalle: [COMMERCIAL_OFFER.md](COMMERCIAL_OFFER.md).
 
 ## Recursos y conservación
 
 La orden del 31/10/2026 reactiva el lanzamiento comercial y sustituye el aplazamiento anterior de los proveedores. Dominio elegido: **truckcontrolai.com**. La demo estable continúa en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site, versión 6, sin altas reales. No es todavía la versión comercial 1.0.
 
-GitHub permite leer, escribir, crear ramas, hacer PR y ejecutar CI. La preparación de correo del PR #4 y los temas/precios del PR #8 ya se integraron en `main`. El trabajo de Gmail por empresa continúa en [PR #9](https://github.com/smartscaneuskadi/TruckControl-AI/pull/9), `feat/company-mail-onboarding`; las ramas anteriores se conservan. La candidata 6, fuente `c80add77`, publica la guía y el retorno canónico corregido de Gmail; el backend Gmail v2 está desplegado y el cliente Google creado; los valores seguros y OAuth real siguen pendientes según [MAIL_SETUP.md](MAIL_SETUP.md). Los permisos administrativos de protección de ramas/Pages siguen siendo distintos del permiso de escritura y no se eluden.
+GitHub permite leer, escribir, crear ramas, hacer PR y ejecutar CI. La preparación de correo del PR #4 y los temas/precios del PR #8 ya se integraron en `main`. El trabajo de Gmail por empresa continúa en [PR #9](https://github.com/smartscaneuskadi/TruckControl-AI/pull/9), `feat/company-mail-onboarding`; las ramas anteriores se conservan. La candidata 6, fuente `c80add77`, publica la guía y el retorno canónico corregido de Gmail; el backend Gmail v2 está desplegado, pero la inspección privada posterior encontró vacía la lista de clientes Google; el cliente, su pareja válida y OAuth real siguen pendientes según [MAIL_SETUP.md](MAIL_SETUP.md). Los permisos administrativos de protección de ramas/Pages siguen siendo distintos del permiso de escritura y no se eluden.
 
 Se verificó otra copia completa del historial: `/workspace/artifacts/truckcontrol-commercial-baseline-20261031.bundle`. Las versiones alojadas y las ramas anteriores se conservan. El destino único de Supabase sigue siendo `kkkemaycedexymrpaqtp`, `truckcontrol-ai`, organización `fixpilot-dev`. FIXPilot permanece separado.
 
@@ -36,7 +38,7 @@ Para habilitar en el futuro se requieren credenciales seguras del proveedor, fir
 
 ## IA y autorizaciones
 
-El propietario ha autorizado **abrir el selector seguro de OpenAI para crear una credencial exclusiva**, sin activar consumo. Aún no se ha creado ni guardado una clave; falta completar la selección oficial. No enviar claves por el chat. La selección de proyecto, el destino privado y la autorización de cualquier presupuesto de uso son pasos separados. No hacer llamadas de pago por el mero hecho de disponer de una clave.
+El propietario creó una clave propia «my test key». El backend de TruckControl **ya la usa desde los secretos de funciones**, sin mostrar su valor ni crear otra. Tras aprobar 10 USD/mes antes de impuestos, la salud devuelve configured=true y enabled=true. Dos llamadas reales pasan con una factura ficticia: extracción de importes y consulta documental con cita; los gastos siguen pendientes de revisión. Las dos empresas de aceptación quedan suspendidas y bloqueadas después de verificar aislamiento; registros y uso se conservan. No se conoce el saldo del proveedor ni se activan recargas. No enviar claves por el chat ni repetir su guardado. Resend Free y hasta 2 USD acumulados de automatización están aprobados; falta la conexión privada y la entrega real. Estado y pruebas vigentes: [AI_RECEIVER_ACTIVATION.md](AI_RECEIVER_ACTIVATION.md).
 
 La autorización de administración de Auth/SMTP sigue pendiente; el conector actual de Supabase no ofrece un ajuste de SMTP alojado. Las plantillas y la aplicación parcial controlada de configuración están preparadas en `scripts/configure_auth_mail.py`; su estado no prueba entrega real. DNS/HTTPS ya están verificados; falta completar SMTP, los flujos reales y la configuración alojada de Auth antes de abrir cuentas.
 
@@ -51,3 +53,8 @@ Siguen bloqueando el lanzamiento para clientes: validación DKIM/DNSSEC de Migad
 ## Candidata de apariencia 0.5.0-rc.1
 
 Fleet Light y Fleet Cockpit comparten permisos y cálculos. La preferencia se guarda en el perfil propio cuando Auth está conectado; la candidata utiliza caché local. No se aplica otra migración por motivos visuales ni se abre el registro. El estado vigente de publicación se mantiene en [CURRENT_DELIVERY.md](CURRENT_DELIVERY.md) y `deployment/candidate-hosting.json`; las cifras y versiones de apartados anteriores describen la entrega histórica.
+
+
+## Correo general, 0.5.2-rc.1
+
+Candidata web 8 con importación EML/PDF/imágenes y ejemplo ficticio sin red, conservada. El backend posterior tiene 44 migraciones, lectura IA real probada y módulos habilitados tras la aprobación del titular; la recepción sigue pendiente de conectar Resend Free. La prueba remota positiva de correo también pasa con rollback. IMAP y Microsoft OAuth no se presentan como conectados. Estado vigente: [CURRENT_DELIVERY.md](CURRENT_DELIVERY.md) y [AI_RECEIVER_ACTIVATION.md](AI_RECEIVER_ACTIVATION.md). El 01/11 a las 18:04 UTC los tres destinos DKIM de Migadu seguían en SERVFAIL tanto en Google como Cloudflare; no se cambia DNSSEC ni se repite el pago.

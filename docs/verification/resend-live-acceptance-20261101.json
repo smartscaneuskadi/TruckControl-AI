@@ -1,0 +1,189 @@
+{
+  "checked_at": "2026-11-01T21:35:00.958165+00:00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "synthetic_data_only": true,
+  "code_commit": "b1d47e07a78c05437a194c441346ab685e750f17",
+  "pull_request": 15,
+  "api_key": {
+    "source": "Supabase Vault truckcontrol_resend_api_key",
+    "provider_authenticated": true,
+    "plaintext_exposed": false
+  },
+  "domain": {
+    "name": "facturas.truckcontrolai.com",
+    "id": "2fa6aaf2-0cb4-4cee-adcf-d8d63683cfba",
+    "region": "eu-west-1",
+    "provider_status": "verified",
+    "records_verified": 5,
+    "receiving_enabled": true,
+    "sending_enabled": true,
+    "tls": "enforced",
+    "open_tracking": false,
+    "click_tracking": false
+  },
+  "dns": {
+    "creates": 5,
+    "edits": 0,
+    "deletions": 0,
+    "original_records_preserved": 27,
+    "live_records": 32,
+    "web_and_migadu_preserved": true,
+    "partial_failure": "Initial apply created 2 records before HTTP 503; inspected inventory and prepared a fresh 3-record plan before completing. No blind retry."
+  },
+  "webhook": {
+    "id": "c39ebee1-9207-4170-9444-9423e9e65802",
+    "endpoint": "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-mail-resend",
+    "events": [
+      "email.received"
+    ],
+    "enabled": true,
+    "signing_secret_stored": true,
+    "decoded_secret_bytes": 24,
+    "secret_rotated": false
+  },
+  "functions": [
+    {
+      "name": "company-mail",
+      "version": 10,
+      "all_files_match": true,
+      "files": 8,
+      "bundle_sha256": "76d8215f94c3d2b4afc68e0aab4aff54d4336b976bd3c0b39fd17c57797faf91"
+    },
+    {
+      "name": "company-mail-resend",
+      "version": 3,
+      "all_files_match": true,
+      "files": 9,
+      "bundle_sha256": "64ea42653e00adb76336da798d18689e73f66f304e6e1b3769ce48d693906ced"
+    }
+  ],
+  "actual_provider_compatibility": {
+    "canonical_svix_secret_decoded_bytes": "24\u201364",
+    "raw_cdn": "cdn.resend.app",
+    "raw_path_prefix": "/receiving/raw/",
+    "redirects_followed": false,
+    "key_sent_to_cdn": false,
+    "signed_url_exposed": false,
+    "initial_callback_failure": "HTTP 502 receiver_original_unavailable before exact CDN fix; provider retry succeeded after receiver v3."
+  },
+  "messages": {
+    "sent": 3,
+    "completed_receipts": 3,
+    "company_a": {
+      "messages": 2,
+      "documents": 1,
+      "invoices": 1,
+      "model_calls": 1,
+      "net_cents": 20000,
+      "tax_cents": 4200,
+      "total_cents": 24200,
+      "status": "needs_review"
+    },
+    "company_b": {
+      "messages": 1,
+      "documents": 1,
+      "invoices": 1,
+      "model_calls": 0,
+      "ai_opt_in": false,
+      "amounts": null,
+      "status": "needs_review"
+    },
+    "finance_entries": 0,
+    "attachment_sha256": "38ddbe22d677f6dd23f76f7408145e77840de9c3ed065e969afdfa1b6eee260d"
+  },
+  "rls": {
+    "actual_document_and_storage_checks": 15,
+    "passed": true,
+    "method": "PostgreSQL authenticated and anon roles with transaction-local synthetic subjects; own and foreign invoice, document, storage and RPC assertions",
+    "after_suspension_denied": true,
+    "private_bucket": true
+  },
+  "cleanup": {
+    "new_fixture_inboxes_disabled": 2,
+    "new_fixture_customers_suspended": 2,
+    "new_auth_users_banned": 2,
+    "new_auth_sessions": 0,
+    "records_preserved": true,
+    "prior_fixtures_still_suspended_and_banned": true,
+    "total_synthetic_auth_users": 4,
+    "real_customer_accounts": 0,
+    "prior_auth_session_rows_preserved": true,
+    "prior_session_deletion_attempt": "Not applied: Supabase confirmation expired. No destructive retry."
+  },
+  "ai_budget": {
+    "approved_usd_monthly": 10,
+    "provider_tax_excluded": true,
+    "auto_top_up": false,
+    "total_settled_calls": 3,
+    "estimated_micro_usd": 925,
+    "unresolved_reserved_micro_usd": 0,
+    "estimate_is_provider_invoice": false
+  },
+  "limits": {
+    "resend_requested_plan": "Free",
+    "new_paid_upgrade": false,
+    "approved_usd_monthly": 0,
+    "plan_billing_verified_via_api": false,
+    "account_daily_email_limit": 100,
+    "account_monthly_email_limit": 3000
+  },
+  "security": {
+    "resend_admin_helpers_executable_by_clients": false,
+    "resend_admin_helpers_executable_by_service_role": false,
+    "private_api_schema_exposed": false,
+    "extensions_api_schema_exposed": false,
+    "raw_http_extension_owner": "supabase_admin",
+    "raw_http_public_sql_execute_remains": true,
+    "raw_http_api_isolation_verified": true,
+    "warning": "Leaked Password Protection Disabled",
+    "warning_preexisting_before_migration45": true,
+    "warning_remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+    "registration_open": false,
+    "payments_enabled": false
+  },
+  "migrations": {
+    "count": 46,
+    "applied_once": [
+      {
+        "local": "20261101203215",
+        "remote": "20261101204442",
+        "name": "resend_admin_setup"
+      },
+      {
+        "local": "20261101205354",
+        "remote": "20261101205705",
+        "name": "resend_webhook_key_compatibility"
+      }
+    ]
+  },
+  "release": {
+    "public_candidate_version": 8,
+    "public_url": "https://truckcontrolai.com",
+    "frontend_redeployed": false,
+    "stable_demo_preserved": true,
+    "commercial_release_ready": false
+  },
+  "remaining": [
+    "Real Auth SMTP confirmation/recovery and verified owner administrator",
+    "Valid Google OAuth client credentials if direct Gmail is required; general forwarding works independently",
+    "Review leaked-password protection without enabling an unapproved paid plan",
+    "Legal, recovery acceptance and physical Android/Windows device checks",
+    "Commercial onboarding remains closed"
+  ],
+  "ci": {
+    "run_id": 41352158854,
+    "job_id": 124984503645,
+    "conclusion": "success",
+    "head_sha": "b1d47e07a78c05437a194c441346ab685e750f17",
+    "unit_sql": 311,
+    "python": 32,
+    "demo": 64,
+    "companies": 22,
+    "saas": 30,
+    "candidate": 14,
+    "public_profiles": 6,
+    "total": 479,
+    "original_test_file_hashes_verified": 11,
+    "public_candidate_unchanged": true
+  }
+}

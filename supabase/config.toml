@@ -419,3 +419,12 @@ verify_jwt = false
 # require HMAC over the exact request, an active company inbox and replay lease.
 [functions.company-mail]
 verify_jwt = false
+
+[functions.company-mail-resend]
+# Official Svix verification is performed before any provider/message lookup.
+verify_jwt = false
+
+# Public account requests keep native Auth verification, server quotas, legal
+# and registration gates. Non-browser operations additionally require HMAC.
+[functions.company-auth]
+verify_jwt = false

@@ -10,7 +10,15 @@ import { commercialEnabled } from "../domain/subscriptions";
 import type { Plan } from "../domain/subscriptions";
 import { PublicPortal } from "../pages/PublicPortal";
 import { CommercialSession } from "./CommercialSession";
+import {
+  customAuthMail,
+  readEmailAction,
+} from "../integrations/supabase/auth-mail";
+import { EmailConfirmation } from "../components/EmailConfirmation";
+import { LegalPage } from "../components/LegalPage";
+import type { LegalDocument } from "../domain/legal";
 import { demoRestoreViewKey } from "../data/demo-keys";
+import { isCandidateRelease } from "../domain/release";
 import {
   chooseCompany,
   readCompanySelection,
@@ -82,7 +90,19 @@ const restoredDemoPreference = () => {
     return false;
   }
 };
+// Capture once before React StrictMode mounts; remove the one-use token from history immediately.
+const initialEmailAction =
+  typeof window !== "undefined" && customAuthMail && !isCandidateRelease
+    ? readEmailAction(window.location.hash)
+    : null;
+if (initialEmailAction)
+  window.history.replaceState(
+    null,
+    "",
+    window.location.pathname + window.location.search,
+  );
 export function CompanyAccessProvider({ children }: { children: ReactNode }) {
+  const [emailAction, setEmailAction] = useState(initialEmailAction);
   const [client] = useState(getSupabaseClient);
   const [mode, setMode] = useState<"demo" | "company" | "portal">(() =>
     companyPreference()
@@ -238,7 +258,30 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   };
   return (
     <Context.Provider value={value}>
-      {mode === "portal" && commercialEnabled() ? (
+      {["notice", "privacy", "terms"].includes(
+        new URLSearchParams(window.location.search).get("legal") ?? "",
+      ) ? (
+        <LegalPage
+          document={
+            new URLSearchParams(window.location.search).get(
+              "legal",
+            ) as LegalDocument
+          }
+        />
+      ) : emailAction ? (
+        <EmailConfirmation
+          action={emailAction}
+          onCancel={() => {
+            setEmailAction(null);
+            changeMode("company");
+          }}
+          onComplete={() => {
+            setRecovery(true);
+            setEmailAction(null);
+            changeMode("company");
+          }}
+        />
+      ) : mode === "portal" && commercialEnabled() ? (
         <PublicPortal
           onDemo={() => {
             window.location.hash = "/dashboard";

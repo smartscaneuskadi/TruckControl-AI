@@ -8,6 +8,7 @@ const result = spawnSync(
       ...process.env,
       VITE_RELEASE_CHANNEL: "candidate",
       VITE_COMMERCIAL_MODE: "true",
+      VITE_AUTH_MAIL_PROVIDER: "",
       VITE_SUPABASE_URL: "",
       VITE_SUPABASE_PUBLISHABLE_KEY: "",
     },
