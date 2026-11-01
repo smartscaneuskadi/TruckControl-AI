@@ -25,5 +25,5 @@
   "fixpilot_modified": false,
   "google_gmail_api_enabled": true,
   "google_consent": "External / Testing; owner confirmed",
-  "google_oauth_client_created": false
+  "google_oauth_client_created": true
 }

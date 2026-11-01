@@ -198,3 +198,10 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - El CI público 41312325569 falla al localizar el callback con PWA activa. Diagnóstico HTTPS: el alojamiento redirige gmail-callback.html a gmail-callback conservando parámetros; la página existe y sus hashes son correctos, pero el fallback de Workbox solo excluía .html. La prueba local anterior no reproducía esa normalización.
 - Se restaura la candidata guardada 4 mediante appgdep_6ae7431bd3308191a62308c84320b52f a las 13:48:22 UTC, manteniendo todos los paquetes y Git. No se altera la demo estable v6 ni Supabase. No se declara correcta la candidata 5 por sus hashes si el recorrido funcional falla.
 - Corrección rc.2: excluir ambas rutas, usar URI Google canónica sin extensión y añadir una prueba de la redirección 308 con el service worker activo. Nueva publicación pendiente de controles del código y del recorrido público.
+
+# 2026-11-01 — candidata 6 corregida publicada
+
+- El titular confirma también el cliente web Google creado. Proyecto 468881730124, Gmail API y consentimiento Externo/Pruebas completados; no repetirlos. Valores seguros y aprobación separada de las dos migraciones/backend todavía pendientes.
+- CI de la fuente exacta c80add77165d6953cd4a9cc43066c435874e7f4f aprobado, run 41313197695: 229 unitarias/SQL, 23 Python, 58 demo, 22 empresas, 30 SaaS y 12 candidata, más seis recorridos de la v4 restaurada (380 comprobaciones). La prueba nueva reproduce el 308 de .html a la ruta canónica con PWA instalada.
+- Candidata guardada 6, versión 0.5.1-rc.2, desplegada por appgdep_6ae744aeaf4c81918fcd5a1b0b52c9cb a las 13:55:11 UTC. 69/69 archivos HTTPS coinciden con TLS verificado y la demo estable v6 conserva su hash. La revisión pública de este inventario vuelve a exigir el callback canónico con PWA activa, sin saltarse la comprobación que detectó el fallo anterior.
+- No hay OAuth real comprobado, secretos de Google recibidos en chat, cambios Supabase de esta fase, cobros o consumo IA activados. La recuperación y el fallo v5 se conservan en el historial e informes; no se declara v5 funcional por coincidir sus archivos.
