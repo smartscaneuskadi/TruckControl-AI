@@ -1,0 +1,15 @@
+; Transcripcion del export BIND original de Migadu, captura 303168.jpg.
+; Registros de correo unicamente. No sustituir con esto toda la zona DNS.
+truckcontrolai.com. 3000 IN TXT "hosted-email-verify=1wb6rzag"
+truckcontrolai.com. 3000 IN MX 10 aspmx1.migadu.com.
+truckcontrolai.com. 3000 IN MX 20 aspmx2.migadu.com.
+truckcontrolai.com. 3000 IN TXT "v=spf1 include:spf.migadu.com -all"
+key1._domainkey.truckcontrolai.com. 3000 IN CNAME key1.truckcontrolai.com._domainkey.migadu.com.
+key2._domainkey.truckcontrolai.com. 3000 IN CNAME key2.truckcontrolai.com._domainkey.migadu.com.
+key3._domainkey.truckcontrolai.com. 3000 IN CNAME key3.truckcontrolai.com._domainkey.migadu.com.
+_dmarc.truckcontrolai.com. 3000 IN TXT "v=DMARC1; p=quarantine;"
+autoconfig.truckcontrolai.com. 3000 IN CNAME autoconfig.migadu.com.
+_autodiscover._tcp.truckcontrolai.com. 3000 IN SRV 0 1 443 autodiscover.migadu.com.
+_submissions._tcp.truckcontrolai.com. 3000 IN SRV 0 1 465 smtp.migadu.com.
+_imaps._tcp.truckcontrolai.com. 3000 IN SRV 0 1 993 imap.migadu.com.
+_pop3s._tcp.truckcontrolai.com. 3000 IN SRV 0 1 995 pop.migadu.com.

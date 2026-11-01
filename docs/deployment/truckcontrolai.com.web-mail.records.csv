@@ -1,0 +1,21 @@
+Tipo,Host relativo a truckcontrolai.com,Valor,Prioridad,TTL,Origen
+A,@,162.159.143.30,,600,sites
+A,@,172.66.3.26,,600,sites
+TXT,_openai-site-verification,openai-site-verification=KAkyMZYRGdFfkgxYF1UJWAB2OFIeE5RsIdHvKVcp9Vo,,600,sites
+TXT,_cf-custom-hostname,5028b548-5fae-4f1e-94f0-cd5031dc18a2,,600,sites
+CNAME,www,custom-domains.chatgpt.site.,,600,sites
+TXT,_openai-site-verification.www,openai-site-verification=G6S3HzZ_qY48LEUd7Zyijp_UHf7BXdsp4Cl0JzWV-TM,,600,sites
+TXT,_cf-custom-hostname.www,b4d8b848-1c2a-457c-aa63-e276ade0d23f,,600,sites
+TXT,@,hosted-email-verify=1wb6rzag,,600,migadu
+MX,@,aspmx1.migadu.com.,10,600,migadu
+MX,@,aspmx2.migadu.com.,20,600,migadu
+TXT,@,v=spf1 include:spf.migadu.com -all,,600,migadu
+CNAME,key1._domainkey,key1.truckcontrolai.com._domainkey.migadu.com.,,600,migadu
+CNAME,key2._domainkey,key2.truckcontrolai.com._domainkey.migadu.com.,,600,migadu
+CNAME,key3._domainkey,key3.truckcontrolai.com._domainkey.migadu.com.,,600,migadu
+TXT,_dmarc,v=DMARC1; p=quarantine;,,600,migadu
+CNAME,autoconfig,autoconfig.migadu.com.,,600,migadu
+SRV,_autodiscover._tcp,1 443 autodiscover.migadu.com.,0,600,migadu
+SRV,_submissions._tcp,1 465 smtp.migadu.com.,0,600,migadu
+SRV,_imaps._tcp,1 993 imap.migadu.com.,0,600,migadu
+SRV,_pop3s._tcp,1 995 pop.migadu.com.,0,600,migadu

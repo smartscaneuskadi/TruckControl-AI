@@ -123,3 +123,12 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - La cuenta Migadu está creada según el titular. Dominio de correo, buzones, plan/pago y entrega aún no comprobados; faltan acceso seguro y los registros exactos de cuenta. No solicitar claves por chat ni afirmar que crear la cuenta transfiere acceso al agente.
 - El entorno confirma cero secretos/identidades configurados para estos proveedores. No hay conector de edición DNS Porkbun o provisión Migadu entre los disponibles; no se vuelve a proponer Wix después de la compra. Se continúa con la preparación independiente sin nuevos cargos.
 - CI del commit anterior de PR #6 (`83d6e808`) completado correctamente: ejecución `41255058432`. El código publicado permanece intacto; esta continuación actualiza documentación y configuración DNS preparada.
+
+# 2026-11-01 — Migadu configurado en su panel y registros originales recibidos
+
+- El propietario confirma Micro anual pagado. Las capturas 303158/303160 muestran el plan y la selección de DNS externos; 303162 confirma creación del dominio. No repetir pago, alta ni creación del dominio.
+- La captura 303168.jpg muestra los trece registros BIND originales completos. Se transcriben a `docs/deployment/migadu-truckcontrolai.com.source.zone`, con hash de procedencia en el plan conjunto. No se publica la imagen con datos de su cuenta.
+- Preparados veinte registros: siete web y trece de Migadu. Un solo SPF, dos MX priorizados, tres CNAME DKIM originales, DMARC `p=quarantine` del proveedor, autoconfig y cuatro SRV. TTL inicial propuesto 600; fuente conservada con 3000. Archivos JSON/BIND/CSV y solicitud completa para Porkbun.
+- Se corrige el riesgo de copiar nombres técnicos traducidos: `key1/2/3._domainkey` y `hosted-email-verify` proceden del export original. No se inventan claves ni se reutilizan credenciales.
+- El plan está preparado, no aplicado. Faltan inventario autenticado de Porkbun, aplicación selectiva, validación de dominio/certificado, comprobación de buzones, SMTP y entrega. No sustituir toda la zona ni borrar registros ajenos; las respuestas DNS de un comodín no prueban registros explícitos.
+- PR #6 quedó integrado en `main` (`934044e5604c6d6d412f7165b286ad12c17a683e`) tras CI completo correcto (`41256538221`). Este trabajo continúa en `feat/domain-mail-dns-records`, conservando las demos y el código de aplicación.
