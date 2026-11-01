@@ -33,7 +33,7 @@
     "typescript": true,
     "pwa_build": true,
     "original_test_files_retained": 11,
-    "full_ci_pending": true,
+    "full_ci_pending": false,
     "physical_devices": false
   },
   "rehearsal": {
@@ -53,11 +53,15 @@
     "authAccountsCredentialsAndProviderSettingsRestored": false
   },
   "release": {
-    "currently_published_version": 9,
-    "new_frontend_not_published_yet": true,
+    "currently_published_version": 10,
+    "new_frontend_not_published_yet": false,
     "registration_open": true,
     "payments_enabled": false,
-    "ai_budget_usd_month": 10
+    "ai_budget_usd_month": 10,
+    "source": "e5ce8e662dc8ef8466025f5d90ba0884298ff5f4",
+    "deployment_id": "appgdep_6ae7cc64f8b88191b6856c51b08f0da0",
+    "https_hashes_verified": 72,
+    "demo_unchanged": true
   },
   "limits": {
     "max_content_bytes": 20971520,
@@ -65,5 +69,19 @@
     "max_documents": 2000,
     "max_invoices": 2000,
     "managed_database_and_s3_restore_tested": false
+  },
+  "ci": {
+    "run": 41361898380,
+    "deployment_source_run": 41362141114,
+    "conclusion": "success",
+    "total": 587,
+    "unit_sql": 397,
+    "python": 32,
+    "demo_browser": 64,
+    "company_browser": 22,
+    "saas_browser": 36,
+    "candidate_browser": 14,
+    "production_browser": 16,
+    "public_browser_previous_v9": 6
   }
 }

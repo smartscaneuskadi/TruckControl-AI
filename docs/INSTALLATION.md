@@ -35,4 +35,4 @@ Tras la primera carga se puede explorar la demo sin red. La empresa necesita pre
 
 Las comprobaciones Android/Windows son emuladas; falta aceptación en dispositivos físicos. [Administración](SAAS_ADMIN.md), [guía anterior conservada](history/20261101-pre-client-production/INSTALLATION.md).
 
-La continuación 0.5.4-rc.1 prepara **Configuración → Copia cifrada de empresa** para guardar registros y originales autorizados, comprobarlos y recuperar archivos sin cambiar datos del servidor. Estará disponible al publicar el nuevo paquete; acepta **Actualizar** cuando aparezca. [Contenido y límites](COMPANY_RECOVERY.md).
+La versión publicada 0.5.4-rc.1 incluye **Configuración → Copia cifrada de empresa** para guardar registros y originales autorizados, comprobarlos y recuperar archivos sin cambiar datos del servidor. Está disponible en cuentas de empresa administradoras; acepta **Actualizar** cuando aparezca. [Contenido y límites](COMPANY_RECOVERY.md).
