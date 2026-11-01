@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "environment": "isolated PGlite/PostgreSQL with application migrations; synthetic data only",
+  "trucks": 50,
+  "drivers": 46,
+  "financeEntries": 2102,
+  "operations": 7,
+  "documents": 1,
+  "invoices": 1,
+  "originalSha256Matched": true,
+  "financialTotalsUnchanged": true,
+  "bookedOperationLinkPreserved": true,
+  "crossCompanyRlsDenied": true,
+  "managedSupabaseRestoreTested": false,
+  "authAccountsCredentialsAndProviderSettingsRestored": false
+}

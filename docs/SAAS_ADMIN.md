@@ -1,41 +1,46 @@
 # Administración de TruckControl AI
 
-## Destino y condiciones
+Aplicación: **https://truckcontrolai.com**. Único Supabase: **truckcontrol-ai / kkkemaycedexymrpaqtp**, organización fixpilot-dev. FIXPilot y merymery_16 siguen separados. [Entrega vigente](CURRENT_DELIVERY.md).
 
-Proyecto independiente `truckcontrol-ai` (`kkkemaycedexymrpaqtp`), organización `fixpilot-dev`. Datos, usuarios, archivos y credenciales separados de FIXPilot. No se ha contratado ningún plan de pago. El prototipo merymery_16 permanece pausado con su contenido conservado.
+## Cuenta administradora y roles
 
-Condiciones vigentes: prueba Full de **30 días** y plan **Inicial a 10 €/mes como ejemplo editable**, hasta 50 camiones. El plan Full se conserva internamente pero no se anuncia como una segunda oferta vigente. Las fechas se calculan en PostgreSQL; editar metadatos, crear otra empresa o reanudar la cuenta no reinicia la prueba. Al expirar o suspender, se conservan los datos y se deniega su uso hasta resolver la licencia.
-
-## Cuentas y roles
-
-La cuenta de superadministrador está reservada a **pedidos@smartscaneuskadi.com**, una vez confirmado el correo por Auth. No se ha creado una identidad ni una contraseña en nombre del propietario. Ningún metadato de registro permite obtener administración global.
+**pedidos@smartscaneuskadi.com** tiene correo verificado, contraseña elegida por su titular y rol de superadministrador confirmado en servidor. Entra desde **Entrar en mi empresa**. El panel **Tu centro de administración** ofrece **Clientes**, **Módulos**, **Planes y cobros** y **Actividad**. No se ha generado ni almacenado su contraseña en nombre del propietario.
 
 | Rol | Alcance |
 | --- | --- |
-| Superadministrador | Clientes, suspensión/reactivación, planes, precios, módulos, autorización IA y auditoría administrativa. |
-| Propietario de empresa | Datos propios, equipo, conexión Gmail y operaciones permitidas por su plan. |
-| Administrador de empresa | Gestión de la empresa y equipo según permisos efectivos. |
-| Operador | Operaciones y escrituras autorizadas, sin gestionar conexión OAuth o permisos de equipo. |
-| Consulta | Lectura autorizada; no escribe ni contabiliza. |
+| Superadministrador | Clientes, suspensión/reactivación, planes, precios, módulos y permisos IA. |
+| Propietario de empresa | Empresa, equipo y operaciones autorizadas por licencia. |
+| Administrador de empresa | Empresa y miembros según permisos efectivos. |
+| Operador | Operaciones permitidas, sin administración global. |
+| Consulta | Lectura autorizada, sin contabilizar ni modificar. |
 
-Los usuarios invitados necesitan una cuenta confirmada y aceptar la invitación. El servidor comprueba la pertenencia, rol y restricciones del miembro en cada operación. El superadministrador no recibe acceso indiscriminado a documentos empresariales desde el navegador.
+RLS/servidor comprueban empresa, rol, licencia y módulos. La administración global no concede acceso indiscriminado a documentos de clientes. No suplantar sesiones ni utilizar metadatos editables para asignar roles.
 
-## Registro
+## Altas y planes
 
-El portal muestra los precios antes de pedir acceso. El cliente aporta contacto, empresa, identificación fiscal, dirección, correo y teléfono. La confirmación del correo permite aprovisionar empresa y prueba automáticamente. Si `sms_ready=true`, también se exige que Auth confirme exactamente el teléfono aportado. Si el proveedor SMS no está configurado, no se finge una comprobación ni se envían mensajes: el registro puede funcionar con correo confirmado y SMS opcional.
+Registro abierto después de verificar al propietario. El cliente completa empresa, identificación fiscal, dirección, contacto, correo y teléfono; acepta la versión legal vigente y confirma su correo. El servidor exige un recibo inmutable del consentimiento. El cliente elige contraseña tras verificar el correo. La nueva empresa recibe **10 días Full** y capacidad inicial de **50 camiones**.
 
-Actualmente **`registration_open=false`**. Falta configurar y probar SMTP, URL del sitio y redirecciones de Auth en el servicio alojado. `supabase/config.toml` documenta la configuración deseada pero no modifica automáticamente esos ajustes. La demo publicada no lleva credenciales de acceso comercial; no puede enviar altas reales.
+| Plan | Base mensual | IVA 21 % | Total |
+| --- | ---: | ---: | ---: |
+| Básico | 300 € | 63 € | 363 € |
+| Full | 700 € | 147 € | 847 € |
 
-## Controles de servicio
+Edita precios en **Planes y cobros**. Conserva limited/full y contratos históricos. No reiniciar pruebas mediante metadatos ni acortar períodos concedidos. Vencimiento/suspensión conserva datos y deniega servicios según licencia. No hay cobro automático al vencer la prueba.
 
-Estado remoto comprobado: `enforce_access=true`, `registration_open=false`, `sms_ready=false`, `payments_enabled=false`, `prices_are_examples=true`. Gmail, lectura IA de facturas y consulta documental IA están desactivados globalmente.
+Estado comprobado: `registration_open=true`, `enforce_access=true`, `payments_enabled=false`, `sms_ready=false`, `prices_are_examples=false`. El correo de acceso usa enlaces nativos Supabase y Resend, sin SMTP Migadu. Cuotas conservadoras de 40 solicitudes/día y 1.000/mes para la plataforma, además de límites por correo/IP y proveedor. Revisar auditoría antes de repetir un envío; no contratar otro plan sin autorización.
 
-El panel permite cambiar precios y límites, publicar planes, suspender clientes y activar/desactivar módulos. Las funciones IA exigen a la vez módulo global, licencia, autorización individual del superadministrador y aceptación del usuario. Las claves de proveedores solo se configuran en el servidor. Activar un módulo sin proveedor no simula una conexión funcional.
+## Servicios e IA
 
-No activar pagos ni consumo de proveedores sin la autorización comercial correspondiente. Los precios de ejemplo no generan checkout real. La preparación de pagos aún requiere credenciales, prueba de webhook, catálogo definitivo y decisión sobre renovación recurrente.
+En **Módulos** se habilitan/deshabilitan servicios. En cada cliente se gestionan estado, plan y autorización IA. La IA exige licencia, módulo, autorización individual y consentimiento. Las claves solo están en backend/Vault/secretos de funciones: nunca en VITE, Git o mensajes.
 
-## Antes de abrir clientes reales
+OpenAI: **10 USD/mes antes de impuestos**, compartidos por toda la plataforma, sin recarga automática. Se reserva presupuesto antes de llamar; una respuesta desconocida conserva su reserva en vez de repetirse a ciegas. No ampliar límites sin aprobación.
 
-El responsable del despliegue debe comprobar el envío de confirmación y recuperación, redirecciones HTTPS, verificación del correo del administrador, aislamiento por empresa y restauración. Gmail requiere cliente OAuth oficial y, para el uso público de su alcance restringido, la revisión que Google exija. IA y SMS son opcionales y permanecen apagados mientras falten credenciales o autorización de coste.
+Resend recibe facturas con dirección privada por empresa, firma e idempotencia. Mantener **revisión humana antes de contabilizar**. El reenvío funciona con distintos proveedores; Gmail OAuth directo sigue pendiente. Resend Free permanece sin upgrade/pay-as-you-go. SMS y cobros automáticos apagados.
 
-No hay alta empresarial real, envío SMS, cobro o consumo IA activado por esta entrega. Los requisitos de proveedores externos son límites reales de producción, no tareas que se hayan sustituido por simulaciones.
+## Mantenimiento y recuperación
+
+Conservar las 48 migraciones y correspondencias, ramas GitHub y paquetes publicados. No ejecutar db push ni editar migraciones aplicadas a ciegas. Demo estable y candidata 8 son recuperables. Ante una incidencia, cerrar primero el registro/servicio afectado desde administración y conservar documentos/auditoría. No borrar clientes ni restaurar encima de datos actuales.
+
+La recuperación de demo cubre solo datos locales, no toda Supabase/Storage. La continuación 0.5.4 añade copia cifrada de registros y originales autorizados y comprobación local; no importa datos encima de producción. El ensayo aislado conserva relaciones contables y RLS. [Guía y límites](COMPANY_RECOVERY.md). Antes de contratar un SLA, verificar copia/restauración del servicio gestionado y definir retención. La recuperación de contraseñas sí tiene aceptación real. Una copia del código no equivale a una copia de documentos de clientes.
+
+El asesor conserva un aviso previo de protección contra contraseñas filtradas; requiere Pro o superior y no se ha contratado. Falta aceptación física Android/Windows y revisión jurídica externa de los textos de ELEVADANCOR S.L. [Controles](CLIENT_LAUNCH.md), [guía anterior conservada](history/20261101-pre-client-production/SAAS_ADMIN.md).

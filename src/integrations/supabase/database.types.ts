@@ -114,6 +114,10 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_backup_page: {
+        Args: { p_org: string; p_kind: string; p_after?: string | null };
+        Returns: Json;
+      };
       tc_organization_access: { Args: { p_org: string }; Returns: Json };
       tc_team_control: {
         Args: { p_org: string | null; p_action: string; p_data?: Json };

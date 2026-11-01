@@ -1,33 +1,38 @@
-# Probar e instalar TruckControl AI
+# Instalar y empezar con TruckControl AI
 
-La candidata está disponible en **https://truckcontrolai.com**. Utiliza esa dirección para instalarla. También responde www y se conservan la [candidata anterior](https://truckcontrol-ai-candidata.earlymug513.chatgpt.site) y la [demo estable](https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site). Todas utilizan datos ficticios; guarda una copia antes de borrar datos del navegador.
+Abre **https://truckcontrolai.com**. El registro de empresas está abierto; los cobros automáticos están apagados. Es una PWA por HTTPS, sin APK o EXE.
 
-Cada origen mantiene por separado sus datos locales de demostración. Para trasladar tus cambios, exporta una copia desde la dirección anterior e impórtala en **Configuración → Copias y recuperación de la demo** de la dirección nueva. Los archivos adjuntos no se incluyen en esa copia JSON; la guía [DEMO_RECOVERY.md](DEMO_RECOVERY.md) explica su alcance.
+## Crear una empresa
+
+1. Pulsa **Probar Full gratis 10 días** y completa los datos de contacto y empresa.
+2. Acepta privacidad y condiciones. No se pide contraseña antes de verificar tu correo.
+3. Abre **Confirma tu acceso a TruckControl AI**, pulsa **Continuar en TruckControl AI** y después **Confirmar y continuar**.
+4. Elige tu contraseña y entra. El enlace es personal y de un solo uso; no lo compartas.
+
+Prueba Full diez días. Básico: 300 €/mes + IVA 21 % (363 €). Full: 700 €/mes + IVA 21 % (847 €). Vencer la prueba no genera un cargo automático. Los datos y archivos están separados por empresa; cada servicio requiere permiso.
+
+Si olvidas la contraseña, usa **He olvidado la contraseña** y abre el mensaje de recuperación. La respuesta de solicitud es genérica y no revela si existe la cuenta.
 
 ## Android
 
-1. Abre la URL directamente en Chrome y entra en **Abrir demostración** o **Explorar la demo**.
-2. Usa **Instalar aplicación** en TruckControl. Si Chrome ofrece la opción desde su menú, elige instalar o añadir a la pantalla de inicio.
-3. Abre el icono instalado. Haz la primera visita con Internet para que se descargue la aplicación.
+Abre la URL en Chrome desde una pestaña normal. Elige **Instalar aplicación** o menú → **Añadir a pantalla de inicio**. Abre el icono instalado. La primera visita necesita Internet. Si ya la tenías, guarda los formularios y acepta **Actualizar** cuando aparezca.
 
 ## Windows
 
-1. Abre la URL en Edge o Chrome.
-2. Pulsa **Instalar aplicación** en TruckControl o el icono de instalación del navegador.
-3. Confirma la instalación y abre TruckControl desde Inicio o su acceso directo.
+Abre la URL en Edge o Chrome, pulsa el icono de instalación de la barra de direcciones o **Instalar aplicación** y confirma. Abre TruckControl desde Inicio o su acceso directo. El navegador puede ocultar la instalación si ya está instalada o la abriste en el navegador interno de otra app.
 
-Es una PWA por HTTPS; no se distribuye un APK o EXE ni una aplicación de tienda. El navegador puede ocultar el botón si ya está instalada o no ofrece instalación en ese contexto. Ábrela en una ventana normal del navegador para instalarla.
+## Apariencia y demo
 
-## Qué revisar
+En **Configuración → Apariencia**, previsualiza/aplica **Fleet Light**, **Fleet Cockpit** o la configuración del dispositivo. No recarga la app. Puedes reducir/desactivar animaciones. La cuenta conectada conserva la preferencia en su perfil; la demo usa caché local.
 
-En **Configuración → Apariencia** puedes previsualizar **Fleet Light**, **Fleet Cockpit** o **Seguir configuración del dispositivo**. Pulsa **Aplicar apariencia**. El botón de sol/luna de la cabecera y de los formularios abre el mismo selector sin cerrar tu trabajo. También puedes reducir o desactivar animaciones. En la demo la elección se conserva en ese navegador; la sincronización entre dispositivos requiere una cuenta conectada.
+**Explorar la demo** permite probar datos ficticios sin registrarse. La demo estable sigue en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. Cada origen conserva sus propios datos locales. Antes de borrarlos o cambiar de dirección, exporta desde **Configuración → Copias y recuperación de la demo**; los adjuntos no se incluyen en ese JSON. [Alcance](DEMO_RECOVERY.md).
 
-Si ya tenías la PWA instalada, guarda cualquier formulario y pulsa **Actualizar** cuando aparezca el aviso de nueva versión. El cambio de tema posterior no necesita actualizar ni recargar la aplicación.
+En **Correo y facturas**, la empresa autorizada importa EML/PDF/imágenes y habilita su dirección privada de reenvío. La IA es opcional y requiere autorización/consentimiento; no contabiliza sin revisión. Gmail OAuth directo sigue pendiente; el reenvío admite distintos proveedores. No reenvíes todo tu buzón ni compartas la dirección de otra empresa. [Guía](GENERAL_EMAIL.md).
 
-Explora camiones, conductores, remolques, clientes, viajes, combustible, mantenimiento, documentación, ingresos, gastos, rentabilidad, alertas e informes. Los cambios de demostración se guardan en ese navegador. En **Configuración → Copias y recuperación de la demo** se puede conservar el estado antes de probar cambios. Utiliza solo archivos ficticios.
+## Sin conexión
 
-En **Correo y facturas → Probar correo ficticio** puedes revisar e importar el PDF de un mensaje de ejemplo. Completa los datos y confirma la factura para registrar su gasto. La candidata permite esta prueba sin Gmail y sin red después de la primera carga. Los adjuntos ficticios se vacían al salir de la pantalla; los gastos confirmados se conservan y no se duplican al repetir el ejemplo. La importación de archivos reales requiere una cuenta de empresa autorizada; el reenvío automático todavía necesita un receptor configurado. [Alcance del correo](GENERAL_EMAIL.md).
+Tras la primera carga se puede explorar la demo sin red. La empresa necesita preparar/desbloquear su copia offline cifrada. Al reconectar se revisan permisos, licencia y conflictos antes de sincronizar. Acceso, proveedores y operaciones que necesitan servidor requieren conexión; no toda operación es offline. Cierra sesión y bloquea el dispositivo si lo compartes.
 
-Tras la primera carga, la candidata permite volver a entrar y explorar la demo sin red. La conexión Gmail, la lectura remota de documentos, la autenticación y las operaciones de empresa requieren los proveedores y la configuración comercial. La copia offline de empresa es un servicio separado, cifrado y con revalidación de permisos; no queda activada por instalar la PWA.
+Las comprobaciones Android/Windows son emuladas; falta aceptación en dispositivos físicos. [Administración](SAAS_ADMIN.md), [guía anterior conservada](history/20261101-pre-client-production/INSTALLATION.md).
 
-La candidata muestra el registro comercial cerrado. No solicita contraseñas reales ni tarjeta; no sustituye la apertura de producción bajo `truckcontrolai.com`.
+La continuación 0.5.4-rc.1 prepara **Configuración → Copia cifrada de empresa** para guardar registros y originales autorizados, comprobarlos y recuperar archivos sin cambiar datos del servidor. Estará disponible al publicar el nuevo paquete; acepta **Actualizar** cuando aparezca. [Contenido y límites](COMPANY_RECOVERY.md).

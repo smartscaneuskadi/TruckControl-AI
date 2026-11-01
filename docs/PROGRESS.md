@@ -1,5 +1,7 @@
 # Registro de reanudación — 31 de octubre de 2026
 
+**Estado vigente:** producción conectada 9 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
+
 Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI
 
 Rama de trabajo: `feat/dedicated-supabase-project`.
@@ -279,3 +281,27 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Rama feat/resend-api-bootstrap, PR #15; conservar demo estable, candidata 8 y 64 pruebas. Informe docs/verification/resend-live-acceptance-20261101.json. Registro y pagos permanecen cerrados; no se declara lanzamiento comercial.
 
 - CI exacto b1d47e07, ejecución 41352158854: 479 comprobaciones aprobadas y logs revisados (311 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 30 SaaS, 14 candidata, seis públicas). TypeScript/build PWA correctos.
+
+# 2026-11-01 — publicación conectada y verificación administradora pendiente
+
+- PR #16 integrado como b39c1b778deb77034849365f32cb67cfef3f3df8 tras CI 41356880182: 548 comprobaciones (364 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 30 SaaS, 14 candidata, 16 producción y seis públicas). Las 64 originales conservan once hashes.
+- Versión 9 publicada desde bcffa56f0b3a3f851af4e9f433223b49bad7ed9c; despliegue appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e. Canal production con clave moderna publicable, sin secretos en el paquete. Los 72 archivos HTTPS coinciden en tres orígenes; demo v6 idéntica y candidata v8 recuperable.
+- Proveedor confirma entregada la invitación a pedidos@smartscaneuskadi.com. No se lee ni se comparte su enlace; debe verificarlo el titular y elegir su contraseña. legal_ready=true, registro y cobros todavía cerrados. No confundir publicado con registro ya abierto.
+- Supabase 48 migraciones; company-auth v3. Confirmación y recuperación nativas con Resend comprobadas, fixture bloqueado/sin sesiones y prueba de consentimiento/RLS remota con rollback completo. IA restablecida con 10 USD/mes; el propietario confirmó que la clave de una descripción ya estaba revocada. No se piden nuevas claves ni se activan costes.
+
+# 2026-11-01 — propietario verificado y registro abierto
+
+- El propietario confirma acceso. La consulta remota devuelve un usuario reservado, correo confirmado, contraseña establecida y un rol global. Sin leer tokens, contraseña ni enlace personal.
+- Se abre únicamente registration_open mediante transacción condicionada al propietario verificado, enforcement, correo/legal preparados y pruebas internas/pagos apagados. El catálogo anónimo HTTPS confirma 200, registro abierto, diez días y precios con IVA correctos; max_trucks=50.
+- Producción v9 permanece sin cambios; la demo estable y candidata 8 se conservan. Inventario actualizado para probar el canal production y las altas abiertas en los tres orígenes.
+- El primer navegador local rechaza la CA del proxy de este entorno; no se deshabilita TLS. Las solicitudes HTTPS de recursos/catálogo validan certificados. La prueba browser pública se ejecutará en GitHub, con TLS activo y evidencia separada del CI previo.
+- Guías de entrega, instalación, administración y continuidad actualizadas. Versiones anteriores archivadas y conservadas también en Git.
+
+# 2026-11-01 — copias cifradas de empresa y ensayo de recuperación
+
+- Nueva rama feat/company-backup-recovery, 0.5.4-rc.1. Conserva la demo, producción v9 y todas las pruebas originales. Sin compras, nuevos proveedores ni cambios económicos.
+- Cifra fichas, operaciones, facturas y originales autorizados con AES-GCM/PBKDF2; verifica pertenencia, relaciones, importes, huellas y estabilidad del origen. Rechaza pérdida de permisos, cambios concurrentes, datos incompletos y otra empresa. Límite explícito 20 MiB/2000 documentos, sin copia parcial silenciosa.
+- Nueva paginación SQL invoker con RLS existente, sin acceso anónimo ni grants de tablas. Migración local 20261101230718 aplicada una vez como 20261101231713, 49 remotas. Índice de cursor verificado. La prueba remota con 201 documentos y dos empresas pasa y se revierte: cero filas de fixture restantes; registro/enforcement/cobros preservados.
+- Ensayo aislado PGlite y PDF: 50 camiones, 46 conductores, 2102 movimientos, siete operaciones y una factura; importes/vínculos/huellas y RLS correctos. No es restauración del servicio alojado. Guía COMPANY_RECOVERY.md.
+- Pasan 393 unitarias/SQL iniciales más tres de adaptador y una de archivo grande; 34 recorridos SaaS iniciales y dos corregidos tras ajustar el fixture a la ruta Storage real. El primer servidor local fallaba por EPERM del sandbox; se habilitó la capacidad de red del comando y funcionó, sin desactivar TLS. CI completo y publicación siguientes.
+- Google: sesión válida del proyecto exclusivo, cero clientes OAuth web. Solo lectura, 4 pasos/34 segundos; acumulado65/544s, estimación1.05814 USD de máximo2 aprobado. Sin abrir secretos ni nuevas credenciales. Migadu sigue con tres destinos DKIM SERVFAIL; no cambiar DNSSEC ni repetir pagos.

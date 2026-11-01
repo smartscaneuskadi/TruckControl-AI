@@ -1,60 +1,26 @@
-# Lanzamiento comercial 1.0 — trabajo en curso
+# Lanzamiento de TruckControl AI — estado vigente
 
-**Actualización vigente, 01/11/2026 21:34 UTC:** Resend está conectado por API, dominio de facturas y webhook verificados, tres correos ficticios recibidos y lectura IA opcional probada. 46 migraciones; funciones mail v10/receptor v3. Se conserva candidata 8 y demo estable; registro y pagos cerrados. [Entrega vigente](CURRENT_DELIVERY.md) e [informe](verification/resend-live-acceptance-20261101.json). Las etapas anteriores de esta guía son historial, no motivos para repetir permisos o credenciales. Pendientes comerciales: SMTP Auth/recuperación, administrador real verificado, protección de contraseñas filtradas, legales, recuperación y dispositivos físicos.
+**Producción conectada 9 publicada y registro de clientes abierto:** https://truckcontrolai.com. El correo, contraseña elegida y rol del propietario se verificaron en servidor antes de abrir. La demo estable sigue intacta y la candidata 8 es recuperable. [Entrega actual](CURRENT_DELIVERY.md), [controles](CLIENT_LAUNCH.md), [inventario](deployment/candidate-hosting.json).
 
-Oferta vigente del propietario: **10 días Full gratis; Básico 300 €/mes + IVA del 21 % (363 € total); Full 700 €/mes + IVA del 21 % (847 € total)**. Ambos planes se muestran para el lanzamiento. La configuración sustituye los precios y treinta días de propuestas anteriores; no activa cobros ni acorta períodos ya concedidos. Detalle: [COMMERCIAL_OFFER.md](COMMERCIAL_OFFER.md).
+Oferta: diez días Full gratuitos; Básico 300 €/mes + IVA 21 % (363 €); Full 700 €/mes + IVA 21 % (847 €). Hasta 50 camiones por empresa. **Cobros recurrentes y SMS apagados.** Abrir registro no activa contratación de proveedores ni cargos.
 
-## Recursos y conservación
+## Comprobado
 
-La orden del 31/10/2026 reactiva el lanzamiento comercial y sustituye el aplazamiento anterior de los proveedores. Dominio elegido: **truckcontrolai.com**. La demo estable continúa en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site, versión 6, sin altas reales. No es todavía la versión comercial 1.0.
+- HTTPS y procedencia: 72 hashes de archivos coinciden en tres orígenes; fuente bcffa56f y versión 9.
+- Auth nativo y Resend: confirmación, un solo uso, contraseña, login, recuperación y cierre global con datos ficticios; cuenta del propietario verificada por su titular.
+- Consentimiento versionado inmutable, RLS y dos empresas aisladas; pruebas remotas con rollback, sin fixtures residuales del ensayo.
+- 48 migraciones aplicadas una vez; ningún cambio en FIXPilot.
+- Recepción real de tres correos ficticios, originales privados, idempotencia y lectura IA opcional sin gastos automáticos.
+- CI del código desplegado: 548 comprobaciones; preservadas las 64 originales. Los seis recorridos públicos de ese CI eran de la candidata anterior; la aceptación v9 se guarda por separado.
 
-GitHub permite leer, escribir, crear ramas, hacer PR y ejecutar CI. La preparación de correo del PR #4 y los temas/precios del PR #8 ya se integraron en `main`. El trabajo de Gmail por empresa continúa en [PR #9](https://github.com/smartscaneuskadi/TruckControl-AI/pull/9), `feat/company-mail-onboarding`; las ramas anteriores se conservan. La candidata 6, fuente `c80add77`, publica la guía y el retorno canónico corregido de Gmail; el backend Gmail v2 está desplegado, pero la inspección privada posterior encontró vacía la lista de clientes Google; el cliente, su pareja válida y OAuth real siguen pendientes según [MAIL_SETUP.md](MAIL_SETUP.md). Los permisos administrativos de protección de ramas/Pages siguen siendo distintos del permiso de escritura y no se eluden.
+## Operación y autorizaciones
 
-Se verificó otra copia completa del historial: `/workspace/artifacts/truckcontrol-commercial-baseline-20261031.bundle`. Las versiones alojadas y las ramas anteriores se conservan. El destino único de Supabase sigue siendo `kkkemaycedexymrpaqtp`, `truckcontrol-ai`, organización `fixpilot-dev`. FIXPilot permanece separado.
+OpenAI está limitado a 10 USD/mes antes de impuestos, sin recarga automática. Resend permanece en el alcance Free aprobado. Migadu Micro ya fue pagado por el propietario. No se han contratado upgrades. Los secretos se mantienen en backend; no reproducir descripciones administrativas con valores secretos.
 
-## Dominio y correo
+El panel del propietario permite clientes, módulos, planes y actividad. Los precios se modifican conservando contratos históricos. El vencimiento de prueba suspende servicios según licencia, conserva datos y no genera un cargo. [Administración](SAAS_ADMIN.md), [instalación](INSTALLATION.md).
 
-Porkbun confirmó `AVAILABLE`, no premium, el 31/10/2026. Registro por un año: **11,08 USD**. Renovación publicada: **11,08 USD/año**; no es una garantía de precio futuro. La tasa ICANN está incluida; impuestos y conversión, si proceden, se confirman al pagar. Fuente y evidencia: [domain-quote-20261031.json](deployment/domain-quote-20261031.json), [tarifa oficial](https://api.porkbun.com/api/json/v3/pricing/get).
+## Límites y tareas posteriores
 
-El propietario confirma completados compra de dominio y registro de cuenta Migadu. RDAP confirma registro el 01/11/2026 y vencimiento el 01/11/2027. **https://truckcontrolai.com y www están activos con HTTPS**, conservando los NS de Porkbun y las dos direcciones anteriores de demostración. El agente no ejecutó pagos. Se republicó la misma candidata guardada 1 para activar las rutas, sin cambiar fuente ni audiencia; dieciséis recursos HTTPS coinciden con el paquete probado.
+Gmail OAuth directo y revisión Google; SMS; pasarela y aceptación de cobros reales; buzones Migadu/DKIM; restauración completa/SLA; aceptación en dispositivos físicos; revisión jurídica externa. El aviso previo de protección alojada contra contraseñas filtradas requiere un plan Pro o superior, no contratado. Ninguna copia del código acredita por sí sola una copia/restauración de los documentos empresariales.
 
-**Migadu Micro anual, 19 USD/año, está pagado según el propietario**, que comunica el dominio activo. El plan incluye 5 GB, 200 mensajes entrantes y 20 salientes al día compartidos; no tiene administración por varios administradores. [Brevo Free](https://help.brevo.com/hc/en-us/articles/208589409-About-Brevo-s-pricing-plans), 0 de cuota y 300 envíos diarios, sigue propuesto para transaccionales, sin cuenta conectada ni activación. Los límites gratuitos no equivalen a disponibilidad comercial ilimitada. No repetir pago ni alta de Migadu.
-
-La conexión directa de Porkbun se autorizó por PKCE con `read,dns`, sin compras, y el titular activó API Access del dominio. El [plan de veinte registros](deployment/truckcontrolai.com.web-mail-plan.json) ya está aplicado: cuatro ediciones, dieciséis altas, cero borrados y siete registros anteriores conservados. [Informe y recuperación](DOMAIN_DNS_OPERATIONS.md). Las claves se guardan solo en el almacén privado del agente, fuera de Git; no repetir autorización porque no aparezcan como bindings del entorno.
-
-MX, SPF único, los CNAME DKIM y DMARC del export están publicados. Sin embargo, Google y Cloudflare devuelven un fallo DNSSEC al consultar los TXT de los tres destinos DKIM bajo migadu.com. [Diagnóstico e informe de soporte](deployment/migadu-dkim-dnssec-20261101.json). No se ha desactivado DNSSEC ni cambiado la política para ocultarlo. Buzones, SMTP, recepción, envío, confirmación y recuperación siguen pendientes de comprobación real; no abrir empresas ni declararlos funcionales con solo DNS o el estado activo del panel. No se reutilizan credenciales de FIXPilot.
-
-## Suscripción mensual preparada, todavía apagada
-
-Se incorpora una pasarela separada `truckcontrol-subscriptions` sin sustituir el pago de un mes existente. Usa Checkout en modo `subscription`, precio mensual y fechas calculados en servidor, consentimiento versionado y una reserva única por cuenta. Conserva la prueba gratuita de la aplicación y los periodos ya abonados. El usuario puede solicitar cancelar la renovación o reactivarla; cancelar sigue permitido aunque se apaguen las ventas nuevas.
-
-Solo una factura pagada verificada con Stripe y vinculada a la suscripción, usuario, pedido, precio y periodo correctos amplía el acceso. Volver de Checkout, una factura gratuita, un impago o un evento de estado no lo amplían. Hay deduplicación por evento y por factura, control de eventos retrasados y preservación de las suspensiones administrativas. Los historiales no son accesibles por otra cuenta. Las tablas están en `private`, con RLS y sin permisos de cliente; la entrada de servidor es `SECURITY INVOKER`, limitada a `service_role`.
-
-La migración `20261031181317_recurring_subscriptions.sql`, creada mediante CLI, está aplicada una sola vez con versión remota `20261031205146`. La posterior `20261031205953_explicit_server_only_billing_policies.sql` tiene versión remota `20261031210121`: hace explícita la denegación de clientes con políticas restrictivas. **Hay 40 migraciones remotas (incluida la oferta de diez días e IVA) y la nueva función `truckcontrol-subscriptions` está ACTIVE, versión 1.** Las otras tres funciones se conservan. No repetir ni empujar las migraciones antiguas: el inventario registra la correspondencia entre versiones remotas y locales.
-
-Se verificó el flujo en PostgreSQL real con datos sintéticos y rollback, incluidos aislamiento de recibos, duplicados y suspensiones. Se confirma que no quedan usuarios ni suscripciones sintéticos y que registro y pagos continúan cerrados. El asesor de seguridad no devuelve incidencias. Las llamadas HTTP reales rechazan anónimos (401), otro origen (403), método incorrecto (405) y webhook falso (400), sin consultar Stripe. Evidencias: `docs/verification/recurring-billing-rollback.sql` y `recurring-live-smoke-20261031.json`.
-
-Para habilitar en el futuro se requieren credenciales seguras del proveedor, firma de webhook propia, autorización expresa de costes, condiciones comerciales publicadas y versionadas, fiscalidad acordada, prueba completa en el entorno de pruebas del proveedor y los controles del lanzamiento. `BILLING_RECURRING_ENABLED` sigue en `false`; tampoco se activan `payments_enabled` ni precios reales. Los cambios de precio afectan a nuevas solicitudes: no modifican en silencio los contratos de Stripe existentes. Reembolsos, disputas y cambios de contrato requieren un procedimiento comercial antes de activar cobros.
-
-## IA y autorizaciones
-
-El propietario creó una clave propia «my test key». El backend de TruckControl **ya la usa desde los secretos de funciones**, sin mostrar su valor ni crear otra. Tras aprobar 10 USD/mes antes de impuestos, la salud devuelve configured=true y enabled=true. Dos llamadas reales pasan con una factura ficticia: extracción de importes y consulta documental con cita; los gastos siguen pendientes de revisión. Las dos empresas de aceptación quedan suspendidas y bloqueadas después de verificar aislamiento; registros y uso se conservan. No se conoce el saldo del proveedor ni se activan recargas. No enviar claves por el chat ni repetir su guardado. Resend Free y hasta 2 USD acumulados de automatización están aprobados; falta la conexión privada y la entrega real. Estado y pruebas vigentes: [AI_RECEIVER_ACTIVATION.md](AI_RECEIVER_ACTIVATION.md).
-
-La autorización de administración de Auth/SMTP sigue pendiente; el conector actual de Supabase no ofrece un ajuste de SMTP alojado. Las plantillas y la aplicación parcial controlada de configuración están preparadas en `scripts/configure_auth_mail.py`; su estado no prueba entrega real. DNS/HTTPS ya están verificados; falta completar SMTP, los flujos reales y la configuración alojada de Auth antes de abrir cuentas.
-
-## Verificación y siguiente punto de reanudación
-
-Han pasado TypeScript, compilación PWA, la batería unitaria/SQL y las 7 pruebas de correo; se añade una comprobación de políticas restrictivas para un total de 180 unitarias/SQL. Se mantienen las 64 originales y la comprobación SHA-256 de sus once archivos. En navegador pasan 28 recorridos SaaS y 6 de la candidata en escritorio/Android, incluidos consentimiento versionado, cancelación, falta de proveedor, destinos de pago ajenos, accesibilidad, PWA y arranque sin red. Se corrigieron dos fallos de contraste antes de continuar. Las llamadas Stripe están simuladas; no son un ensayo del proveedor real. El CI completo del commit publicado reúne 271 pruebas, contando los 42 recorridos de demo y 8 de empresas conservados.
-
-Candidata publicada en https://truckcontrol-ai-candidata.earlymug513.chatgpt.site, versión alojada 1, tras aprobar el CI del commit exacto `e7a43948bff9bf3b3c5c37c890324ce6dc94852c`. Identidad y publicación registradas en `docs/deployment/candidate-hosting.json`; no crear otro alojamiento para esta candidata. El paquete `0.4.0-rc.1` fuerza datos ficticios, cierra formularios comerciales y rechaza una compilación candidata con configuración de Supabase. Cada paquete incluye `release.json` con versión, canal y commit, sin secretos. La demo estable v6 no se sustituye. La URL anterior pasó sus perfiles de navegador. El CI de PR #7 amplía la comprobación a Sites, truckcontrolai.com y www, en Windows y Android, sin desactivar TLS.
-
-Siguen bloqueando el lanzamiento para clientes: validación DKIM/DNSSEC de Migadu, proveedor SMTP y entrega real, alta verificada del administrador, validación de dos cuentas autorizadas de empresas, recuperación comercial, información legal del titular y condiciones, aceptación física Android/Windows cuando estén disponibles. Gmail y Google login requieren su cliente OAuth, consentimiento/revisión y secretos independientes; no bloquean los módulos básicos. Los servicios de IA y los pagos necesitan presupuesto aprobado y pruebas reales autorizadas antes de activarse.
-
-## Candidata de apariencia 0.5.0-rc.1
-
-Fleet Light y Fleet Cockpit comparten permisos y cálculos. La preferencia se guarda en el perfil propio cuando Auth está conectado; la candidata utiliza caché local. No se aplica otra migración por motivos visuales ni se abre el registro. El estado vigente de publicación se mantiene en [CURRENT_DELIVERY.md](CURRENT_DELIVERY.md) y `deployment/candidate-hosting.json`; las cifras y versiones de apartados anteriores describen la entrega histórica.
-
-
-## Correo general, 0.5.2-rc.1
-
-Candidata web 8 con importación EML/PDF/imágenes y ejemplo ficticio sin red, conservada. El backend posterior tiene 44 migraciones, lectura IA real probada y módulos habilitados tras la aprobación del titular; la recepción sigue pendiente de conectar Resend Free. La prueba remota positiva de correo también pasa con rollback. IMAP y Microsoft OAuth no se presentan como conectados. Estado vigente: [CURRENT_DELIVERY.md](CURRENT_DELIVERY.md) y [AI_RECEIVER_ACTIVATION.md](AI_RECEIVER_ACTIVATION.md). El 01/11 a las 18:04 UTC los tres destinos DKIM de Migadu seguían en SERVFAIL tanto en Google como Cloudflare; no se cambia DNSSEC ni se repite el pago.
+Las fases previas y sus estados se conservan en [historial](history/20261101-pre-client-production/COMMERCIAL_LAUNCH.md). No reutilizarlos como motivo para repetir claves, pagos o permisos ya resueltos. No presentar integraciones pendientes como verificadas ni declarar certificación comercial completa.

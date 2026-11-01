@@ -17,6 +17,7 @@ import { OfflineSettings } from "../components/OfflineSettings";
 import { DemoBackupTools } from "../components/DemoBackupTools";
 import { useOperations } from "../app/OperationsProvider";
 import { AppearanceSettings } from "../components/AppearanceSettings";
+import { CompanyBackupTools } from "../components/CompanyBackupTools";
 
 export function Settings() {
   const { snapshot, reset, refresh, busy, notify } = useFleet();
@@ -40,6 +41,7 @@ export function Settings() {
       <AppearanceSettings />
       <div className="settings-grid">
         <OfflineSettings />
+        {cloud && <CompanyBackupTools />}
         <section className="card settings-card">
           <span className="settings-icon">
             <MonitorSmartphone size={25} />
