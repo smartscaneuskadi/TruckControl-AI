@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import { OfflineSettings } from "../components/OfflineSettings";
 import { DemoBackupTools } from "../components/DemoBackupTools";
 import { useOperations } from "../app/OperationsProvider";
+import { AppearanceSettings } from "../components/AppearanceSettings";
 
 export function Settings() {
   const { snapshot, reset, refresh, busy, notify } = useFleet();
@@ -36,6 +37,7 @@ export function Settings() {
             : "Controla tus datos de demostración y lleva la aplicación contigo."
         }
       />
+      <AppearanceSettings />
       <div className="settings-grid">
         <OfflineSettings />
         <section className="card settings-card">

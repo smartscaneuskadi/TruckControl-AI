@@ -1,0 +1,19 @@
+@layer theme-important, legacy, appearance;
+@import "../styles.css" layer(legacy);
+@import "./professional-theme.css" layer(legacy);
+@import "./company.css" layer(legacy);
+@import "./commercial.css" layer(legacy);
+@import "./operations.css" layer(legacy);
+@import "./fleet-identity.css" layer(legacy);
+@import "./themes.css" layer(appearance);
+@layer theme-important {
+  .app-main .data-table .route-cell {
+    color: var(--theme-muted) !important;
+  }
+  .invoice-review-note {
+    color: var(--theme-gold) !important;
+  }
+  .verification-done {
+    color: var(--theme-green) !important;
+  }
+}

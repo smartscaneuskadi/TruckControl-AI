@@ -154,10 +154,44 @@ try {
         if (await page.evaluate(() => document.body.scrollWidth > innerWidth))
           throw new Error("Layout exceeds viewport");
         await page.screenshot({ path: `${dir}/${name}-published.png` });
+        const checkedThemes = [];
+        for (const theme of config.expected_themes || []) {
+          if (!["light", "cockpit"].includes(theme))
+            throw new Error("Unrecognized published theme");
+          await page
+            .getByRole("button", { name: "Cambiar apariencia", exact: true })
+            .click();
+          const dialog = page.getByRole("dialog", {
+            name: "Apariencia de TruckControl",
+          });
+          await dialog
+            .getByRole("radio", {
+              name: theme === "light" ? "Fleet Light" : "Fleet Cockpit",
+              exact: true,
+            })
+            .check();
+          await dialog
+            .getByRole("button", { name: "Aplicar apariencia" })
+            .click();
+          await dialog.getByRole("button", { name: "Cerrar ventana" }).click();
+          if ((await page.locator("html").getAttribute("data-theme")) !== theme)
+            throw new Error("Published theme did not apply");
+          if (
+            await page.evaluate(
+              () => document.body.scrollWidth > innerWidth + 1,
+            )
+          )
+            throw new Error("Published theme exceeds viewport");
+          await page.screenshot({
+            path: `${dir}/${name}-${theme}-published.png`,
+          });
+          checkedThemes.push(theme);
+        }
         results.push({
           origin: target.origin,
           profile: name,
           sourceCommit: metadata.sourceCommit,
+          themes: checkedThemes,
           passed: true,
         });
         console.log(

@@ -20,6 +20,10 @@ Es una PWA por HTTPS; no se distribuye un APK o EXE ni una aplicación de tienda
 
 ## Qué revisar
 
+En **Configuración → Apariencia** puedes previsualizar **Fleet Light**, **Fleet Cockpit** o **Seguir configuración del dispositivo**. Pulsa **Aplicar apariencia**. El botón de sol/luna de la cabecera y de los formularios abre el mismo selector sin cerrar tu trabajo. También puedes reducir o desactivar animaciones. En la demo la elección se conserva en ese navegador; la sincronización entre dispositivos requiere una cuenta conectada.
+
+Si ya tenías la PWA instalada, guarda cualquier formulario y pulsa **Actualizar** cuando aparezca el aviso de nueva versión. El cambio de tema posterior no necesita actualizar ni recargar la aplicación.
+
 Explora camiones, conductores, remolques, clientes, viajes, combustible, mantenimiento, documentación, ingresos, gastos, rentabilidad, alertas e informes. Los cambios de demostración se guardan en ese navegador. En **Configuración → Copias y recuperación de la demo** se puede conservar el estado antes de probar cambios. Utiliza solo archivos ficticios.
 
 Tras la primera carga, la candidata permite volver a entrar y explorar la demo sin red. La conexión Gmail, la lectura remota de documentos, la autenticación y las operaciones de empresa requieren los proveedores y la configuración comercial. La copia offline de empresa es un servicio separado, cifrado y con revalidación de permisos; no queda activada por instalar la PWA.

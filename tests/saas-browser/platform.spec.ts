@@ -671,6 +671,55 @@ test("el portal y la administración son accesibles en escritorio y Android", as
   ).toBe(true);
 });
 
+test("los dos temas cubren todas las pestañas y formularios de administración", async ({
+  page,
+}) => {
+  test.setTimeout(90000);
+  await fixtures(page);
+  await login(page, "pedidos@smartscaneuskadi.com");
+  for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+    await page.getByRole("button", { name: "Apariencia", exact: true }).click();
+    const appearance = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+    });
+    await appearance.getByRole("radio", { name: theme, exact: true }).check();
+    await appearance
+      .getByLabel("Animaciones", { exact: true })
+      .selectOption("off");
+    await appearance
+      .getByRole("button", { name: "Aplicar apariencia" })
+      .click();
+    await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+    for (const tab of ["Clientes", "Módulos", "Planes y cobros", "Actividad"]) {
+      await page.getByRole("button", { name: tab, exact: true }).click();
+      expect(
+        await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+      ).toBe(true);
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+            .analyze()
+        ).violations,
+        `${theme}: ${tab}`,
+      ).toEqual([]);
+    }
+    await page.getByRole("button", { name: "Clientes", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Gestionar Empresa ficticia SaaS" })
+      .click();
+    const dialog = page.getByRole("dialog");
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    await dialog.getByRole("button", { name: "Cerrar ventana" }).click();
+  }
+});
+
 test.describe("contratación y renovación mensual", () => {
   async function ready(page: Page, subscription = false) {
     const f = await fixtures(page);

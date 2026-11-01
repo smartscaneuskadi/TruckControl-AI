@@ -7,6 +7,7 @@ import {
   Mail,
   ShieldCheck,
   Truck,
+  Palette,
 } from "lucide-react";
 import { Badge, Button } from "../components/ui";
 import { getSupabaseClient } from "../integrations/supabase/client";
@@ -15,6 +16,7 @@ import type { Catalog, Plan } from "../domain/subscriptions";
 import { money } from "../lib/format";
 import { isCandidateRelease } from "../domain/release";
 import { DemoManufacturers } from "../components/VehicleBrand";
+import { useAppearance } from "../app/AppearanceContext";
 
 export function PlanCards({
   catalog,
@@ -117,6 +119,7 @@ export function PublicPortal({
   onAccess(view: "login" | "signup", plan?: Plan["id"]): void;
   onDemo(): void;
 }) {
+  const appearance = useAppearance();
   const [catalog, setCatalog] = useState<Catalog>(
     isCandidateRelease
       ? { ...exampleCatalog, registration_open: false, payments_enabled: false }
@@ -163,6 +166,13 @@ export function PublicPortal({
           </span>
         </a>
         <nav aria-label="Acceso a TruckControl">
+          <button
+            className="theme-launcher"
+            aria-label="Cambiar apariencia"
+            onClick={appearance.open}
+          >
+            <Palette size={19} />
+          </button>
           <a
             href="#planes"
             onClick={(e) => {

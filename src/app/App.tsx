@@ -12,6 +12,7 @@ import {
   Menu,
   Search,
   Settings as SettingsIcon,
+  SunMoon,
   ShieldCheck,
   Sparkles,
   Truck,
@@ -62,6 +63,7 @@ import { useCompany } from "./CompanyAccess";
 import { initials } from "../lib/format";
 import { FeatureGate, useSubscription } from "./SubscriptionContext";
 import { commercialEnabled, trialDaysLeft } from "../domain/subscriptions";
+import { useAppearance } from "./AppearanceContext";
 import type { Feature } from "../domain/subscriptions";
 import { useOffline } from "./OfflineContext";
 import { useOperations } from "./OperationsProvider";
@@ -148,6 +150,7 @@ export function App() {
 }
 
 function Workspace() {
+  const appearance = useAppearance();
   const offline = useOffline();
   const { snapshot, notify } = useFleet();
   const subscription = useSubscription();
@@ -406,6 +409,13 @@ function Workspace() {
             <strong>{currentPage}</strong>
           </div>
           <div className="topbar-right">
+            <button
+              className="theme-launcher"
+              aria-label="Cambiar apariencia"
+              onClick={appearance.open}
+            >
+              <SunMoon size={18} />
+            </button>
             <button
               className="global-search-button"
               aria-label="Buscar en tu flota"
