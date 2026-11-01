@@ -14,6 +14,7 @@ import { exampleCatalog, subscriptionPrice } from "../domain/subscriptions";
 import type { Catalog, Plan } from "../domain/subscriptions";
 import { money } from "../lib/format";
 import { isCandidateRelease } from "../domain/release";
+import { DemoManufacturers } from "../components/VehicleBrand";
 
 export function PlanCards({
   catalog,
@@ -255,6 +256,7 @@ export function PublicPortal({
             <span>Tu siguiente objetivo</span>
             <ChevronRight size={18} />
           </div>
+          <DemoManufacturers />
         </div>
       </section>
       <section

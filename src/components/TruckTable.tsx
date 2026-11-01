@@ -1,4 +1,4 @@
-import { ArrowUpRight, Truck as TruckIcon } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { useFleet } from "../app/FleetProvider";
 import { useWorkspace } from "../app/WorkspaceContext";
 import type { Truck } from "../domain/models";
@@ -6,6 +6,7 @@ import { truckStatuses } from "../domain/models";
 import { truckProfitability } from "../domain/finance";
 import { initials, money } from "../lib/format";
 import { Badge, Empty } from "./ui";
+import { VehicleBrand } from "./VehicleBrand";
 
 export function TruckTable({ trucks }: { trucks: Truck[] }) {
   const { snapshot } = useFleet();
@@ -41,9 +42,7 @@ export function TruckTable({ trucks }: { trucks: Truck[] }) {
               <tr key={truck.id}>
                 <td>
                   <div className="vehicle-cell">
-                    <span className="vehicle-symbol">
-                      <TruckIcon size={21} aria-hidden="true" />
-                    </span>
+                    <VehicleBrand brand={truck.brand} />
                     <div>
                       <button
                         className="text-button strong"
