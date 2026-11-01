@@ -6,7 +6,7 @@ Oferta vigente del propietario: **10 días Full gratis; Básico 300 €/mes + IV
 
 La orden del 31/10/2026 reactiva el lanzamiento comercial y sustituye el aplazamiento anterior de los proveedores. Dominio elegido: **truckcontrolai.com**. La demo estable continúa en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site, versión 6, sin altas reales. No es todavía la versión comercial 1.0.
 
-GitHub permite leer, escribir, crear ramas, hacer PR y ejecutar CI. La preparación de correo del PR #4 y los temas/precios del PR #8 ya se integraron en `main`. El trabajo de Gmail por empresa continúa en [PR #9](https://github.com/smartscaneuskadi/TruckControl-AI/pull/9), `feat/company-mail-onboarding`; las ramas anteriores se conservan. La candidata 6, fuente `c80add77`, publica la guía y el retorno canónico corregido de Gmail; el backend Gmail v2 está desplegado y el cliente Google creado; los valores seguros y OAuth real siguen pendientes según [MAIL_SETUP.md](MAIL_SETUP.md). Los permisos administrativos de protección de ramas/Pages siguen siendo distintos del permiso de escritura y no se eluden.
+GitHub permite leer, escribir, crear ramas, hacer PR y ejecutar CI. La preparación de correo del PR #4 y los temas/precios del PR #8 ya se integraron en `main`. El trabajo de Gmail por empresa continúa en [PR #9](https://github.com/smartscaneuskadi/TruckControl-AI/pull/9), `feat/company-mail-onboarding`; las ramas anteriores se conservan. La candidata 6, fuente `c80add77`, publica la guía y el retorno canónico corregido de Gmail; el backend Gmail v2 está desplegado, pero la inspección privada posterior encontró vacía la lista de clientes Google; el cliente, su pareja válida y OAuth real siguen pendientes según [MAIL_SETUP.md](MAIL_SETUP.md). Los permisos administrativos de protección de ramas/Pages siguen siendo distintos del permiso de escritura y no se eluden.
 
 Se verificó otra copia completa del historial: `/workspace/artifacts/truckcontrol-commercial-baseline-20261031.bundle`. Las versiones alojadas y las ramas anteriores se conservan. El destino único de Supabase sigue siendo `kkkemaycedexymrpaqtp`, `truckcontrol-ai`, organización `fixpilot-dev`. FIXPilot permanece separado.
 
@@ -51,3 +51,8 @@ Siguen bloqueando el lanzamiento para clientes: validación DKIM/DNSSEC de Migad
 ## Candidata de apariencia 0.5.0-rc.1
 
 Fleet Light y Fleet Cockpit comparten permisos y cálculos. La preferencia se guarda en el perfil propio cuando Auth está conectado; la candidata utiliza caché local. No se aplica otra migración por motivos visuales ni se abre el registro. El estado vigente de publicación se mantiene en [CURRENT_DELIVERY.md](CURRENT_DELIVERY.md) y `deployment/candidate-hosting.json`; las cifras y versiones de apartados anteriores describen la entrega histórica.
+
+
+## Correo general, 0.5.2-rc.1
+
+Candidata 8 con importación EML/PDF/imágenes y ejemplo ficticio sin red. Receptor de reenvíos por empresa preparado pero apagado; IMAP y Microsoft OAuth no se presentan como conectados. Proyecto TruckControl con 43 migraciones y company-mail v1; el módulo remoto de correo permanece cerrado. La prueba de denegación remota pasa con rollback, y la prueba positiva completa pasa localmente. Estado vigente, publicación y comprobación funcional: [CURRENT_DELIVERY.md](CURRENT_DELIVERY.md) y [GENERAL_EMAIL.md](GENERAL_EMAIL.md). El 01/11 a las 18:04 UTC los tres destinos DKIM de Migadu siguen en SERVFAIL tanto en Google como Cloudflare; no se cambia DNSSEC ni se repite el pago.

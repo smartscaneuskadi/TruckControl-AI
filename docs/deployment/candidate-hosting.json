@@ -6,11 +6,11 @@
   "purpose": "Separate candidate; stable demo project and audience preserved",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "c80add77165d6953cd4a9cc43066c435874e7f4f",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ac0aeceee2a4819181723d87a1d73506",
-  "published_version_number": 6,
-  "deployment_id": "appgdep_6ae744aeaf4c81918fcd5a1b0b52c9cb",
-  "previous_deployment_id": "appgdep_6ae7431bd3308191a62308c84320b52f",
+  "published_commit": "ba7a226f976a0eb52b8e28f2407d78384edced53",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_37b135d97b1481919488d6d012b35456",
+  "published_version_number": 8,
+  "deployment_id": "appgdep_6ae77f9666388191a9fa987bed562089",
+  "previous_deployment_id": "appgdep_6ae744aeaf4c81918fcd5a1b0b52c9cb",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -21,7 +21,7 @@
     "vat_rate_bps": 2100,
     "plans": [
       {
-        "name": "B\u00e1sico",
+        "name": "Básico",
         "monthly_cents": 30000
       },
       {
@@ -30,12 +30,12 @@
       }
     ]
   },
-  "deployed_at": "2026-11-01T13:55:11.515991+00:00",
+  "deployed_at": "2026-11-01T18:06:28.481881+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 41313197695,
+  "source_ci_run": 41334469182,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -43,5 +43,16 @@
     "reason": "v5 callback failed live installed-PWA verification: hosting canonicalizes html to extensionless paths; prior v4 restored while correcting both routes",
     "recovered_to_version": 4,
     "recovery_deployment_id": "appgdep_6ae7431bd3308191a62308c84320b52f"
+  },
+  "expected_universal_mail": true,
+  "previous_stable_candidate": {
+    "version": 6,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ac0aeceee2a4819181723d87a1d73506",
+    "source_commit": "c80add77165d6953cd4a9cc43066c435874e7f4f"
+  },
+  "unpublished_saved_version": {
+    "version": 7,
+    "source_commit": "2c104916604da3e4e217de0a610771b6a0d0f626",
+    "reason": "CI caught transient theme contrast; never deployed; replaced by corrected v8"
   }
 }
