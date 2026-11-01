@@ -1,0 +1,9 @@
+{
+  "compilerOptions": { "strict": true },
+  "nodeModulesDir": "auto",
+  "imports": {
+    "svix": "npm:svix@2.9.1",
+    "postal-mime": "npm:postal-mime@4.2.0",
+    "@supabase/supabase-js": "npm:@supabase/supabase-js@2.118.0"
+  }
+}

@@ -369,7 +369,8 @@ export function UniversalMailIntake({
         <ShieldCheck size={18} aria-hidden="true" />
         <p>
           Los documentos quedan pendientes de revisión. Importar o reenviar no
-          registra gastos automáticamente ni activa la IA.
+          registra gastos automáticamente. La lectura IA requiere habilitación
+          del administrador y consentimiento de la cuenta.
         </p>
       </div>
       {disableInbox && (
