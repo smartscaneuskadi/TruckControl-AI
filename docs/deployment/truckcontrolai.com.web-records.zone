@@ -1,0 +1,11 @@
+; Solo registros web de TruckControl AI. No es una zona completa.
+; No sustituir la zona ni modificar MX/SPF/DKIM/DMARC con este archivo.
+$ORIGIN truckcontrolai.com.
+$TTL 600
+truckcontrolai.com. 600 IN A 162.159.143.30
+truckcontrolai.com. 600 IN A 172.66.3.26
+_openai-site-verification.truckcontrolai.com. 600 IN TXT "openai-site-verification=KAkyMZYRGdFfkgxYF1UJWAB2OFIeE5RsIdHvKVcp9Vo"
+_cf-custom-hostname.truckcontrolai.com. 600 IN TXT "5028b548-5fae-4f1e-94f0-cd5031dc18a2"
+www.truckcontrolai.com. 600 IN CNAME custom-domains.chatgpt.site.
+_openai-site-verification.www.truckcontrolai.com. 600 IN TXT "openai-site-verification=G6S3HzZ_qY48LEUd7Zyijp_UHf7BXdsp4Cl0JzWV-TM"
+_cf-custom-hostname.www.truckcontrolai.com. 600 IN TXT "b4d8b848-1c2a-457c-aa63-e276ade0d23f"

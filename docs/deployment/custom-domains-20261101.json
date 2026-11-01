@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-11-01T00:21:14.381Z",
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "domains": [
+    {
+      "id": "appgdom_6ae685a1b4008191a3bcb1750255d88e",
+      "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+      "hostname": "truckcontrolai.com",
+      "worker_name": "site---6ae655e56db481918fe18adfe9df8b66",
+      "status": "pending",
+      "provider_status": "pending",
+      "ssl_status": "initializing",
+      "cname_target": "custom-domains.chatgpt.site.",
+      "apex_proxy_ipv4_targets": [
+        "162.159.143.30",
+        "172.66.3.26"
+      ],
+      "validation_records": [
+        {
+          "record_type": "TXT",
+          "name": "_openai-site-verification.truckcontrolai.com",
+          "value": "openai-site-verification=KAkyMZYRGdFfkgxYF1UJWAB2OFIeE5RsIdHvKVcp9Vo"
+        },
+        {
+          "record_type": "TXT",
+          "name": "_cf-custom-hostname.truckcontrolai.com",
+          "value": "5028b548-5fae-4f1e-94f0-cd5031dc18a2"
+        }
+      ],
+      "last_error": null,
+      "created_at": "2026-11-01T00:19:45.703453+00:00",
+      "updated_at": "2026-11-01T00:19:48.067587+00:00"
+    },
+    {
+      "id": "appgdom_6ae685ab86088191822d8b2610ca0d12",
+      "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+      "hostname": "www.truckcontrolai.com",
+      "worker_name": "site---6ae655e56db481918fe18adfe9df8b66",
+      "status": "pending",
+      "provider_status": "pending",
+      "ssl_status": "initializing",
+      "cname_target": "custom-domains.chatgpt.site.",
+      "apex_proxy_ipv4_targets": [
+        "162.159.143.30",
+        "172.66.3.26"
+      ],
+      "validation_records": [
+        {
+          "record_type": "TXT",
+          "name": "_openai-site-verification.www.truckcontrolai.com",
+          "value": "openai-site-verification=G6S3HzZ_qY48LEUd7Zyijp_UHf7BXdsp4Cl0JzWV-TM"
+        },
+        {
+          "record_type": "TXT",
+          "name": "_cf-custom-hostname.www.truckcontrolai.com",
+          "value": "b4d8b848-1c2a-457c-aa63-e276ade0d23f"
+        }
+      ],
+      "last_error": null,
+      "created_at": "2026-11-01T00:19:55.523799+00:00",
+      "updated_at": "2026-11-01T00:19:57.800021+00:00"
+    }
+  ],
+  "dns_applied": false,
+  "mail_dns_pending": true
+}

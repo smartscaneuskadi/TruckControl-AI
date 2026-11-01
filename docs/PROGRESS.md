@@ -105,3 +105,21 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - CI `41242941858` correcto: la URL pública pasa Chrome de escritorio y perfil Android, con TLS activo, fuente coincidente, planes/altas cerrados y entrada a la demo. No se desactiva la comprobación de certificados.
 - PostgreSQL real permite 50 camiones, rechaza el 51 y aísla 2.100 apuntes de dos empresas. Todo se revierte y quedan cero filas sintéticas; no es una promesa de SLA. Fuente: `docs/verification/fleet-capacity-rollback.sql`.
 - Informe `release-0.4.0-rc.1.json` y entrega actual actualizados. No hay servicios de pago activados ni datos reales en la candidata.
+
+# 2026-11-01 — dominio, correo y presupuesto autorizado
+
+- El propietario pide crear dominio/correo y aprueba expresamente Migadu Micro por **19 USD/año** para los tres buzones. Conservar esta autorización; no repetirla. No se ha contratado ni cobrado.
+- Consulta exacta de Porkbun a las 23:59 UTC: dominio AVAILABLE, no premium, 11,08 USD por registro y renovación anual publicada. Nueva comprobación del 01/11: RDAP 404 y siete consultas DNS con NXDOMAIN. No acredita propiedad ni reserva el nombre. Evidencia: `docs/deployment/domain-mail-preflight-20261101.json`.
+- Descubierta y sugerida la conexión oficial de Wix para consultar compra de dominio desde el chat. Sin conexión confirmada, sin presupuesto Wix y sin nuevo sitio. El precio de Porkbun no se aplica a Wix.
+- Verificado el registro oficial de Migadu, que solicita identidad y confirmación por correo del titular; no requiere tarjeta para la prueba. No hay conector de provisión ni credenciales seguras disponibles para Migadu/Brevo. No pedir secretos por chat. No inventar nombre, dominio comprado, DKIM ni pago.
+- Preparación de buzones, DNS, SPF/DKIM/DMARC, SMTP, verificación y límites en `docs/DOMAIN_AND_MAIL.md`. La candidata continúa sin dominio asociado y ambas demos conservan sus direcciones. No se modifica Supabase ni FIXPilot.
+- Verificados de nuevo los hashes de once archivos de las 64 pruebas iniciales y las siete pruebas de correo. Solo cambian documentación y evidencia pública.
+
+# 2026-11-01 — dominio registrado y conexión web preparada
+
+- El propietario confirma completados los pasos 1 y 2: compra del dominio y registro de cuenta Migadu. No repetirlos. RDAP 200 confirma registro 01/11/2026 00:15:48 UTC y vencimiento 01/11/2027; servidores de nombres Porkbun. Evidencia en `registered-domain-20261101.json`.
+- Se añaden una sola vez `truckcontrolai.com` (`appgdom_6ae685a1b4008191a3bcb1750255d88e`) y `www.truckcontrolai.com` (`appgdom_6ae685ab86088191822d8b2610ca0d12`) al proyecto candidato existente. Pendientes de validación DNS y certificado; no duplicarlos ni confundirlos con HTTPS ya operativo. La demo estable se conserva.
+- Registros nativos en `docs/deployment/custom-domains-20261101.json`; siete registros web preparados y solicitud concreta para soporte de Porkbun. No son una zona completa ni eliminan registros de correo. DNS todavía apunta al aparcamiento y reenvío inicial de Porkbun.
+- La cuenta Migadu está creada según el titular. Dominio de correo, buzones, plan/pago y entrega aún no comprobados; faltan acceso seguro y los registros exactos de cuenta. No solicitar claves por chat ni afirmar que crear la cuenta transfiere acceso al agente.
+- El entorno confirma cero secretos/identidades configurados para estos proveedores. No hay conector de edición DNS Porkbun o provisión Migadu entre los disponibles; no se vuelve a proponer Wix después de la compra. Se continúa con la preparación independiente sin nuevos cargos.
+- CI del commit anterior de PR #6 (`83d6e808`) completado correctamente: ejecución `41255058432`. El código publicado permanece intacto; esta continuación actualiza documentación y configuración DNS preparada.
