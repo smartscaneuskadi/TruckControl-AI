@@ -6,12 +6,13 @@ import { CompanyAccessProvider, FleetAccess } from "./app/CompanyAccess";
 import { PwaTools } from "./components/PwaTools";
 import { OperationsProvider } from "./app/OperationsProvider";
 import { OfflineApplication } from "./app/OfflineApplication";
-import "./styles.css";
-import "./styles/professional-theme.css";
-import "./styles/company.css";
-import "./styles/commercial.css";
-import "./styles/operations.css";
-import "./styles/fleet-identity.css";
+import { AppearanceProvider } from "./app/AppearanceProvider";
+import {
+  defaultAppearance,
+  readAppearanceCache,
+  setAppearanceDocument,
+} from "./domain/appearance";
+import "./styles/theme-entry.css";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -45,20 +46,25 @@ class ErrorBoundary extends Component<
   }
 }
 
+setAppearanceDocument(
+  readAppearanceCache(null)?.preference ?? defaultAppearance,
+);
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ErrorBoundary>
-      <PwaTools>
-        <OfflineApplication>
-          <CompanyAccessProvider>
-            <FleetAccess>
-              <OperationsProvider>
-                <App />
-              </OperationsProvider>
-            </FleetAccess>
-          </CompanyAccessProvider>
-        </OfflineApplication>
-      </PwaTools>
+      <AppearanceProvider>
+        <PwaTools>
+          <OfflineApplication>
+            <CompanyAccessProvider>
+              <FleetAccess>
+                <OperationsProvider>
+                  <App />
+                </OperationsProvider>
+              </FleetAccess>
+            </CompanyAccessProvider>
+          </OfflineApplication>
+        </PwaTools>
+      </AppearanceProvider>
     </ErrorBoundary>
   </StrictMode>,
 );

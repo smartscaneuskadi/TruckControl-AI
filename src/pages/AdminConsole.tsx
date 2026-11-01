@@ -28,6 +28,7 @@ import type {
 } from "../domain/subscriptions";
 import { money } from "../lib/format";
 import { parseMoney } from "../domain/finance";
+import { useAppearance } from "../app/AppearanceContext";
 
 export function AdminConsole({
   email,
@@ -38,6 +39,7 @@ export function AdminConsole({
   onSignOut(): Promise<void>;
   onDemo(): void;
 }) {
+  const appearance = useAppearance();
   const client = getSupabaseClient();
   const [snapshot, setSnapshot] = useState<AdminSnapshot | null>(null);
   const [tab, setTab] = useState("customers");
@@ -128,6 +130,9 @@ export function AdminConsole({
           </span>
         </div>
         <div className="admin-account">
+          <Button variant="secondary" onClick={appearance.open}>
+            Apariencia
+          </Button>
           <ShieldCheck size={18} />
           <span>{email}</span>
           <Button

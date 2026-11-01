@@ -93,7 +93,7 @@ export default defineConfig({
     },
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["favicon.svg", "icons/*.png", "brands/*"],
+      includeAssets: ["favicon.svg", "icons/*.png", "brands/*", "images/*"],
       manifest: {
         id: publicBase,
         name: "TruckControl AI",
@@ -132,7 +132,9 @@ export default defineConfig({
       workbox: {
         navigateFallback: `${publicBase}index.html`,
         cleanupOutdatedCaches: true,
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,webmanifest,woff2}"],
+        globPatterns: [
+          "**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,webmanifest,woff2}",
+        ],
       },
     }),
   ],

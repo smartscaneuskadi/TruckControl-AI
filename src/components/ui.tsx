@@ -2,6 +2,7 @@ import {
   Children,
   cloneElement,
   isValidElement,
+  useContext,
   useEffect,
   useId,
   useRef,
@@ -14,8 +15,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
+  SunMoon,
   X,
 } from "lucide-react";
+import { AppearanceContext } from "../app/AppearanceContext";
 import { monthLabel, number } from "../lib/format";
 import type { FleetSnapshot, Period } from "../domain/models";
 
@@ -103,6 +106,8 @@ export function Metric({
   icon: Icon,
   highlight,
   change,
+  series,
+  tone,
 }: {
   label: string;
   value: string;
@@ -110,9 +115,11 @@ export function Metric({
   icon: LucideIcon;
   highlight?: boolean;
   change?: { value: number; label: string };
+  series?: number[];
+  tone?: "green" | "blue" | "gold" | "purple";
 }) {
   return (
-    <div className={`metric ${highlight ? "highlight" : ""}`}>
+    <div className={`metric ${highlight ? "highlight" : ""}`} data-tone={tone}>
       <div className="metric-top">
         <span>{label}</span>
         <span className="metric-icon">
@@ -135,7 +142,37 @@ export function Metric({
         )}
         <span>{change?.label ?? subtitle}</span>
       </div>
+      {series && <MetricSparkline values={series} />}
     </div>
+  );
+}
+function MetricSparkline({ values }: { values: number[] }) {
+  const points = values.filter(Number.isFinite).slice(-24);
+  if (points.length < 2) return null;
+  const min = Math.min(...points),
+    span = Math.max(1, Math.max(...points) - min);
+  const line = points
+    .map(
+      (value, i) =>
+        `${(i / (points.length - 1)) * 180},${26 - ((value - min) / span) * 23}`,
+    )
+    .join(" ");
+  return (
+    <svg
+      className="metric-sparkline"
+      viewBox="0 0 180 30"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <polyline
+        points={line}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 export function PeriodPicker({
@@ -266,14 +303,18 @@ export function Modal({
   children,
   onClose,
   wide = false,
+  allowAppearance = true,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
   onClose(): void;
   wide?: boolean;
+  allowAppearance?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  const appearance = useContext(AppearanceContext);
   useEffect(() => {
     const dialog = ref.current;
     dialog?.showModal();
@@ -283,7 +324,7 @@ export function Modal({
     <dialog
       ref={ref}
       className={`modal ${wide ? "wide" : ""}`}
-      aria-labelledby="modal-title"
+      aria-labelledby={titleId}
       onCancel={(e) => {
         e.preventDefault();
         onClose();
@@ -295,16 +336,27 @@ export function Modal({
       <div className="modal-content">
         <div className="modal-heading">
           <div>
-            <h2 id="modal-title">{title}</h2>
+            <h2 id={titleId}>{title}</h2>
             {subtitle && <p>{subtitle}</p>}
           </div>
-          <button
-            className="icon-button"
-            aria-label="Cerrar ventana"
-            onClick={onClose}
-          >
-            <X size={20} />
-          </button>
+          <div className="inline-actions">
+            {allowAppearance && appearance && (
+              <button
+                className="icon-button"
+                aria-label="Cambiar apariencia"
+                onClick={appearance.open}
+              >
+                <SunMoon size={19} />
+              </button>
+            )}
+            <button
+              className="icon-button"
+              aria-label="Cerrar ventana"
+              onClick={onClose}
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
         {children}
       </div>
