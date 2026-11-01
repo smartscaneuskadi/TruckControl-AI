@@ -49,6 +49,13 @@
       "name": "gmail_provider_vault_config",
       "sha256": "e60e50b07522372e3fa88eb78a70de975af9507f03a078077548190b7e0850b2",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101172906_company_mail_ingestion.sql",
+      "version": "20261101175756",
+      "name": "company_mail_ingestion",
+      "sha256": "70f9b448157b2f620591e18e236afc37804feec49177c8b524b267a0e3b80daa",
+      "already_applied": true
     }
   ]
 }

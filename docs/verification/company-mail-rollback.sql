@@ -1,5 +1,8 @@
 -- TruckControl only. Synthetic records, no Auth API/email/provider/file uploads.
 -- No DDL or global setting changes. All fixture rows are rolled back.
+-- Requires the mail module enabled by normal platform administration; never
+-- enable it merely to pass this fixture. Use company-mail-disabled-rollback.sql
+-- while the live module is closed.
 begin;
 do $$ begin
  if not (select enforce_access from private.tc_settings where id=true)
