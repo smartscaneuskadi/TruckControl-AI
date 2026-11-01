@@ -11,6 +11,7 @@ import {
   unseal,
   verifierFor,
 } from "../_shared/invoice.ts";
+import type { GmailOAuthConfig } from "./config.ts";
 
 const gmailScope = "https://www.googleapis.com/auth/gmail.readonly";
 const bucket = "truckcontrol-documents";
@@ -36,13 +37,16 @@ export interface GmailConfig {
   enforceCompanyRoles?: boolean;
   enforceEntitlements?: boolean;
   appOrigin: string;
+  additionalOrigins?: string[];
   callbackUrl: string;
-  oauth?: { clientId: string; clientSecret: string; encryptionKey: string };
+  oauth?: GmailOAuthConfig;
+  resolveOAuth?: () => Promise<GmailOAuthConfig | undefined>;
   ai?: { key: string; model: string };
 }
 interface State {
   organization_id: string;
   user_id: string;
+  return_origin?: string;
 }
 interface Credentials extends State {
   google_subject: string;
@@ -85,6 +89,11 @@ export function createGmailHandler(
   fetcher: typeof fetch = fetch,
 ) {
   const origin = new URL(config.appOrigin).origin;
+  const getOAuth = async () => config.oauth ?? (await config.resolveOAuth?.());
+  const allowedOrigins = new Set([
+    origin,
+    ...(config.additionalOrigins ?? []).map((value) => new URL(value).origin),
+  ]);
   const headers = {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Headers":
@@ -99,12 +108,12 @@ export function createGmailHandler(
       status,
       headers: { ...headers, "Content-Type": "application/json" },
     });
-  const redirect = (key: string, value: string) =>
+  const redirect = (key: string, value: string, returnOrigin = origin) =>
     new Response(null, {
       status: 303,
       headers: {
         ...headers,
-        Location: `${origin}/#/invoices?${key}=${encodeURIComponent(value)}`,
+        Location: `${allowedOrigins.has(returnOrigin) ? returnOrigin : origin}/#/invoices?${key}=${encodeURIComponent(value)}`,
       },
     });
   async function googleJson(url: string, options: RequestInit = {}) {
@@ -136,7 +145,6 @@ export function createGmailHandler(
     };
   }
   async function callback(url: URL) {
-    if (!config.oauth) return redirect("gmail_error", "unavailable");
     const state = url.searchParams.get("state");
     if (!state || !/^[A-Za-z0-9_-]{43}$/.test(state))
       return redirect("gmail_error", "invalid_state");
@@ -144,63 +152,74 @@ export function createGmailHandler(
       state_hash: await hash(state),
     });
     if (!stored) return redirect("gmail_error", "expired");
-    if (url.searchParams.has("error"))
-      return redirect("gmail_error", "declined");
-    const code = url.searchParams.get("code");
-    if (!code || code.length > 4096)
-      return redirect("gmail_error", "invalid_code");
-    const oauth = config.oauth;
-    const token = await tokens(
-      new URLSearchParams({
-        client_id: oauth.clientId,
-        client_secret: oauth.clientSecret,
-        code,
-        grant_type: "authorization_code",
-        redirect_uri: config.callbackUrl,
-        code_verifier: await verifierFor(state, oauth.encryptionKey),
-      }),
-    );
-    if (
-      !token.access_token ||
-      !token.refresh_token ||
-      !token.scope?.split(" ").includes(gmailScope)
-    )
-      return redirect("gmail_error", "permission_required");
-    const auth = { headers: { Authorization: `Bearer ${token.access_token}` } };
-    const [identity, profile] = await Promise.all([
-      googleJson("https://openidconnect.googleapis.com/v1/userinfo", auth),
-      googleJson(
-        "https://gmail.googleapis.com/gmail/v1/users/me/profile",
-        auth,
-      ),
-    ]);
-    if (
-      typeof identity.sub !== "string" ||
-      typeof identity.email !== "string" ||
-      identity.email_verified !== true ||
-      typeof profile.emailAddress !== "string" ||
-      identity.email.toLowerCase() !== profile.emailAddress.toLowerCase()
-    )
-      return redirect("gmail_error", "identity_mismatch");
-    const ticket = randomToken();
-    const cipher = await seal(
-      token.refresh_token,
-      oauth.encryptionKey,
-      `${stored.organization_id}:${stored.user_id}:${identity.sub}`,
-    );
-    // Finalize only with the SAME authenticated app user after the redirect.
-    // This prevents an attacker from linking a victim's Gmail using their own OAuth start URL.
-    await gateway.server("pending_create", {
-      ...stored,
-      ticket_hash: await hash(ticket),
-      google_subject: identity.sub,
-      email: identity.email,
-      refresh_token_cipher: cipher,
-    });
-    return redirect("gmail_ticket", ticket);
+    const destination = stored.return_origin ?? origin;
+    try {
+      const oauth = await getOAuth();
+      if (!oauth) return redirect("gmail_error", "unavailable", destination);
+      if (url.searchParams.has("error"))
+        return redirect("gmail_error", "declined", destination);
+      const code = url.searchParams.get("code");
+      if (!code || code.length > 4096)
+        return redirect("gmail_error", "invalid_code", destination);
+      const token = await tokens(
+        new URLSearchParams({
+          client_id: oauth.clientId,
+          client_secret: oauth.clientSecret,
+          code,
+          grant_type: "authorization_code",
+          redirect_uri: config.callbackUrl,
+          code_verifier: await verifierFor(state, oauth.encryptionKey),
+        }),
+      );
+      if (
+        !token.access_token ||
+        !token.refresh_token ||
+        !token.scope?.split(" ").includes(gmailScope)
+      )
+        return redirect("gmail_error", "permission_required", destination);
+      const auth = {
+        headers: { Authorization: `Bearer ${token.access_token}` },
+      };
+      const [identity, profile] = await Promise.all([
+        googleJson("https://openidconnect.googleapis.com/v1/userinfo", auth),
+        googleJson(
+          "https://gmail.googleapis.com/gmail/v1/users/me/profile",
+          auth,
+        ),
+      ]);
+      if (
+        typeof identity.sub !== "string" ||
+        typeof identity.email !== "string" ||
+        identity.email_verified !== true ||
+        typeof profile.emailAddress !== "string" ||
+        identity.email.toLowerCase() !== profile.emailAddress.toLowerCase()
+      )
+        return redirect("gmail_error", "identity_mismatch", destination);
+      const ticket = randomToken();
+      const cipher = await seal(
+        token.refresh_token,
+        oauth.encryptionKey,
+        `${stored.organization_id}:${stored.user_id}:${identity.sub}`,
+      );
+      // Finalize only with the SAME authenticated app user after the redirect.
+      // This prevents an attacker from linking a victim's Gmail using their own OAuth start URL.
+      await gateway.server("pending_create", {
+        ...stored,
+        ticket_hash: await hash(ticket),
+        google_subject: identity.sub,
+        email: identity.email,
+        refresh_token_cipher: cipher,
+      });
+      return redirect("gmail_ticket", ticket, destination);
+    } catch {
+      return redirect("gmail_error", "authorization_failed", destination);
+    }
   }
-  async function sync(organizationId: string, userId: string) {
-    const oauth = config.oauth!;
+  async function sync(
+    organizationId: string,
+    userId: string,
+    oauth: GmailOAuthConfig,
+  ) {
     const locked = await gateway.server<boolean>("lock_sync", {
       organization_id: organizationId,
     });
@@ -415,9 +434,9 @@ export function createGmailHandler(
       });
     }
   }
-  return async function handle(request: Request): Promise<Response> {
+  async function dispatch(request: Request): Promise<Response> {
     const requestOrigin = request.headers.get("origin");
-    if (requestOrigin && requestOrigin !== origin)
+    if (requestOrigin && !allowedOrigins.has(requestOrigin))
       return json({ error: "origin_not_allowed" }, 403);
     if (request.method === "OPTIONS")
       return new Response(null, { status: 204, headers });
@@ -426,6 +445,34 @@ export function createGmailHandler(
       if (request.method === "GET") return await callback(url);
       if (request.method !== "POST")
         return json({ error: "method_not_allowed" }, 405);
+      // The branded callback receives a short-lived Google code, never tokens.
+      // Its public exchange still requires a valid one-use server-side state;
+      // the resulting ticket must be finalized by the original app user/company.
+      if (url.pathname.endsWith("/company-gmail/oauth-callback")) {
+        const raw = await request.text();
+        if (raw.length > 8192) return json({ error: "request_too_large" }, 413);
+        let body: Data;
+        try {
+          body = JSON.parse(raw);
+        } catch {
+          return json({ error: "invalid_request" }, 400);
+        }
+        if (
+          !body ||
+          typeof body.state !== "string" ||
+          !/^[A-Za-z0-9_-]{43}$/.test(body.state)
+        )
+          return json({ error: "invalid_state" }, 400);
+        const exchange = new URL(config.callbackUrl);
+        exchange.searchParams.set("state", body.state);
+        if (typeof body.error === "string" && body.error.length <= 256)
+          exchange.searchParams.set("error", body.error);
+        else if (typeof body.code === "string" && body.code.length <= 4096)
+          exchange.searchParams.set("code", body.code);
+        else return json({ error: "invalid_request" }, 400);
+        const result = await callback(exchange);
+        return json({ url: result.headers.get("Location") });
+      }
       const token = request.headers
         .get("authorization")
         ?.match(/^Bearer ([^\s]+)$/i)?.[1];
@@ -466,9 +513,10 @@ export function createGmailHandler(
         !gmailAllowed
       )
         return json({ error: "module_not_available" }, 403);
+      const oauth = await getOAuth();
       if (body.action === "status")
         return json({
-          oauth_ready: Boolean(config.oauth),
+          oauth_ready: Boolean(oauth),
           ai_enabled:
             Boolean(config.ai) &&
             (!gateway.featureAllowed ||
@@ -478,14 +526,14 @@ export function createGmailHandler(
                 "invoice_ai",
               ))),
         });
-      if (!config.oauth) return json({ error: "gmail_not_configured" }, 503);
-      const oauth = config.oauth;
+      if (!oauth) return json({ error: "gmail_not_configured" }, 503);
       if (body.action === "start") {
         const state = randomToken();
         await gateway.server("state_create", {
           organization_id: organizationId,
           user_id: user.id,
           state_hash: await hash(state),
+          return_origin: requestOrigin || origin,
         });
         const verifier = await verifierFor(state, oauth.encryptionKey);
         const challenge = base64url(
@@ -534,16 +582,59 @@ export function createGmailHandler(
         return json({ connected: true });
       }
       if (body.action === "disconnect") {
+        const credentials = await gateway.server<Credentials | null>(
+          "credentials",
+          {
+            organization_id: organizationId,
+            purpose: "disconnect",
+          },
+        );
+        if (credentials) {
+          const refreshToken = await unseal(
+            credentials.refresh_token_cipher,
+            oauth.encryptionKey,
+            `${organizationId}:${credentials.user_id}:${credentials.google_subject}`,
+          );
+          const revoked = await fetcher(
+            "https://oauth2.googleapis.com/revoke",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({ token: refreshToken }),
+              signal: AbortSignal.timeout(20000),
+            },
+          );
+          const alreadyRevoked =
+            revoked.status === 400 &&
+            (await revoked.json().catch(() => ({})))?.error === "invalid_token";
+          if (!revoked.ok && !alreadyRevoked)
+            return json({ error: "gmail_revocation_unavailable" }, 502);
+        }
         await gateway.server("disconnect", { organization_id: organizationId });
         return json({ disconnected: true });
       }
-      if (body.action === "sync") return await sync(organizationId, user.id);
+      if (body.action === "sync")
+        return await sync(organizationId, user.id, oauth);
       return json({ error: "unsupported_action" }, 400);
     } catch {
       return request.method === "GET"
         ? redirect("gmail_error", "authorization_failed")
         : json({ error: "integration_unavailable" }, 502);
     }
+  }
+  return async function handle(request: Request): Promise<Response> {
+    const response = await dispatch(request);
+    const requested = request.headers.get("origin");
+    const outgoing = new Headers(response.headers);
+    outgoing.set(
+      "Access-Control-Allow-Origin",
+      requested && allowedOrigins.has(requested) ? requested : origin,
+    );
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: outgoing,
+    });
   };
 }
 export { bucket };

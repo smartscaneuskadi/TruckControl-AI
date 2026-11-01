@@ -11,6 +11,11 @@ import type { Plan } from "../domain/subscriptions";
 import { PublicPortal } from "../pages/PublicPortal";
 import { CommercialSession } from "./CommercialSession";
 import { demoRestoreViewKey } from "../data/demo-keys";
+import {
+  chooseCompany,
+  readCompanySelection,
+  rememberCompanySelection,
+} from "../domain/company-selection";
 
 type Organization = { id: string; name: string };
 interface Access {
@@ -175,7 +180,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
             : old,
         );
         setSelected((old) =>
-          data.some((o) => o.id === old) ? old : (data[0]?.id ?? null),
+          chooseCompany(data, old, readCompanySelection(userId)),
         );
         setError("");
       });
@@ -185,6 +190,10 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   }, [client, userId, revision]);
   const organization =
     account.organizations.find((o) => o.id === selected) ?? null;
+  useEffect(() => {
+    if (userId && organization)
+      rememberCompanySelection(userId, organization.id);
+  }, [userId, organization?.id]);
   function changeMode(next: "demo" | "company" | "portal") {
     setMode(next);
     try {
