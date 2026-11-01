@@ -1,5 +1,7 @@
 -- TruckControl only. Exercise deployed RPC permissions with all existing
 -- controls intact. No provider request, credential output or account creation.
+-- Historical pre-approval check. AI now has an approved 10 USD/month budget;
+-- do not disable an authorized service merely to replay this closed-state test.
 begin;
 do $$ begin
  if not (select enforce_access from private.tc_settings where id=true)
