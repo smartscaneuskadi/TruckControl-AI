@@ -1,0 +1,28 @@
+Asunto: truckcontrolai.com activo - fallo DNSSEC en los destinos DKIM de Migadu
+
+Hola. Mi dominio truckcontrolai.com ya figura activo en Migadu, con Micro anual.
+He publicado los registros exactos de vuestro export BIND en Porkbun.
+
+Los tres CNAME de mi dominio resuelven correctamente hacia:
+key1.truckcontrolai.com._domainkey.migadu.com.
+key2.truckcontrolai.com._domainkey.migadu.com.
+key3.truckcontrolai.com._domainkey.migadu.com.
+
+Al consultar TXT en esos tres destinos, Google Public DNS y Cloudflare devuelven
+SERVFAIL (RCODE 2). Comprobación independiente: 01/11/2026 10:31:57 UTC.
+
+Google indica: DNSSEC validation failure.
+Cloudflare indica: EDE(6): DNSSEC Bogus wildcard expansion proof.
+
+Ejemplos de comprobación pública:
+https://dns.google/resolve?name=key1.truckcontrolai.com._domainkey.migadu.com&type=TXT
+https://cloudflare-dns.com/dns-query?name=key1.truckcontrolai.com._domainkey.migadu.com&type=TXT
+
+Por favor, revisad la publicación de las claves y la cadena DNSSEC de esos
+destinos bajo migadu.com. No solicitamos desactivar DNSSEC, cambiar los NS de
+nuestro dominio ni modificar otros dominios. No autorizar servicios adicionales
+ni ampliar el plan sin consultar antes el importe.
+
+La activación de envío y sus pruebas se mantienen pendientes hasta completar
+la verificación. Puedo aportar el export y el diagnóstico desde esta cuenta.
+No se adjuntan contraseñas ni claves API.

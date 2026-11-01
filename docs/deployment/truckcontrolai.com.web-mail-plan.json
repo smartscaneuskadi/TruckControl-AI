@@ -1,7 +1,7 @@
 {
   "domain": "truckcontrolai.com",
   "prepared_at": "2026-11-01T09:57:00.478746+00:00",
-  "status": "prepared_not_applied",
+  "status": "applied_and_registry_readback_verified",
   "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
   "source": {
     "kind": "owner_screenshot_of_original_migadu_bind_export",
@@ -13,8 +13,8 @@
   },
   "target_ttl": 600,
   "target_ttl_note": "Reduced cache lifetime for initial setup; record values match the provider source.",
-  "provider_zone_inventory_received": false,
-  "dns_changed_by_agent": false,
+  "provider_zone_inventory_received": true,
+  "dns_changed_by_agent": true,
   "full_zone_replacement_authorized": false,
   "records": [
     {
@@ -178,5 +178,14 @@
     "sending_must_wait_for_spf_dkim_verification": true,
     "reporting_mailbox_added": false
   },
-  "secrets_included": false
+  "secrets_included": false,
+  "applied_at": "2026-11-01T10:16:28.345534+00:00",
+  "public_dns_verified_at": "2026-11-01T10:18:16.846605+00:00",
+  "applied_operations": 20,
+  "created_records": 16,
+  "edited_records": 4,
+  "deleted_records": 0,
+  "preserved_record_count": 7,
+  "live_record_count": 27,
+  "verification_report": "dns-activation-20261101.json"
 }

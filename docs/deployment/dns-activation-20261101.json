@@ -1,0 +1,162 @@
+{
+  "domain": "truckcontrolai.com",
+  "applied_at": "2026-11-01T10:16:28.345534+00:00",
+  "verified_at": "2026-11-01T10:22:15.693915+00:00",
+  "authorization": {
+    "method": "official_porkbun_pkce",
+    "verified_scopes": [
+      "read",
+      "dns"
+    ],
+    "purchase_permission": false,
+    "client_domain_pinned": true,
+    "credentials_published": false
+  },
+  "operations": {
+    "edits": 4,
+    "creates": 16,
+    "deletions": 0,
+    "source_records": 11,
+    "result_records": 27,
+    "unchanged_records": 7
+  },
+  "public_dns_checks": [
+    {
+      "name": "truckcontrolai.com",
+      "type": "A",
+      "expected_value_matches": true
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "A",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_openai-site-verification.truckcontrolai.com",
+      "type": "TXT",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_cf-custom-hostname.truckcontrolai.com",
+      "type": "TXT",
+      "expected_value_matches": true
+    },
+    {
+      "name": "www.truckcontrolai.com",
+      "type": "CNAME",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_openai-site-verification.www.truckcontrolai.com",
+      "type": "TXT",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_cf-custom-hostname.www.truckcontrolai.com",
+      "type": "TXT",
+      "expected_value_matches": true
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "TXT",
+      "expected_value_matches": true
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "MX",
+      "expected_value_matches": true
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "MX",
+      "expected_value_matches": true
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "TXT",
+      "expected_value_matches": true
+    },
+    {
+      "name": "key1._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "expected_value_matches": true
+    },
+    {
+      "name": "key2._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "expected_value_matches": true
+    },
+    {
+      "name": "key3._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_dmarc.truckcontrolai.com",
+      "type": "TXT",
+      "expected_value_matches": true
+    },
+    {
+      "name": "autoconfig.truckcontrolai.com",
+      "type": "CNAME",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_autodiscover._tcp.truckcontrolai.com",
+      "type": "SRV",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_submissions._tcp.truckcontrolai.com",
+      "type": "SRV",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_imaps._tcp.truckcontrolai.com",
+      "type": "SRV",
+      "expected_value_matches": true
+    },
+    {
+      "name": "_pop3s._tcp.truckcontrolai.com",
+      "type": "SRV",
+      "expected_value_matches": true
+    }
+  ],
+  "tls_certificate_verification_disabled": false,
+  "https_resources_verified": 16,
+  "published_commit": "e7a43948bff9bf3b3c5c37c890324ce6dc94852c",
+  "channel": "candidate",
+  "real_customer_registration_open": false,
+  "routing_fix": {
+    "redeployed_saved_version": 1,
+    "deployment_id": "appgdep_6ae7123d2f2c8191b0a9b4c047f60837",
+    "source_changed": false
+  },
+  "backups": {
+    "local_before_digest": "7c95c709339d06f81c52144236bdb3be982485b4f0aac7b819ecf5471f391d18",
+    "private_before_file": "/workspace/.truckcontrol-private/porkbun/dns-before-first-change.json",
+    "provider_restore_points": [
+      {
+        "id": 2647452,
+        "takenAt": "2026-11-01 10:15:38",
+        "reason": "before-edit",
+        "recordCount": 12
+      },
+      {
+        "id": 2629184,
+        "takenAt": "2026-11-01 00:16:32",
+        "reason": "before-create",
+        "recordCount": 6
+      }
+    ]
+  },
+  "migadu": {
+    "domain_active_reported_by_owner": true,
+    "inbound_delivery_verified": false,
+    "outbound_delivery_verified": false,
+    "hosted_supabase_smtp_configured_by_agent": false,
+    "mailboxes_checked": false,
+    "dkim_public_key_validation": "pending_provider_dnssec_resolution",
+    "dkim_dnssec_report": "migadu-dkim-dnssec-20261101.json"
+  }
+}

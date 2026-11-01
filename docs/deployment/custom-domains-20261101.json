@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-01T00:21:14.381Z",
+  "checked_at": "2026-11-01T10:31:16.019Z",
   "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
   "domains": [
     {
@@ -7,9 +7,9 @@
       "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
       "hostname": "truckcontrolai.com",
       "worker_name": "site---6ae655e56db481918fe18adfe9df8b66",
-      "status": "pending",
-      "provider_status": "pending",
-      "ssl_status": "initializing",
+      "status": "active",
+      "provider_status": "active",
+      "ssl_status": "active",
       "cname_target": "custom-domains.chatgpt.site.",
       "apex_proxy_ipv4_targets": [
         "162.159.143.30",
@@ -29,16 +29,23 @@
       ],
       "last_error": null,
       "created_at": "2026-11-01T00:19:45.703453+00:00",
-      "updated_at": "2026-11-01T00:19:48.067587+00:00"
+      "updated_at": "2026-11-01T10:20:16.101762+00:00",
+      "current_provider_validation_records": [
+        {
+          "record_type": "TXT",
+          "name": "_openai-site-verification.truckcontrolai.com",
+          "value": "openai-site-verification=KAkyMZYRGdFfkgxYF1UJWAB2OFIeE5RsIdHvKVcp9Vo"
+        }
+      ]
     },
     {
       "id": "appgdom_6ae685ab86088191822d8b2610ca0d12",
       "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
       "hostname": "www.truckcontrolai.com",
       "worker_name": "site---6ae655e56db481918fe18adfe9df8b66",
-      "status": "pending",
-      "provider_status": "pending",
-      "ssl_status": "initializing",
+      "status": "active",
+      "provider_status": "active",
+      "ssl_status": "active",
       "cname_target": "custom-domains.chatgpt.site.",
       "apex_proxy_ipv4_targets": [
         "162.159.143.30",
@@ -58,9 +65,17 @@
       ],
       "last_error": null,
       "created_at": "2026-11-01T00:19:55.523799+00:00",
-      "updated_at": "2026-11-01T00:19:57.800021+00:00"
+      "updated_at": "2026-11-01T10:20:56.465358+00:00",
+      "current_provider_validation_records": [
+        {
+          "record_type": "TXT",
+          "name": "_openai-site-verification.www.truckcontrolai.com",
+          "value": "openai-site-verification=G6S3HzZ_qY48LEUd7Zyijp_UHf7BXdsp4Cl0JzWV-TM"
+        }
+      ]
     }
   ],
-  "dns_applied": false,
-  "mail_dns_pending": true
+  "dns_applied": true,
+  "mail_dns_pending": false,
+  "mailbox_delivery_pending": true
 }

@@ -9,5 +9,11 @@
   "published_commit": "e7a43948bff9bf3b3c5c37c890324ce6dc94852c",
   "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0820192a9ff88191b11caf73f39d91aa",
   "published_version_number": 1,
-  "deployment_id": "appgdep_6ae659bb6444819186d21272cfe43404"
+  "deployment_id": "appgdep_6ae7123d2f2c8191b0a9b4c047f60837",
+  "previous_deployment_id": "appgdep_6ae659bb6444819186d21272cfe43404",
+  "verified_custom_origins": [
+    "https://truckcontrolai.com",
+    "https://www.truckcontrolai.com"
+  ],
+  "custom_domains_verified_at": "2026-11-01T10:22:15.693915+00:00"
 }
