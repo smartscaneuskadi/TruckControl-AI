@@ -1,0 +1,175 @@
+{
+  "checked_at": "2026-11-01T00:19:21.827755+00:00",
+  "domain": "truckcontrolai.com",
+  "owner_reports_domain_purchase": true,
+  "owner_reports_migadu_signup": true,
+  "read_only": true,
+  "rdap": {
+    "http_status": 200,
+    "domain_name": "TRUCKCONTROLAI.COM",
+    "status": [
+      "client delete prohibited",
+      "client transfer prohibited"
+    ],
+    "events": [
+      {
+        "eventAction": "registration",
+        "eventDate": "2026-11-01T00:15:48Z"
+      },
+      {
+        "eventAction": "expiration",
+        "eventDate": "2027-11-01T00:15:48Z"
+      },
+      {
+        "eventAction": "last changed",
+        "eventDate": "2026-11-01T00:16:32Z"
+      },
+      {
+        "eventAction": "last update of RDAP database",
+        "eventDate": "2026-11-01T00:19:14Z"
+      }
+    ],
+    "nameservers": [
+      "CURITIBA.NS.PORKBUN.COM",
+      "FORTALEZA.NS.PORKBUN.COM",
+      "MACEIO.NS.PORKBUN.COM",
+      "SALVADOR.NS.PORKBUN.COM"
+    ]
+  },
+  "dns": [
+    {
+      "name": "truckcontrolai.com",
+      "type": "NS",
+      "http_status": 200,
+      "dns_status": 0,
+      "answers": [
+        {
+          "name": "truckcontrolai.com.",
+          "type": 2,
+          "TTL": 21600,
+          "data": "curitiba.ns.porkbun.com."
+        },
+        {
+          "name": "truckcontrolai.com.",
+          "type": 2,
+          "TTL": 21600,
+          "data": "maceio.ns.porkbun.com."
+        },
+        {
+          "name": "truckcontrolai.com.",
+          "type": 2,
+          "TTL": 21600,
+          "data": "fortaleza.ns.porkbun.com."
+        },
+        {
+          "name": "truckcontrolai.com.",
+          "type": 2,
+          "TTL": 21600,
+          "data": "salvador.ns.porkbun.com."
+        }
+      ],
+      "error_type": null
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "A",
+      "http_status": 200,
+      "dns_status": 0,
+      "answers": [
+        {
+          "name": "truckcontrolai.com.",
+          "type": 1,
+          "TTL": 31,
+          "data": "207.207.210.23"
+        },
+        {
+          "name": "truckcontrolai.com.",
+          "type": 1,
+          "TTL": 31,
+          "data": "207.207.210.50"
+        },
+        {
+          "name": "truckcontrolai.com.",
+          "type": 1,
+          "TTL": 31,
+          "data": "207.207.210.36"
+        }
+      ],
+      "error_type": null
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "AAAA",
+      "http_status": 200,
+      "dns_status": 0,
+      "answers": [],
+      "error_type": null
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "MX",
+      "http_status": 200,
+      "dns_status": 0,
+      "answers": [
+        {
+          "name": "truckcontrolai.com.",
+          "type": 15,
+          "TTL": 600,
+          "data": "10 fwd1.porkbun.com."
+        },
+        {
+          "name": "truckcontrolai.com.",
+          "type": 15,
+          "TTL": 600,
+          "data": "20 fwd2.porkbun.com."
+        }
+      ],
+      "error_type": null
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "TXT",
+      "http_status": 200,
+      "dns_status": 0,
+      "answers": [
+        {
+          "name": "truckcontrolai.com.",
+          "type": 16,
+          "TTL": 600,
+          "data": "v=spf1 include:_spf.porkbun.com ~all"
+        }
+      ],
+      "error_type": null
+    },
+    {
+      "name": "_dmarc.truckcontrolai.com",
+      "type": "TXT",
+      "http_status": 200,
+      "dns_status": 0,
+      "answers": [
+        {
+          "name": "_dmarc.truckcontrolai.com.",
+          "type": 5,
+          "TTL": 600,
+          "data": "uixie.porkbun.com."
+        }
+      ],
+      "error_type": null
+    },
+    {
+      "name": "www.truckcontrolai.com",
+      "type": "CNAME",
+      "http_status": 200,
+      "dns_status": 0,
+      "answers": [
+        {
+          "name": "www.truckcontrolai.com.",
+          "type": 5,
+          "TTL": 600,
+          "data": "uixie.porkbun.com."
+        }
+      ],
+      "error_type": null
+    }
+  ]
+}

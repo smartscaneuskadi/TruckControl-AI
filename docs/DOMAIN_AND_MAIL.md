@@ -2,29 +2,35 @@
 
 ## Estado al 1 de noviembre de 2026
 
-Destino único: **truckcontrolai.com**. La consulta exacta de Porkbun del 31/10 a las 23:59 UTC devuelve `AVAILABLE`, sin precio premium, por 11,08 USD para un año y renovación publicada de 11,08 USD/año. La comprobación del 01/11 mantiene RDAP 404 y DNS NXDOMAIN. Estos resultados no reservan el nombre ni acreditan propiedad. Evidencia pública: [domain-mail-preflight-20261101.json](deployment/domain-mail-preflight-20261101.json).
+Destino único: **truckcontrolai.com**. El propietario confirma completados la compra y el registro de cuenta Migadu. RDAP devuelve 200 y confirma registro el **01/11/2026 a las 00:15:48 UTC**, con vencimiento el **01/11/2027**. Los servidores de nombres pertenecen a Porkbun. Evidencia actual: [registered-domain-20261101.json](deployment/registered-domain-20261101.json). Se conserva la [consulta anterior a la compra](deployment/domain-mail-preflight-20261101.json) como historial; sus resultados AVAILABLE/NXDOMAIN ya no describen el estado actual.
 
 El propietario **ha aprobado expresamente Migadu Micro por 19 USD/año** para los tres buzones. No volver a pedir esta autorización dentro de ese importe y alcance. Si el checkout añade impuestos o cambia el importe, mostrar el total antes de pagar. La aprobación no significa cuenta creada, dominio comprado ni pago ejecutado.
 
-No se han contratado servicios, creado buzones, enviado mensajes o modificado registros DNS. La candidata no tiene dominios personalizados asociados. La demo estable y la candidata continúan en sus direcciones actuales, sin cambios.
+El agente no ha ejecutado compras ni nuevos cargos. La cuenta Migadu consta creada según el titular; todavía no se ha podido comprobar su plan/pago, el dominio de correo ni los buzones mediante acceso autorizado. No se han enviado mensajes ni modificado registros DNS desde este entorno.
+
+Se han añadido `truckcontrolai.com` y `www.truckcontrolai.com` al alojamiento existente de la candidata. Ambos están **pendientes de validación DNS**, con certificado inicializándose; no afirmar que HTTPS ya está activo. Identidades y registros exactos: [custom-domains-20261101.json](deployment/custom-domains-20261101.json). La demo estable y la candidata conservan sus direcciones anteriores y no se abren altas comerciales.
+
+Se han preparado [siete registros web](deployment/truckcontrolai.com.web-records.zone) y una [solicitud lista para soporte de Porkbun](deployment/porkbun-domain-connection.txt). El archivo contiene exclusivamente registros web: no es una exportación completa de la zona ni debe usarse para sustituirla. Los MX/SPF actuales todavía corresponden a Porkbun; conservarlos hasta disponer de los valores reales de Migadu y preparar su cambio controlado.
 
 ## Proveedores y presupuesto
 
 | Servicio | Precio publicado | Alcance y estado |
 | --- | --- | --- |
-| Dominio en [Porkbun](https://porkbun.com/checkout/search?q=truckcontrolai.com) | 11,08 USD/año; renovación actual igual | Consulta pública exacta; pago pendiente. Impuestos/conversión se comprueban en el checkout. |
+| Dominio en [Porkbun](https://porkbun.com/account/domainsSpeedy) | 11,08 USD/año de tarifa consultada; renovación actual igual | Comprado según el titular y registro confirmado por RDAP. Importe final de su factura no consultado; no volver a comprar. |
 | [Migadu Micro](https://www.migadu.com/pricing/) | 19 USD/año por cuenta | Aprobado por el propietario. 5 GB, 200 entrantes/día y 20 salientes/día compartidos; no son cuotas por buzón. No incluye administración de la cuenta por varios administradores. |
 | [Brevo Free](https://help.brevo.com/hc/en-us/articles/208589409-About-Brevo-s-pricing-plans) | 0 de cuota | Hasta 300 envíos/día para confirmación y recuperación. Cuenta, autenticación del remitente y entrega todavía pendientes. No activar SMS ni opciones de pago. |
 
-El presupuesto de referencia con Porkbun y Migadu es **30,08 USD el primer año**, antes de posibles impuestos/conversión. Las renovaciones futuras pueden cambiar. El coste del dominio todavía no se ha aprobado como un cargo ejecutable. La cuenta de correo solo atiende las direcciones de la plataforma; no aloja automáticamente el correo de las empresas clientes.
+El presupuesto de referencia con Porkbun y Migadu es **30,08 USD el primer año**, antes de posibles impuestos/conversión. Las renovaciones futuras pueden cambiar. El titular ya ha realizado el paso de compra del dominio; no repetirlo ni ejecutar otra compra. La cuenta de correo solo atiende las direcciones de la plataforma; no aloja automáticamente el correo de las empresas clientes.
 
-Se ha encontrado y sugerido la conexión oficial de **Wix**, anunciada para buscar y comprar dominios desde el chat. No está confirmada su conexión ni se ha obtenido su precio para este dominio. El importe de Porkbun **no** es un presupuesto de Wix. Consultar el total y la renovación de Wix cuando esté conectado, comprar únicamente el dominio y mantener el alojamiento existente. Wix documenta que permite comprar un dominio sin plan de sitio y dirigirlo a un alojamiento externo. No crear otro sitio, contratar hosting ni rehacer la aplicación para usar esta conexión.
+Anteriormente se sugirió Wix para consultar compra dentro del chat, pero el dominio ya está registrado en Porkbun. No es necesario instalar Wix, transferir el dominio ni contratar otro alojamiento. No crear otro sitio ni rehacer la aplicación.
 
 ## Alta y acceso seguro pendientes
 
-El [registro oficial de Migadu](https://admin.migadu.com/public/signup) solicita nombre completo del titular, un correo existente y aceptación de condiciones; envía un enlace de confirmación. Se puede usar `pedidos@smartscaneuskadi.com` como correo de acceso externo, evitando depender de un buzón del dominio que aún no existe. La prueba no requiere tarjeta. El nombre del titular no debe inventarse. El propietario debe completar su identidad, confirmación y pago en el proveedor cuando no haya un flujo conectado que permita hacerlo con seguridad.
+El titular comunica que ha completado el [registro de Migadu](https://admin.migadu.com/public/signup). No repetir el alta. La cuenta utiliza un correo externo para no depender de un buzón del dominio aún no operativo. La creación de cuenta no prueba que se hayan creado el dominio de correo, sus buzones o el plan de pago.
 
 No existe actualmente un conector de provisión de Migadu/Brevo ni un almacén seguro de credenciales configurado para estas cuentas. Crear una cuenta no proporciona por sí mismo acceso al agente. La API oficial de Migadu permite gestionar dominio, buzones y registros, pero exige una clave propia de la cuenta: utilizarla únicamente si se conecta mediante un mecanismo seguro. No pedir contraseñas ni claves por chat, pasarlas como argumentos o guardarlas en Git. No reutilizar las credenciales ni datos de FIXPilot.
+
+La conexión de Porkbun tampoco está disponible: el entorno no tiene secretos ni identidades de estos proveedores. Las búsquedas de conectores específicos no han encontrado uno que permita editar su DNS. No inventar un botón OAuth o un checkout nuevo. Si no hay un canal seguro de acceso, la alternativa concreta para la web es entregar la solicitud preparada al [soporte oficial de Porkbun](https://porkbun.com/contact) desde la cuenta del titular. Para correo hacen falta los registros de verificación y DNS generados por Migadu para este dominio; son información publicable, a diferencia de contraseñas, claves API o enlaces de acceso.
 
 ## Direcciones previstas
 

@@ -1,0 +1,46 @@
+SOLICITUD DE CONEXION WEB — truckcontrolai.com
+
+Solicito aplicar estos registros DNS al dominio truckcontrolai.com de mi cuenta.
+Los valores los ha generado el alojamiento de la aplicacion existente.
+No solicito transferir el dominio, cambiar nameservers ni contratar servicios.
+
+Sustituir solo los registros de aparcamiento de @ y www que entren en conflicto.
+Conservar todos los registros de correo (MX, SPF, DKIM, DMARC), otros subdominios
+y cualquier verificacion ajena a los nombres especificados. No sustituir la zona completa.
+Si aparece un registro no relacionado o hay cargos adicionales, avisarme antes de modificarlo.
+
+REGISTROS WEB (TTL 600 segundos):
+
+Tipo: A
+Nombre/Host: @
+Valor/Respuesta: 162.159.143.30
+
+Tipo: A
+Nombre/Host: @
+Valor/Respuesta: 172.66.3.26
+
+Tipo: TXT
+Nombre/Host: _openai-site-verification
+Valor/Respuesta: openai-site-verification=KAkyMZYRGdFfkgxYF1UJWAB2OFIeE5RsIdHvKVcp9Vo
+
+Tipo: TXT
+Nombre/Host: _cf-custom-hostname
+Valor/Respuesta: 5028b548-5fae-4f1e-94f0-cd5031dc18a2
+
+Tipo: CNAME
+Nombre/Host: www
+Valor/Respuesta: custom-domains.chatgpt.site.
+
+Tipo: TXT
+Nombre/Host: _openai-site-verification.www
+Valor/Respuesta: openai-site-verification=G6S3HzZ_qY48LEUd7Zyijp_UHf7BXdsp4Cl0JzWV-TM
+
+Tipo: TXT
+Nombre/Host: _cf-custom-hostname.www
+Valor/Respuesta: b4d8b848-1c2a-457c-aa63-e276ade0d23f
+
+CORREO:
+Migadu se configurara por separado con sus registros de cuenta exactos.
+Esta solicitud no elimina los MX ni el SPF actuales de Porkbun.
+
+La comprobacion HTTPS y la entrega real de correo las haremos despues de aplicar DNS.
