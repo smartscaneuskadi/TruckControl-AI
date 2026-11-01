@@ -1,0 +1,24 @@
+{
+  "checked_at": "2026-11-01T23:15:36.685072+00:00",
+  "provider": "Google Public DNS",
+  "results": [
+    {
+      "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+      "rcode": 2,
+      "txt_found": false,
+      "dnssec_authenticated": false
+    },
+    {
+      "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+      "rcode": 2,
+      "txt_found": false,
+      "dnssec_authenticated": false
+    },
+    {
+      "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+      "rcode": 2,
+      "txt_found": false,
+      "dnssec_authenticated": false
+    }
+  ]
+}

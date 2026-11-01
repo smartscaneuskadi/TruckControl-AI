@@ -91,6 +91,13 @@
       "name": "registration_legal_consent",
       "sha256": "79ec43005390babfddb3308fc80d61d12d27e0413551e900268ddd37fc671ae2",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101230718_company_backup_pagination.sql",
+      "version": "20261101231713",
+      "name": "company_backup_pagination",
+      "sha256": "afc0b4656c25362a37fecbb22bc923a506c4c52930a33bff9562c3922f8f428e",
+      "already_applied": true
     }
   ]
 }

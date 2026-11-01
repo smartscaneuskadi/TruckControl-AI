@@ -296,3 +296,19 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Producción v9 permanece sin cambios; la demo estable y candidata 8 se conservan. Inventario actualizado para probar el canal production y las altas abiertas en los tres orígenes.
 - El primer navegador local rechaza la CA del proxy de este entorno; no se deshabilita TLS. Las solicitudes HTTPS de recursos/catálogo validan certificados. La prueba browser pública se ejecutará en GitHub, con TLS activo y evidencia separada del CI previo.
 - Guías de entrega, instalación, administración y continuidad actualizadas. Versiones anteriores archivadas y conservadas también en Git.
+
+# 2026-11-01 — copias cifradas de empresa y ensayo de recuperación
+
+- Nueva rama feat/company-backup-recovery, 0.5.4-rc.1. Conserva la demo, producción v9 y todas las pruebas originales. Sin compras, nuevos proveedores ni cambios económicos.
+- Cifra fichas, operaciones, facturas y originales autorizados con AES-GCM/PBKDF2; verifica pertenencia, relaciones, importes, huellas y estabilidad del origen. Rechaza pérdida de permisos, cambios concurrentes, datos incompletos y otra empresa. Límite explícito 20 MiB/2000 documentos, sin copia parcial silenciosa.
+- Nueva paginación SQL invoker con RLS existente, sin acceso anónimo ni grants de tablas. Migración local 20261101230718 aplicada una vez como 20261101231713, 49 remotas. Índice de cursor verificado. La prueba remota con 201 documentos y dos empresas pasa y se revierte: cero filas de fixture restantes; registro/enforcement/cobros preservados.
+- Ensayo aislado PGlite y PDF: 50 camiones, 46 conductores, 2102 movimientos, siete operaciones y una factura; importes/vínculos/huellas y RLS correctos. No es restauración del servicio alojado. Guía COMPANY_RECOVERY.md.
+- Pasan 393 unitarias/SQL iniciales más tres de adaptador y una de archivo grande; 34 recorridos SaaS iniciales y dos corregidos tras ajustar el fixture a la ruta Storage real. El primer servidor local fallaba por EPERM del sandbox; se habilitó la capacidad de red del comando y funcionó, sin desactivar TLS. CI completo y publicación siguientes.
+- Google: sesión válida del proyecto exclusivo, cero clientes OAuth web. Solo lectura, 4 pasos/34 segundos; acumulado65/544s, estimación1.05814 USD de máximo2 aprobado. Sin abrir secretos ni nuevas credenciales. Migadu sigue con tres destinos DKIM SERVFAIL; no cambiar DNSSEC ni repetir pagos.
+
+# 2026-11-01 — producción 10 publicada
+
+- CI 41361898380 del commit d3d2ff6: 587 comprobaciones aprobadas. CI 41362141114 de la fuente exacta e5ce8e6 también termina correctamente. Solo difiere el manifiesto de alojamiento.
+- Guardada y publicada versión 10, paquete 0.5.4-rc.1, despliegue appgdep_6ae7cc64f8b88191b6856c51b08f0da0. Los 72 hashes HTTPS coinciden y la demo estable conserva su hash. v9 y candidata8 recuperables; backend49 aditivo sin cambiar datos ni servicios de pago.
+- Se actualiza inventario para ejecutar la aceptación pública de v10. La verificación privada del nuevo flujo ya cubre Android/Windows emulados y ambos temas con 36 recorridos SaaS; no hay dispositivos físicos.
+- Google: ya se creó un único cliente web en el proyecto468881730124 con origen/retorno canónicos. La respuesta mantiene el secreto enmascarado; no se han modificado los campos existentes de Vault. Transferencia segura pendiente de comprobar en su pantalla oficial. No publicar ni registrar valores secretos en evidencias.

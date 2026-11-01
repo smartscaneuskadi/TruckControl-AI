@@ -1,0 +1,87 @@
+{
+  "checked_at": "2026-11-01T23:21:40.828217+00:00",
+  "project": "kkkemaycedexymrpaqtp",
+  "source_version": "0.5.4-rc.1",
+  "migration": {
+    "local": "20261101230718",
+    "remote": "20261101231713",
+    "count": 49,
+    "already_applied": true,
+    "source_sha256": "afc0b4656c25362a37fecbb22bc923a506c4c52930a33bff9562c3922f8f428e"
+  },
+  "scope": "Company records and authorized registered documents, encrypted; no Auth credentials/provider settings and no automatic production restore",
+  "remote_checks": {
+    "rollback_passed": true,
+    "fixture_users_remaining": 0,
+    "fixture_companies_remaining": 0,
+    "fixture_documents_remaining": 0,
+    "launch_settings_unchanged": true,
+    "function_security_definer": false,
+    "anon_execute": false,
+    "authenticated_execute": true,
+    "cursor_index_verified": true,
+    "security_advisor_new_warnings": 0,
+    "existing_leaked_password_warning": true
+  },
+  "local_checks": {
+    "initial_full_unit_sql": 393,
+    "additional_adapter": 3,
+    "additional_large_file": 1,
+    "combined_unit_sql": 397,
+    "saas_initial_passed": 34,
+    "saas_storage_fixture_correction_passed": 2,
+    "typescript": true,
+    "pwa_build": true,
+    "original_test_files_retained": 11,
+    "full_ci_pending": false,
+    "physical_devices": false
+  },
+  "rehearsal": {
+    "passed": true,
+    "environment": "isolated PGlite/PostgreSQL with application migrations; synthetic data only",
+    "trucks": 50,
+    "drivers": 46,
+    "financeEntries": 2102,
+    "operations": 7,
+    "documents": 1,
+    "invoices": 1,
+    "originalSha256Matched": true,
+    "financialTotalsUnchanged": true,
+    "bookedOperationLinkPreserved": true,
+    "crossCompanyRlsDenied": true,
+    "managedSupabaseRestoreTested": false,
+    "authAccountsCredentialsAndProviderSettingsRestored": false
+  },
+  "release": {
+    "currently_published_version": 10,
+    "new_frontend_not_published_yet": false,
+    "registration_open": true,
+    "payments_enabled": false,
+    "ai_budget_usd_month": 10,
+    "source": "e5ce8e662dc8ef8466025f5d90ba0884298ff5f4",
+    "deployment_id": "appgdep_6ae7cc64f8b88191b6856c51b08f0da0",
+    "https_hashes_verified": 72,
+    "demo_unchanged": true
+  },
+  "limits": {
+    "max_content_bytes": 20971520,
+    "max_file_bytes": 33554432,
+    "max_documents": 2000,
+    "max_invoices": 2000,
+    "managed_database_and_s3_restore_tested": false
+  },
+  "ci": {
+    "run": 41361898380,
+    "deployment_source_run": 41362141114,
+    "conclusion": "success",
+    "total": 587,
+    "unit_sql": 397,
+    "python": 32,
+    "demo_browser": 64,
+    "company_browser": 22,
+    "saas_browser": 36,
+    "candidate_browser": 14,
+    "production_browser": 16,
+    "public_browser_previous_v9": 6
+  }
+}

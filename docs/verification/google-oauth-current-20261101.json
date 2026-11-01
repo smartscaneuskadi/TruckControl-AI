@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-11-01T23:16:40.128786+00:00",
+  "project_name": "TruckControlAI",
+  "project_id": "truckcontrolai",
+  "project_number": "468881730124",
+  "signed_in": true,
+  "web_clients": 0,
+  "client_secrets_opened": false,
+  "writes_performed": false,
+  "run_steps": 4,
+  "duration_seconds": 34,
+  "cumulative_steps": 65,
+  "cumulative_seconds": 544,
+  "estimated_cumulative_usd": 1.0581333333333334,
+  "approved_max_cumulative_usd": 2,
+  "top_up_or_auto_reload_activated": false
+}

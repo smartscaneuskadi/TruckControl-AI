@@ -34,3 +34,5 @@ En **Correo y facturas**, la empresa autorizada importa EML/PDF/imágenes y habi
 Tras la primera carga se puede explorar la demo sin red. La empresa necesita preparar/desbloquear su copia offline cifrada. Al reconectar se revisan permisos, licencia y conflictos antes de sincronizar. Acceso, proveedores y operaciones que necesitan servidor requieren conexión; no toda operación es offline. Cierra sesión y bloquea el dispositivo si lo compartes.
 
 Las comprobaciones Android/Windows son emuladas; falta aceptación en dispositivos físicos. [Administración](SAAS_ADMIN.md), [guía anterior conservada](history/20261101-pre-client-production/INSTALLATION.md).
+
+La versión publicada 0.5.4-rc.1 incluye **Configuración → Copia cifrada de empresa** para guardar registros y originales autorizados, comprobarlos y recuperar archivos sin cambiar datos del servidor. Está disponible en cuentas de empresa administradoras; acepta **Actualizar** cuando aparezca. [Contenido y límites](COMPANY_RECOVERY.md).

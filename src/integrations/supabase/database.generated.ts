@@ -1,4 +1,3 @@
-// Generated from project crcdrxbioyberfibrzuw after the TruckControl migrations.
 export type Json =
   | string
   | number
@@ -75,6 +74,7 @@ export type Database = {
           organization_id: string;
           payment_status: string;
           row_version: number;
+          source_record_id: string | null;
           truck_id: string;
         };
         Insert: {
@@ -89,6 +89,7 @@ export type Database = {
           organization_id: string;
           payment_status?: string;
           row_version?: number;
+          source_record_id?: string | null;
           truck_id: string;
         };
         Update: {
@@ -103,6 +104,7 @@ export type Database = {
           organization_id?: string;
           payment_status?: string;
           row_version?: number;
+          source_record_id?: string | null;
           truck_id?: string;
         };
         Relationships: [
@@ -142,93 +144,6 @@ export type Database = {
           owner_id?: string;
         };
         Relationships: [];
-      };
-      plans: {
-        Row: {
-          created_at: string;
-          id: string;
-          included_users: number | null;
-          name: string;
-        };
-        Insert: {
-          created_at?: string;
-          id: string;
-          included_users?: number | null;
-          name: string;
-        };
-        Update: {
-          created_at?: string;
-          id?: string;
-          included_users?: number | null;
-          name?: string;
-        };
-        Relationships: [];
-      };
-      profiles: {
-        Row: {
-          created_at: string;
-          display_name: string | null;
-          user_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          display_name?: string | null;
-          user_id: string;
-        };
-        Update: {
-          created_at?: string;
-          display_name?: string | null;
-          user_id?: string;
-        };
-        Relationships: [];
-      };
-      subscriptions: {
-        Row: {
-          created_at: string;
-          external_customer_id: string | null;
-          external_subscription_id: string | null;
-          id: string;
-          plan_id: string;
-          status: string;
-          user_limit_override: number | null;
-          workshop_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          external_customer_id?: string | null;
-          external_subscription_id?: string | null;
-          id?: string;
-          plan_id: string;
-          status?: string;
-          user_limit_override?: number | null;
-          workshop_id: string;
-        };
-        Update: {
-          created_at?: string;
-          external_customer_id?: string | null;
-          external_subscription_id?: string | null;
-          id?: string;
-          plan_id?: string;
-          status?: string;
-          user_limit_override?: number | null;
-          workshop_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_plan_id_fkey";
-            columns: ["plan_id"];
-            isOneToOne: false;
-            referencedRelation: "plans";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "subscriptions_workshop_id_fkey";
-            columns: ["workshop_id"];
-            isOneToOne: true;
-            referencedRelation: "workshops";
-            referencedColumns: ["id"];
-          },
-        ];
       };
       trucks: {
         Row: {
@@ -293,62 +208,6 @@ export type Database = {
           },
         ];
       };
-      workshop_members: {
-        Row: {
-          active: boolean;
-          created_at: string;
-          role: string;
-          user_id: string;
-          workshop_id: string;
-        };
-        Insert: {
-          active?: boolean;
-          created_at?: string;
-          role: string;
-          user_id: string;
-          workshop_id: string;
-        };
-        Update: {
-          active?: boolean;
-          created_at?: string;
-          role?: string;
-          user_id?: string;
-          workshop_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "workshop_members_workshop_id_fkey";
-            columns: ["workshop_id"];
-            isOneToOne: false;
-            referencedRelation: "workshops";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      workshops: {
-        Row: {
-          created_at: string;
-          id: string;
-          name: string;
-          status: string;
-          tax_id: string | null;
-        };
-        Insert: {
-          created_at?: string;
-          id?: string;
-          name: string;
-          status?: string;
-          tax_id?: string | null;
-        };
-        Update: {
-          created_at?: string;
-          id?: string;
-          name?: string;
-          status?: string;
-          tax_id?: string | null;
-        };
-        Relationships: [];
-      };
     };
     Views: {
       [_ in never]: never;
@@ -361,6 +220,30 @@ export type Database = {
           p_organization_id: string;
         };
         Returns: string;
+      };
+      company_ai_budget_server: {
+        Args: { p_action: string; p_data: Json };
+        Returns: Json;
+      };
+      company_auth_mail_config: { Args: never; Returns: Json };
+      company_auth_mail_consent: {
+        Args: {
+          p_authenticated?: boolean;
+          p_request_id: string;
+          p_user_id: string;
+          p_version: string;
+        };
+        Returns: boolean;
+      };
+      company_auth_mail_reserve: { Args: { p_data: Json }; Returns: string };
+      company_invoice_ai_apply: { Args: { p_data: Json }; Returns: boolean };
+      company_mail_server: {
+        Args: { p_action: string; p_data: Json };
+        Returns: Json;
+      };
+      company_provider_runtime_config: {
+        Args: { p_scope: string };
+        Returns: Json;
       };
       get_company_document: {
         Args: { p_document_id: string; p_organization_id: string };
@@ -381,9 +264,8 @@ export type Database = {
           status: string;
         }[];
       };
+      gmail_runtime_config: { Args: never; Returns: Json };
       gmail_server: { Args: { p_action: string; p_data: Json }; Returns: Json };
-      is_workshop_admin: { Args: { p_workshop_id: string }; Returns: boolean };
-      is_workshop_member: { Args: { p_workshop_id: string }; Returns: boolean };
       list_company_documents: {
         Args: { p_organization_id: string };
         Returns: unknown[];
@@ -412,15 +294,58 @@ export type Database = {
         Args: { p_action: string; p_data?: Json };
         Returns: Json;
       };
+      tc_backup_page: {
+        Args: { p_after?: string; p_kind: string; p_org: string };
+        Returns: Json;
+      };
+      tc_book_record: {
+        Args: { p_expected: number; p_org: string; p_record: string };
+        Returns: Json;
+      };
+      tc_company_server_access: {
+        Args: { p_org: string; p_user: string };
+        Returns: Json;
+      };
+      tc_consume_document_ai: {
+        Args: { p_org: string; p_user: string };
+        Returns: boolean;
+      };
+      tc_delete_record: {
+        Args: { p_expected: number; p_id: string; p_org: string };
+        Returns: undefined;
+      };
       tc_finish_registration: { Args: never; Returns: Json };
+      tc_list_records: {
+        Args: { p_after?: string; p_org: string };
+        Returns: Json;
+      };
       tc_my_access: { Args: never; Returns: Json };
+      tc_organization_access: { Args: { p_org: string }; Returns: Json };
       tc_platform_server: {
         Args: { p_action: string; p_data: Json };
         Returns: Json;
       };
       tc_public_catalog: { Args: never; Returns: Json };
+      tc_recurring_billing: {
+        Args: { p_action: string; p_data: Json };
+        Returns: Json;
+      };
       tc_request_plan: { Args: { p_plan_id: string }; Returns: string };
+      tc_save_record: {
+        Args: {
+          p_expected?: number;
+          p_id: string;
+          p_kind: string;
+          p_org: string;
+          p_payload: Json;
+        };
+        Returns: Json;
+      };
       tc_set_ai_opt_in: { Args: { p_enabled: boolean }; Returns: Json };
+      tc_team_control: {
+        Args: { p_action: string; p_data?: Json; p_org: string };
+        Returns: Json;
+      };
     };
     Enums: {
       [_ in never]: never;
