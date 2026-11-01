@@ -11,6 +11,7 @@ import "./styles/professional-theme.css";
 import "./styles/company.css";
 import "./styles/commercial.css";
 import "./styles/operations.css";
+import "./styles/fleet-identity.css";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },

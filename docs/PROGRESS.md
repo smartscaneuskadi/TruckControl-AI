@@ -149,3 +149,10 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Portal, registro, administración y solicitudes usan los importes nuevos y un desglose de IVA en céntimos. La migración nueva cambia solo las altas futuras; conserva pruebas históricas de treinta días y presupuestos anteriores sin inventar su tratamiento fiscal. Registro comercial y pagos siguen cerrados.
 - Se conservan las 64 pruebas originales. Se añaden comprobaciones de redondeo de IVA, presupuestos idempotentes, rechazo de importes inconsistentes y conservación de contratos. Publicación pendiente de CI y validación.
 - La captura 303201 confirma el ticket Migadu abierto por el titular; aún sin respuesta del proveedor en la captura. No volver a pedir que lo abra. El último diagnóstico público mantiene SERVFAIL/DNSSEC en los tres destinos DKIM; conexión de Migadu y SMTP siguen pendientes.
+
+# 2026-11-01 — identidad verde y azul más luminosa
+
+- El propietario solicita más verde oscuro, azul, luminosidad y los logotipos de Scania, Mercedes-Benz y MAN. Se añaden activos oficiales locales, un resumen de fabricantes y distintivos en tablas/fichas, sin cambiar datos ni permisos.
+- Paleta forestal y marina, paneles más luminosos, mejores bordes/contraste y relojes/odómetros conservados. Vista previa real en escritorio y perfil Android: cero errores JavaScript, logos cargados, sin desbordamiento horizontal y cero incidencias Axe AA en portal y panel.
+- Se detecta que el paquete anterior abría directamente la demo. Se conserva la candidata 1 mientras se verifica la corrección: build:candidate fija la entrada de planes y Vite impide crear candidatas sin ella. No se declara corregido un paquete inmutable solo por reenviarlo con el mismo commit. La publicación nueva utilizará una fuente distinta y comprobada.
+- La oferta de diez días, 300 € / 700 € más IVA del 21 % ya está aplicada una sola vez en Supabase (40 migraciones), con desglose y ensayos reales transaccionales revertidos. Altas y cobros permanecen cerrados. La demo estable v6 y los paquetes anteriores se conservan.

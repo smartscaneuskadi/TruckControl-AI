@@ -28,6 +28,13 @@
       "name": "truckcontrol_explicit_server_only_billing_policies",
       "sha256": "e14d552c66d146581af1955391ac7ebdbb21d1c9a5d5074ead28802988184f49",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101110905_commercial_offer_ten_days_vat.sql",
+      "version": "20261101111403",
+      "name": "truckcontrol_commercial_offer_ten_days_vat",
+      "sha256": "06a096bf714f3e84319718c35ee06fca00f58f2b0adb9fb69e082d291e7c2f72",
+      "already_applied": true
     }
   ]
 }

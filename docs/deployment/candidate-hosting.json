@@ -24,5 +24,19 @@
         "monthly_cents": 1000
       }
     ]
+  },
+  "pending_offer": {
+    "trial_days": 10,
+    "vat_rate_bps": 2100,
+    "plans": [
+      {
+        "name": "Básico",
+        "monthly_cents": 30000
+      },
+      {
+        "name": "Full",
+        "monthly_cents": 70000
+      }
+    ]
   }
 }

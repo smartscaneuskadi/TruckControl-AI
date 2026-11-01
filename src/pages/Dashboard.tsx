@@ -29,6 +29,7 @@ import {
 } from "../components/ui";
 import { TruckTable } from "../components/TruckTable";
 import { FleetInstruments } from "../components/FleetInstruments";
+import { FleetBrands } from "../components/VehicleBrand";
 
 export function Dashboard() {
   const { mode } = useCompany();
@@ -90,6 +91,7 @@ export function Dashboard() {
           Registrar ingreso
         </Button>
       </PageHeading>
+      <FleetBrands trucks={snapshot.trucks} />
       <div className="overview-toolbar">
         <div className="section-label">
           <span className="live-dot" />
