@@ -20,9 +20,9 @@ Supabase tiene 48 migraciones, aplicadas una vez. Local `20261101214649` → rem
 
 ## Publicación controlada
 
-La candidata 8 y demo estable siguen disponibles mientras se valida el paquete conectado. La nueva producción requiere canal production, portal comercial, la URL del proyecto TruckControl, clave moderna publicable y proveedor de correo Resend; nunca admite una clave de servicio en el cliente. La configuración no habilita cobros. El historial de la candidata se conserva para recuperación.
+La versión conectada 9 está publicada en https://truckcontrolai.com, www y el hostname técnico de la candidata. Fuente bcffa56f0b3a3f851af4e9f433223b49bad7ed9c, canal production, clave moderna publicable y correo Resend; ninguna clave de servicio está en el cliente. Los 72 recursos HTTPS coinciden con el paquete probado. La candidata 8 queda guardada para recuperación y la demo estable v6 sigue intacta en su URL propia.
 
-Al publicar y verificar HTTPS se prepara el aviso legal y se envía al propietario una invitación nativa. Se comprueba su verificación y rol antes de abrir el registro de clientes. La prueba Full será de diez días; Básico 300 €/mes + IVA 21 % (363 €), Full 700 €/mes + IVA 21 % (847 €). El vencimiento no crea cargos ni deuda automática.
+El aviso legal está publicado y la invitación nativa se entregó al propietario. Este confirmó su acceso; la base verifica correo confirmado, contraseña elegida y rol global. Después de esas comprobaciones se abrió el registro, manteniendo enforcement activo, pruebas internas deshabilitadas y pagos apagados. El catálogo anónimo real devuelve HTTP 200, registro abierto y prueba Full de diez días; Básico 300 €/mes + IVA 21 % (363 €), Full 700 €/mes + IVA 21 % (847 €). El vencimiento no crea cargos ni deuda automática.
 
 Se mantiene el presupuesto IA aprobado de 10 USD/mes antes de impuestos, con cuotas y aceptación individual. Una descripción administrativa contenía una clave de OpenAI; el titular confirmó que ya estaba revocada. Se restableció el runtime existente sin pedir otra clave ni ampliar presupuesto. No volver a suspenderlo por ese valor obsoleto ni reproducir valores de descripciones de claves.
 

@@ -1,0 +1,78 @@
+{
+  "checked_at": "2026-11-01T22:42:47.347433+00:00",
+  "status": 200,
+  "catalogue": {
+    "plans": [
+      {
+        "id": "limited",
+        "name": "Básico",
+        "modules": {
+          "fuel": true,
+          "team": true,
+          "gmail": true,
+          "trips": true,
+          "alerts": true,
+          "income": true,
+          "trucks": true,
+          "drivers": true,
+          "expenses": true,
+          "trailers": true,
+          "assistant": true,
+          "customers": true,
+          "dashboard": true,
+          "deadlines": true,
+          "documents": true,
+          "invoice_ai": false,
+          "document_ai": true,
+          "maintenance": true,
+          "profitability": true
+        },
+        "currency": "EUR",
+        "revision": 3,
+        "max_trucks": 50,
+        "vat_rate_bps": 2100,
+        "monthly_cents": 30000,
+        "monthly_vat_cents": 6300,
+        "monthly_total_cents": 36300
+      },
+      {
+        "id": "full",
+        "name": "Full",
+        "modules": {
+          "fuel": true,
+          "team": true,
+          "gmail": true,
+          "trips": true,
+          "alerts": true,
+          "income": true,
+          "trucks": true,
+          "drivers": true,
+          "expenses": true,
+          "trailers": true,
+          "assistant": true,
+          "customers": true,
+          "dashboard": true,
+          "deadlines": true,
+          "documents": true,
+          "invoice_ai": true,
+          "document_ai": true,
+          "maintenance": true,
+          "profitability": true
+        },
+        "currency": "EUR",
+        "revision": 3,
+        "max_trucks": 50,
+        "vat_rate_bps": 2100,
+        "monthly_cents": 70000,
+        "monthly_vat_cents": 14700,
+        "monthly_total_cents": 84700
+      }
+    ],
+    "app_name": "TruckControl AI",
+    "sms_ready": false,
+    "trial_days": 10,
+    "payments_enabled": false,
+    "registration_open": true,
+    "prices_are_examples": false
+  }
+}

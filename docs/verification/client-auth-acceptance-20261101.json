@@ -1,10 +1,10 @@
 {
-  "checked_at": "2026-11-01T22:21:52.287132+00:00",
+  "checked_at": "2026-11-01T22:42:43.543501+00:00",
   "project_id": "kkkemaycedexymrpaqtp",
   "operator": {
     "name": "ELEVADANCOR S.L.",
     "tax_id": "B02993426",
-    "address": "Pol\u00edgono Arzabalza, n.\u00ba 50, Tolosa",
+    "address": "Polígono Arzabalza, n.º 50, Tolosa",
     "email": "pedidos@smartscaneuskadi.com",
     "source": "Owner supplied in this conversation"
   },
@@ -14,8 +14,8 @@
     "deno_config_supplied_but_omitted_by_provider_retrieval": true,
     "bundle_sha256": "1ac9a86cf0153039bb9926833d27aa30b28e607b76f7c41726df52fc5c07d107",
     "auth_mail_enabled": true,
-    "legal_ready": false,
-    "registration_open": false,
+    "legal_ready": true,
+    "registration_open": true,
     "payments_enabled": false,
     "sms_ready": false,
     "ai_enabled": true,
@@ -105,7 +105,13 @@
     "deno": true,
     "pwa_build": true,
     "original_64_tests_retained_file_hashes": 11,
-    "physical_devices_tested": false
+    "physical_devices_tested": false,
+    "github_ci": {
+      "run": 41356880182,
+      "source": "60398b60c7136abb8f7608471677fcc7f478f6d9",
+      "conclusion": "success",
+      "total": 548
+    }
   },
   "security_notice": {
     "leaked_password_protection_warning": "Pre-existing; hosted feature requires Pro or above. No upgrade activated.",
@@ -114,10 +120,23 @@
     "no_plaintext_secret_in_public_artifact": true
   },
   "publication": {
-    "current_live_candidate": 8,
     "stable_demo_preserved": true,
-    "new_production_not_deployed_yet": true,
-    "owner_verification_pending": true,
-    "automatic_payments_enabled": false
+    "new_production_not_deployed_yet": false,
+    "owner_verification_pending": false,
+    "automatic_payments_enabled": false,
+    "current_live_version": 9,
+    "current_channel": "production",
+    "url": "https://truckcontrolai.com",
+    "deployment_id": "appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e",
+    "source": "bcffa56f0b3a3f851af4e9f433223b49bad7ed9c",
+    "https_resource_hash_checks": 72,
+    "candidate8_recoverable": true,
+    "owner_invitation_delivered": true,
+    "owner_email_verified": true,
+    "owner_password_set": true,
+    "owner_admin_role_verified": true,
+    "client_registration_open": true,
+    "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
+    "preserved_candidate_version": 8
   }
 }
