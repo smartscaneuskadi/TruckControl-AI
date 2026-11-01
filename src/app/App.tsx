@@ -104,7 +104,7 @@ const navigation = [
     icon: FileText,
     feature: "documents",
   },
-  { to: "/invoices", label: "Facturas Gmail", icon: Mail, feature: "gmail" },
+  { to: "/invoices", label: "Correo y facturas", icon: Mail, feature: "gmail" },
   { to: "/trailers", label: "Remolques", icon: Container, feature: "trailers" },
   {
     to: "/customers",

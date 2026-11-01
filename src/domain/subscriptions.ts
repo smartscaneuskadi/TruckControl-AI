@@ -8,7 +8,7 @@ export const featureLabels = {
   expenses: "Gastos",
   profitability: "Rentabilidad",
   documents: "Documentos",
-  gmail: "Facturas Gmail",
+  gmail: "Correo y facturas",
   assistant: "Copiloto",
   invoice_ai: "Lectura IA de facturas",
   document_ai: "Consulta IA de documentos",

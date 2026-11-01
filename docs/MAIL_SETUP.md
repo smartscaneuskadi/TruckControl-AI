@@ -1,5 +1,7 @@
 # Correo de cada empresa — configuración y comprobación
 
+La entrada general en desarrollo permite importar EML/PDF/imágenes desde cualquier proveedor y prepara reenvíos verificados por empresa. Gmail directo conserva la configuración descrita abajo y su bloqueo no impide continuar con la importación general. Véase [GENERAL_EMAIL.md](GENERAL_EMAIL.md). El reenvío real sigue apagado hasta disponer de receptor y dominio autorizados.
+
 Esta fase conecta **Gmail y Google Workspace** desde Facturas de la empresa activa. No instala un cliente universal de correo. La identidad, los documentos y la conexión de cada empresa siguen aislados; conectar Gmail no activa la IA ni crea gastos automáticamente.
 
 ## Identidades existentes

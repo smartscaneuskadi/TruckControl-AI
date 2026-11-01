@@ -1331,6 +1331,83 @@ dialog.modal,
   padding: 25px;
   margin-bottom: 24px;
 }
+
+.universal-mail {
+  margin-bottom: 20px;
+  padding: 24px;
+}
+.universal-mail h2 {
+  margin: 0 0 6px;
+}
+.universal-mail p,
+.universal-mail small {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.mail-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin: 22px 0;
+}
+.mail-options > article {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+.mail-options > article > svg {
+  color: var(--accent);
+}
+.mail-options h3 {
+  margin: 10px 0;
+}
+.mail-options small {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.82rem;
+}
+.mail-options input[type="file"] {
+  max-width: 100%;
+}
+.universal-mail .inline-actions {
+  flex-wrap: wrap;
+}
+.universal-mail .button {
+  max-width: 100%;
+  white-space: normal;
+}
+.mail-preview {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.mail-preview ul {
+  padding-left: 20px;
+}
+.mail-preview li {
+  padding: 5px 0;
+  overflow-wrap: anywhere;
+}
+.mail-preview li span {
+  margin-left: 12px;
+  color: var(--text-muted);
+}
+.mail-recipient {
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+.mail-success {
+  font-weight: 600;
+}
+@media (max-width: 760px) {
+  .mail-options {
+    grid-template-columns: 1fr;
+  }
+  .universal-mail {
+    padding: 18px;
+  }
+}
 .gmail-actions {
   flex-wrap: wrap;
 }

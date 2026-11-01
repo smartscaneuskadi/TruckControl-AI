@@ -22,6 +22,8 @@ import { categories, entrySchema } from "../domain/models";
 import { parseMoney } from "../domain/finance";
 import { money } from "../lib/format";
 import { GmailConnectionGuide } from "../components/GmailConnectionGuide";
+import { UniversalMailIntake } from "../components/UniversalMailIntake";
+import type { ParsedMail } from "../../supabase/functions/_shared/mail.ts";
 
 const demoEntryId = "b1000000-0000-4000-8000-000000000001";
 interface IntegrationStatus {
@@ -41,6 +43,9 @@ export function Invoices() {
   const [connection, setConnection] = useState<CompanyGmail | null>(null);
   const [status, setStatus] = useState<IntegrationStatus | null>(null);
   const [invoices, setInvoices] = useState<CompanyInvoice[]>([]);
+  const [demoImports, setDemoImports] = useState<
+    (CompanyInvoice & { file: Blob; fileName: string; demoEntry: string })[]
+  >([]);
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -207,7 +212,64 @@ export function Invoices() {
     finance_entry_id: null,
     created_at: "",
   };
-  const rows = cloud ? invoices : [sample];
+  const currentDemoImports = demoImports.filter(
+    (i) => i.organization_id === org,
+  );
+  const rows = cloud
+    ? invoices.filter((i) => i.organization_id === org)
+    : [sample, ...currentDemoImports];
+  function addDemoMail(parsed: ParsedMail) {
+    setDemoImports((previous) => {
+      const next = [...previous];
+      for (const item of parsed.attachments) {
+        if (
+          next.some(
+            (i) =>
+              i.organization_id === org && i.content_hash === item.contentHash,
+          )
+        )
+          continue;
+        // A repeat of the same fictitious document keeps its expense identity,
+        // including after a reload; confirmed demo expenses are never duplicated.
+        const h = item.contentHash;
+        const demoExpenseId =
+          h.slice(0, 8) +
+          "-" +
+          h.slice(8, 12) +
+          "-8" +
+          h.slice(13, 16) +
+          "-8" +
+          h.slice(17, 20) +
+          "-" +
+          h.slice(20, 32);
+        const alreadyBooked = snapshot.entries.some(
+          (e) => e.id === demoExpenseId,
+        );
+        next.push({
+          ...sample,
+          id: crypto.randomUUID(),
+          message_id: parsed.messageId,
+          attachment_id: item.attachmentId,
+          content_hash: item.contentHash,
+          supplier: "Proveedor pendiente · correo ficticio",
+          invoice_number: "",
+          invoice_date: null,
+          net_cents: null,
+          tax_cents: null,
+          total_cents: null,
+          status: alreadyBooked ? "approved" : "needs_review",
+          finance_entry_id: alreadyBooked ? demoExpenseId : null,
+          import_source: "email_upload",
+          demoEntry: demoExpenseId,
+          file: new Blob([item.bytes as BlobPart], { type: item.type }),
+          fileName: item.name,
+          review_note:
+            "Adjunto de correo ficticio. No se han extraído importes ni utilizado IA. Completa y revisa los datos.",
+        });
+      }
+      return next;
+    });
+  }
   async function approve(invoice: CompanyInvoice, form: FormData) {
     const net = parseMoney(String(form.get("net")));
     const taxText = String(form.get("tax")).trim();
@@ -216,7 +278,9 @@ export function Invoices() {
     if (total !== net + tax)
       throw new Error("El total debe coincidir con la base más el IVA.");
     const entry = entrySchema.parse({
-      id: demoEntryId,
+      id:
+        currentDemoImports.find((i) => i.id === invoice.id)?.demoEntry ??
+        demoEntryId,
       truckId: String(form.get("truck")),
       kind: "expense",
       concept: String(form.get("concept")),
@@ -246,8 +310,16 @@ export function Invoices() {
         );
       await refresh();
       setRevision((n) => n + 1);
-    } else if (!snapshot.entries.some((e) => e.id === demoEntryId))
+    } else if (!snapshot.entries.some((e) => e.id === entry.id)) {
       await execute({ type: "save-entry", value: entry });
+      setDemoImports((previous) =>
+        previous.map((i) =>
+          i.id === invoice.id
+            ? { ...i, status: "approved", finance_entry_id: entry.id }
+            : i,
+        ),
+      );
+    }
     notify(
       cloud
         ? "Factura registrada como gasto pendiente de pago."
@@ -256,7 +328,20 @@ export function Invoices() {
     setReview(null);
   }
   async function download(invoice: CompanyInvoice) {
-    if (!client || !cloud) return;
+    if (!cloud) {
+      const imported = currentDemoImports.find((i) => i.id === invoice.id);
+      if (!imported) return;
+      const url = URL.createObjectURL(imported.file),
+        link = document.createElement("a");
+      link.href = url;
+      link.download = imported.fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      return;
+    }
+    if (!client) return;
     setBusy(true);
     setError("");
     try {
@@ -278,8 +363,17 @@ export function Invoices() {
     <>
       <PageHeading
         eyebrow="BANDEJA DE FACTURAS"
-        title="De tu Gmail a tus gastos"
-        description="Una cuenta Gmail independiente para cada empresa. Revisa cada factura antes de registrarla."
+        title="Del correo a tus gastos"
+        description="Importa facturas de tu correo habitual o utiliza Gmail. Revisa cada documento antes de registrarlo."
+      />
+      <UniversalMailIntake
+        key={`${cloud}:${org}`}
+        organizationId={org}
+        cloud={cloud}
+        canWrite={canWrite}
+        canManage={canManage}
+        onDemoImport={addDemoMail}
+        onImported={() => setRevision((n) => n + 1)}
       />
       <section className="card integration-card">
         <div className="integration-status">
@@ -294,11 +388,12 @@ export function Invoices() {
                 : "Demostración · datos ficticios"}
           </Badge>
         </div>
-        <h2>
+        <h2>De tu Gmail a tus gastos</h2>
+        <p>
           {cloud
             ? snapshot.organization.name
             : "Prueba la revisión de una factura"}
-        </h2>
+        </p>
         <p>
           {cloud
             ? "Autoriza el buzón de esta empresa en Google. El permiso es de solo lectura: TruckControl busca correos de facturas y guarda sus adjuntos; no envía ni modifica mensajes."
@@ -439,6 +534,15 @@ export function Invoices() {
           {rows.map((invoice) => (
             <article className="card document-card" key={invoice.id}>
               <FileText size={25} />
+              {invoice.import_source && invoice.import_source !== "gmail" && (
+                <Badge tone="blue">
+                  {invoice.import_source === "forwarded_email"
+                    ? "Correo reenviado"
+                    : invoice.import_source === "email_upload"
+                      ? "Archivo de correo"
+                      : "Archivo importado"}
+                </Badge>
+              )}
               <Badge tone={invoice.status === "approved" ? "green" : "amber"}>
                 {invoice.status === "approved" ? "Registrada" : "Revisar"}
               </Badge>
@@ -493,7 +597,8 @@ export function Invoices() {
                 >
                   Revisar factura
                 </Button>
-                {cloud && (
+                {(cloud ||
+                  currentDemoImports.some((i) => i.id === invoice.id)) && (
                   <Button
                     variant="secondary"
                     disabled={busy}
@@ -509,7 +614,7 @@ export function Invoices() {
       ) : (
         <section className="card">
           <Empty title="Sin facturas importadas">
-            Conecta Gmail e importa los adjuntos de esta empresa para empezar.
+            Importa un correo, PDF o imagen, o conecta Gmail para empezar.
           </Empty>
         </section>
       )}
