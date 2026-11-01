@@ -83,6 +83,12 @@ beforeAll(async () => {
     create table private.test_http_responses(method text,path text,result jsonb,primary key(method,path));
     create table private.test_http_calls(id bigint generated always as identity,method text,path text,body jsonb);`);
   await db.exec(source);
+  await db.exec(
+    readFileSync(
+      "supabase/migrations/20261101205354_resend_webhook_key_compatibility.sql",
+      "utf8",
+    ),
+  );
 }, 30000);
 beforeEach(async () => {
   await db.exec(transport);
@@ -99,6 +105,25 @@ afterAll(async () => {
 });
 
 describe("administración Resend: límites reales de permisos", () => {
+  it("la validación SQL acepta ambos tamaños oficiales y rechaza una clave débil", async () => {
+    for (const [bytes, valid] of [
+      [23, false],
+      [24, true],
+      [32, true],
+      [64, true],
+      [65, false],
+    ] as const) {
+      const key = "whsec_" + btoa("x".repeat(bytes));
+      expect(
+        (
+          await db.query<{ valid: boolean }>(
+            "select private.tc_resend_webhook_secret_valid($1) valid",
+            [key],
+          )
+        ).rows[0].valid,
+      ).toBe(valid);
+    }
+  });
   it("anon, usuarios y runtime no pueden ejecutar el cliente administrativo", async () => {
     for (const role of ["anon", "authenticated", "service_role"]) {
       await db.exec("set role " + role);

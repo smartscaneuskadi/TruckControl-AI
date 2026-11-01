@@ -38,6 +38,9 @@ def records(resource):
             host = SUBDOMAIN
         elif raw == SUBDOMAIN or raw.endswith("." + SUBDOMAIN):
             host = raw
+        elif raw == "facturas" or raw.endswith(".facturas"):
+            # The current API also returns names relative to the parent zone.
+            host = raw + "." + api.DOMAIN
         elif raw == api.DOMAIN or raw.endswith("." + api.DOMAIN):
             fail("receiving_record_outside_subdomain")
         else:

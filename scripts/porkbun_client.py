@@ -17,6 +17,7 @@ RECEIVING_HOST_TYPES = {
     "facturas": {"MX", "TXT"},
     "send.facturas": {"MX", "TXT"},
     "resend._domainkey.facturas": {"TXT", "CNAME"},
+    "rsend.facturas": {"CNAME"},
     "_dmarc.facturas": {"TXT"},
 }
 

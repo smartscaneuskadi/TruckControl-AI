@@ -10,6 +10,10 @@ import {
 } from "../../../supabase/functions/_shared/mail.ts";
 import type { MailGateway } from "../../../supabase/functions/company-mail/handler.ts";
 import { MailActionError } from "../../../supabase/functions/company-mail/handler.ts";
+import {
+  validResendWebhookSecret,
+  resendReady,
+} from "../../../supabase/functions/_shared/resend-runtime.ts";
 const emailId = "c3000000-0000-4000-8000-000000000001",
   org = "c3000000-0000-4000-8000-000000000002",
   user = "c3000000-0000-4000-8000-000000000003",
@@ -121,6 +125,42 @@ function setup(
   };
 }
 describe("receptor nativo Resend: firma, destinatario y original privado", () => {
+  it("admite la clave real de 24 bytes y verifica su firma con el SDK oficial", async () => {
+    const key = "whsec_" + btoa("s".repeat(24));
+    expect(validResendWebhookSecret(key)).toBe(true);
+    expect(resendReady({ ...config, webhookSecret: key })).toBe(true);
+    const body = JSON.stringify({ type: "unsupported" }),
+      id = "msg_short_secret",
+      date = new Date();
+    const request = new Request("https://app.example/company-mail-resend", {
+      method: "POST",
+      body,
+      headers: {
+        "svix-id": id,
+        "svix-timestamp": String(Math.floor(date.getTime() / 1000)),
+        "svix-signature": new Webhook(key).sign(id, date, body),
+      },
+    });
+    const s = setup();
+    const handler = createResendHandler(
+      s.gateway,
+      { ...config, webhookSecret: key },
+      s.transport as typeof fetch,
+    );
+    expect((await handler(request)).status).toBe(200);
+    expect(s.transport).not.toHaveBeenCalled();
+  });
+  it("rechaza firmas demasiado cortas, mal codificadas o con exceso de tamaño", () => {
+    for (const key of [
+      "pending",
+      "whsec_" + btoa("x".repeat(23)),
+      "whsec_" + btoa("x".repeat(65)),
+      "whsec_" + "A".repeat(32) + "!",
+      "whsec_" + "A".repeat(33),
+    ])
+      expect(validResendWebhookSecret(key)).toBe(false);
+    expect(validResendWebhookSecret(config.webhookSecret)).toBe(true);
+  });
   it("el receptor sin configuración queda cerrado y no consulta al proveedor", async () => {
     const s = setup();
     const handler = createResendHandler(

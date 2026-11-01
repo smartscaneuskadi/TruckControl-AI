@@ -31,6 +31,16 @@ class ReceivingDnsTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaises(op.api.auth.SetupError):
                 data = resource();data["records"][0]["name"] = name;op.records(data)
 
+    def test_parent_relative_provider_names_and_current_spf_cname(self):
+        data = resource()
+        for row in data["records"]:
+            row["name"] = "facturas" if row["name"] == "@" else row["name"] + ".facturas"
+        data["records"].append({"name": "rsend.facturas", "type": "CNAME", "value": "send.forge.rmta.net"})
+        rows = op.records(data)
+        self.assertEqual(len(rows), 5)
+        self.assertEqual(rows[0]["name"], "resend._domainkey." + op.SUBDOMAIN)
+        self.assertEqual(rows[-1]["name"], "rsend." + op.SUBDOMAIN)
+
     def test_bad_values_types_and_mx_priorities_are_rejected(self):
         for change in [{"value": "bad\nvalue"}, {"type": "A"}, {"type": "NS"}, {"type": "MX", "priority": -1}, {"type": "MX", "priority": True}]:
             with self.subTest(change=change), self.assertRaises(op.api.auth.SetupError):
