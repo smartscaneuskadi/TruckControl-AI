@@ -131,6 +131,8 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: `${publicBase}index.html`,
+        // Google codes must reach the dedicated, credential-free callback page.
+        navigateFallbackDenylist: [/\/gmail-callback\.html/],
         cleanupOutdatedCaches: true,
         globPatterns: [
           "**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,webmanifest,woff2}",

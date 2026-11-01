@@ -1326,3 +1326,73 @@ dialog.modal,
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.gmail-guide {
+  padding: 25px;
+  margin-bottom: 24px;
+}
+.gmail-actions {
+  flex-wrap: wrap;
+}
+.integration-status .badge {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.gmail-guide-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+.gmail-guide-title > svg,
+.gmail-steps svg {
+  flex-shrink: 0;
+  color: var(--theme-blue);
+}
+.gmail-guide h2 {
+  margin: 0 0 7px;
+  font-size: 20px;
+}
+.gmail-guide p {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0;
+}
+.gmail-steps {
+  list-style: none;
+  padding: 0;
+  margin: 23px 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.gmail-steps li {
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-subtle);
+  border-radius: 10px;
+}
+.gmail-steps strong {
+  display: block;
+  margin: 13px 0 8px;
+  font-size: 13px;
+}
+.gmail-privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--theme-muted);
+}
+.gmail-privacy-note svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+@media (max-width: 760px) {
+  .gmail-guide {
+    padding: 18px;
+  }
+  .gmail-steps {
+    grid-template-columns: 1fr;
+  }
+}

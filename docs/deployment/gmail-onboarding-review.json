@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-01",
+  "project": "truckcontrol-ai",
+  "project_ref": "kkkemaycedexymrpaqtp",
+  "google_project_number": "468881730124",
+  "branch": "feat/company-mail-onboarding",
+  "remote_migrations_inspected": 40,
+  "new_migrations_applied": 0,
+  "gmail_deployed_version_at_inspection": 1,
+  "google_oauth_verified": false,
+  "planned_google_redirect_uri": "https://truckcontrolai.com/gmail-callback.html",
+  "automatic_review": {
+    "action": "live transactional DDL dry run with Vault secret generation and temporary access-enforcement disable",
+    "result": "rejected before execution; no changes performed",
+    "reason": "requires reviewed migration workflow and explicit approval",
+    "safe_followup": "review the two migrations in GitHub, keep access enforcement and RLS enabled, obtain approval before applying and deploying the Gmail backend"
+  },
+  "pending_migrations": [
+    "20261101125037_gmail_oauth_return_origins.sql",
+    "20261101125406_gmail_provider_vault_config.sql"
+  ],
+  "registration_opened": false,
+  "ai_enabled": false,
+  "payments_enabled": false,
+  "fixpilot_modified": false
+}

@@ -16,7 +16,8 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 PROJECT_REF = "kkkemaycedexymrpaqtp"
 ORGANIZATION_ID = "wlvawqxuflbiabowjpkx"
-APP_ORIGIN = "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site"
+APP_ORIGIN = "https://truckcontrolai.com"
+OWNED_ORIGINS = {APP_ORIGIN, "https://www.truckcontrolai.com", "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site"}
 ROOT = Path(__file__).resolve().parents[1]
 SUBJECTS = {
     "confirmation": "Confirma tu cuenta de TruckControl AI",
@@ -48,7 +49,7 @@ def build_patch(current):
     for value in redirects + [current.get("site_url") or APP_ORIGIN]:
         parsed = urlsplit(value)
         local = parsed.hostname in ("127.0.0.1", "localhost", "::1")
-        ours = parsed.scheme == "https" and parsed.netloc == urlsplit(APP_ORIGIN).netloc
+        ours = parsed.scheme == "https" and f"https://{parsed.netloc}" in OWNED_ORIGINS
         if not (local or ours) or parsed.username or parsed.password or any(c in value for c in ("*", "?", "#", "\r", "\n")):
             raise SetupError("Hay redirecciones de otra aplicación o ambiguas; se conservan sin modificar hasta revisarlas.")
     patch = {
