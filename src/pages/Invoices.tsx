@@ -21,6 +21,7 @@ import {
 import { categories, entrySchema } from "../domain/models";
 import { parseMoney } from "../domain/finance";
 import { money } from "../lib/format";
+import { GmailConnectionGuide } from "../components/GmailConnectionGuide";
 
 const demoEntryId = "b1000000-0000-4000-8000-000000000001";
 interface IntegrationStatus {
@@ -33,6 +34,10 @@ export function Invoices() {
   const { snapshot, execute, refresh, notify } = useFleet();
   const client = getSupabaseClient();
   const cloud = access.mode === "company" && Boolean(client);
+  const canManage =
+    !subscription.enabled || subscription.access?.can_manage === true;
+  const canWrite =
+    !subscription.enabled || subscription.access?.can_write === true;
   const [connection, setConnection] = useState<CompanyGmail | null>(null);
   const [status, setStatus] = useState<IntegrationStatus | null>(null);
   const [invoices, setInvoices] = useState<CompanyInvoice[]>([]);
@@ -147,7 +152,9 @@ export function Invoices() {
         throw new Error(
           action === "start"
             ? "Gmail todavía no está disponible. La autorización de Google debe estar activada para esta aplicación."
-            : "No se ha podido completar la operación de Gmail. Revisa la conexión e inténtalo de nuevo.",
+            : action === "disconnect"
+              ? "No se ha podido confirmar la revocación en Google. La conexión no se ha marcado como desconectada. Vuelve a intentarlo."
+              : "No se ha podido completar la operación de Gmail. Revisa la conexión e inténtalo de nuevo.",
         );
       if (action === "start") {
         const url = new URL(data?.url ?? "");
@@ -294,7 +301,7 @@ export function Invoices() {
         </h2>
         <p>
           {cloud
-            ? "Autoriza el buzón de esta empresa en Google. TruckControl solo leerá los adjuntos de mensajes con facturas; no enviará correos ni cambiará tu buzón."
+            ? "Autoriza el buzón de esta empresa en Google. El permiso es de solo lectura: TruckControl busca correos de facturas y guarda sus adjuntos; no envía ni modifica mensajes."
             : "Esta factura de ejemplo permite probar el registro de un gasto. Gmail y la lectura IA todavía no están activos en la demostración."}
         </p>
         {cloud && (
@@ -340,25 +347,31 @@ export function Invoices() {
         {cloud ? (
           <>
             <p>
-              {!status?.oauth_ready
-                ? "La conexión Gmail está pendiente de activación por el administrador."
-                : status.ai_enabled
-                  ? "Lectura IA habilitada. Los resultados siempre requieren tu revisión."
-                  : "Lectura IA desactivada. Puedes importar los documentos y completar sus datos manualmente."}
+              {loading
+                ? "Comprobando la conexión de esta empresa…"
+                : !status
+                  ? "No se ha podido comprobar la disponibilidad de Gmail. Vuelve a comprobar el estado."
+                  : !status.oauth_ready
+                    ? "La conexión Gmail está pendiente de activación por el administrador."
+                    : status.ai_enabled
+                      ? "Lectura IA habilitada. Los resultados siempre requieren tu revisión."
+                      : "Lectura IA desactivada. Puedes importar los documentos y completar sus datos manualmente."}
             </p>
-            <div className="inline-actions">
+            <div className="inline-actions gmail-actions">
               {connection ? (
                 <>
                   <Button
                     icon={RefreshCw}
-                    disabled={busy || connection.status !== "connected"}
+                    disabled={
+                      busy || connection.status !== "connected" || !canWrite
+                    }
                     onClick={() => void gmailAction("sync")}
                   >
                     {busy ? "Importando…" : "Importar facturas"}
                   </Button>
                   <Button
                     variant="secondary"
-                    disabled={busy}
+                    disabled={busy || !status?.oauth_ready || !canManage}
                     onClick={() => void gmailAction("start")}
                   >
                     Cambiar o renovar cuenta
@@ -366,7 +379,7 @@ export function Invoices() {
                   <Button
                     variant="ghost"
                     icon={Unplug}
-                    disabled={busy}
+                    disabled={busy || !canManage}
                     onClick={() => setDisconnect(true)}
                   >
                     Desconectar
@@ -375,13 +388,27 @@ export function Invoices() {
               ) : (
                 <Button
                   icon={Mail}
-                  disabled={busy || !status?.oauth_ready}
+                  disabled={busy || !status?.oauth_ready || !canManage}
                   onClick={() => void gmailAction("start")}
                 >
                   Conectar Gmail de esta empresa
                 </Button>
               )}
+              <Button
+                variant="ghost"
+                disabled={busy || loading}
+                icon={RefreshCw}
+                onClick={() => setRevision((value) => value + 1)}
+              >
+                Comprobar conexión
+              </Button>
             </div>
+            {!canManage && (
+              <p>
+                Solo un administrador de la empresa puede conectar, cambiar o
+                desconectar su correo.
+              </p>
+            )}
             {connection?.last_sync_at && (
               <p>
                 Última importación:{" "}
@@ -399,6 +426,7 @@ export function Invoices() {
           <Button onClick={access.openAccount}>Acceso de empresas</Button>
         )}
       </section>
+      <GmailConnectionGuide />
       {error && (
         <p role="alert" className="form-error">
           {error}

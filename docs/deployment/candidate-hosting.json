@@ -6,11 +6,11 @@
   "purpose": "Separate candidate; stable demo project and audience preserved",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "304b63ffb3742eaeacd662995c7483837eb5e11f",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_e73d18a1b358819183c2e34b16a2e65a",
-  "published_version_number": 4,
-  "deployment_id": "appgdep_6ae72d93048c8191be302c43dbace95f",
-  "previous_deployment_id": "appgdep_6ae72530f6348191a1299411bba5fb47",
+  "published_commit": "c80add77165d6953cd4a9cc43066c435874e7f4f",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ac0aeceee2a4819181723d87a1d73506",
+  "published_version_number": 6,
+  "deployment_id": "appgdep_6ae744aeaf4c81918fcd5a1b0b52c9cb",
+  "previous_deployment_id": "appgdep_6ae7431bd3308191a62308c84320b52f",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -21,7 +21,7 @@
     "vat_rate_bps": 2100,
     "plans": [
       {
-        "name": "Básico",
+        "name": "B\u00e1sico",
         "monthly_cents": 30000
       },
       {
@@ -30,7 +30,18 @@
       }
     ]
   },
-  "deployed_at": "2026-11-01T12:16:35.374323+00:00",
-  "expected_themes": ["light", "cockpit"],
-  "source_ci_run": 41305222529
+  "deployed_at": "2026-11-01T13:55:11.515991+00:00",
+  "expected_themes": [
+    "light",
+    "cockpit"
+  ],
+  "source_ci_run": 41313197695,
+  "expected_gmail_callback": true,
+  "callback_route": "/gmail-callback",
+  "rollback_history": {
+    "version": 5,
+    "reason": "v5 callback failed live installed-PWA verification: hosting canonicalizes html to extensionless paths; prior v4 restored while correcting both routes",
+    "recovered_to_version": 4,
+    "recovery_deployment_id": "appgdep_6ae7431bd3308191a62308c84320b52f"
+  }
 }

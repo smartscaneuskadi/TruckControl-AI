@@ -1,0 +1,77 @@
+{
+  "version": "0.5.1-rc.2",
+  "source_commit": "c80add77165d6953cd4a9cc43066c435874e7f4f",
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "version_number": 6,
+  "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ac0aeceee2a4819181723d87a1d73506",
+  "deployment_id": "appgdep_6ae744aeaf4c81918fcd5a1b0b52c9cb",
+  "deployed_at": "2026-11-01T13:55:11.515991+00:00",
+  "source_ci": {
+    "run": 41313197695,
+    "passed": true,
+    "total_checks": 380,
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41313197695",
+    "public_checks_referenced_restored_v4": true
+  },
+  "tests": {
+    "unit_sql": 229,
+    "python": 23,
+    "demo_browser": 58,
+    "company_browser": 22,
+    "saas_browser": 30,
+    "candidate_browser": 12,
+    "original_64_retained": true,
+    "retained_file_hashes": 11
+  },
+  "public_https": {
+    "origins": [
+      "https://truckcontrolai.com",
+      "https://www.truckcontrolai.com",
+      "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site"
+    ],
+    "matched_files": 69,
+    "total_files": 69,
+    "tls_verification": true,
+    "stable_demo_unchanged": true
+  },
+  "public_browser_current_version": {
+    "expected_source_commit": "c80add77165d6953cd4a9cc43066c435874e7f4f",
+    "themes": [
+      "light",
+      "cockpit"
+    ],
+    "callback_checked": true,
+    "callback_route": "/gmail-callback",
+    "profiles_per_origin": [
+      "windows",
+      "android"
+    ],
+    "total_profile_flows": 6,
+    "checks_url": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/9/checks",
+    "report_artifact": "public-test-results/verification.json",
+    "result_source": "final PR checks; source CI tested restored v4"
+  },
+  "backend_typecheck": {
+    "runtime": "Deno 2.9.6",
+    "passed": true,
+    "location": "local"
+  },
+  "physical_devices": false,
+  "google_project_number": "468881730124",
+  "google_gmail_api_enabled": "owner confirmed",
+  "google_consent": "External / Testing; owner confirmed",
+  "google_web_client_created": "owner confirmed",
+  "google_secure_values": "pending; never sent to chat",
+  "gmail_real_oauth_tested": false,
+  "remote_migrations": 40,
+  "new_migrations_applied": 0,
+  "gmail_backend_version": 1,
+  "backend_approval": "pending explicit owner response",
+  "commercial_registration_open": false,
+  "payments_enabled": false,
+  "ai_enabled": false,
+  "stable_demo_version": 6,
+  "archive_gzip_sha256": "c576d69a6da079f78f7558366c2170ae2a4a2bd08cfd91e4ea1c2ec3044e8f98",
+  "previous_v5": "rolled back after live PWA check failed; preserved in history",
+  "canonical_redirect_regression_test": "passed locally and in source CI for Windows/Android with an installed service worker"
+}

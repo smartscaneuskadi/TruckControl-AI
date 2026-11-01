@@ -1,12 +1,13 @@
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { bucket, createGmailHandler } from "./handler.ts";
 import type { GmailConfig, GmailGateway } from "./handler.ts";
+import { createGmailConfigResolver } from "./config.ts";
 
 const url = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const appOrigin =
-  Deno.env.get("TRUCKCONTROL_APP_ORIGIN") ??
-  "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site";
+// Canonical production origin is pinned independently of obsolete demo settings.
+// A valid OAuth state preserves www/legacy sessions through its own allowlist.
+const appOrigin = "https://truckcontrolai.com";
 const client = createClient(url, serviceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
@@ -62,17 +63,29 @@ const gateway: GmailGateway = {
 const clientId = Deno.env.get("GOOGLE_CLIENT_ID");
 const clientSecret = Deno.env.get("GOOGLE_CLIENT_SECRET");
 const encryptionKey = Deno.env.get("GMAIL_TOKEN_ENCRYPTION_KEY");
+const resolveOAuth = createGmailConfigResolver(
+  { clientId, clientSecret, encryptionKey },
+  async () => {
+    const { data, error } = await client.rpc("gmail_runtime_config");
+    if (error) return null;
+    return data;
+  },
+  Date.now,
+  "468881730124",
+);
 const key = Deno.env.get("OPENAI_API_KEY");
 const model = Deno.env.get("OPENAI_INVOICE_MODEL");
 const config: GmailConfig = {
   enforceCompanyRoles: true,
   enforceEntitlements: true,
   appOrigin,
-  callbackUrl: `${url}/functions/v1/company-gmail`,
-  oauth:
-    clientId && clientSecret && encryptionKey
-      ? { clientId, clientSecret, encryptionKey }
-      : undefined,
+  additionalOrigins: [
+    "https://truckcontrolai.com",
+    "https://www.truckcontrolai.com",
+    "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+  ],
+  callbackUrl: `${appOrigin}/gmail-callback`,
+  resolveOAuth,
   // Opt-in only; presence of an API key never enables billable processing.
   ai:
     Deno.env.get("INVOICE_AI_ENABLED") === "true" && key && model
