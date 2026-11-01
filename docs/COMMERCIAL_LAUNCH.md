@@ -36,7 +36,7 @@ Para habilitar en el futuro se requieren credenciales seguras del proveedor, fir
 
 ## IA y autorizaciones
 
-El propietario ha autorizado **abrir el selector seguro de OpenAI para crear una credencial exclusiva**, sin activar consumo. Aún no se ha creado ni guardado una clave; falta completar la selección oficial. No enviar claves por el chat. La selección de proyecto, el destino privado y la autorización de cualquier presupuesto de uso son pasos separados. No hacer llamadas de pago por el mero hecho de disponer de una clave.
+El propietario creó una clave propia «my test key». El backend de TruckControl **ya la detecta en los secretos de funciones**, sin mostrar su valor ni crear otra. La salud devuelve configured=true y enabled=false. El presupuesto global y el receptor están desplegados, pero siguen cerrados hasta la aprobación del importe concreto y la conexión privada del proveedor; no hay solicitudes facturables, crédito ni respuesta real del modelo comprobados. No enviar claves por el chat ni repetir su guardado. Estado y pruebas vigentes: [AI_RECEIVER_ACTIVATION.md](AI_RECEIVER_ACTIVATION.md).
 
 La autorización de administración de Auth/SMTP sigue pendiente; el conector actual de Supabase no ofrece un ajuste de SMTP alojado. Las plantillas y la aplicación parcial controlada de configuración están preparadas en `scripts/configure_auth_mail.py`; su estado no prueba entrega real. DNS/HTTPS ya están verificados; falta completar SMTP, los flujos reales y la configuración alojada de Auth antes de abrir cuentas.
 

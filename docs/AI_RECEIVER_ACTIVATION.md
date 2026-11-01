@@ -6,7 +6,7 @@ Continuación de 0.5.2-rc.1, rama `feat/ai-receiver-activation`, preparación 0.
 
 El titular informa de una clave llamada «my test key» y autoriza usar IA. El nombre no permite recuperar el valor de una clave creada manualmente. No se crea otra clave ni se modifica la anterior.
 
-Al verificar el proyecto exclusivo `kkkemaycedexymrpaqtp`, Vault aún contiene solo los tres secretos anteriores de Google/Gmail. La clave nueva no aparece bajo `truckcontrol_openai_api_key`. Se pide localizar proyecto y sección, sin solicitar valores ni capturas de claves. El backend nuevo admite también `OPENAI_API_KEY` o `truckcontrol_openai_api_key` de los secretos de funciones. Ninguna comprobación devuelve el valor.
+El backend desplegado del proyecto exclusivo `kkkemaycedexymrpaqtp` **ya detecta la clave en los secretos de funciones**: salud HTTPS `configured=true`, `enabled=false`. Vault conserva un campo pendiente, pero no es necesario volver a copiar ni crear la clave. Se admiten `OPENAI_API_KEY` y `truckcontrol_openai_api_key`, sin que un alias inválido oculte otro válido. Ninguna comprobación devuelve su valor. La detección no acredita todavía una respuesta real ni saldo de OpenAI.
 
 La migración nueva prepara los campos pendientes sin reemplazar secretos existentes. El lector público es `SECURITY INVOKER`, exclusivo de `service_role`, y llama a un lector privado limitado a nombres concretos. No otorga lectura general de Vault ni acceso de clientes al proveedor.
 
@@ -15,7 +15,7 @@ La migración nueva prepara los campos pendientes sin reemplazar secretos existe
 ## Consumo controlado
 
 - Modelo preparado: `gpt-6-luna`, con tarifa estándar forzada, almacenamiento desactivado, sin herramientas y hasta 1.200 tokens de salida.
-- Precio estándar publicado el 01/11/2026: 0,10 USD por millón de tokens de entrada y 1,00 USD por millón de salida. Hay suplementos de contexto largo, caché y región. Fuente: [modelo](https://developers.openai.com/api/docs/models/gpt-6-luna) y [tarifas](https://developers.openai.com/api/docs/pricing).
+- Precio estándar publicado el 01/11/2026: 0,10 USD por millón de tokens de entrada y 0,50 USD por millón de salida. Hay suplementos de contexto largo, caché y región. Fuente: [modelo](https://developers.openai.com/api/docs/models/gpt-6-luna) y [tarifas](https://developers.openai.com/api/docs/pricing).
 - **Estado inicial: deshabilitado y presupuesto cero.** La autorización genérica de contratar no fija un presupuesto ilimitado. Un importe concreto debe quedar aprobado antes de abrir el consumo.
 - Se reserva un máximo conservador de 1,00 USD antes de cada petición. Se mantiene si hay un timeout o una respuesta perdida; no se reintenta automáticamente una llamada facturable.
 - Con uso confirmado se calcula una estimación superior conservadora y se libera el resto de la reserva. La estimación interna no es la factura del proveedor. No se almacenan prompts ni cuerpos de documentos en el registro de uso.
@@ -52,8 +52,14 @@ No se encontró un conector administrativo Resend/Mailgun/Postmark disponible. E
 
 ## Migración, recuperación y validación
 
-Migración CLI nueva: `20261101191806_ai_provider_and_receiver_runtime.sql`. En este punto es local; el inventario remoto anterior tiene 43 migraciones. Se debe verificar historial antes de aplicarla una sola vez. No usar `db push` sobre las versiones históricas distintas. No se modifica FIXPilot.
+Migración CLI `20261101191806_ai_provider_and_receiver_runtime.sql` **ya aplicada una sola vez**, versión remota `20261101194201`: 44 migraciones. La correspondencia y SHA están en `deployment/recovered-migrations.json`; no repetirla ni usar `db push` sobre las versiones históricas distintas. No se modifica FIXPilot.
+
+Funciones desplegadas y comparadas archivo por archivo con el commit `ceff63d64e59da5aae3ffebb7663eade410a8f76`: `company-assistant` v9, `company-gmail` v10, `company-mail` v9 y `company-mail-resend` v1. La autenticación JWT se valida dentro de las funciones; el receptor exige la firma del proveedor. No se ha habilitado recepción ni consumo. [Evidencia del backend](verification/ai-provider-backend-20261101.json).
 
 La reversión operativa consiste en deshabilitar IA/recepción y restaurar las versiones anteriores de funciones. Las tablas aditivas y registros de uso se conservan: no se borran para recuperar un despliegue. Una reserva de gasto desconocido tampoco se elimina para hacer pasar una prueba.
 
-Validación local: 291 unitarias/SQL, incluidas 35 nuevas, TypeScript, compilación PWA, Deno en cuatro entradas y auditoría de producción sin vulnerabilidades. Se conservan las 64 originales mediante once hashes. Las pruebas cubren firmas reales de la biblioteca, límites, aislamiento, consentimiento, cuotas concurrentes, liquidaciones repetidas, respuesta perdida, importación sin contabilizar y preservación de una factura confirmada. Las pruebas usan datos y claves ficticios, no consumen IA ni acreditan entregas, créditos o dispositivos físicos reales. El CI completo y los informes remotos determinan el siguiente estado efectivo.
+El [CI del commit exacto](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41343043038) pasa **450 comprobaciones**: 291 unitarias/SQL, incluidas 35 nuevas; 23 Python; 64 demo; 22 empresas; 30 SaaS; 14 candidata y seis recorridos de la publicación v8. TypeScript, compilación PWA, Deno de cuatro entradas y auditoría de producción sin vulnerabilidades. Se conservan las 64 originales mediante once hashes.
+
+Las pruebas cubren firmas reales de la biblioteca, límites, aislamiento, consentimiento, cuotas concurrentes, liquidaciones repetidas, respuesta perdida, importación sin contabilizar y preservación de una factura confirmada. Además pasan 22 comprobaciones HTTP reales con TLS y una prueba PostgreSQL remota de permisos con rollback: clientes sin acceso a configuración, registros o presupuesto; ningún usuario, empresa ni llamada IA creados; AES de Gmail intacto y asesor de seguridad sin incidencias. [Prueba SQL](verification/ai-provider-disabled-rollback.sql). Las pruebas usan datos y claves ficticios, no consumen IA ni acreditan entregas, créditos o dispositivos físicos reales.
+
+Pendiente del titular: aprobar el límite propuesto de 10 USD/mes antes de impuestos del proveedor, el máximo acumulado de 2 USD de automatización sin recargas y la conexión privada a Resend Free. La solicitud está presentada; una clave detectada no sustituye esa respuesta. A continuación se podrán configurar credenciales y webhook, comprobar entrega y aceptación con cuentas autorizadas. El registro público y los cobros siguen cerrados.

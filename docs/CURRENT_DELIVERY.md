@@ -16,9 +16,17 @@ La conexión directa Gmail anterior se conserva. El reenvío desde Outlook, Micr
 
 ## Base de datos y seguridad
 
-Único proyecto: truckcontrol-ai, kkkemaycedexymrpaqtp. Migración aditiva CLI 20261101172906 aplicada como versión remota 20261101175756, 43 en total. company-mail ACTIVE v1, sus cinco archivos coinciden con el código revisado. Las otras cuatro funciones y AES permanecen intactas. Siete comprobaciones HTTP pasan; asesor de seguridad sin incidencias.
+Único proyecto: truckcontrol-ai, kkkemaycedexymrpaqtp. El backend incorpora ya la migración aditiva de proveedor `20261101191806`, aplicada una sola vez como `20261101194201`: **44 migraciones**. Funciones ACTIVE: company-assistant v9, company-gmail v10, company-mail v9 y company-mail-resend v1. Los 26 archivos de sus paquetes coinciden con la fuente revisada; AES de Gmail permanece intacto. Pasan 22 comprobaciones HTTP con TLS y el asesor de seguridad no devuelve incidencias. [Evidencia vigente](verification/ai-provider-backend-20261101.json).
 
 El módulo remoto de correo sigue cerrado por la administración. La prueba positiva remota se detuvo por ese permiso y revirtió; no se modifica el control para hacerla pasar. La prueba del módulo cerrado pasa en PostgreSQL remoto, con cero usuarios/empresas sintéticos después del rollback. La prueba positiva completa está ensayada en PostgreSQL local; debe repetirse remotamente al habilitar el módulo para aceptación. [Evidencia](verification/company-mail-backend-20261101.json).
+
+## IA y recepción preparada, 0.5.3-rc.1
+
+La clave existente de OpenAI **ya está detectada en los secretos de funciones**, sin mostrarla ni crear otra. Salud: `configured=true`, `enabled=false`. El asistente documental, Gmail y la importación de facturas comparten un presupuesto global y cuotas por empresa. Una lectura propone campos pendientes de revisión y no contabiliza gastos. El adaptador Resend usa firma oficial y direcciones independientes por empresa; todavía no hay cuenta receptora conectada.
+
+El [CI de esta fuente backend](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41343043038) supera 450 comprobaciones, conservando las 64 iniciales y verificando la candidata v8 publicada. La prueba remota de permisos con rollback confirma configuración y registros privados, presupuesto cerrado, cero llamadas IA y cero usuarios/empresas. Esta actualización backend **no sustituye el paquete web v8 ni la demo estable**. Guía: [AI_RECEIVER_ACTIVATION.md](AI_RECEIVER_ACTIVATION.md).
+
+La aprobación concreta de 10 USD/mes de IA, máximo acumulado de 2 USD de automatización sin recargas y conexión privada Resend Free está pendiente. No se ha generado consumo ni contratado un plan. Detectar la clave no prueba saldo, respuesta real del modelo ni entrega de correo.
 
 ## Validación y límites
 
