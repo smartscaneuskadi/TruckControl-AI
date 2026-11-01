@@ -4,7 +4,7 @@
 
 Facturas explica cómo conectar Gmail por empresa, importar documentos y revisarlos. El retorno Google utiliza **https://truckcontrolai.com/gmail-callback**, elimina el código de la URL y mantiene estado/ticket de un uso ligados a usuario, rol y empresa. La selección de empresa se restaura solo entre las autorizadas. Desconectar revoca primero el permiso Google y conserva el estado si el proveedor falla.
 
-**Google preparado por el titular:** proyecto TruckControlAI `468881730124`, Gmail API habilitada, consentimiento Externo/Pruebas y cliente web creados. No se han recibido secretos en el chat. **Backend actualizado:** las dos migraciones están aplicadas y Gmail v2 está activo. **Pendientes:** introducir ID/secreto directamente en Vault y probar OAuth real. [Configuración y aceptación](MAIL_SETUP.md).
+**Google comprobado desde el navegador privado:** proyecto TruckControlAI `468881730124` accesible. Gmail API y consentimiento Externo/Pruebas están confirmados por el titular, pero la inspección directa muestra la lista OAuth vacía, sustituyendo su confirmación anterior de cliente creado. Supabase solicita inicio de sesión con hCaptcha; la transferencia se detuvo sin cambios. Los dos campos Google siguen iguales y el ID no tiene formato válido. **Backend actualizado:** las dos migraciones están aplicadas y Gmail v2 está activo. **Pendientes:** recuperar el acceso privado, crear el único cliente web si la lista sigue vacía, guardar su pareja correcta en Vault y probar OAuth real. [Configuración y aceptación](MAIL_SETUP.md).
 
 La candidata usa datos ficticios y no incorpora credenciales Supabase ni conexión a datos de clientes. Registro, IA remota y cobros permanecen cerrados. Conectar Gmail no activa IA ni crea gastos automáticamente. Gmail real aún no está verificado.
 
@@ -36,4 +36,4 @@ Fleet Light, Fleet Cockpit, modo del dispositivo y movimiento reducido permanece
 
 Abre https://truckcontrolai.com, pulsa **Explorar la demo** y visita Facturas para revisar el ejemplo ficticio. Si la PWA ofrece actualizar, guarda el formulario antes de pulsar Actualizar. [Instalación Android y Windows](INSTALLATION.md).
 
-Para clientes reales faltan los dos valores Google en Vault, OAuth y aislamiento con dos empresas autorizadas, verificación Google de alcances restringidos, SMTP/recuperación reales, administrador verificado, recuperación comercial, información legal y aceptación física disponible. IA y pagos requieren sus conexiones y autorizaciones independientes. Esta candidata no acredita lanzamiento comercial 1.0.
+Para clientes reales faltan el cliente OAuth y su pareja correcta en Vault, OAuth y aislamiento con dos empresas autorizadas, verificación Google de alcances restringidos, SMTP/recuperación reales, administrador verificado, recuperación comercial, información legal y aceptación física disponible. IA y pagos requieren sus conexiones y autorizaciones independientes. Esta candidata no acredita lanzamiento comercial 1.0.
