@@ -192,6 +192,7 @@ try {
           await page.evaluate(async () => {
             await navigator.serviceWorker.ready;
           });
+          await page.reload({ waitUntil: "networkidle" });
           await page.waitForFunction(() =>
             Boolean(navigator.serviceWorker.controller),
           );
