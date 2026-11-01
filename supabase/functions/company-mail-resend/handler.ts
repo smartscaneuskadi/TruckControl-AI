@@ -46,6 +46,7 @@ export function safeResendRawUrl(value: unknown) {
       u.hash ||
       (u.port && u.port !== "443") ||
       !(
+        u.hostname === "cdn.resend.app" ||
         u.hostname.endsWith(".cloudfront.net") ||
         u.hostname.endsWith(".resend.com")
       ) ||
