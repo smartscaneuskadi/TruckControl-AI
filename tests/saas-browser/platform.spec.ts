@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import {
+  decryptCompanyBackup,
+  encryptCompanyBackup,
+} from "../../src/data/company-backup";
+import type { CompanyDocument } from "../../src/integrations/supabase/database.types";
 import AxeBuilder from "@axe-core/playwright";
 import type { RecurringStatus } from "../../src/components/RecurringSubscription";
 import { exampleCatalog, featureLabels } from "../../src/domain/subscriptions";
@@ -60,6 +67,8 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     }
   >();
   const controls = {
+    companyRole: "owner" as "owner" | "admin" | "operator" | "viewer",
+    backupDocuments: [] as CompanyDocument[],
     conflict: false,
     recurring: {
       configured: false,
@@ -145,9 +154,12 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       plan: "full",
       max_trucks: 50,
       requires_phone_verification: smsReady && !verified,
-      company_role: "owner",
+      company_role: controls.companyRole,
       can_write: (!smsReady || verified) && active,
-      can_manage: (!smsReady || verified) && active,
+      can_manage:
+        (!smsReady || verified) &&
+        active &&
+        ["owner", "admin"].includes(controls.companyRole),
       organization_id: org,
       sms_ready: smsReady,
       prices_are_examples: true,
@@ -281,6 +293,19 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
         records.set(id, record);
         data = record;
       }
+    } else if (url.pathname === "/rest/v1/rpc/tc_backup_page")
+      data = body?.p_kind === "documents" ? controls.backupDocuments : [];
+    else if (
+      /^\/storage\/v1\/object\/(?:authenticated\/)?truckcontrol-documents\//.test(
+        url.pathname,
+      )
+    ) {
+      await route.fulfill({
+        status: 200,
+        headers: { ...headers, "Content-Type": "application/pdf" },
+        body: Buffer.from("%PDF-1.7\nOriginal ficticio de recuperacion\n%%EOF"),
+      });
+      return;
     } else if (url.pathname === "/rest/v1/rpc/tc_list_records")
       data = [...records.values()].sort((a, b) => a.id.localeCompare(b.id));
     else if (url.pathname === "/rest/v1/organizations")
@@ -361,6 +386,187 @@ async function login(page: Page, email: string) {
     .fill("synthetic-password-123");
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
 }
+
+async function openRecovery(page: Page) {
+  await login(page, "customer@example.com");
+  await expect(page).toHaveURL(/#\/dashboard/);
+  await page.goto("/#/settings");
+  await expect(
+    page.getByRole("heading", {
+      name: "Conserva registros y originales",
+      exact: true,
+    }),
+  ).toBeVisible();
+}
+async function downloadRecovery(page: Page) {
+  const phrase = "Frase-ficticia-copia-2026";
+  await page
+    .getByLabel("Frase para cifrar la copia", { exact: true })
+    .fill(phrase);
+  await page
+    .getByLabel("Repite la frase de la copia", { exact: true })
+    .fill(phrase);
+  const pending = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Descargar copia cifrada", exact: true })
+    .click();
+  const downloaded = await pending;
+  const text = await readFile((await downloaded.path())!, "utf8");
+  return { text, phrase };
+}
+async function reviewRecovery(page: Page, text: string, phrase: string) {
+  await page
+    .getByLabel("Copia cifrada de esta empresa", { exact: true })
+    .setInputFiles({
+      name: "copia.truckcontrol",
+      mimeType: "application/json",
+      buffer: Buffer.from(text),
+    });
+  await page
+    .getByLabel("Frase para abrir la copia", { exact: true })
+    .fill(phrase);
+  await page
+    .getByRole("button", { name: "Comprobar recuperación", exact: true })
+    .click();
+}
+
+test("recupera un original cifrado y verifica ambos temas sin escribir datos ni llamar proveedores", async ({
+  page,
+}, info) => {
+  const f = await fixtures(page),
+    original = Buffer.from(
+      "%PDF-1.7\nOriginal ficticio de recuperacion\n%%EOF",
+    ),
+    id = "50000000-0000-4000-8000-000000000082";
+  f.controls.backupDocuments.push({
+    id,
+    organization_id: org,
+    name: "Original ficticio.pdf",
+    object_path: `${org}/${id}/document.pdf`,
+    content_type: "application/pdf",
+    size_bytes: original.length,
+    truck_id: "40000000-0000-4000-8000-000000000082",
+    driver_id: null,
+    created_at: stamp,
+  });
+  await openRecovery(page);
+  const { text, phrase } = await downloadRecovery(page);
+  expect(text).not.toContain("Empresa ficticia");
+  expect(text).not.toContain(phrase);
+  await reviewRecovery(page, text, phrase);
+  const modal = page.getByRole("dialog", {
+    name: "Comprobación de recuperación",
+  });
+  await expect(modal).toContainText("1 originales");
+  await expect(
+    modal.getByRole("button", { name: "Recuperar original", exact: true }),
+  ).toBeDisabled();
+  await modal
+    .getByLabel("Confirmo que guardaré los originales en un lugar privado")
+    .check();
+  const pending = page.waitForEvent("download");
+  await modal
+    .getByRole("button", { name: "Recuperar original", exact: true })
+    .click();
+  const recovered = await pending;
+  expect(
+    createHash("sha256")
+      .update(await readFile((await recovered.path())!))
+      .digest("hex"),
+  ).toBe(createHash("sha256").update(original).digest("hex"));
+  await modal.getByRole("button", { name: "Cerrar comprobación" }).click();
+  expect(
+    await page.evaluate(
+      (p) =>
+        JSON.stringify({
+          local: { ...localStorage },
+          session: { ...sessionStorage },
+        }).includes(p),
+      phrase,
+    ),
+  ).toBe(false);
+  for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+    await page
+      .getByRole("button", { name: "Cambiar apariencia", exact: true })
+      .click();
+    const appearance = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+    });
+    await appearance.getByRole("radio", { name: theme, exact: true }).check();
+    await appearance
+      .getByRole("button", { name: "Aplicar apariencia" })
+      .click();
+    await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+    await expect(page.locator(".company-backup-card")).toBeVisible();
+    expect(
+      (await new AxeBuilder({ page }).include(".company-backup-card").analyze())
+        .violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await page.screenshot({
+      path: info.outputPath(
+        `company-backup-${theme === "Fleet Light" ? "light" : "cockpit"}.png`,
+      ),
+    });
+  }
+  expect(
+    f.calls.filter((c) =>
+      /tc_save_record|tc_book_record|approve_company_invoice|functions\/v1/.test(
+        c.path,
+      ),
+    ),
+  ).toEqual([]);
+});
+
+test("rechaza frases y empresas distintas sin restaurar sobre la cuenta actual", async ({
+  page,
+}) => {
+  await fixtures(page);
+  await openRecovery(page);
+  const { text, phrase } = await downloadRecovery(page);
+  await reviewRecovery(page, text, "Otra-frase-ficticia-2026");
+  await expect(page.locator(".company-backup-card [role=alert]")).toContainText(
+    "incorrecta",
+  );
+  const backup = await decryptCompanyBackup(text, phrase, org);
+  backup.fleet.organization.id = "20000000-0000-4000-8000-000000000099";
+  const foreign = await encryptCompanyBackup(backup, phrase);
+  await reviewRecovery(page, foreign, phrase);
+  await expect(page.locator(".company-backup-card [role=alert]")).toContainText(
+    "otra empresa",
+  );
+  await expect(
+    page.getByRole("dialog", { name: "Comprobación de recuperación" }),
+  ).toHaveCount(0);
+});
+
+test("revocar administración impide exportar y un operador no muestra controles de recuperación", async ({
+  page,
+}) => {
+  const f = await fixtures(page);
+  await openRecovery(page);
+  f.controls.companyRole = "operator";
+  await page
+    .getByLabel("Frase para cifrar la copia", { exact: true })
+    .fill("Frase-ficticia-copia-2026");
+  await page
+    .getByLabel("Repite la frase de la copia", { exact: true })
+    .fill("Frase-ficticia-copia-2026");
+  await page
+    .getByRole("button", { name: "Descargar copia cifrada", exact: true })
+    .click();
+  await expect(page.locator(".company-backup-card [role=alert]")).toContainText(
+    "administradora activa",
+  );
+  expect(f.calls.some((c) => c.path.endsWith("tc_backup_page"))).toBe(false);
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Configuración", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".company-backup-card")).toHaveCount(0);
+});
 
 test.describe("copia cifrada y sincronización", () => {
   test.use({ serviceWorkers: "allow" });

@@ -2,6 +2,8 @@
 
 **Aplicación conectada publicada: https://truckcontrolai.com.** El propietario verificó su correo, eligió su contraseña y accedió con administración global; las tres condiciones están comprobadas en Supabase. El registro de clientes está abierto, con consentimiento legal y confirmación de correo. **Cobros automáticos y SMS desactivados.**
 
+**Continuación 0.5.4-rc.1:** copia cifrada de registros y originales autorizados, comprobación y recuperación local sin sobrescribir producción; ensayo aislado con 50 camiones y pruebas RLS remotas con rollback. La migración de paginación ya está aplicada una vez: 49 en total. La interfaz pública sigue en v9 hasta validar y publicar el nuevo paquete. [Alcance y guía](COMPANY_RECOVERY.md).
+
 ## Acceso y oferta
 
 El cliente solicita la prueba Full, completa su empresa y contacto, acepta privacidad y condiciones, confirma el correo y elige una contraseña. Cada empresa tiene usuarios, camiones, documentos y permisos propios. Capacidad inicial: **50 camiones por empresa**. El superadministrador reservado es pedidos@smartscaneuskadi.com.
@@ -16,7 +18,7 @@ También responden https://www.truckcontrolai.com y https://truckcontrol-ai-cand
 
 ## Datos, autenticación y seguridad
 
-Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **48 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261101-client-auth.json), [correspondencias](deployment/recovered-migrations.json).
+Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **49 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261101-company-recovery.json), [correspondencias](deployment/recovered-migrations.json).
 
 Confirmación y recuperación usan enlaces nativos Supabase enviados por API Resend, sin depender de SMTP Migadu. La aceptación real probó verificación, enlace de un uso, contraseña, inicio de sesión, recuperación y cierre global. El consentimiento inmutable del servidor impide activar empresas mediante metadatos editables. La prueba remota de dos empresas pasa con rollback completo. [Evidencia](verification/client-auth-acceptance-20261101.json).
 

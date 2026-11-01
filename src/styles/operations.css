@@ -236,3 +236,16 @@ p.form-error {
     min-width: 0;
   }
 }
+.company-backup-card form {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+}
+.company-backup-card form + form {
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--theme-border);
+}
+.company-backup-card small {
+  color: var(--theme-muted);
+  line-height: 1.6;
+}
