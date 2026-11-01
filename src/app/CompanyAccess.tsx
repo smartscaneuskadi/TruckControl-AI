@@ -18,6 +18,7 @@ import { EmailConfirmation } from "../components/EmailConfirmation";
 import { LegalPage } from "../components/LegalPage";
 import type { LegalDocument } from "../domain/legal";
 import { demoRestoreViewKey } from "../data/demo-keys";
+import { isCandidateRelease } from "../domain/release";
 import {
   chooseCompany,
   readCompanySelection,
@@ -91,7 +92,7 @@ const restoredDemoPreference = () => {
 };
 // Capture once before React StrictMode mounts; remove the one-use token from history immediately.
 const initialEmailAction =
-  typeof window !== "undefined" && customAuthMail
+  typeof window !== "undefined" && customAuthMail && !isCandidateRelease
     ? readEmailAction(window.location.hash)
     : null;
 if (initialEmailAction)

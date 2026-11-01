@@ -23,6 +23,7 @@ import { isCandidateRelease } from "../domain/release";
 import { customAuthMail } from "../integrations/supabase/auth-mail";
 import { legalVersion } from "../domain/legal";
 import { LegalLinks } from "../components/LegalPage";
+import { CompleteRegistration } from "../components/CompleteRegistration";
 
 export function Registration({
   initialView = "login",
@@ -101,7 +102,7 @@ export function Registration({
             });
         if (error) throw error;
         setMessage(
-          "Solicitud recibida. Si procede, recibirás un enlace para confirmar tu correo y elegir tu contraseña. Tu empresa se activará después de completar las verificaciones indicadas.",
+          "Solicitud recibida. Confirma tu correo con el enlace que recibirás si procede. Tu empresa se activará después de completar las verificaciones indicadas.",
         );
       } else if (view === "reset") {
         const { error } = customAuthMail
@@ -444,6 +445,14 @@ export function PhoneVerification({
       setBusy(false);
     }
   }
+  if (customAuthMail && !access.profile && !access.sms_ready)
+    return (
+      <CompleteRegistration
+        user={user}
+        onComplete={onComplete}
+        onSignOut={onSignOut}
+      />
+    );
   return (
     <main className="registration-page">
       <section className="card registration-card">

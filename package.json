@@ -20,7 +20,9 @@
     "verify:published": "node scripts/verify-published-candidate.mjs",
     "verify:retained": "node scripts/verify-retained-tests.mjs",
     "check": "npm run verify:retained && npm run typecheck && npm test && npm run build",
-    "build:candidate": "node scripts/build-candidate.mjs"
+    "build:candidate": "node scripts/build-candidate.mjs",
+    "build:production": "node scripts/build-production.mjs",
+    "test:e2e:production": "node scripts/test-production.mjs"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "5.3.0",

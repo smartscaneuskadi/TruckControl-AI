@@ -29,7 +29,38 @@ Deno.serve(
             }
           : { type: "recovery", email },
       );
-      return error ? null : (data.properties?.hashed_token ?? null);
+      return error || !data.user || !data.properties?.hashed_token
+        ? null
+        : { token_hash: data.properties.hashed_token, user_id: data.user.id };
+    },
+    async consent(user, request, version) {
+      const { data, error } = await client.rpc("company_auth_mail_consent", {
+        p_user_id: user,
+        p_request_id: request,
+        p_version: version,
+        p_authenticated: false,
+      });
+      return !error && data === true;
+    },
+    async completeProfile(token, profile, version) {
+      const { data: identity, error: authError } =
+        await client.auth.getUser(token);
+      const user = identity.user;
+      if (authError || !user?.email_confirmed_at) return false;
+      const { data, error } = await client.rpc("company_auth_mail_consent", {
+        p_user_id: user.id,
+        p_request_id: null,
+        p_version: version,
+        p_authenticated: true,
+      });
+      if (error || data !== true) return false;
+      const updated = await client.auth.admin.updateUserById(user.id, {
+        user_metadata: {
+          ...user.user_metadata,
+          truckcontrol_registration: profile,
+        },
+      });
+      return !updated.error;
     },
   }),
 );

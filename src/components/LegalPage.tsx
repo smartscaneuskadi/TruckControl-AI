@@ -31,6 +31,9 @@ export function LegalPage({ document }: { document: LegalDocument }) {
         }}
       >
         <p className="eyebrow">TRUCKCONTROL AI · {legalVersion}</p>
+        <p>
+          {operator.name} · CIF {operator.taxId} · {operator.address}
+        </p>
         <h1>{content.title}</h1>
         {content.sections.map((s) => (
           <section key={s.title} style={{ marginTop: 24 }}>

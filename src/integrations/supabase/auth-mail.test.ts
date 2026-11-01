@@ -43,12 +43,31 @@ function setup(overrides: Partial<AuthMailRuntime> = {}) {
         _type: "invite" | "recovery",
         _email: string,
         _metadata?: Record<string, unknown>,
-      ): Promise<string | null> => token,
+      ): Promise<{ token_hash: string; user_id: string } | null> => ({
+        token_hash: token,
+        user_id: requestId,
+      }),
     ),
     transport = vi.fn(async (_input: RequestInfo | URL, _init?: RequestInit) =>
       Response.json({ id: requestId }),
     );
-  const gateway: AuthMailGateway = { config, reserve, generate };
+  const consent = vi.fn(
+      async (_user: string, _request: string, _version: string) => true,
+    ),
+    completeProfile = vi.fn(
+      async (
+        _token: string,
+        _profile: Record<string, string>,
+        _version: string,
+      ) => false,
+    );
+  const gateway: AuthMailGateway = {
+    config,
+    reserve,
+    generate,
+    consent,
+    completeProfile,
+  };
   return {
     handler: createAuthMailHandler(gateway, transport as typeof fetch),
     runtime,
@@ -56,6 +75,8 @@ function setup(overrides: Partial<AuthMailRuntime> = {}) {
     reserve,
     generate,
     transport,
+    consent,
+    completeProfile,
   };
 }
 function request(
@@ -92,6 +113,42 @@ async function signed(body: object, age = 0, origin: string | null = null) {
   });
 }
 describe("correo nativo de acceso, sin SMTP ni claves en clientes", () => {
+  it("no entrega una invitación si no se guarda el recibo legal", async () => {
+    const s = setup();
+    s.consent.mockResolvedValueOnce(false);
+    expect((await s.handler(request(signup()))).status).toBe(202);
+    expect(s.consent).toHaveBeenCalledWith(requestId, requestId, "2026-11-01");
+    expect(s.transport).not.toHaveBeenCalled();
+  });
+  it("completar un perfil exige sesión verificada y consentimiento", async () => {
+    const s = setup();
+    const body = {
+      action: "complete_profile",
+      registration: profile,
+      terms_accepted: true,
+      terms_version: "2026-11-01",
+      user_id: "attacker-controlled",
+    };
+    expect((await s.handler(request(body))).status).toBe(401);
+    expect(s.completeProfile).not.toHaveBeenCalled();
+    s.completeProfile.mockResolvedValueOnce(true);
+    expect(
+      (
+        await s.handler(
+          request(body, "https://truckcontrolai.com", {
+            Authorization: "Bearer verified-native-session",
+          }),
+        )
+      ).status,
+    ).toBe(200);
+    expect(s.completeProfile).toHaveBeenCalledWith(
+      "verified-native-session",
+      profile,
+      "2026-11-01",
+    );
+    expect(s.reserve).not.toHaveBeenCalled();
+    expect(s.transport).not.toHaveBeenCalled();
+  });
   it("solo muestra dos booleanos de salud", async () => {
     const s = setup();
     const r = await s.handler(
@@ -216,7 +273,7 @@ describe("correo nativo de acceso, sin SMTP ni claves en clientes", () => {
   });
   it("no llama a proveedores al agotar cuota", async () => {
     const s = setup();
-    s.reserve.mockResolvedValueOnce(null as unknown as string);
+    s.reserve.mockResolvedValueOnce(null);
     expect((await s.handler(request(signup()))).status).toBe(202);
     expect(s.generate).not.toHaveBeenCalled();
     expect(s.transport).not.toHaveBeenCalled();
@@ -224,7 +281,7 @@ describe("correo nativo de acceso, sin SMTP ni claves en clientes", () => {
   it("la recuperación no revela si existe una cuenta", async () => {
     const known = setup(),
       unknown = setup();
-    unknown.generate.mockResolvedValueOnce(null as unknown as string);
+    unknown.generate.mockResolvedValueOnce(null);
     const body = { action: "recovery", email: "person@company.invalid" };
     expect(await (await known.handler(request(body))).json()).toEqual(
       await (await unknown.handler(request(body))).json(),

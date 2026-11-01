@@ -21,7 +21,13 @@ export interface AuthMailGateway {
     type: "invite" | "recovery",
     email: string,
     metadata?: Record<string, unknown>,
-  ): Promise<string | null>;
+  ): Promise<{ token_hash: string; user_id: string } | null>;
+  consent(user: string, request: string, version: string): Promise<boolean>;
+  completeProfile(
+    token: string,
+    profile: Record<string, string>,
+    version: string,
+  ): Promise<boolean>;
 }
 const origins = new Set([
   "https://truckcontrolai.com",
@@ -198,9 +204,13 @@ export function createAuthMailHandler(
       }
       const action = body.action;
       if (
-        !["signup", "recovery", "owner_invite", "acceptance"].includes(
-          String(action),
-        )
+        ![
+          "signup",
+          "recovery",
+          "owner_invite",
+          "acceptance",
+          "complete_profile",
+        ].includes(String(action))
       )
         return response(400, { error: "invalid_action" });
       const internal = action === "owner_invite" || action === "acceptance";
@@ -211,6 +221,28 @@ export function createAuthMailHandler(
           : !origin
       )
         return response(403, { error: "authorization_required" });
+      if (action === "complete_profile") {
+        if (!runtime!.registration_open)
+          return response(403, { error: "registration_closed" });
+        const profile = registration(body.registration),
+          authorization = request.headers.get("Authorization") ?? "";
+        if (
+          !profile ||
+          body.terms_accepted !== true ||
+          body.terms_version !== runtime!.legal_version
+        )
+          return response(400, { error: "registration_invalid" });
+        if (
+          !authorization.startsWith("Bearer ") ||
+          !(await gateway.completeProfile(
+            authorization.slice(7),
+            profile,
+            runtime!.legal_version,
+          ))
+        )
+          return response(401, { error: "verified_account_required" });
+        return response(200, { completed: true });
+      }
       const inputEmail =
         action === "owner_invite" ? runtime!.owner_email : body.email;
       if (!validAuthEmail(inputEmail))
@@ -225,6 +257,11 @@ export function createAuthMailHandler(
       )
         return response(403, { error: "acceptance_denied" });
       let metadata: Record<string, unknown> | undefined;
+      if (action === "acceptance")
+        metadata = {
+          fixture: true,
+          truckcontrol_acceptance: "native-auth-mail-20261101",
+        };
       if (action === "signup") {
         if (!runtime!.registration_open)
           return response(403, { error: "registration_closed" });
@@ -278,9 +315,18 @@ export function createAuthMailHandler(
         (action === "acceptance" && body.recovery === true)
           ? "recovery"
           : "invite";
-      const token = await gateway.generate(type, email, metadata);
-      if (!token) return accepted();
-      const link = authEmailLink(type, token);
+      const generated = await gateway.generate(type, email, metadata);
+      if (!generated) return accepted();
+      if (
+        action === "signup" &&
+        !(await gateway.consent(
+          generated.user_id,
+          reserved,
+          runtime!.legal_version,
+        ))
+      )
+        return accepted();
+      const link = authEmailLink(type, generated.token_hash);
       const title =
         type === "recovery"
           ? "Recupera tu acceso a TruckControl AI"
