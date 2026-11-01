@@ -1,0 +1,90 @@
+{
+  "domain": "truckcontrolai.com",
+  "checked_at": "2026-11-01T00:01:09.176396+00:00",
+  "read_only": true,
+  "rdap_http_status": 404,
+  "rdap_error_type": null,
+  "registrar_lookup": {
+    "domain": "truckcontrolai.com",
+    "availability": "AVAILABLE",
+    "premium": false,
+    "currency": "USD",
+    "registration_cents": "1108",
+    "renewal_cents": "1108",
+    "checked_at": "2026-10-31T23:59:01.438095+00:00",
+    "official_lookup": "https://porkbun.com/checkout/search?q=truckcontrolai.com",
+    "purchase_completed": false
+  },
+  "public_com_pricing": {
+    "source": "https://api.porkbun.com/api/json/v3/pricing/get",
+    "checked_at": "2026-11-01T00:01:56.802460+00:00",
+    "http_status": 200,
+    "currency": "USD",
+    "registration": "11.08",
+    "renewal": "11.08",
+    "transfer": "11.08"
+  },
+  "dns": [
+    {
+      "name": "truckcontrolai.com",
+      "type": "NS",
+      "http_status": 200,
+      "dns_status": 3,
+      "answers": [],
+      "error_type": null
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "A",
+      "http_status": 200,
+      "dns_status": 3,
+      "answers": [],
+      "error_type": null
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "AAAA",
+      "http_status": 200,
+      "dns_status": 3,
+      "answers": [],
+      "error_type": null
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "MX",
+      "http_status": 200,
+      "dns_status": 3,
+      "answers": [],
+      "error_type": null
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "TXT",
+      "http_status": 200,
+      "dns_status": 3,
+      "answers": [],
+      "error_type": null
+    },
+    {
+      "name": "_dmarc.truckcontrolai.com",
+      "type": "TXT",
+      "http_status": 200,
+      "dns_status": 3,
+      "answers": [],
+      "error_type": null
+    },
+    {
+      "name": "www.truckcontrolai.com",
+      "type": "CNAME",
+      "http_status": 200,
+      "dns_status": 3,
+      "answers": [],
+      "error_type": null
+    }
+  ],
+  "ownership_verified": false,
+  "purchase_completed": false,
+  "mailboxes_created": false,
+  "dns_changed": false,
+  "smtp_delivery_verified": false
+}

@@ -105,3 +105,12 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - CI `41242941858` correcto: la URL pública pasa Chrome de escritorio y perfil Android, con TLS activo, fuente coincidente, planes/altas cerrados y entrada a la demo. No se desactiva la comprobación de certificados.
 - PostgreSQL real permite 50 camiones, rechaza el 51 y aísla 2.100 apuntes de dos empresas. Todo se revierte y quedan cero filas sintéticas; no es una promesa de SLA. Fuente: `docs/verification/fleet-capacity-rollback.sql`.
 - Informe `release-0.4.0-rc.1.json` y entrega actual actualizados. No hay servicios de pago activados ni datos reales en la candidata.
+
+# 2026-11-01 — dominio, correo y presupuesto autorizado
+
+- El propietario pide crear dominio/correo y aprueba expresamente Migadu Micro por **19 USD/año** para los tres buzones. Conservar esta autorización; no repetirla. No se ha contratado ni cobrado.
+- Consulta exacta de Porkbun a las 23:59 UTC: dominio AVAILABLE, no premium, 11,08 USD por registro y renovación anual publicada. Nueva comprobación del 01/11: RDAP 404 y siete consultas DNS con NXDOMAIN. No acredita propiedad ni reserva el nombre. Evidencia: `docs/deployment/domain-mail-preflight-20261101.json`.
+- Descubierta y sugerida la conexión oficial de Wix para consultar compra de dominio desde el chat. Sin conexión confirmada, sin presupuesto Wix y sin nuevo sitio. El precio de Porkbun no se aplica a Wix.
+- Verificado el registro oficial de Migadu, que solicita identidad y confirmación por correo del titular; no requiere tarjeta para la prueba. No hay conector de provisión ni credenciales seguras disponibles para Migadu/Brevo. No pedir secretos por chat. No inventar nombre, dominio comprado, DKIM ni pago.
+- Preparación de buzones, DNS, SPF/DKIM/DMARC, SMTP, verificación y límites en `docs/DOMAIN_AND_MAIL.md`. La candidata continúa sin dominio asociado y ambas demos conservan sus direcciones. No se modifica Supabase ni FIXPilot.
+- Verificados de nuevo los hashes de once archivos de las 64 pruebas iniciales y las siete pruebas de correo. Solo cambian documentación y evidencia pública.

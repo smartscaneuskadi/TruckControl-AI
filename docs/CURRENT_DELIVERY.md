@@ -22,6 +22,6 @@ Supabase independiente `truckcontrol-ai` (`kkkemaycedexymrpaqtp`, organización 
 
 Esta publicación es una candidata de demostración; **todavía no es el lanzamiento 1.0 para empresas reales**. Faltan dominio comprado/DNS, correo real y administrador verificado, autorización y configuración de proveedores, presupuesto de IA, condiciones/fiscalidad, recuperación comercial y aceptación física cuando haya dispositivos disponibles. El envío real de correo y la pasarela no se declaran verificados con pruebas simuladas. No se han activado cargos.
 
-El dominio sigue pendiente de compra. Se ha propuesto Migadu Micro (19 USD/año) y Brevo gratuito para correo, sin contratar nada. La selección del proyecto de OpenAI del formulario oficial sigue pendiente; todavía no hay clave ni consumo autorizado.
+El dominio sigue pendiente de compra. **Migadu Micro, 19 USD/año, está aprobado por el propietario desde el 01/11/2026**, sin contratar ni cobrar todavía. Brevo gratuito se propone para el correo automático. Se ha sugerido Wix para acceder al flujo oficial de compra de dominio desde el chat, aún sin conexión ni presupuesto confirmados. Preparación y acceso seguro pendientes: [DOMAIN_AND_MAIL.md](DOMAIN_AND_MAIL.md). La selección del proyecto de OpenAI del formulario oficial sigue pendiente; todavía no hay clave ni consumo autorizado.
 
 [Instalación Android y Windows](INSTALLATION.md) · [Detalle de la candidata](RELEASE_0_4_RC.md) · [Lanzamiento comercial](COMMERCIAL_LAUNCH.md) · [Registro persistente](PROGRESS.md).
