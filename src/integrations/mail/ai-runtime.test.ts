@@ -58,6 +58,16 @@ const request = (overrides: object = {}) => ({
   }),
 });
 describe("activación IA con credenciales privadas y límite global", () => {
+  it("un placeholder anterior no oculta una clave válida bajo el nombre alternativo autorizado", async () => {
+    const runtime = createAiRuntimeResolver(
+      { config: async () => null, budget: vi.fn() },
+      ["pending", key],
+    );
+    expect(await runtime.health()).toEqual({
+      configured: true,
+      enabled: false,
+    });
+  });
   it("la disponibilidad publica solo dos booleanos y no habilita consumo por tener una clave", async () => {
     const { runtime, budget, transport } = setup({ enabled: false });
     expect(await runtime.health()).toEqual({

@@ -10,8 +10,10 @@ const client = createClient(
     auth: { persistSession: false, autoRefreshToken: false },
   },
 );
-const environmentKey =
-  Deno.env.get("OPENAI_API_KEY") ?? Deno.env.get("truckcontrol_openai_api_key");
+const environmentKey = [
+  Deno.env.get("OPENAI_API_KEY"),
+  Deno.env.get("truckcontrol_openai_api_key"),
+];
 const gateway = createMailGateway(client, environmentKey);
 Deno.serve(async (request: Request) => {
   const { data, error } = await client.rpc("company_provider_runtime_config", {

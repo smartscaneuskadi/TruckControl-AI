@@ -6,7 +6,7 @@ import type { MailAccess, MailGateway } from "./handler.ts";
 
 export function createMailGateway(
   client: SupabaseClient,
-  environmentKey?: string,
+  environmentKey?: string | readonly (string | undefined)[],
 ): MailGateway {
   const runtime = createAiRuntimeResolver(
     {

@@ -21,14 +21,20 @@ export function usableApiKey(value: unknown): value is string {
 }
 export function createAiRuntimeResolver(
   gateway: AiRuntimeGateway,
-  environmentKey?: string,
+  environmentKey?: string | readonly (string | undefined)[],
   transport: typeof fetch = fetch,
 ) {
   async function read() {
     const policy = await gateway.config();
     const stored =
       typeof policy?.api_key === "string" ? policy.api_key.trim() : "";
-    const key = usableApiKey(stored) ? stored : environmentKey?.trim();
+    const candidates =
+      typeof environmentKey === "string" || environmentKey === undefined
+        ? [environmentKey]
+        : environmentKey;
+    const key = usableApiKey(stored)
+      ? stored
+      : candidates.map((value) => value?.trim()).find(usableApiKey);
     return { policy, key: usableApiKey(key) ? key : undefined };
   }
   return {

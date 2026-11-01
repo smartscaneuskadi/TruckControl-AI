@@ -92,7 +92,7 @@ const aiRuntime = createAiRuntimeResolver(
       return result;
     },
   },
-  Deno.env.get("OPENAI_API_KEY") ?? Deno.env.get("truckcontrol_openai_api_key"),
+  [Deno.env.get("OPENAI_API_KEY"), Deno.env.get("truckcontrol_openai_api_key")],
 );
 const config: GmailConfig = {
   enforceCompanyRoles: true,
