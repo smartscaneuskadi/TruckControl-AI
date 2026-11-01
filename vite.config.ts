@@ -21,6 +21,19 @@ if (
   throw new Error(
     "La candidata se construye sin conexión a datos de clientes.",
   );
+if (
+  releaseChannel === "production" &&
+  (process.env.VITE_COMMERCIAL_MODE !== "true" ||
+    process.env.VITE_AUTH_MAIL_PROVIDER !== "resend" ||
+    process.env.VITE_SUPABASE_URL !==
+      "https://kkkemaycedexymrpaqtp.supabase.co" ||
+    !/^sb_publishable_[A-Za-z0-9_-]+$/.test(
+      process.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "",
+    ))
+)
+  throw new Error(
+    "Producción requiere el proyecto TruckControl, clave publicable, portal y correo verificado.",
+  );
 const appPackage = JSON.parse(
   readFileSync(new URL("./package.json", import.meta.url), "utf8"),
 );
@@ -102,7 +115,9 @@ export default defineConfig({
         description:
           releaseChannel === "candidate"
             ? "Gestión de flotas · Candidata con datos ficticios"
-            : "Gestión inteligente de flotas · Demostración",
+            : releaseChannel === "production"
+              ? "Gestión inteligente de flotas para empresas"
+              : "Gestión inteligente de flotas · Demostración",
         start_url: publicBase,
         scope: publicBase,
         display: "standalone",
