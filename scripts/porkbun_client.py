@@ -13,6 +13,12 @@ spec = importlib.util.spec_from_file_location("truckcontrol_porkbun_auth", ROOT 
 auth = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(auth)
 DOMAIN = "truckcontrolai.com"
+RECEIVING_HOST_TYPES = {
+    "facturas": {"MX", "TXT"},
+    "send.facturas": {"MX", "TXT"},
+    "resend._domainkey.facturas": {"TXT", "CNAME"},
+    "_dmarc.facturas": {"TXT"},
+}
 
 def call(method, route, body=None, operation_id=None):
     allowed_read = {"/dns/retrieve/" + DOMAIN, "/dns/history/" + DOMAIN}
@@ -28,8 +34,10 @@ def call(method, route, body=None, operation_id=None):
             "_openai-site-verification.www", "_cf-custom-hostname.www",
             "key1._domainkey", "key2._domainkey", "key3._domainkey", "_dmarc", "autoconfig",
             "_autodiscover._tcp", "_submissions._tcp", "_imaps._tcp", "_pop3s._tcp",
-        }:
+        } | set(RECEIVING_HOST_TYPES):
             raise auth.SetupError("dns_hostname_not_allowed")
+        if host in RECEIVING_HOST_TYPES and body["type"] not in RECEIVING_HOST_TYPES[host]:
+            raise auth.SetupError("receiving_record_type_not_allowed")
     credentials = auth.read_private(auth.CREDENTIAL)
     if credentials.get("domain") != DOMAIN or credentials.get("verified") is not True:
         raise auth.SetupError("unverified_credentials_or_domain")
