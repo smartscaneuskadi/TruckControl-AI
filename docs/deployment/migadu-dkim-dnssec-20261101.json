@@ -1,0 +1,54 @@
+{
+  "checked_at": "2026-11-01T10:31:57.339802+00:00",
+  "domain_active_reported_by_owner": true,
+  "results": [
+    {
+      "resolver": "google",
+      "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "has_public_key": false,
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key1.truckcontrolai.com._domainkey.migadu.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key1.truckcontrolai.com._domainkey.migadu.com for errors"
+    },
+    {
+      "resolver": "google",
+      "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "has_public_key": false,
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key2.truckcontrolai.com._domainkey.migadu.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key2.truckcontrolai.com._domainkey.migadu.com for errors"
+    },
+    {
+      "resolver": "google",
+      "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "has_public_key": false,
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key3.truckcontrolai.com._domainkey.migadu.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key3.truckcontrolai.com._domainkey.migadu.com for errors"
+    },
+    {
+      "resolver": "cloudflare",
+      "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "has_public_key": false,
+      "comment": [
+        "EDE(6): DNSSEC Bogus wildcard expansion proof for key1.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    },
+    {
+      "resolver": "cloudflare",
+      "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "has_public_key": false,
+      "comment": [
+        "EDE(6): DNSSEC Bogus wildcard expansion proof for key2.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    },
+    {
+      "resolver": "cloudflare",
+      "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "has_public_key": false,
+      "comment": [
+        "EDE(6): DNSSEC Bogus wildcard expansion proof for key3.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    }
+  ]
+}

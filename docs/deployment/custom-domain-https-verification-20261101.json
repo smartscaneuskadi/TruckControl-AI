@@ -1,0 +1,123 @@
+{
+  "checked_at": "2026-11-01T10:22:15.693915+00:00",
+  "tls_validation_disabled": false,
+  "checks": [
+    {
+      "url": "https://truckcontrolai.com/",
+      "http_status": 200,
+      "sha256": "538d5adbbca2edd594bf559f4e18d5533428986ed9d5d9373732bfb6502cda4f",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://truckcontrolai.com/release.json",
+      "http_status": 200,
+      "sha256": "f175ef2f6c7515ca7f056cfba3360c0f4290cb5c01c19e91be55dff27b3cca06",
+      "matches_saved_build": true,
+      "release": {
+        "app": "TruckControl AI",
+        "version": "0.4.0-rc.1",
+        "channel": "candidate",
+        "sourceCommit": "e7a43948bff9bf3b3c5c37c890324ce6dc94852c",
+        "sourceDirty": false,
+        "companyConnectionBundled": false,
+        "registrationForcedClosed": true,
+        "builtAt": "2026-10-31T21:10:34.138Z"
+      }
+    },
+    {
+      "url": "https://truckcontrolai.com/manifest.webmanifest",
+      "http_status": 200,
+      "sha256": "67be7b0df43c0c690eb2732e9a6d27910981ccb74dafbb07c01bfae0bffc4311",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://truckcontrolai.com/sw.js",
+      "http_status": 200,
+      "sha256": "3fccbd275a88587b19dc8ab510988064c6cb80baa460ed56c5ca089f81636ba3",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://truckcontrolai.com/icons/icon-192.png",
+      "http_status": 200,
+      "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://truckcontrolai.com/icons/icon-512.png",
+      "http_status": 200,
+      "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://truckcontrolai.com/assets/index-DLTjns-m.js",
+      "http_status": 200,
+      "sha256": "f8b948b34280b94444870f7f947cba30bffa70fcc27cbdcccf6b6b8bfdb72768",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://truckcontrolai.com/assets/index-XUXO6L7o.css",
+      "http_status": 200,
+      "sha256": "594f66a981466d4a1da81b90542de38809e3ee920ae75a3c59d01cee0837604f",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://www.truckcontrolai.com/",
+      "http_status": 200,
+      "sha256": "538d5adbbca2edd594bf559f4e18d5533428986ed9d5d9373732bfb6502cda4f",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://www.truckcontrolai.com/release.json",
+      "http_status": 200,
+      "sha256": "f175ef2f6c7515ca7f056cfba3360c0f4290cb5c01c19e91be55dff27b3cca06",
+      "matches_saved_build": true,
+      "release": {
+        "app": "TruckControl AI",
+        "version": "0.4.0-rc.1",
+        "channel": "candidate",
+        "sourceCommit": "e7a43948bff9bf3b3c5c37c890324ce6dc94852c",
+        "sourceDirty": false,
+        "companyConnectionBundled": false,
+        "registrationForcedClosed": true,
+        "builtAt": "2026-10-31T21:10:34.138Z"
+      }
+    },
+    {
+      "url": "https://www.truckcontrolai.com/manifest.webmanifest",
+      "http_status": 200,
+      "sha256": "67be7b0df43c0c690eb2732e9a6d27910981ccb74dafbb07c01bfae0bffc4311",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://www.truckcontrolai.com/sw.js",
+      "http_status": 200,
+      "sha256": "3fccbd275a88587b19dc8ab510988064c6cb80baa460ed56c5ca089f81636ba3",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://www.truckcontrolai.com/icons/icon-192.png",
+      "http_status": 200,
+      "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://www.truckcontrolai.com/icons/icon-512.png",
+      "http_status": 200,
+      "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://www.truckcontrolai.com/assets/index-DLTjns-m.js",
+      "http_status": 200,
+      "sha256": "f8b948b34280b94444870f7f947cba30bffa70fcc27cbdcccf6b6b8bfdb72768",
+      "matches_saved_build": true
+    },
+    {
+      "url": "https://www.truckcontrolai.com/assets/index-XUXO6L7o.css",
+      "http_status": 200,
+      "sha256": "594f66a981466d4a1da81b90542de38809e3ee920ae75a3c59d01cee0837604f",
+      "matches_saved_build": true
+    }
+  ],
+  "all_16_resources_match": true
+}

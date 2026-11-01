@@ -1,6 +1,8 @@
 # Probar e instalar TruckControl AI
 
-La demo estable está disponible en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. La URL verificada de la candidata se registra en [CURRENT_DELIVERY.md](CURRENT_DELIVERY.md) después de publicarla. Ambas utilizan datos ficticios; guarda una copia antes de borrar los datos del navegador.
+La candidata está disponible en **https://truckcontrolai.com**. Utiliza esa dirección para instalarla. También responde www y se conservan la [candidata anterior](https://truckcontrol-ai-candidata.earlymug513.chatgpt.site) y la [demo estable](https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site). Todas utilizan datos ficticios; guarda una copia antes de borrar datos del navegador.
+
+Cada origen mantiene por separado sus datos locales de demostración. Para trasladar tus cambios, exporta una copia desde la dirección anterior e impórtala en **Configuración → Copias y recuperación de la demo** de la dirección nueva. Los archivos adjuntos no se incluyen en esa copia JSON; la guía [DEMO_RECOVERY.md](DEMO_RECOVERY.md) explica su alcance.
 
 ## Android
 

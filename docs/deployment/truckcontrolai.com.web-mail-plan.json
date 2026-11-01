@@ -1,0 +1,191 @@
+{
+  "domain": "truckcontrolai.com",
+  "prepared_at": "2026-11-01T09:57:00.478746+00:00",
+  "status": "applied_and_registry_readback_verified",
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "source": {
+    "kind": "owner_screenshot_of_original_migadu_bind_export",
+    "filename": "303168.jpg",
+    "sha256": "ebbe7880c073c45379ee84de61aa9e0c87e263fed658b73c6107e9f4c24d2c97",
+    "transcription_visually_checked": true,
+    "source_ttl": 3000,
+    "provider_records": 13
+  },
+  "target_ttl": 600,
+  "target_ttl_note": "Reduced cache lifetime for initial setup; record values match the provider source.",
+  "provider_zone_inventory_received": true,
+  "dns_changed_by_agent": true,
+  "full_zone_replacement_authorized": false,
+  "records": [
+    {
+      "name": "truckcontrolai.com",
+      "type": "A",
+      "value": "162.159.143.30",
+      "ttl": 600,
+      "source": "sites"
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "A",
+      "value": "172.66.3.26",
+      "ttl": 600,
+      "source": "sites"
+    },
+    {
+      "name": "_openai-site-verification.truckcontrolai.com",
+      "type": "TXT",
+      "value": "openai-site-verification=KAkyMZYRGdFfkgxYF1UJWAB2OFIeE5RsIdHvKVcp9Vo",
+      "ttl": 600,
+      "source": "sites"
+    },
+    {
+      "name": "_cf-custom-hostname.truckcontrolai.com",
+      "type": "TXT",
+      "value": "5028b548-5fae-4f1e-94f0-cd5031dc18a2",
+      "ttl": 600,
+      "source": "sites"
+    },
+    {
+      "name": "www.truckcontrolai.com",
+      "type": "CNAME",
+      "value": "custom-domains.chatgpt.site.",
+      "ttl": 600,
+      "source": "sites"
+    },
+    {
+      "name": "_openai-site-verification.www.truckcontrolai.com",
+      "type": "TXT",
+      "value": "openai-site-verification=G6S3HzZ_qY48LEUd7Zyijp_UHf7BXdsp4Cl0JzWV-TM",
+      "ttl": 600,
+      "source": "sites"
+    },
+    {
+      "name": "_cf-custom-hostname.www.truckcontrolai.com",
+      "type": "TXT",
+      "value": "b4d8b848-1c2a-457c-aa63-e276ade0d23f",
+      "ttl": 600,
+      "source": "sites"
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "TXT",
+      "ttl": 600,
+      "source": "migadu",
+      "value": "hosted-email-verify=1wb6rzag"
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "MX",
+      "ttl": 600,
+      "source": "migadu",
+      "priority": 10,
+      "value": "aspmx1.migadu.com."
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "MX",
+      "ttl": 600,
+      "source": "migadu",
+      "priority": 20,
+      "value": "aspmx2.migadu.com."
+    },
+    {
+      "name": "truckcontrolai.com",
+      "type": "TXT",
+      "ttl": 600,
+      "source": "migadu",
+      "value": "v=spf1 include:spf.migadu.com -all"
+    },
+    {
+      "name": "key1._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "ttl": 600,
+      "source": "migadu",
+      "value": "key1.truckcontrolai.com._domainkey.migadu.com."
+    },
+    {
+      "name": "key2._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "ttl": 600,
+      "source": "migadu",
+      "value": "key2.truckcontrolai.com._domainkey.migadu.com."
+    },
+    {
+      "name": "key3._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "ttl": 600,
+      "source": "migadu",
+      "value": "key3.truckcontrolai.com._domainkey.migadu.com."
+    },
+    {
+      "name": "_dmarc.truckcontrolai.com",
+      "type": "TXT",
+      "ttl": 600,
+      "source": "migadu",
+      "value": "v=DMARC1; p=quarantine;"
+    },
+    {
+      "name": "autoconfig.truckcontrolai.com",
+      "type": "CNAME",
+      "ttl": 600,
+      "source": "migadu",
+      "value": "autoconfig.migadu.com."
+    },
+    {
+      "name": "_autodiscover._tcp.truckcontrolai.com",
+      "type": "SRV",
+      "ttl": 600,
+      "source": "migadu",
+      "priority": 0,
+      "weight": 1,
+      "port": 443,
+      "value": "autodiscover.migadu.com."
+    },
+    {
+      "name": "_submissions._tcp.truckcontrolai.com",
+      "type": "SRV",
+      "ttl": 600,
+      "source": "migadu",
+      "priority": 0,
+      "weight": 1,
+      "port": 465,
+      "value": "smtp.migadu.com."
+    },
+    {
+      "name": "_imaps._tcp.truckcontrolai.com",
+      "type": "SRV",
+      "ttl": 600,
+      "source": "migadu",
+      "priority": 0,
+      "weight": 1,
+      "port": 993,
+      "value": "imap.migadu.com."
+    },
+    {
+      "name": "_pop3s._tcp.truckcontrolai.com",
+      "type": "SRV",
+      "ttl": 600,
+      "source": "migadu",
+      "priority": 0,
+      "weight": 1,
+      "port": 995,
+      "value": "pop.migadu.com."
+    }
+  ],
+  "dmarc": {
+    "value": "v=DMARC1; p=quarantine;",
+    "source": "Migadu export",
+    "sending_must_wait_for_spf_dkim_verification": true,
+    "reporting_mailbox_added": false
+  },
+  "secrets_included": false,
+  "applied_at": "2026-11-01T10:16:28.345534+00:00",
+  "public_dns_verified_at": "2026-11-01T10:18:16.846605+00:00",
+  "applied_operations": 20,
+  "created_records": 16,
+  "edited_records": 4,
+  "deleted_records": 0,
+  "preserved_record_count": 7,
+  "live_record_count": 27,
+  "verification_report": "dns-activation-20261101.json"
+}

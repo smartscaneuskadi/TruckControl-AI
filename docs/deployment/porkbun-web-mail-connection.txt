@@ -1,0 +1,114 @@
+SOLICITUD DE CONFIGURACION WEB Y CORREO: truckcontrolai.com
+
+Soy titular de este dominio, registrado en mi cuenta de Porkbun. Solicito aplicar
+los siguientes registros para mi web TruckControl y mi cuenta Migadu con DNS externos.
+Conservar nameservers de Porkbun. No transferir dominio ni contratar servicios nuevos.
+
+ANTES DE APLICAR: conservar inventario de la zona para recuperacion; comparar los
+registros existentes. Reemplazar solo el aparcamiento de @/www, los MX de reenvio
+que se sustituyen por Migadu, el SPF del dominio y el DMARC correspondiente.
+No borrar la zona completa, otros subdominios ni TXT de verificacion ajenos.
+Debe quedar un solo SPF en @ y sin mezcla de MX de Porkbun y Migadu.
+Si hay una configuracion ajena o cargos adicionales, consultar primero.
+
+REGISTROS: TTL 600 segundos. Los puntos finales en destinos son FQDN.
+Los valores TXT van SIN las comillas de presentacion del formato BIND.
+
+Tipo: A
+Host: @
+Valor: 162.159.143.30
+
+Tipo: A
+Host: @
+Valor: 172.66.3.26
+
+Tipo: TXT
+Host: _openai-site-verification
+Valor: openai-site-verification=KAkyMZYRGdFfkgxYF1UJWAB2OFIeE5RsIdHvKVcp9Vo
+
+Tipo: TXT
+Host: _cf-custom-hostname
+Valor: 5028b548-5fae-4f1e-94f0-cd5031dc18a2
+
+Tipo: CNAME
+Host: www
+Valor: custom-domains.chatgpt.site.
+
+Tipo: TXT
+Host: _openai-site-verification.www
+Valor: openai-site-verification=G6S3HzZ_qY48LEUd7Zyijp_UHf7BXdsp4Cl0JzWV-TM
+
+Tipo: TXT
+Host: _cf-custom-hostname.www
+Valor: b4d8b848-1c2a-457c-aa63-e276ade0d23f
+
+Tipo: TXT
+Host: @
+Valor: hosted-email-verify=1wb6rzag
+
+Tipo: MX
+Host: @
+Prioridad: 10
+Valor: aspmx1.migadu.com.
+
+Tipo: MX
+Host: @
+Prioridad: 20
+Valor: aspmx2.migadu.com.
+
+Tipo: TXT
+Host: @
+Valor: v=spf1 include:spf.migadu.com -all
+
+Tipo: CNAME
+Host: key1._domainkey
+Valor: key1.truckcontrolai.com._domainkey.migadu.com.
+
+Tipo: CNAME
+Host: key2._domainkey
+Valor: key2.truckcontrolai.com._domainkey.migadu.com.
+
+Tipo: CNAME
+Host: key3._domainkey
+Valor: key3.truckcontrolai.com._domainkey.migadu.com.
+
+Tipo: TXT
+Host: _dmarc
+Valor: v=DMARC1; p=quarantine;
+
+Tipo: CNAME
+Host: autoconfig
+Valor: autoconfig.migadu.com.
+
+Tipo: SRV
+Host: _autodiscover._tcp
+Prioridad: 0
+Peso: 1
+Puerto: 443
+Valor: autodiscover.migadu.com.
+
+Tipo: SRV
+Host: _submissions._tcp
+Prioridad: 0
+Peso: 1
+Puerto: 465
+Valor: smtp.migadu.com.
+
+Tipo: SRV
+Host: _imaps._tcp
+Prioridad: 0
+Peso: 1
+Puerto: 993
+Valor: imap.migadu.com.
+
+Tipo: SRV
+Host: _pop3s._tcp
+Prioridad: 0
+Peso: 1
+Puerto: 995
+Valor: pop.migadu.com.
+
+DMARC p=quarantine procede del export de Migadu. Se comprobara SPF/DKIM y
+alineacion antes de habilitar envio real; no se ha anadido un buzon de informes.
+Los buzones se activaran desde la cuenta Migadu del titular tras verificar DNS.
+No comunicar contrasenas ni claves API por correo o chat.

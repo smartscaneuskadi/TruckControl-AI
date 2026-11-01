@@ -1,0 +1,23 @@
+; CAMBIO PROPUESTO: web y correo de truckcontrolai.com. NO es una zona completa.
+; No eliminar registros ajenos ni cambiar nameservers. Comparar con inventario de Porkbun.
+; TTL inicial 600; Migadu exporta 3000. Los valores originales se conservan en el archivo source.zone.
+truckcontrolai.com. 600 IN A 162.159.143.30
+truckcontrolai.com. 600 IN A 172.66.3.26
+_openai-site-verification.truckcontrolai.com. 600 IN TXT "openai-site-verification=KAkyMZYRGdFfkgxYF1UJWAB2OFIeE5RsIdHvKVcp9Vo"
+_cf-custom-hostname.truckcontrolai.com. 600 IN TXT "5028b548-5fae-4f1e-94f0-cd5031dc18a2"
+www.truckcontrolai.com. 600 IN CNAME custom-domains.chatgpt.site.
+_openai-site-verification.www.truckcontrolai.com. 600 IN TXT "openai-site-verification=G6S3HzZ_qY48LEUd7Zyijp_UHf7BXdsp4Cl0JzWV-TM"
+_cf-custom-hostname.www.truckcontrolai.com. 600 IN TXT "b4d8b848-1c2a-457c-aa63-e276ade0d23f"
+truckcontrolai.com. 600 IN TXT "hosted-email-verify=1wb6rzag"
+truckcontrolai.com. 600 IN MX 10 aspmx1.migadu.com.
+truckcontrolai.com. 600 IN MX 20 aspmx2.migadu.com.
+truckcontrolai.com. 600 IN TXT "v=spf1 include:spf.migadu.com -all"
+key1._domainkey.truckcontrolai.com. 600 IN CNAME key1.truckcontrolai.com._domainkey.migadu.com.
+key2._domainkey.truckcontrolai.com. 600 IN CNAME key2.truckcontrolai.com._domainkey.migadu.com.
+key3._domainkey.truckcontrolai.com. 600 IN CNAME key3.truckcontrolai.com._domainkey.migadu.com.
+_dmarc.truckcontrolai.com. 600 IN TXT "v=DMARC1; p=quarantine;"
+autoconfig.truckcontrolai.com. 600 IN CNAME autoconfig.migadu.com.
+_autodiscover._tcp.truckcontrolai.com. 600 IN SRV 0 1 443 autodiscover.migadu.com.
+_submissions._tcp.truckcontrolai.com. 600 IN SRV 0 1 465 smtp.migadu.com.
+_imaps._tcp.truckcontrolai.com. 600 IN SRV 0 1 993 imap.migadu.com.
+_pop3s._tcp.truckcontrolai.com. 600 IN SRV 0 1 995 pop.migadu.com.
