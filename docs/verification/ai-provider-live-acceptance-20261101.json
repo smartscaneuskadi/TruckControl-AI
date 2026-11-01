@@ -1,0 +1,178 @@
+{
+  "checked_at": "2026-11-01T19:56:32.955334+00:00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "tls_verified": true,
+  "synthetic_data_only": true,
+  "synthetic_auth_confirmation_seeded": true,
+  "email_delivery_tested": false,
+  "checks": [
+    {
+      "name": "synthetic_password_login_0",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "tenant_access_0",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "mail_ai_ready_0",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "synthetic_password_login_1",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "tenant_access_1",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "mail_ai_ready_1",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_mail_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "client_cannot_read_provider_key",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "original_imported",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "own_invoice_pending_review",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "invoice_extracted_amounts",
+      "passed": true,
+      "net_cents": 20000,
+      "tax_cents": 4200,
+      "total_cents": 24200
+    },
+    {
+      "name": "duplicate_does_not_analyze",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_invoice_denied",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "own_document_registered",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "own_private_original_matches",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_original_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "name": "public_original_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "name": "foreign_document_assistant_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "document_assistant_real_response",
+      "passed": true,
+      "status": 200
+    }
+  ],
+  "paid_calls_attempted": 2,
+  "document_sha256": "9d43bea9d8611533df34a41a325a9b1dd03856349eef47f6a2d3cf70edef0802",
+  "invoice_ai_used": true,
+  "invoice_id": "36cd214d-9ba7-4117-8877-54f167094ccc",
+  "document_id": "eecf7d6f-db3a-4250-a08a-749e12568648",
+  "storage_object_path": "279b4ffd-fac9-4e1b-9c56-ad4736c1bf9b/eecf7d6f-db3a-4250-a08a-749e12568648/document.pdf",
+  "functional_checks_passed": true,
+  "finished_at": "2026-11-01T19:56:59.942093+00:00",
+  "cleanup": {
+    "synthetic_accounts_suspended_and_banned": true,
+    "checks": [
+      {
+        "fixture": 0,
+        "suspended_access_denied": true,
+        "edge_access_denied": true,
+        "logout_processed": true
+      },
+      {
+        "fixture": 1,
+        "suspended_access_denied": true,
+        "edge_access_denied": true,
+        "logout_processed": true
+      }
+    ],
+    "cost_ledger_and_private_original_retained": true
+  },
+  "owner_authorization": {
+    "answer": "correcto",
+    "ai_monthly_budget_usd": 10,
+    "before_provider_tax": true,
+    "browser_cumulative_budget_usd": 2,
+    "no_automatic_top_up": true,
+    "resend_plan": "Free",
+    "resend_monthly_usd": 0
+  },
+  "ledger_and_cleanup": {
+    "suspended_synthetic_customers": 2,
+    "banned_synthetic_auth_users": 2,
+    "finance_entries": 0,
+    "ai_calls": 2,
+    "settled_ai_calls": 2,
+    "estimated_micro_usd": 628,
+    "unknown_reserved_micro_usd": "0",
+    "monthly_budget_cents": 1000,
+    "registration_open": false,
+    "payments_enabled": false
+  },
+  "company_mail_positive_rollback": {
+    "verification": "company_mail_passed_and_rolled_back",
+    "synthetic_users_remaining": 0,
+    "synthetic_companies_remaining": 0,
+    "enforce_access": true,
+    "registration_open": false,
+    "payments_enabled": false
+  },
+  "credential": {
+    "backend_configured": true,
+    "backend_enabled": true,
+    "real_responses_verified": 2,
+    "value_disclosed": false,
+    "duplicate_key_created": false,
+    "provider_balance_known": false
+  },
+  "remaining_blockers": [
+    "Private Resend sign-in and secure receiver configuration",
+    "Real email delivery and SMTP confirmation/recovery acceptance",
+    "Commercial/legal and physical-device acceptance gates"
+  ],
+  "demo_version_preserved": 8,
+  "source_commit": "ceff63d64e59da5aae3ffebb7663eade410a8f76",
+  "billing_note": "628 micro USD is the conservative internal estimate for the two calls, not the provider invoice; both reservations were settled."
+}

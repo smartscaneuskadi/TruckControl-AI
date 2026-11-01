@@ -1,5 +1,5 @@
 {
   "compilerOptions": { "strict": true },
   "nodeModulesDir": "auto",
-  "imports": { "postal-mime": "npm:postal-mime@4.2.0" }
+  "imports": { "postal-mime": "npm:postal-mime@4.2.0", "@supabase/supabase-js": "npm:@supabase/supabase-js@2.118.0" }
 }

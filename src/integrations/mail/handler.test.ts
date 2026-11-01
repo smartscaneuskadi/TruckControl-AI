@@ -45,7 +45,7 @@ function setup() {
         if (action === "record_invoice") {
           records.push(data);
           hashes.add(String(data.content_hash));
-          return {} as T;
+          return { id: crypto.randomUUID() } as T;
         }
         if (action === "delivery_begin")
           return {
@@ -129,6 +129,56 @@ async function signed(value = event(), timestamp = String(now / 1000)) {
   };
 }
 describe("correo universal: permisos y recepción firmada", () => {
+  it("la lectura IA autorizada propone datos después de guardar el original", async () => {
+    const s = setup();
+    s.gateway.analyze = vi.fn(async () => true);
+    const response = await s.handle(upload());
+    expect(await response.json()).toMatchObject({
+      imported: 1,
+      failures: 0,
+      ai_used: true,
+    });
+    expect(s.records).toHaveLength(1);
+    expect(s.files.size).toBe(1);
+    expect(s.gateway.analyze).toHaveBeenCalledWith(
+      org,
+      user,
+      expect.any(String),
+      expect.any(Uint8Array),
+      "application/pdf",
+    );
+  });
+  it("una IA no disponible conserva el documento pendiente sin simular un gasto ni repetir la subida", async () => {
+    const s = setup();
+    s.gateway.analyze = vi.fn(async () => {
+      throw Error("model unavailable");
+    });
+    expect(await (await s.handle(upload())).json()).toMatchObject({
+      imported: 1,
+      failures: 0,
+      ai_used: false,
+    });
+    expect(s.records).toHaveLength(1);
+    expect(s.files.size).toBe(1);
+    expect(s.gateway.upload).toHaveBeenCalledTimes(1);
+    expect(s.gateway.remove).not.toHaveBeenCalled();
+  });
+  it("la disponibilidad global de IA no habilita una cuenta sin su permiso y consentimiento", async () => {
+    const s = setup();
+    s.gateway.aiStatus = vi.fn(async () => true);
+    const response = await s.handle(
+      new Request(origin + "/company-mail", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer valid",
+          Origin: origin,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ action: "status", organization_id: org }),
+      }),
+    );
+    expect(await response.json()).toMatchObject({ ai_enabled: false });
+  });
   it("exige sesión y no acepta acceso a otra empresa", async () => {
     const { handle, gateway } = setup();
     expect((await handle(upload(org, "invalid"))).status).toBe(401);

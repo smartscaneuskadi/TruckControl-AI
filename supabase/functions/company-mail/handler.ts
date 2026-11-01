@@ -26,6 +26,14 @@ export interface MailGateway {
   server<T>(action: string, data: Data): Promise<T>;
   upload(path: string, bytes: Uint8Array, type: string): Promise<void>;
   remove(path: string): Promise<void>;
+  aiStatus?(): Promise<boolean>;
+  analyze?(
+    organizationId: string,
+    userId: string,
+    invoiceId: string,
+    bytes: Uint8Array,
+    type: string,
+  ): Promise<boolean>;
 }
 export interface MailConfig {
   origins: string[];
@@ -154,7 +162,8 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
     const parsed = await parseMailFile(bytes, name);
     let imported = 0,
       skipped = parsed.skipped,
-      failures = 0;
+      failures = 0,
+      analyzed = 0;
     for (const attachment of parsed.attachments) {
       await allowed(org, user, true);
       const identity = {
@@ -173,32 +182,50 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
       try {
         await gateway.upload(path, attachment.bytes, attachment.type);
         uploaded = true;
-        const result = await gateway.server<{ duplicate?: boolean }>(
-          "record_invoice",
-          {
-            ...identity,
-            ...delivery,
-            ...emptyInvoice(),
-            message_id: parsed.messageId,
-            attachment_id: attachment.attachmentId,
-            import_source: delivery
-              ? "forwarded_email"
-              : parsed.messageId.startsWith("eml:")
-                ? "email_upload"
-                : "file_upload",
-            document: {
-              id,
-              name: attachment.name,
-              object_path: path,
-              content_type: attachment.type,
-              size_bytes: attachment.bytes.length,
-            },
+        const result = await gateway.server<{
+          duplicate?: boolean;
+          id?: string;
+        }>("record_invoice", {
+          ...identity,
+          ...delivery,
+          ...emptyInvoice(),
+          message_id: parsed.messageId,
+          attachment_id: attachment.attachmentId,
+          import_source: delivery
+            ? "forwarded_email"
+            : parsed.messageId.startsWith("eml:")
+              ? "email_upload"
+              : "file_upload",
+          document: {
+            id,
+            name: attachment.name,
+            object_path: path,
+            content_type: attachment.type,
+            size_bytes: attachment.bytes.length,
           },
-        );
+        });
         if (result.duplicate) {
           await gateway.remove(path);
           skipped++;
-        } else imported++;
+        } else {
+          imported++;
+          if (gateway.analyze && isUuid(result.id)) {
+            try {
+              if (
+                await gateway.analyze(
+                  org,
+                  user,
+                  result.id,
+                  attachment.bytes,
+                  attachment.type,
+                )
+              )
+                analyzed++;
+            } catch {
+              // An AI failure never undoes a saved document or books an expense.
+            }
+          }
+        }
       } catch (error) {
         if (
           uploaded &&
@@ -221,7 +248,7 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
         failures++;
       }
     }
-    return { imported, skipped, failures, ai_used: false };
+    return { imported, skipped, failures, ai_used: analyzed > 0 };
   }
   return async (request: Request) => {
     const origin = request.headers.get("origin");
@@ -398,13 +425,20 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
       )
         return json({ error: "invalid_request" }, 400);
       const org = body.organization_id;
-      await allowed(org, user.id, false, body.action !== "status");
+      const access = await allowed(
+        org,
+        user.id,
+        false,
+        body.action !== "status",
+      );
       const context = { organization_id: org, user_id: user.id };
       if (body.action === "status")
         return json({
           upload_ready: true,
           forwarding_ready: ingressReady(config),
-          ai_enabled: false,
+          ai_enabled: Boolean(
+            access.features.invoice_ai && (await gateway.aiStatus?.()),
+          ),
           inbox: await gateway.server("get_inbox", context),
         });
       if (body.action === "enable_inbox") {

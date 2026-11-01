@@ -1,0 +1,146 @@
+{
+  "checked_at": "2026-11-01T19:49:38.831450+00:00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "tls_verified": true,
+  "model_calls": 0,
+  "provider_deliveries": 0,
+  "checks": [
+    {
+      "name": "assistant_readiness",
+      "status": 200,
+      "expected": 200,
+      "health": {
+        "configured": true,
+        "enabled": false
+      },
+      "passed": true
+    },
+    {
+      "name": "company-assistant_anonymous",
+      "status": 401,
+      "expected": 401,
+      "passed": true
+    },
+    {
+      "name": "company-assistant_foreign_origin",
+      "status": 403,
+      "expected": 403,
+      "passed": true
+    },
+    {
+      "name": "company-assistant_wrong_method",
+      "status": 405,
+      "expected": 405,
+      "passed": true
+    },
+    {
+      "name": "company-assistant_preflight_apex",
+      "status": 204,
+      "expected": 204,
+      "passed": true
+    },
+    {
+      "name": "company-assistant_preflight_www",
+      "status": 204,
+      "expected": 204,
+      "passed": true
+    },
+    {
+      "name": "company-gmail_anonymous",
+      "status": 401,
+      "expected": 401,
+      "passed": true
+    },
+    {
+      "name": "company-gmail_foreign_origin",
+      "status": 403,
+      "expected": 403,
+      "passed": true
+    },
+    {
+      "name": "company-gmail_wrong_method",
+      "status": 405,
+      "expected": 405,
+      "passed": true
+    },
+    {
+      "name": "company-gmail_preflight_apex",
+      "status": 204,
+      "expected": 204,
+      "passed": true
+    },
+    {
+      "name": "company-gmail_preflight_www",
+      "status": 204,
+      "expected": 204,
+      "passed": true
+    },
+    {
+      "name": "company-mail_anonymous",
+      "status": 401,
+      "expected": 401,
+      "passed": true
+    },
+    {
+      "name": "company-mail_foreign_origin",
+      "status": 403,
+      "expected": 403,
+      "passed": true
+    },
+    {
+      "name": "company-mail_wrong_method",
+      "status": 405,
+      "expected": 405,
+      "passed": true
+    },
+    {
+      "name": "company-mail_preflight_apex",
+      "status": 204,
+      "expected": 204,
+      "passed": true
+    },
+    {
+      "name": "company-mail_preflight_www",
+      "status": 204,
+      "expected": 204,
+      "passed": true
+    },
+    {
+      "name": "gmail_callback_invalid",
+      "status": 400,
+      "expected": 400,
+      "passed": true
+    },
+    {
+      "name": "gmail_callback_no_state",
+      "status": 303,
+      "expected": 303,
+      "passed": true
+    },
+    {
+      "name": "mail_receiver_closed",
+      "status": 503,
+      "expected": 503,
+      "passed": true
+    },
+    {
+      "name": "resend_receiver_closed",
+      "status": 503,
+      "expected": 503,
+      "passed": true
+    },
+    {
+      "name": "resend_browser_denied",
+      "status": 403,
+      "expected": 403,
+      "passed": true
+    },
+    {
+      "name": "resend_wrong_method",
+      "status": 405,
+      "expected": 405,
+      "passed": true
+    }
+  ],
+  "passed": 22
+}

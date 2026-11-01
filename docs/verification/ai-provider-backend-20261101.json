@@ -1,0 +1,112 @@
+{
+  "checked_at": "2026-11-01T19:49:51.679Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "source_commit": "ceff63d64e59da5aae3ffebb7663eade410a8f76",
+  "remote_migrations": 44,
+  "local_migration": "20261101191806_ai_provider_and_receiver_runtime.sql",
+  "remote_migration": "20261101194201",
+  "functions": [
+    {
+      "name": "company-assistant",
+      "version": 9,
+      "status": "ACTIVE",
+      "bundle_sha256": "cff2af2ab89d7c73a19b8bcc99493acf8032f364eca7288716fdc6994950354a",
+      "files": [
+        "company-assistant/index.ts",
+        "company-assistant/handler.ts",
+        "_shared/invoice.ts",
+        "_shared/ai-runtime.ts"
+      ],
+      "all_source_files_match": true
+    },
+    {
+      "name": "company-gmail",
+      "version": 10,
+      "status": "ACTIVE",
+      "bundle_sha256": "52c84afb1c064ca273daf07215d9da7b2318de6e7701cbf5a3adc3232d4b864c",
+      "files": [
+        "company-gmail/index.ts",
+        "company-gmail/handler.ts",
+        "_shared/invoice.ts",
+        "company-gmail/config.ts",
+        "_shared/ai-runtime.ts"
+      ],
+      "all_source_files_match": true
+    },
+    {
+      "name": "company-mail",
+      "version": 9,
+      "status": "ACTIVE",
+      "bundle_sha256": "f84daf0d90878cdc2467c8777c322de009e135e74941d5b72ee306e7d210f875",
+      "files": [
+        "company-mail/index.ts",
+        "company-mail/handler.ts",
+        "_shared/invoice.ts",
+        "_shared/mail.ts",
+        "company-mail/gateway.ts",
+        "_shared/ai-runtime.ts",
+        "_shared/resend-runtime.ts",
+        "company-mail/deno.json"
+      ],
+      "all_source_files_match": true
+    },
+    {
+      "name": "company-mail-resend",
+      "version": 1,
+      "status": "ACTIVE",
+      "bundle_sha256": "4e5f7cb2570cbfdab6975da2acb7fa6fabdfbc765b1bb4791946d1b758d6a1b9",
+      "files": [
+        "company-mail-resend/index.ts",
+        "company-mail/gateway.ts",
+        "_shared/ai-runtime.ts",
+        "_shared/invoice.ts",
+        "company-mail/handler.ts",
+        "_shared/mail.ts",
+        "company-mail-resend/handler.ts",
+        "_shared/resend-runtime.ts",
+        "company-mail-resend/deno.json"
+      ],
+      "all_source_files_match": true
+    }
+  ],
+  "closed_permissions_rollback": {
+    "verification": "ai_provider_disabled_permissions_passed_and_rolled_back",
+    "auth_users": 0,
+    "organizations": 0,
+    "ai_calls": 0,
+    "reserved_micro_usd": "0",
+    "enforce_access": true,
+    "registration_open": false,
+    "payments_enabled": false,
+    "ai_enabled": false,
+    "ai_monthly_budget_cents": 0,
+    "receiving_enabled": false,
+    "gmail_aes_updated_at": "2026-11-01 14:06:39.765229+00"
+  },
+  "security_advisories": 0,
+  "credential": {
+    "backend_configured": true,
+    "enabled": false,
+    "source": "Edge Function secret",
+    "vault_value_configured": false,
+    "value_disclosed": false,
+    "provider_api_validity_verified": false,
+    "credits_verified": false
+  },
+  "ci": {
+    "run_id": 41343043038,
+    "head_sha": "ceff63d64e59da5aae3ffebb7663eade410a8f76",
+    "conclusion": "success",
+    "unit_sql": 291,
+    "python": 23,
+    "demo": 64,
+    "company": 22,
+    "saas": 30,
+    "candidate": 14,
+    "published": 6,
+    "total": 450
+  },
+  "paid_model_calls": 0,
+  "receiver_connected": false,
+  "public_site_version_preserved": 8
+}

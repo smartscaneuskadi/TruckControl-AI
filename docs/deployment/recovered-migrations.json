@@ -56,6 +56,13 @@
       "name": "company_mail_ingestion",
       "sha256": "70f9b448157b2f620591e18e236afc37804feec49177c8b524b267a0e3b80daa",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101191806_ai_provider_and_receiver_runtime.sql",
+      "version": "20261101194201",
+      "name": "ai_provider_and_receiver_runtime",
+      "sha256": "11f01bb635d107c849caf3068a6c5267cdb45acaf874cbd4e8387634ddc6c777",
+      "already_applied": true
     }
   ]
 }
