@@ -84,7 +84,7 @@ const config: GmailConfig = {
     "https://www.truckcontrolai.com",
     "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
   ],
-  callbackUrl: `${appOrigin}/gmail-callback.html`,
+  callbackUrl: `${appOrigin}/gmail-callback`,
   resolveOAuth,
   // Opt-in only; presence of an API key never enables billable processing.
   ai:

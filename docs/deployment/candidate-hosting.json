@@ -9,8 +9,8 @@
   "published_commit": "304b63ffb3742eaeacd662995c7483837eb5e11f",
   "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_e73d18a1b358819183c2e34b16a2e65a",
   "published_version_number": 4,
-  "deployment_id": "appgdep_6ae72d93048c8191be302c43dbace95f",
-  "previous_deployment_id": "appgdep_6ae72530f6348191a1299411bba5fb47",
+  "deployment_id": "appgdep_6ae7431bd3308191a62308c84320b52f",
+  "previous_deployment_id": "appgdep_6ae73fb2463881918edb2afe28c768de",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -21,7 +21,7 @@
     "vat_rate_bps": 2100,
     "plans": [
       {
-        "name": "Básico",
+        "name": "B\u00e1sico",
         "monthly_cents": 30000
       },
       {
@@ -30,7 +30,13 @@
       }
     ]
   },
-  "deployed_at": "2026-11-01T12:16:35.374323+00:00",
-  "expected_themes": ["light", "cockpit"],
-  "source_ci_run": 41305222529
+  "deployed_at": "2026-11-01T13:48:22.189823+00:00",
+  "expected_themes": [
+    "light",
+    "cockpit"
+  ],
+  "source_ci_run": 41305222529,
+  "expected_gmail_callback": false,
+  "rollback_reason": "v5 callback failed live installed-PWA verification: hosting canonicalizes html to extensionless paths; prior v4 restored while correcting both routes",
+  "rolled_back_version_number": 5
 }

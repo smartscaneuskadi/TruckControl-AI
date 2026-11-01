@@ -187,11 +187,57 @@ try {
           });
           checkedThemes.push(theme);
         }
+        let gmailCallbackChecked = false;
+        if (config.expected_gmail_callback === true) {
+          await page.evaluate(async () => {
+            await navigator.serviceWorker.ready;
+          });
+          await page.reload({ waitUntil: "networkidle" });
+          await page.waitForFunction(() =>
+            Boolean(navigator.serviceWorker.controller),
+          );
+          let providerRequests = 0;
+          const providerRequest = (request) => {
+            if (new URL(request.url()).hostname.endsWith(".supabase.co"))
+              providerRequests++;
+          };
+          page.on("request", providerRequest);
+          await page.goto(
+            `${target.origin}/gmail-callback?state=invalid&code=synthetic-public-test`,
+            { waitUntil: "networkidle" },
+          );
+          await page
+            .getByRole("heading", { name: "Conectando tu correo" })
+            .waitFor();
+          if (
+            !(await page.getByRole("status").innerText()).includes(
+              "No se ha podido conectar Gmail",
+            ) ||
+            new URL(page.url()).search ||
+            providerRequests !== 0
+          )
+            throw new Error(
+              "Published Gmail callback did not reject invalid state without provider access",
+            );
+          page.off("request", providerRequest);
+          const cachedUrls = await page.evaluate(async () => {
+            const urls = [];
+            for (const name of await caches.keys())
+              for (const request of await (await caches.open(name)).keys())
+                urls.push(request.url);
+            return urls;
+          });
+          if (cachedUrls.some((url) => new URL(url).searchParams.has("code")))
+            throw new Error("OAuth code unexpectedly persisted in PWA cache");
+          await page.screenshot({ path: `${dir}/${name}-gmail-callback.png` });
+          gmailCallbackChecked = true;
+        }
         results.push({
           origin: target.origin,
           profile: name,
           sourceCommit: metadata.sourceCommit,
           themes: checkedThemes,
+          gmailCallback: gmailCallbackChecked,
           passed: true,
         });
         console.log(
