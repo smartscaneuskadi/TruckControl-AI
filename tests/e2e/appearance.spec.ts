@@ -237,3 +237,20 @@ test("los dos temas y la fotografía están disponibles sin conexión", async ({
     page.getByRole("heading", { name: "Mapa sin conexión" }),
   ).toBeVisible();
 });
+
+test("las pantallas estrechas de 320 px conservan filtros e indicadores en ambos temas", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 780 });
+  await page.goto("/#/dashboard");
+  for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+    await appearance(page, theme);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await expect(page.getByLabel("Periodo", { exact: true })).toBeVisible();
+    await expect(
+      page.getByRole("combobox", { name: "Filtrar camión", exact: true }),
+    ).toBeVisible();
+  }
+});
