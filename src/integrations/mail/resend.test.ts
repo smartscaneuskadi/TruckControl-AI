@@ -125,6 +125,27 @@ function setup(
   };
 }
 describe("receptor nativo Resend: firma, destinatario y original privado", () => {
+  it("admite el CDN exacto observado en la API autenticada de Resend", async () => {
+    const s = setup({
+      url: "https://cdn.resend.app/receiving/raw/opaque-id?token=fictitious",
+    });
+    expect((await s.handler(signed())).status).toBe(200);
+    const download = s.transport.mock.calls.find(([url]) =>
+      String(url).startsWith("https://cdn.resend.app/"),
+    );
+    expect(download?.[1]?.redirect).toBe("error");
+    expect(download?.[1]?.headers).toBeUndefined();
+  });
+  it("no confunde el CDN oficial con subdominios de clientes o dominios parecidos", () => {
+    for (const url of [
+      "https://tenant.resend.app/receiving/raw/file",
+      "https://cdn.resend.app.evil.invalid/receiving/raw/file",
+      "https://cdn.resend.app@evil.invalid/receiving/raw/file",
+      "http://cdn.resend.app/receiving/raw/file",
+      "https://cdn.resend.app/private/file",
+    ])
+      expect(safeResendRawUrl(url)).toBeNull();
+  });
   it("admite la clave real de 24 bytes y verifica su firma con el SDK oficial", async () => {
     const key = "whsec_" + btoa("s".repeat(24));
     expect(validResendWebhookSecret(key)).toBe(true);
