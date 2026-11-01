@@ -15,6 +15,15 @@
   gap: 24px;
   border-bottom: 1px solid #24394b;
 }
+.plan-tax {
+  color: #b6ccdc;
+  margin: 0 0 6px;
+}
+.plan-total {
+  color: #b9f4d9;
+  font-weight: 650;
+  margin: 0 0 18px;
+}
 .portal-brand {
   display: flex;
   gap: 12px;
@@ -810,5 +819,13 @@
   background: #102b32;
   color: #e8f1fa;
 }
-.candidate-notice h2 { color: #e8f1fa; margin: 12px 0; font-size: 21px; }
-.candidate-notice p { color: #c2d6e5; margin-bottom: 16px; line-height: 1.6; }
+.candidate-notice h2 {
+  color: #e8f1fa;
+  margin: 12px 0;
+  font-size: 21px;
+}
+.candidate-notice p {
+  color: #c2d6e5;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}

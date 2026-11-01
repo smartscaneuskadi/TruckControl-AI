@@ -142,3 +142,10 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - El titular comunica Migadu activo. Los CNAME coinciden con el export; los TXT de sus destinos bajo migadu.com devuelven SERVFAIL/DNSSEC en Google y Cloudflare (EDE 6, wildcard proof). Diagnóstico y solicitud de soporte preparados; no se desactiva DNSSEC ni se declara entrega real. Buzones y SMTP todavía pendientes.
 - Dieciséis pruebas nuevas del mantenimiento DNS/PKCE pasan junto a las siete de correo (23 Python). Los hashes de los once archivos de las 64 pruebas iniciales siguen intactos. La comprobación de URL pública se amplía a los tres orígenes en Windows/Android, con TLS activo; pendiente del CI del commit final.
 - No se han hecho compras, enviado mensajes, abierto registros ni modificado Supabase/FIXPilot. La URL definitiva sirve la candidata ficticia, no un lanzamiento comercial 1.0 abierto.
+
+# 2026-11-01 — nueva oferta comercial aprobada
+
+- El propietario fija diez días gratuitos Full, Básico 300 €/mes y Full 700 €/mes, más IVA del 21 %: 363 € y 847 € totales. Ambos planes visibles; se conservan identificadores internos y capacidad inicial de 50 camiones. Oferta detallada en COMMERCIAL_OFFER.md.
+- Portal, registro, administración y solicitudes usan los importes nuevos y un desglose de IVA en céntimos. La migración nueva cambia solo las altas futuras; conserva pruebas históricas de treinta días y presupuestos anteriores sin inventar su tratamiento fiscal. Registro comercial y pagos siguen cerrados.
+- Se conservan las 64 pruebas originales. Se añaden comprobaciones de redondeo de IVA, presupuestos idempotentes, rechazo de importes inconsistentes y conservación de contratos. Publicación pendiente de CI y validación.
+- La captura 303201 confirma el ticket Migadu abierto por el titular; aún sin respuesta del proveedor en la captura. No volver a pedir que lo abra. El último diagnóstico público mantiene SERVFAIL/DNSSEC en los tres destinos DKIM; conexión de Migadu y SMTP siguen pendientes.

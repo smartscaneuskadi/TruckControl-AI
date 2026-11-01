@@ -25,6 +25,10 @@ if (
 )
   throw new Error("Unrecognized candidate destination or source");
 const targets = [canonicalTarget];
+const offer = config.expected_offer || {
+  trial_days: 30,
+  plans: [{ name: "Inicial", monthly_cents: 1000 }],
+};
 for (const origin of config.verified_custom_origins || []) {
   const target = new URL(origin);
   if (
@@ -90,7 +94,7 @@ try {
         if (
           !(await page
             .getByRole("button", {
-              name: "Probar Full gratis 30 días",
+              name: `Probar Full gratis ${offer.trial_days} días`,
               exact: true,
             })
             .isDisabled())
@@ -103,12 +107,43 @@ try {
             exact: true,
           })
           .scrollIntoViewIfNeeded();
-        if (
-          !(await page
-            .getByRole("button", { name: "Elegir Inicial", exact: true })
-            .isDisabled())
-        )
-          throw new Error("Plan registration unexpectedly available");
+        if ((await page.locator(".plan-card").count()) !== offer.plans.length)
+          throw new Error("Published plans do not match the saved offer");
+        for (const plan of offer.plans) {
+          const card = page.locator(".plan-card").filter({
+            has: page.getByRole("heading", { name: plan.name, exact: true }),
+          });
+          if (
+            !(await card
+              .getByRole("button", { name: `Elegir ${plan.name}`, exact: true })
+              .isDisabled())
+          )
+            throw new Error("Plan registration unexpectedly available");
+          const base = new Intl.NumberFormat("es-ES", {
+            style: "currency",
+            currency: "EUR",
+            maximumFractionDigits: 0,
+          }).format(plan.monthly_cents / 100);
+          if (!(await card.locator(".plan-price").innerText()).includes(base))
+            throw new Error("Published base price mismatch");
+          if (offer.vat_rate_bps === 2100) {
+            const totalCents =
+              plan.monthly_cents +
+              Math.floor((plan.monthly_cents * 2100 + 5000) / 10000);
+            const total = new Intl.NumberFormat("es-ES", {
+              style: "currency",
+              currency: "EUR",
+              minimumFractionDigits: 2,
+            }).format(totalCents / 100);
+            if (
+              !(await card.locator(".plan-tax").innerText()).includes(
+                "21 % IVA",
+              ) ||
+              !(await card.locator(".plan-total").innerText()).includes(total)
+            )
+              throw new Error("Published VAT or total mismatch");
+          }
+        }
         await page.screenshot({ path: `${dir}/${name}-published-plans.png` });
         await page
           .getByRole("button", { name: "Explorar la demo", exact: true })

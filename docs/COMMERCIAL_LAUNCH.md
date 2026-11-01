@@ -1,5 +1,7 @@
 # Lanzamiento comercial 1.0 — trabajo en curso
 
+Oferta vigente del propietario: **10 días Full gratis; Básico 300 €/mes + IVA del 21 % (363 € total); Full 700 €/mes + IVA del 21 % (847 € total)**. Ambos planes se muestran para el lanzamiento. La configuración sustituye los precios y treinta días de propuestas anteriores; no activa cobros ni acorta períodos ya concedidos. Detalle: [COMMERCIAL_OFFER.md](COMMERCIAL_OFFER.md).
+
 ## Recursos y conservación
 
 La orden del 31/10/2026 reactiva el lanzamiento comercial y sustituye el aplazamiento anterior de los proveedores. Dominio elegido: **truckcontrolai.com**. La demo estable continúa en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site, versión 6, sin altas reales. No es todavía la versión comercial 1.0.

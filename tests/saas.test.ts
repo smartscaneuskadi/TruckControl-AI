@@ -101,10 +101,10 @@ describe("plataforma SaaS, prueba y administración", () => {
         }>("tc_public_catalog"),
       "anon",
     );
-    expect(catalog.trial_days).toBe(30);
-    expect(catalog.prices_are_examples).toBe(true);
+    expect(catalog.trial_days).toBe(10);
+    expect(catalog.prices_are_examples).toBe(false);
     expect(catalog.payments_enabled).toBe(false);
-    expect(catalog.plans.map((p) => p.monthly_cents)).toEqual([1000]);
+    expect(catalog.plans.map((p) => p.monthly_cents)).toEqual([30000, 70000]);
     await as(
       null,
       () =>
@@ -129,7 +129,7 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect(access.active).toBe(false);
     expect(access.is_admin).toBe(false);
   });
-  it("crea automáticamente empresa y treinta días Full tras confirmar ambos canales", async () => {
+  it("crea automáticamente empresa y diez días Full tras confirmar ambos canales", async () => {
     await db.query(
       "update auth.users set phone='34600000001',phone_confirmed_at=now() where id=$1",
       [clientA],
@@ -159,7 +159,7 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect(
       Date.parse(access.profile.trial_ends_at) -
         Date.parse(access.profile.trial_started_at),
-    ).toBe(30 * 86400000);
+    ).toBe(10 * 86400000);
   });
   it("reserva administración al correo confirmado y no a metadatos de registro", async () => {
     expect((await currentAccess(admin)).is_admin).toBe(true);
@@ -286,7 +286,7 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect(after.active).toBe(true);
     expect(after.profile.trial_ends_at).toBe(before.profile.trial_ends_at);
   });
-  it("impide acceder al finalizar treinta días aunque el cliente manipule sus metadatos", async () => {
+  it("impide acceder al finalizar diez días aunque el cliente manipule sus metadatos", async () => {
     await db.query(
       "update private.tc_customers set trial_started_at=now()-interval '11 days',trial_ends_at=now()-interval '1 day' where user_id=$1",
       [clientA],
@@ -311,11 +311,16 @@ describe("plataforma SaaS, prueba y administración", () => {
     ).toBe(id);
     const row = (
       await db.query<{ quoted_cents: number }>(
-        "select quoted_cents from private.tc_payment_requests where id=$1",
+        "select quoted_cents,net_cents,vat_rate_bps,vat_cents from private.tc_payment_requests where id=$1",
         [id],
       )
     ).rows[0];
-    expect(row.quoted_cents).toBe(1000);
+    expect(row.quoted_cents).toBe(36300);
+    expect(row).toMatchObject({
+      net_cents: 30000,
+      vat_rate_bps: 2100,
+      vat_cents: 6300,
+    });
     expect((await currentAccess()).active).toBe(false);
     await as(clientA, () =>
       expect(
@@ -329,6 +334,7 @@ describe("plataforma SaaS, prueba y administración", () => {
         adminCall("plan", { id: "full", monthly_cents: 1 }),
       ).rejects.toThrow("Solo"),
     );
+    await as(admin, () => adminCall("settings", { prices_are_examples: true }));
     await as(admin, () =>
       expect(adminCall("settings", { payments_enabled: true })).rejects.toThrow(
         "Confirma los precios",

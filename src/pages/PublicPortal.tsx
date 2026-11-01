@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Badge, Button } from "../components/ui";
 import { getSupabaseClient } from "../integrations/supabase/client";
-import { exampleCatalog } from "../domain/subscriptions";
+import { exampleCatalog, subscriptionPrice } from "../domain/subscriptions";
 import type { Catalog, Plan } from "../domain/subscriptions";
 import { money } from "../lib/format";
 import { isCandidateRelease } from "../domain/release";
@@ -44,6 +44,12 @@ export function PlanCards({
             <p className="plan-price">
               {money(plan.monthly_cents, plan.monthly_cents % 100 !== 0)}
               <span>/mes</span>
+            </p>
+            <p className="plan-tax">+ 21 % IVA</p>
+            <p className="plan-total">
+              Total:{" "}
+              {money(subscriptionPrice(plan.monthly_cents).totalCents, true)}
+              /mes · IVA incluido
             </p>
             <p>
               {plan.id === "full"
@@ -180,8 +186,9 @@ export function PublicPortal({
           <Badge tone="amber">VERSIÓN CANDIDATA</Badge>
           <h2>Prueba los módulos con datos ficticios</h2>
           <p>
-            La apertura comercial espera la verificación del dominio y del
-            correo. Explora la demo desde este móvil u ordenador.
+            La apertura comercial está pendiente de verificar el correo y
+            completar los controles de producción. Explora la demo desde este
+            móvil u ordenador.
           </p>
           <Button variant="secondary" onClick={onDemo}>
             Abrir demostración
@@ -206,7 +213,7 @@ export function PublicPortal({
               onClick={() => onAccess("signup", "limited")}
               disabled={!catalog.registration_open}
             >
-              Probar Full gratis 30 días
+              Probar Full gratis {catalog.trial_days} días
             </Button>
             <Button variant="ghost" onClick={onDemo}>
               Explorar la demo
@@ -284,9 +291,9 @@ export function PublicPortal({
           <h2>Empieza con todo. Elige tu plan después.</h2>
           <p>
             Solicita tu cuenta, confirma tu correo
-            {catalog.sms_ready ? " y tu teléfono" : ""} y disfruta de treinta
-            días de acceso Full. Tu prueba comienza cuando terminas la
-            verificación.
+            {catalog.sms_ready ? " y tu teléfono" : ""} y disfruta de{" "}
+            {catalog.trial_days} días de acceso Full. Tu prueba comienza cuando
+            terminas la verificación.
           </p>
           {catalog.prices_are_examples && (
             <Badge tone="amber">
@@ -295,8 +302,9 @@ export function PublicPortal({
           )}
           {failed && (
             <p className="portal-notice">
-              Mostramos los planes orientativos. El acceso depende de la
-              configuración disponible.
+              {isCandidateRelease
+                ? "Oferta configurada para el lanzamiento. El registro y los cobros siguen cerrados en esta candidata."
+                : "El acceso depende de la configuración disponible de la plataforma."}
             </p>
           )}
         </div>
@@ -324,7 +332,7 @@ export function PublicPortal({
           onClick={() => onAccess("signup", "limited")}
           disabled={!catalog.registration_open}
         >
-          Solicitar acceso · 30 días gratis
+          Solicitar acceso · {catalog.trial_days} días gratis
         </Button>
       </section>
       <footer className="portal-footer">

@@ -511,7 +511,7 @@ test("muestra los planes antes del registro y solicita la prueba Full sin cobrar
   await expect(page.locator(".plan-grid")).toContainText("10");
   await expect(page.locator(".plan-grid")).not.toContainText("900");
   await page
-    .getByRole("button", { name: "Probar Full gratis 30 días", exact: true })
+    .getByRole("button", { name: "Probar Full gratis 10 días", exact: true })
     .click();
   for (const [label, value] of [
     ["Nombre y apellidos", "Persona ficticia"],
@@ -525,7 +525,7 @@ test("muestra los planes antes del registro y solicita la prueba Full sin cobrar
     await page.getByLabel(label, { exact: true }).fill(value);
   await page
     .getByRole("button", {
-      name: "Solicitar prueba Full de 30 días",
+      name: "Solicitar prueba Full de 10 días",
       exact: true,
     })
     .click();
@@ -605,10 +605,10 @@ test("el administrador gestiona clientes, IA, módulos y precios desde su cuenta
   await page
     .getByRole("button", { name: "Planes y cobros", exact: true })
     .click();
-  await page.getByRole("button", { name: "Editar plan Inicial" }).click();
+  await page.getByRole("button", { name: "Editar plan Básico" }).click();
   await page
     .getByRole("dialog")
-    .getByLabel("Precio mensual (€)")
+    .getByLabel("Precio mensual sin IVA (€)")
     .fill("345,67");
   await page
     .getByRole("dialog")
@@ -617,6 +617,7 @@ test("el administrador gestiona clientes, IA, módulos y precios desde su cuenta
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await expect(page.getByText(/345,67/).first()).toBeVisible();
   expect(f.snapshot.plans[0].monthly_cents).toBe(34567);
+  await page.getByRole("checkbox", { name: /Precios de ejemplo/ }).check();
   await expect(
     page.getByRole("checkbox", { name: /Cobros de suscripción/ }),
   ).toBeDisabled();
@@ -631,7 +632,7 @@ test("una prueba terminada solo permite elegir plan y no accede a la flota", asy
   ).toBeVisible();
   await expect(page.locator(".sidebar")).toHaveCount(0);
   await page
-    .getByRole("button", { name: "Elegir Inicial", exact: true })
+    .getByRole("button", { name: "Elegir Básico", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText(
     "no se ha realizado ningún cargo",
@@ -704,7 +705,7 @@ test.describe("contratación y renovación mensual", () => {
   }) => {
     const f = await ready(page);
     const choose = page.getByRole("button", {
-      name: "Elegir Inicial",
+      name: "Elegir Básico",
       exact: true,
     });
     const terms = page.getByRole("checkbox", {
@@ -769,7 +770,7 @@ test.describe("contratación y renovación mensual", () => {
       }),
     ).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Elegir Inicial", exact: true }),
+      page.getByRole("button", { name: "Elegir Básico", exact: true }),
     ).toBeDisabled();
     expect(f.calls.filter((c) => c.body?.action === "checkout")).toHaveLength(
       0,
@@ -842,7 +843,7 @@ test.describe("contratación y renovación mensual", () => {
       .getByRole("checkbox", { name: /Acepto la renovación mensual/ })
       .check();
     await page
-      .getByRole("button", { name: "Elegir Inicial", exact: true })
+      .getByRole("button", { name: "Elegir Básico", exact: true })
       .click();
     await expect(page.getByRole("alert")).toContainText(
       "No se ha recibido una página de pago válida",

@@ -19,13 +19,23 @@ test("la candidata cierra las altas y permite explorar sin pedir credenciales ni
   ).toBeVisible();
   await expect(
     page.getByRole("button", {
-      name: "Probar Full gratis 30 días",
+      name: "Probar Full gratis 10 días",
       exact: true,
     }),
   ).toBeDisabled();
   await expect(
-    page.getByRole("button", { name: "Elegir Inicial", exact: true }),
+    page.getByRole("button", { name: "Elegir Básico", exact: true }),
   ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Elegir Full", exact: true }),
+  ).toBeDisabled();
+  await expect(page.locator(".plan-card")).toHaveCount(2);
+  await expect(page.locator(".plan-tax")).toHaveText([
+    "+ 21 % IVA",
+    "+ 21 % IVA",
+  ]);
+  await expect(page.locator(".plan-total").nth(0)).toContainText("363,00");
+  await expect(page.locator(".plan-total").nth(1)).toContainText("847,00");
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Acceso comercial en preparación" }),

@@ -15,5 +15,14 @@
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
   ],
-  "custom_domains_verified_at": "2026-11-01T10:22:15.693915+00:00"
+  "custom_domains_verified_at": "2026-11-01T10:22:15.693915+00:00",
+  "expected_offer": {
+    "trial_days": 30,
+    "plans": [
+      {
+        "name": "Inicial",
+        "monthly_cents": 1000
+      }
+    ]
+  }
 }

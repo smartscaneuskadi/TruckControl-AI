@@ -47,14 +47,14 @@ const event = (data: Record<string, unknown> = {}) =>
     event_created: now,
     subscription_id: "sub_synthetic",
     customer_id: "cus_synthetic",
-    unit_amount: 1000,
+    unit_amount: 36300,
     currency: "EUR",
     state: "active",
     cancel_at_period_end: false,
     period_end: now + 30 * 86400,
     invoice_paid: true,
     invoice_id: "in_first",
-    invoice_amount: 1000,
+    invoice_amount: 36300,
     invoice_period_start: now,
     invoice_period_end: now + 30 * 86400,
     ...data,
@@ -105,12 +105,12 @@ beforeEach(async () => {
     update private.tc_settings set payments_enabled=true,prices_are_examples=false;`);
   await db.query(
     `insert into private.tc_payment_requests(id,user_id,plan_id,quoted_cents,plan_revision)
-    select $1,$2,'limited',monthly_cents,revision from private.tc_plans where id='limited'`,
+    select $1,$2,'limited',monthly_cents+private.tc_quote_vat(monthly_cents),revision from private.tc_plans where id='limited'`,
     [order, a],
   );
   await db.query(
     `insert into private.tc_payment_requests(id,user_id,plan_id,quoted_cents,plan_revision)
-    select $1,$2,'limited',monthly_cents,revision from private.tc_plans where id='limited'`,
+    select $1,$2,'limited',monthly_cents+private.tc_quote_vat(monthly_cents),revision from private.tc_plans where id='limited'`,
     [otherOrder, b],
   );
 });

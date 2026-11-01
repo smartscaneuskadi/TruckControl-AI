@@ -144,7 +144,7 @@ afterAll(async () => {
   await db?.close();
 });
 describe("seguridad de equipo y operaciones por empresa", () => {
-  it("activa treinta días sin enviar SMS cuando no existe proveedor y mantiene el límite de 50", async () => {
+  it("activa diez días sin enviar SMS cuando no existe proveedor y mantiene el límite de 50", async () => {
     const access = await as(ownerA, () =>
       rpc<{
         active: boolean;
@@ -160,7 +160,7 @@ describe("seguridad de equipo y operaciones por empresa", () => {
       (Date.parse(access.profile.trial_ends_at) -
         Date.parse(access.profile.trial_started_at)) /
         86400000,
-    ).toBeCloseTo(30, 4);
+    ).toBeCloseTo(10, 4);
   });
   it("rechaza lectura anónima y servicios internos desde el navegador", async () => {
     await as(

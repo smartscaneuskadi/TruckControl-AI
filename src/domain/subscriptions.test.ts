@@ -1,6 +1,48 @@
 import { describe, expect, it } from "vitest";
-import { registrationSchema, trialDaysLeft } from "./subscriptions";
+import {
+  exampleCatalog,
+  registrationSchema,
+  subscriptionPrice,
+  trialDaysLeft,
+} from "./subscriptions";
 describe("registro y presentación de la prueba", () => {
+  it("publica diez días Full y los dos planes aprobados sin activar cobros", () => {
+    expect(exampleCatalog.trial_days).toBe(10);
+    expect(exampleCatalog.prices_are_examples).toBe(false);
+    expect(exampleCatalog.payments_enabled).toBe(false);
+    expect(
+      exampleCatalog.plans
+        .filter((p) => p.published !== false)
+        .map((p) => [p.name, p.monthly_cents, p.max_trucks]),
+    ).toEqual([
+      ["Básico", 30000, 50],
+      ["Full", 70000, 50],
+    ]);
+  });
+  it("calcula base, IVA y total en céntimos con redondeo monetario", () => {
+    expect(subscriptionPrice(30000)).toEqual({
+      netCents: 30000,
+      vatCents: 6300,
+      totalCents: 36300,
+    });
+    expect(subscriptionPrice(70000)).toEqual({
+      netCents: 70000,
+      vatCents: 14700,
+      totalCents: 84700,
+    });
+    expect(subscriptionPrice(102)).toEqual({
+      netCents: 102,
+      vatCents: 21,
+      totalCents: 123,
+    });
+    expect(subscriptionPrice(103)).toEqual({
+      netCents: 103,
+      vatCents: 22,
+      totalCents: 125,
+    });
+    for (const invalid of [-1, 100.5, NaN, Infinity, 100000001])
+      expect(() => subscriptionPrice(invalid)).toThrow();
+  });
   it("valida datos de empresa y teléfono internacional sin usar metadatos para autorizar", () => {
     const data = registrationSchema.parse({
       contact_name: "Persona ficticia",

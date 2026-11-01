@@ -161,7 +161,8 @@ export function Registration({
         </div>
         {view === "signup" && !recovery && (
           <p>
-            30 días gratis con acceso Full. Tu prueba comenzará al confirmar
+            {catalog.trial_days} días gratis con acceso Full. Tu prueba
+            comenzará al confirmar
             {catalog.sms_ready ? " correo y teléfono" : " tu correo"}. Después
             podrás elegir el plan que prefieras.
           </p>
@@ -228,7 +229,7 @@ export function Registration({
                           {p.name} ·{" "}
                           {catalog.prices_are_examples ? "ejemplo " : ""}
                           {money(p.monthly_cents, p.monthly_cents % 100 !== 0)}
-                          /mes
+                          /mes + 21 % IVA
                         </option>
                       ))}
                   </select>
@@ -282,7 +283,7 @@ export function Registration({
               : recovery
                 ? "Guardar contraseña"
                 : view === "signup"
-                  ? "Solicitar prueba Full de 30 días"
+                  ? `Solicitar prueba Full de ${catalog.trial_days} días`
                   : view === "reset"
                     ? "Enviar enlace de recuperación"
                     : "Entrar"}
@@ -305,7 +306,7 @@ export function Registration({
               >
                 {view === "signup"
                   ? "Ya tengo cuenta · entrar"
-                  : "Crear cuenta · 30 días gratis"}
+                  : `Crear cuenta · ${catalog.trial_days} días gratis`}
               </Button>
               <Button
                 variant="ghost"
@@ -436,8 +437,8 @@ export function PhoneVerification({
             <Mail size={22} />
             <p>
               Tu solicitud está guardada. El servicio de verificación por SMS
-              está pendiente de activación. Tu prueba de treinta días todavía no
-              ha comenzado.
+              está pendiente de activación. Tu prueba gratuita todavía no ha
+              comenzado.
             </p>
           </div>
         ) : (
