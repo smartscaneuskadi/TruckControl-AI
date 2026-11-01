@@ -6,7 +6,7 @@ TruckControl mantiene Gmail OAuth y añade una entrada de documentos independien
 | --- | --- | --- |
 | Correo guardado como EML | Previsualización y lectura de adjuntos PDF/imágenes | Cuenta y empresa verificadas, conexión a Supabase y módulo de facturas permitido |
 | PDF, JPG, PNG y WebP | Importación directa a la misma bandeja | Los mismos permisos; no necesita cuenta Google |
-| Reenvío desde cualquier buzón | Receptor HTTP firmado, dirección por empresa, exclusión y reintentos | Conectar un receptor/relay autorizado y su dominio; apagado por defecto |
+| Reenvío desde cualquier buzón | Receptor HTTP firmado, dirección por empresa, exclusión y reintentos | Resend y dominio ya verificados; cuenta real verificada y módulo permitido antes de emitir una dirección |
 | Gmail/Google Workspace directo | OAuth y lector anteriores conservados | Cliente Google y secretos válidos, consentimiento y prueba real pendientes |
 | Outlook/Microsoft 365 directo | No se presenta como conectado | Requiere su aplicación y consentimiento Microsoft OAuth; usar EML o reenvío mientras tanto |
 | IMAP/SMTP directo | No implementado como conexión de buzón | Requiere servicio backend TLS y autenticación admitida por cada proveedor. SMTP sirve para enviar; no permite leer el buzón |
@@ -22,7 +22,7 @@ La importación de EML y adjuntos funciona con archivos exportados por cualquier
 
 En empresas autorizadas, el selector admite archivos reales EML/PDF/imágenes. La candidata publicada mantiene datos ficticios y no incorpora conexión a datos empresariales: ofrece el correo de ejemplo, sin seleccionar ni cargar correos reales. Sus adjuntos de prueba permanecen en memoria hasta salir de la pantalla; los gastos ficticios confirmados siguen guardados y no se duplican al importar el mismo ejemplo después de recargar.
 
-La lectura de importes por IA permanece apagada en esta vía. No se extraen importes del asunto o del nombre del archivo ni se llama a un modelo por disponer de una clave.
+La lectura IA del backend está activada con presupuesto global de 10 USD/mes aprobado y requiere permiso y consentimiento individual. En la candidata ficticia permanece sin llamadas a proveedores. No se extraen importes del asunto o del nombre del archivo ni se llama a un modelo por disponer de una clave.
 
 ## Límites y tratamiento de archivos
 
@@ -51,7 +51,7 @@ La migración local **20261101172906_company_mail_ingestion.sql**, creada con CL
 
 ## Contrato para el receptor de reenvíos
 
-No se ha contratado ni activado un proveedor de recepción. El backend permanece cerrado hasta configurar simultáneamente:
+**Estado vigente:** Resend ya recibe en `facturas.truckcontrolai.com`; tres correos ficticios verifican firma, aislamiento, duplicados e IA opcional. [Aceptación real](verification/resend-live-acceptance-20261101.json). La configuración vigente se obtiene de Vault y de la política privada. Las variables del contrato genérico conservado permiten configurar otro relay autorizado:
 
 - `COMPANY_MAIL_INGRESS_ENABLED=true`, después de verificar y autorizar el receptor.
 - `COMPANY_MAIL_INGRESS_DOMAIN`, dominio de recepción propio validado por el proveedor.
@@ -87,6 +87,10 @@ Se verifica con Web Crypto, sin comparación manual de secretos, y una ventana d
 Cada entrega tiene identidad, hash de cuerpo y una reserva temporal por empresa. Las repeticiones completadas no procesan el mensaje; una entrega en curso no se ejecuta en paralelo. Se rechaza reutilizar la identidad con otro cuerpo. Caducar la reserva no permite finalizar con la anterior. Se revalidan la empresa y el buzón antes de registrar cada documento; desactivar el buzón bloquea también la reserva previa. Hay límites diarios de 200 entregas y 200 documentos en esta entrada y diez intentos por entrega. El servidor serializa por empresa las comprobaciones de cuota e identidad.
 
 Un correo entrante no es evidencia de que el proveedor o remitente de la factura sea legítimo. La revisión humana permanece obligatoria. La configuración del dominio, la entrega de mensajes y el adaptador real necesitan pruebas con un proveedor autorizado; las pruebas sintéticas no los acreditan.
+
+## Aceptación inicial histórica
+
+El párrafo siguiente describe la primera versión. Para el estado vigente de 46 migraciones y las funciones v10/v3, consultar CURRENT_DELIVERY y la aceptación real de Resend. No deshabilitar módulos aprobados ni repetir una migración para reproducir ese estado inicial.
 
 ## Validación y continuación
 

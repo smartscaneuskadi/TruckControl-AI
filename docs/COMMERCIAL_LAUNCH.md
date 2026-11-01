@@ -1,5 +1,7 @@
 # Lanzamiento comercial 1.0 — trabajo en curso
 
+**Actualización vigente, 01/11/2026 21:34 UTC:** Resend está conectado por API, dominio de facturas y webhook verificados, tres correos ficticios recibidos y lectura IA opcional probada. 46 migraciones; funciones mail v10/receptor v3. Se conserva candidata 8 y demo estable; registro y pagos cerrados. [Entrega vigente](CURRENT_DELIVERY.md) e [informe](verification/resend-live-acceptance-20261101.json). Las etapas anteriores de esta guía son historial, no motivos para repetir permisos o credenciales. Pendientes comerciales: SMTP Auth/recuperación, administrador real verificado, protección de contraseñas filtradas, legales, recuperación y dispositivos físicos.
+
 Oferta vigente del propietario: **10 días Full gratis; Básico 300 €/mes + IVA del 21 % (363 € total); Full 700 €/mes + IVA del 21 % (847 € total)**. Ambos planes se muestran para el lanzamiento. La configuración sustituye los precios y treinta días de propuestas anteriores; no activa cobros ni acorta períodos ya concedidos. Detalle: [COMMERCIAL_OFFER.md](COMMERCIAL_OFFER.md).
 
 ## Recursos y conservación

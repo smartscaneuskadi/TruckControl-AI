@@ -63,6 +63,20 @@
       "name": "ai_provider_and_receiver_runtime",
       "sha256": "11f01bb635d107c849caf3068a6c5267cdb45acaf874cbd4e8387634ddc6c777",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101203215_resend_admin_setup.sql",
+      "version": "20261101204442",
+      "name": "resend_admin_setup",
+      "sha256": "6e07b0305b89e71510548f6b3fafb59d65aac59bf1871b57c12a6d9716d29b28",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101205354_resend_webhook_key_compatibility.sql",
+      "version": "20261101205705",
+      "name": "resend_webhook_key_compatibility",
+      "sha256": "1234808c2ea40fb6977f23b9d5bac51049142c87e24a67f2eb4176404e6320c1",
+      "already_applied": true
     }
   ]
 }
