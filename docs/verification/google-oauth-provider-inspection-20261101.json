@@ -1,0 +1,59 @@
+{
+  "checked_at": "2026-11-01T16:37:38.711049+00:00",
+  "scope": {
+    "google_project_number": "468881730124",
+    "google_project_name": "TruckControlAI",
+    "supabase_ref": "kkkemaycedexymrpaqtp",
+    "supabase_project": "truckcontrol-ai"
+  },
+  "browser_inspection": {
+    "google_project_verified": true,
+    "oauth_client_list_empty": true,
+    "previous_owner_client_created_confirmation_superseded": true,
+    "supabase_vault_access_verified": false,
+    "supabase_blocker": "Login page with hCaptcha; owner must complete sign-in in private setup window",
+    "runs_completed": 2,
+    "total_agent_steps": 14,
+    "total_run_duration_seconds": 173,
+    "oauth_clients_created": 0,
+    "vault_values_updated": false,
+    "credentials_returned_in_results": false,
+    "private_setup_links_in_git": false
+  },
+  "database_after_inspection": {
+    "client_id_matches_project": false,
+    "google_fields_equal": true,
+    "encryption_key_unchanged": true,
+    "anon_can_execute_runtime_config": false,
+    "authenticated_can_execute_runtime_config": false,
+    "service_role_can_execute_runtime_config": true,
+    "migration_count": 42,
+    "auth_user_count": 0,
+    "gmail_connection_count": 0,
+    "security_advisors": []
+  },
+  "retained_tests": {
+    "original_test_count": 64,
+    "protected_files": 11,
+    "hash_verification": "passed"
+  },
+  "next_actions": [
+    "Owner completes Supabase sign-in and hCaptcha in private setup, then Save profile",
+    "Verify saved session reaches only authorized TruckControl Vault",
+    "Recheck Google client list; create one Web client only if still empty",
+    "Store matching ID and secret directly in the two existing Vault fields; preserve AES",
+    "Validate configuration using booleans and ACLs",
+    "Test real OAuth only with verified authorized app accounts and fictitious documents"
+  ],
+  "unchanged": {
+    "database_schema": true,
+    "published_candidate": true,
+    "stable_demo": true,
+    "fixpilot": true
+  },
+  "real_google_oauth_verified": false,
+  "commercial_production_ready": false,
+  "ai_activated": false,
+  "payments_activated": false,
+  "public_registration_opened": false
+}
