@@ -1015,6 +1015,9 @@ dialog.modal,
   gap: 20px;
   margin-bottom: 22px;
 }
+.overview-toolbar > .inline-actions {
+  flex-wrap: wrap;
+}
 .monthly-goal,
 .route-map-card,
 .fuel-snapshot {
@@ -1316,5 +1319,10 @@ dialog.modal,
   }
   .route-map-surface {
     height: 275px;
+  }
+}
+@media (max-width: 380px) {
+  .quick-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
