@@ -221,3 +221,10 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - La segunda tarea se detiene en la pantalla de acceso de Supabase con hCaptcha. No se eluden controles, crean clientes ni actualizan secretos. Se ofrece reabrir el acceso privado para el titular, sin solicitar contraseñas o claves por chat.
 - Comprobación SQL posterior: los dos valores Google siguen iguales y el ID es inválido; AES conserva su fecha, anon/authenticated no pueden leer configuración, service_role sí. Cuarenta y dos migraciones, cero usuarios Auth y cero conexiones Gmail; asesores de seguridad vacíos. [Informe](verification/google-oauth-provider-inspection-20261101.json).
 - Dos tareas finalizadas, catorce pasos en total; no se acredita un OAuth real ni se cambia la publicación. IA, pagos y alta pública permanecen cerrados.
+
+# 2026-11-01 — perfil exclusivo y asistente Google
+
+- El titular confirma haber visto el proyecto y la lista de secretos antes de guardar. El perfil anterior sigue sin restaurar Supabase; se prueba un único perfil exclusivo, que también vuelve al acceso con hCaptcha. Se detienen los reintentos sin eludir el control ni pedir credenciales por chat.
+- La tarea Google independiente informa de identidad de aplicación «TruckControl AI Gmail», público externo y usuario de prueba preparados, pero termina por límite antes de crear el cliente web. El indicador final de modo Pruebas no confirma su descripción narrativa; verificarlo al retomar. No se promueve a producción ni se declara el cliente creado.
+- Cincuenta pasos acumulados, 445 segundos de tareas y 0,80 USD en pasos. Automatización pausada; solicitud de ampliar de 1 a 2 USD acumulados todavía pendiente. Sin recargas, suscripciones, IA ni cobros.
+- SQL posterior confirma ID Google inválido y ambos campos iguales, AES intacto, configuración inaccesible a anon/authenticated, 42 migraciones, cero usuarios Auth y cero conexiones Gmail. La candidata, demo y FIXPilot no cambian. [Punto de continuación](verification/gmail-provider-setup-checkpoint-20261101.json).
