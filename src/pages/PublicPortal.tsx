@@ -17,6 +17,7 @@ import { money } from "../lib/format";
 import { isCandidateRelease } from "../domain/release";
 import { DemoManufacturers } from "../components/VehicleBrand";
 import { useAppearance } from "../app/AppearanceContext";
+import { LegalLinks } from "../components/LegalPage";
 
 export function PlanCards({
   catalog,
@@ -56,7 +57,7 @@ export function PlanCards({
             </p>
             <p>
               {plan.id === "full"
-                ? "Documentos, Gmail y herramientas avanzadas para tu operación."
+                ? "Documentos, correo y herramientas avanzadas para tu operación."
                 : "Control de la flota, tu equipo y el resultado de cada camión."}
             </p>
             <ul className="plan-features">
@@ -83,7 +84,7 @@ export function PlanCards({
               {plan.modules.gmail && (
                 <li>
                   <Check size={17} />
-                  Gmail propio de tu empresa
+                  Recepción de facturas por correo
                 </li>
               )}
               {plan.modules.invoice_ai && (
@@ -120,11 +121,11 @@ export function PublicPortal({
   onDemo(): void;
 }) {
   const appearance = useAppearance();
-  const [catalog, setCatalog] = useState<Catalog>(
-    isCandidateRelease
-      ? { ...exampleCatalog, registration_open: false, payments_enabled: false }
-      : exampleCatalog,
-  );
+  const [catalog, setCatalog] = useState<Catalog>({
+    ...exampleCatalog,
+    registration_open: false,
+    payments_enabled: false,
+  });
   const [failed, setFailed] = useState(false);
   useEffect(() => {
     const client = getSupabaseClient();
@@ -349,6 +350,7 @@ export function PublicPortal({
       </section>
       <footer className="portal-footer">
         <span>TruckControl AI · Fleet Intelligence</span>
+        <LegalLinks />
         <button onClick={() => onAccess("login")}>
           Acceso de clientes y administrador
         </button>

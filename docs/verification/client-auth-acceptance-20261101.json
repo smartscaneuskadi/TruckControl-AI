@@ -1,0 +1,123 @@
+{
+  "checked_at": "2026-11-01T22:21:52.287132+00:00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "operator": {
+    "name": "ELEVADANCOR S.L.",
+    "tax_id": "B02993426",
+    "address": "Pol\u00edgono Arzabalza, n.\u00ba 50, Tolosa",
+    "email": "pedidos@smartscaneuskadi.com",
+    "source": "Owner supplied in this conversation"
+  },
+  "runtime": {
+    "company_auth_version": 3,
+    "source_code_files_match": 2,
+    "deno_config_supplied_but_omitted_by_provider_retrieval": true,
+    "bundle_sha256": "1ac9a86cf0153039bb9926833d27aa30b28e607b76f7c41726df52fc5c07d107",
+    "auth_mail_enabled": true,
+    "legal_ready": false,
+    "registration_open": false,
+    "payments_enabled": false,
+    "sms_ready": false,
+    "ai_enabled": true,
+    "ai_monthly_budget_usd": 10,
+    "signup_passwordless_until_email_verification": true
+  },
+  "migrations": [
+    {
+      "local": "20261101214649",
+      "remote": "20261101215459",
+      "name": "client_auth_mail"
+    },
+    {
+      "local": "20261101220448",
+      "remote": "20261101221144",
+      "name": "registration_legal_consent"
+    }
+  ],
+  "total_migrations": 48,
+  "native_auth_live_acceptance": {
+    "synthetic_email_domain": "facturas.truckcontrolai.com",
+    "confirmation_received": true,
+    "recovery_received": true,
+    "native_email_verified": true,
+    "link_replay_rejected": true,
+    "password_set_and_login_passed": true,
+    "recovery_password_change_and_login_passed": true,
+    "logout_global_status": 204,
+    "fixture_sessions_remaining": 0,
+    "fixture_banned": true,
+    "real_accounts_created": false,
+    "verification_tokens_passwords_and_sessions_not_returned_in_tool_output_or_workspace_files": true
+  },
+  "remote_legal_rollback": {
+    "passed": true,
+    "forged_user_metadata_rejected": true,
+    "consent_bound_to_email_hash": true,
+    "trial_days": 10,
+    "two_companies_isolated": true,
+    "client_cannot_record_consent": true,
+    "all_fixture_rows_rolled_back": true,
+    "public_registration_unchanged": true,
+    "registration_open_after_test": false
+  },
+  "http_live_checks": [
+    {
+      "name": "health",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "name": "wrong_origin",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "name": "closed_signup",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "name": "unsigned_owner",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "name": "client_config_denied",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "name": "client_consent_denied",
+      "status": 401,
+      "passed": true
+    }
+  ],
+  "checks": {
+    "unit_sql": 364,
+    "python": 32,
+    "production_browser": 16,
+    "production_browser_profiles": [
+      "Android emulation",
+      "Windows layout"
+    ],
+    "both_themes_accessibility_passed": true,
+    "typescript": true,
+    "deno": true,
+    "pwa_build": true,
+    "original_64_tests_retained_file_hashes": 11,
+    "physical_devices_tested": false
+  },
+  "security_notice": {
+    "leaked_password_protection_warning": "Pre-existing; hosted feature requires Pro or above. No upgrade activated.",
+    "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+    "stale_key_description": "Owner confirmed the OpenAI key in administrative metadata was already revoked; existing approved runtime restored. No new key or budget created.",
+    "no_plaintext_secret_in_public_artifact": true
+  },
+  "publication": {
+    "current_live_candidate": 8,
+    "stable_demo_preserved": true,
+    "new_production_not_deployed_yet": true,
+    "owner_verification_pending": true,
+    "automatic_payments_enabled": false
+  }
+}

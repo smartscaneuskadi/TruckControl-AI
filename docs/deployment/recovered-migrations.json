@@ -77,6 +77,20 @@
       "name": "resend_webhook_key_compatibility",
       "sha256": "1234808c2ea40fb6977f23b9d5bac51049142c87e24a67f2eb4176404e6320c1",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101214649_client_auth_mail.sql",
+      "version": "20261101215459",
+      "name": "client_auth_mail",
+      "sha256": "f2e7cc65f11a944087d1d72f633fa775f153e6e962ed088708b755b2a8368521",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101220448_registration_legal_consent.sql",
+      "version": "20261101221144",
+      "name": "registration_legal_consent",
+      "sha256": "79ec43005390babfddb3308fc80d61d12d27e0413551e900268ddd37fc671ae2",
+      "already_applied": true
     }
   ]
 }

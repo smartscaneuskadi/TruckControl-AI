@@ -20,6 +20,10 @@ import type {
 import { money } from "../lib/format";
 import { errorMessage } from "../app/FleetProvider";
 import { isCandidateRelease } from "../domain/release";
+import { customAuthMail } from "../integrations/supabase/auth-mail";
+import { legalVersion } from "../domain/legal";
+import { LegalLinks } from "../components/LegalPage";
+import { CompleteRegistration } from "../components/CompleteRegistration";
 
 export function Registration({
   initialView = "login",
@@ -78,23 +82,36 @@ export function Registration({
           phone: text("phone").replace(/[ ()-]/g, ""),
           requested_plan: text("plan"),
         });
-        const { error } = await client.auth.signUp({
-          email: text("email"),
-          password: text("password"),
-          options: {
-            emailRedirectTo: redirect,
-            data: { truckcontrol_registration: registration },
-          },
-        });
+        const { error } = customAuthMail
+          ? await client.functions.invoke("company-auth", {
+              body: {
+                action: "signup",
+                email: text("email"),
+                registration,
+                terms_accepted: data.get("legal_consent") === "on",
+                terms_version: legalVersion,
+              },
+            })
+          : await client.auth.signUp({
+              email: text("email"),
+              password: text("password"),
+              options: {
+                emailRedirectTo: redirect,
+                data: { truckcontrol_registration: registration },
+              },
+            });
         if (error) throw error;
         setMessage(
-          "Solicitud recibida. Confirma tu correo con el enlace que recibirás. Después verificaremos tu teléfono y tu empresa se creará automáticamente.",
+          "Solicitud recibida. Confirma tu correo con el enlace que recibirás si procede. Tu empresa se activará después de completar las verificaciones indicadas.",
         );
       } else if (view === "reset") {
-        const { error } = await client.auth.resetPasswordForEmail(
-          text("email"),
-          { redirectTo: redirect },
-        );
+        const { error } = customAuthMail
+          ? await client.functions.invoke("company-auth", {
+              body: { action: "recovery", email: text("email") },
+            })
+          : await client.auth.resetPasswordForEmail(text("email"), {
+              redirectTo: redirect,
+            });
         if (error) throw error;
         setMessage(
           "Si existe una cuenta con ese correo, recibirás un enlace para recuperar el acceso.",
@@ -248,7 +265,8 @@ export function Registration({
                 />
               </Field>
             )}
-            {(view !== "reset" || recovery) && (
+            {(recovery ||
+              (view !== "reset" && !(view === "signup" && customAuthMail))) && (
               <Field label="Contraseña">
                 <input
                   name="password"
@@ -267,6 +285,20 @@ export function Registration({
               </Field>
             )}
           </div>
+          {view === "signup" && !recovery && customAuthMail && (
+            <label className="checkbox-line">
+              <input
+                type="checkbox"
+                name="legal_consent"
+                required
+                disabled={busy}
+              />{" "}
+              He leído la privacidad y acepto las condiciones del servicio y del
+              encargo de tratamiento para mi empresa. Declaro estar autorizado
+              para representarla.
+            </label>
+          )}
+          <LegalLinks />
           {error && (
             <p role="alert" className="form-error">
               {error}
@@ -322,8 +354,9 @@ export function Registration({
         <div className="registration-security">
           <ShieldCheck size={18} />
           <span>
-            El correo y el teléfono se verifican antes de activar la empresa.
-            Cada empresa tiene sus propios datos y Gmail.
+            Confirmamos tu correo antes de activar la empresa. La verificación
+            por SMS se solicita cuando está habilitada. Cada empresa tiene sus
+            propios datos y conexión de correo opcional.
           </span>
         </div>
       </section>
@@ -412,6 +445,14 @@ export function PhoneVerification({
       setBusy(false);
     }
   }
+  if (customAuthMail && !access.profile && !access.sms_ready)
+    return (
+      <CompleteRegistration
+        user={user}
+        onComplete={onComplete}
+        onSignOut={onSignOut}
+      />
+    );
   return (
     <main className="registration-page">
       <section className="card registration-card">
