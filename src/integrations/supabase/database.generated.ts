@@ -298,6 +298,10 @@ export type Database = {
         Args: { p_after?: string; p_kind: string; p_org: string };
         Returns: Json;
       };
+      tc_backup_page_v2: {
+        Args: { p_after?: string; p_kind: string; p_org: string };
+        Returns: Json;
+      };
       tc_book_record: {
         Args: { p_expected: number; p_org: string; p_record: string };
         Returns: Json;
@@ -313,6 +317,10 @@ export type Database = {
       tc_delete_record: {
         Args: { p_expected: number; p_id: string; p_org: string };
         Returns: undefined;
+      };
+      tc_document_page: {
+        Args: { p_after?: string; p_org: string };
+        Returns: Json;
       };
       tc_finish_registration: { Args: never; Returns: Json };
       tc_list_records: {
@@ -334,6 +342,10 @@ export type Database = {
         Args: { p_action: string; p_data: Json };
         Returns: Json;
       };
+      tc_register_document: {
+        Args: { p_document: Json; p_org: string; p_tracking: Json };
+        Returns: string;
+      };
       tc_request_plan: { Args: { p_plan_id: string }; Returns: string };
       tc_save_record: {
         Args: {
@@ -348,6 +360,15 @@ export type Database = {
       tc_set_ai_opt_in: { Args: { p_enabled: boolean }; Returns: Json };
       tc_team_control: {
         Args: { p_action: string; p_data?: Json; p_org: string };
+        Returns: Json;
+      };
+      tc_update_document_metadata: {
+        Args: {
+          p_data: Json;
+          p_document: string;
+          p_expected: number;
+          p_org: string;
+        };
         Returns: Json;
       };
     };

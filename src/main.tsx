@@ -5,6 +5,7 @@ import { App } from "./app/App";
 import { CompanyAccessProvider, FleetAccess } from "./app/CompanyAccess";
 import { PwaTools } from "./components/PwaTools";
 import { OperationsProvider } from "./app/OperationsProvider";
+import { DocumentsProvider } from "./app/DocumentsProvider";
 import { OfflineApplication } from "./app/OfflineApplication";
 import { AppearanceProvider } from "./app/AppearanceProvider";
 import {
@@ -58,7 +59,7 @@ createRoot(document.getElementById("root")!).render(
             <CompanyAccessProvider>
               <FleetAccess>
                 <OperationsProvider>
-                  <App />
+                  <DocumentsProvider><App /></DocumentsProvider>
                 </OperationsProvider>
               </FleetAccess>
             </CompanyAccessProvider>

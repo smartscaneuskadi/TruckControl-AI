@@ -52,7 +52,7 @@ function fixture() {
           error: null,
         };
       if (name === "tc_list_records") return { data: [], error: null };
-      if (name === "tc_backup_page") {
+      if (name === "tc_backup_page_v2") {
         let rows =
           args.p_kind === "documents"
             ? docs
@@ -109,7 +109,7 @@ describe("lectura autorizada para copias", () => {
     expect(
       f.rpc.mock.calls.some(
         ([name, args]) =>
-          name === "tc_backup_page" &&
+          name === "tc_backup_page_v2" &&
           args.p_after === "50000000-0000-4000-8000-000000000200",
       ),
     ).toBe(true);

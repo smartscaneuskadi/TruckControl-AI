@@ -1,16 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
-import { FileCheck2, FileUp, Download, ShieldCheck } from "lucide-react";
+import { FileCheck2, FileUp, ShieldCheck } from "lucide-react";
 import { useCompany } from "../app/CompanyAccess";
 import { useSubscription } from "../app/SubscriptionContext";
 import { errorMessage, useFleet } from "../app/FleetProvider";
 import { getSupabaseClient } from "../integrations/supabase/client";
-import type { CompanyDocument } from "../integrations/supabase/database.types";
+import { useDocuments } from "../app/DocumentsProvider";
+import {
+  DocumentRegister,
+  DocumentTrackingFields,
+  readDocumentTracking,
+} from "../components/DocumentRegister";
 import {
   downloadCompanyDocument,
   uploadCompanyDocument,
+  updateCompanyDocument,
 } from "../integrations/supabase/documents";
-import { Badge, Button, Empty, PageHeading } from "../components/ui";
+import { Badge, Button, PageHeading } from "../components/ui";
 import { DemoDocuments } from "../components/DemoDocuments";
 
 export function Documents() {
@@ -21,39 +27,18 @@ export function Documents() {
   const { snapshot, notify } = useFleet();
   const client = getSupabaseClient();
   const cloud = access.mode === "company" && Boolean(client);
-  const [documents, setDocuments] = useState<CompanyDocument[]>([]);
-  const [revision, setRevision] = useState(0);
+  const register = useDocuments();
+  const { documents, loading } = register;
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [loading, setLoading] = useState(cloud);
   const [truckId, setTruckId] = useState("");
   const [driverId, setDriverId] = useState("");
-  useEffect(() => {
-    if (!cloud || !client) return;
-    let active = true;
-    setLoading(true);
-    void client
-      .rpc("list_company_documents", {
-        p_organization_id: snapshot.organization.id,
-      })
-      .then(({ data, error }) => {
-        if (!active) return;
-        setLoading(false);
-        if (error) setError("No se han podido cargar los documentos.");
-        else {
-          setDocuments(data ?? []);
-          setError("");
-        }
-      });
-    return () => {
-      active = false;
-    };
-  }, [cloud, client, snapshot.organization.id, revision]);
   async function upload(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!client || !cloud || busy || !writable) return;
     const form = e.currentTarget;
-    const file = new FormData(form).get("document");
+    const values = new FormData(form);
+    const file = values.get("document");
     if (!(file instanceof File) || !file.size) return;
     setBusy(true);
     setError("");
@@ -64,9 +49,12 @@ export function Documents() {
         file,
         truckId,
         driverId,
+        readDocumentTracking(values),
       );
       form.reset();
-      setRevision((n) => n + 1);
+      setTruckId("");
+      setDriverId("");
+      await register.refresh();
       notify("Documento guardado en tu empresa.");
     } catch (e) {
       setError(errorMessage(e));
@@ -153,6 +141,7 @@ export function Documents() {
                   </select>
                 </label>
               </div>
+              <DocumentTrackingFields />
               <small>
                 Máximo 10 MB. Los archivos se conservan sin sobrescribir
                 documentos anteriores.
@@ -164,50 +153,32 @@ export function Documents() {
           </form>
           {loading ? (
             <p role="status">Cargando documentos…</p>
-          ) : documents.length ? (
-            <div className="document-grid">
-              {documents.map((doc) => (
-                <article className="card document-card" key={doc.id}>
-                  <FileCheck2 size={25} />
-                  <Badge tone="green">Privado</Badge>
-                  <h2>{doc.name}</h2>
-                  <p>
-                    {(doc.size_bytes / 1024).toFixed(0)} KB ·{" "}
-                    {new Date(doc.created_at).toLocaleDateString("es-ES")}
-                  </p>
-                  <p>
-                    {snapshot.trucks.find((t) => t.id === doc.truck_id)
-                      ?.plate ?? "Documento de empresa"}
-                    {doc.driver_id
-                      ? ` · ${snapshot.drivers.find((d) => d.id === doc.driver_id)?.name ?? "Conductor"}`
-                      : ""}
-                  </p>
-                  <Button
-                    variant="secondary"
-                    icon={Download}
-                    disabled={busy}
-                    onClick={() => {
-                      setBusy(true);
-                      void downloadCompanyDocument(
-                        client!,
-                        doc.object_path,
-                        doc.name,
-                      )
-                        .catch((e) => setError(errorMessage(e)))
-                        .finally(() => setBusy(false));
-                    }}
-                  >
-                    Descargar
-                  </Button>
-                </article>
-              ))}
-            </div>
           ) : (
-            <section className="card">
-              <Empty title="Todavía no hay documentos">
-                Sube el primero para empezar el archivo de tu empresa.
-              </Empty>
-            </section>
+            <DocumentRegister
+              documents={documents}
+              cloud
+              busy={busy}
+              writable={writable}
+              onRefresh={register.refresh}
+              onDownload={(doc) =>
+                downloadCompanyDocument(client!, doc.object_path, doc.name)
+              }
+              onSave={async (doc, value) => {
+                await updateCompanyDocument(
+                  client!,
+                  snapshot.organization.id,
+                  doc.id,
+                  value,
+                  doc.tracking?.row_version ?? 0,
+                );
+                await register.refresh();
+              }}
+            />
+          )}
+          {register.error && (
+            <p className="form-error" role="alert">
+              {register.error}
+            </p>
           )}
         </>
       )}

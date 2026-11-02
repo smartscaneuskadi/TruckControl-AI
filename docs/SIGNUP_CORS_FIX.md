@@ -20,7 +20,11 @@ La interfaz 0.5.7-rc.1 interpreta únicamente códigos públicos conocidos, cons
 - Las pruebas de interfaz cubren el tamaño de la casilla, la explicación de un 503 y un reintento conservando datos y consentimiento.
 - El control público de CI incluye peticiones reales desde el navegador a Supabase en los seis perfiles/orígenes. Antes solo inspeccionaba el portal y la demo; las pruebas de registro interceptaban el backend y no detectaban este fallo de CORS.
 
-Pendiente de completar en este informe: resultados de CI, versión de interfaz publicada y comprobación pública posterior. La entrega del correo al nuevo cliente solo se podrá confirmar después de una nueva solicitud válida. Las pruebas de esta corrección no envían mensajes a su dirección ni inventan sus datos de empresa.
+Publicada **0.5.7-rc.1 / versión 14**, fuente `76c4306024d9a1cdea7074b0d219b1475bdd5471`, despliegue `appgdep_6ae83cf4447081918ecf87896452e718`, 02/11 a las 07:34 UTC. El [código](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41406437153) y la [fuente exacta](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41406452218) pasan **647 comprobaciones**: 447 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 42 SaaS, 14 candidata, 20 producción y seis públicas. Esas seis comprobaron v13 con el backend v4 ya corregido. Los [checks del PR #22](https://github.com/smartscaneuskadi/TruckControl-AI/pull/22/checks) incluyen la comprobación posterior de v14.
+
+[Prueba del backend](verification/signup-origin-backend-20261102.json): ocho comprobaciones HTTP y seis controles CORS desde navegador real. [Verificación HTTPS de v14](verification/signup-fix-production-https-20261102.json): 72 hashes coincidentes, catálogo Básico con diez días, rechazo anónimo de Servicios y demo estable intacta. Android y Windows se emulan. El navegador local no confía en la CA del proxy de este entorno; se dejó intacto su almacén y los controles públicos se ejecutan en GitHub.
+
+La entrega del correo al nuevo cliente solo se podrá confirmar después de una nueva solicitud válida. Las pruebas de esta corrección no envían mensajes a su dirección ni inventan sus datos de empresa.
 
 ## Recuperación
 

@@ -1,0 +1,53 @@
+{
+  "checked_at": "2026-11-02",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "local_migration": "20261102080257",
+  "remote_migration": "20261102082309",
+  "migration_sha256": "c26e59f71a93f6516dc149132e3029c6b3aca6bda1b835a44437600d00fe36f0",
+  "before": {
+    "migrations": 52,
+    "documents": 3,
+    "original_documents_hash": "e9bdcf5b61fc10db67d4da684c78356a",
+    "customers_hash": "42aa0841ece21c489d5c1841f4ee1944",
+    "settings_hash": "f275865d7be202b7b0a2bc5b4081eff7",
+    "plans_hash": "81a09b182007db9969d503582e319923"
+  },
+  "after": {
+    "migrations": 53,
+    "tracking_records": 0,
+    "documents": 3,
+    "original_documents_hash": "e9bdcf5b61fc10db67d4da684c78356a",
+    "customers_hash": "42aa0841ece21c489d5c1841f4ee1944",
+    "settings_hash": "f275865d7be202b7b0a2bc5b4081eff7",
+    "plans_hash": "81a09b182007db9969d503582e319923"
+  },
+  "existing_data_and_settings_unchanged": true,
+  "rollback": {
+    "test": "native_document_tracking_rollback",
+    "fixture_users_absent": true,
+    "fixture_document_absent": true,
+    "fixture_metadata_absent": true
+  },
+  "assertions": [
+    "native email confirmation and immutable legal receipt",
+    "Basic remains the trial license",
+    "metadata register/update with version checks",
+    "original document unchanged",
+    "old backup RPC unchanged",
+    "enriched backup includes metadata",
+    "cross-tenant read/write denied",
+    "authorized viewer can read but cannot edit",
+    "anonymous denied",
+    "module revocation denies RPC and metadata read",
+    "all synthetic data rolled back"
+  ],
+  "local_tests": {
+    "unit_sql": 476,
+    "python": 32,
+    "saas_browser": 46,
+    "original_demo_tests_retained": 64
+  },
+  "no_provider_requests": true,
+  "no_customer_email_sent": true,
+  "known_advisory": "auth_leaked_password_protection is a pre-existing WARN, not changed"
+}

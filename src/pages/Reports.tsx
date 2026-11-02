@@ -17,6 +17,7 @@ import { operationLabels } from "../domain/operations";
 import type { OperationKind, OperationRecord } from "../domain/operations";
 import { exportCsv } from "../lib/export";
 import { money, number } from "../lib/format";
+import { OperatingReport } from "../components/OperatingReport";
 
 export function Reports() {
   const { snapshot } = useFleet(),
@@ -28,7 +29,8 @@ export function Reports() {
   const trips = operations.rows.filter(
     (r) =>
       r.kind === "trips" &&
-      (period === "all" || String(r.data.startOn).startsWith(period)),
+      (period === "all" ||
+        String(r.data.endOn || r.data.startOn).startsWith(period)),
   );
   const completed = trips.filter((r) => r.data.status === "completed"),
     months = [...new Set(entries.map((e) => e.date.slice(0, 7)))]
@@ -160,6 +162,7 @@ export function Reports() {
           </table>
         </div>
       </section>
+      <OperatingReport />
       <section className="card integration-card">
         <h2>Exportaciones operativas</h2>
         <p>

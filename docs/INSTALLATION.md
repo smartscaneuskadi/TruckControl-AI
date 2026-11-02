@@ -38,3 +38,7 @@ Las comprobaciones Android/Windows son emuladas; falta aceptación en dispositiv
 La versión publicada incluye **Configuración → Copia cifrada de empresa** para guardar registros y originales autorizados, comprobarlos y recuperar archivos sin cambiar datos del servidor. Está disponible en cuentas de empresa administradoras; acepta **Actualizar** cuando aparezca. [Contenido y límites](COMPANY_RECOVERY.md).
 
 El superadministrador puede abrir **Administración → Servicios** para comprobar correo, receptor, IA y Gmail y guardar las credenciales Google mediante su formulario privado. Los clientes no tienen acceso a esas claves. [Guía de Servicios](PROVIDER_ADMIN.md).
+
+## Si una solicitud anterior mostraba un error de registro
+
+La corrección de servidor ya admite los tres enlaces oficiales de producción, incluidas las PWA instaladas desde el hostname técnico. Abre https://truckcontrolai.com y vuelve a solicitar acceso con tus datos. No necesitas cambiar el NIF/CIF por ese fallo. Si aparece **Actualizar**, guarda primero cualquier trabajo pendiente y acepta la nueva versión. La interfaz conserva el formulario tras un error y permite reintentar. La confirmación llega por correo; revisa también la carpeta de spam. [Detalle y pruebas](SIGNUP_CORS_FIX.md).
