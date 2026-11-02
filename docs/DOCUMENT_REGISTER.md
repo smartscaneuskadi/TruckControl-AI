@@ -1,6 +1,6 @@
 # Documentos, vencimientos e informes operativos
 
-La mejora 0.5.8-rc.1 continúa la aplicación existente. La versión 14 y la demo estable 6 se conservan para recuperación. Publicación y aceptación de esta mejora se registran en el inventario de despliegue y en el checkpoint `/workspace/artifacts/truckcontrol-documents-20261102/checkpoint.json`.
+**Publicada 0.5.8-rc.1 / versión 15 en https://truckcontrolai.com.** La mejora continúa la aplicación existente. La versión 14 y la demo estable 6 se conservan para recuperación. Publicación y aceptación de esta mejora se registran en el inventario de despliegue y en el checkpoint `/workspace/artifacts/truckcontrol-documents-20261102/checkpoint.json`.
 
 ## Uso
 
@@ -27,3 +27,7 @@ Se corrige además el validador de facturas aprobadas: el gasto debe coincidir c
 ## Verificación
 
 Pruebas SQL cubren aislamiento, lectura y escritura por rol, permisos retirados, edición obsoleta, campos no admitidos, paginación y alta atómica. Las pruebas de dominio cubren fechas, antelación, archivo, revisión, renovación, categorías, viajes e importes. El recorrido de navegador comprueba el original después de archivar y la exportación del informe en Android/Windows emulados. Las 64 pruebas iniciales se conservan mediante once hashes. La aceptación remota usa exclusivamente fixtures sintéticos con rollback; no se envían correos ni llamadas IA para probar esta mejora.
+
+La migración documental local 20261102080257 corresponde a la remota 20261102082309. La migración adicional local 20261102085143 / remota 20261102085701 prepara el retorno Gmail desde el hostname de producción ya publicado. Hay 54 migraciones aplicadas una vez. `company-gmail` v11 incorpora una salud pública sin secretos, que devuelve únicamente un booleano; los 14 controles HTTP y el ensayo de estados con rollback pasan. El diagnóstico sigue sin configuración Google válida, por lo que no se afirma una conexión de Gmail. El reenvío general se conserva.
+
+La interfaz y su fuente exacta pasan 680 controles anteriores a la publicación; el código final pasa 487 unitarias/SQL y 32 Python. Los checks de PR #23 contienen la aceptación pública posterior de v15. El paquete publicado supera las cuatro combinaciones de tema y dispositivo emulado con cero infracciones Axe AA. Se conservan producción v14, demo v6 y copias Git recuperables. El asesor mantiene el aviso previo de [protección de contraseñas filtradas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection); no se ha contratado un plan superior.

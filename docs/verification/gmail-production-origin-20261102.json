@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-02",
+  "project": "kkkemaycedexymrpaqtp",
+  "migration": {
+    "local": "20261102085143",
+    "remote": "20261102085701",
+    "sha256": "67c47d8f2c342114ae04d3a068aacc4bdceea9d523cc570ec42727d9d111b872"
+  },
+  "runtime": {
+    "version": 11,
+    "status": "ACTIVE",
+    "verify_jwt": false,
+    "hash": "e6a0ef230cc0fdf7b6393d14cb3272dd7de6a95ccf3a835d780409eaac92e40a",
+    "files_match": true
+  },
+  "native_rollback": {
+    "test": "gmail_origin_rollback",
+    "fixture_users_absent": true,
+    "fixture_states_absent": true
+  },
+  "assertions": [
+    "three production origins and legacy return preserved",
+    "state bound to company and user",
+    "replayed state rejected",
+    "foreign origin rejected",
+    "foreign company manager rejected",
+    "client cannot invoke server OAuth RPC",
+    "no fixture users or states remaining"
+  ],
+  "existing_business_fingerprints_unchanged": true,
+  "after": {
+    "migrations": 54,
+    "tracking_records": 0,
+    "original_documents_hash": "e9bdcf5b61fc10db67d4da684c78356a",
+    "customers_hash": "42aa0841ece21c489d5c1841f4ee1944",
+    "settings_hash": "f275865d7be202b7b0a2bc5b4081eff7",
+    "plans_hash": "81a09b182007db9969d503582e319923",
+    "gmail_connections": 0
+  },
+  "google_configuration_recognized": false,
+  "gmail_connections": 0,
+  "no_google_or_ai_requests": true
+}
