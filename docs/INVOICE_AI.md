@@ -1,6 +1,6 @@
 # Lectura IA de facturas guardadas
 
-Preparada en 0.5.10-rc.1, sobre la bandeja existente. No depende de Gmail OAuth: sirve para originales recibidos por reenvío o importados como correo, PDF o imagen. La publicación comprobada se registra en [entrega vigente](CURRENT_DELIVERY.md).
+Publicada en 0.5.10-rc.1 / versión 17 en https://truckcontrolai.com, sobre la bandeja existente. No depende de Gmail OAuth: sirve para originales recibidos por reenvío o importados como correo, PDF o imagen. La publicación comprobada se registra en [entrega vigente](CURRENT_DELIVERY.md).
 
 ## Uso
 
@@ -33,3 +33,5 @@ Los campos extraídos se aplican solo si la factura sigue pendiente y el usuario
 El [ensayo nativo con rollback](verification/invoice-ai-rollback.sql) comprueba actores, empresas, consulta, exceso de tamaño, consentimiento y reserva única. No quedan usuarios, documentos, facturas ni reservas ficticias; las huellas comerciales, documentos, contabilidad y las tres llamadas IA anteriores permanecen idénticas. [Resultado](verification/invoice-ai-native-20261102.json), [fuentes del backend](verification/invoice-ai-edge-20261102.json).
 
 Esta entrega no realiza nuevas llamadas reales a OpenAI: usa la conexión existente y pruebas con proveedor simulado. La aceptación anterior del proveedor se conserva. Gmail OAuth directo, buzones Migadu/DKIM, SMS, cobros recurrentes, dispositivos físicos y recuperación integral del servicio gestionado siguen con los límites descritos en la entrega vigente.
+
+Código y fuente exacta pasan **748 controles** previos al despliegue, con seis recorridos públicos de v16. Los [checks de PR #25](https://github.com/smartscaneuskadi/TruckControl-AI/pull/25/checks) registran la aceptación posterior de v17. [72 hashes HTTPS y demo intacta](verification/invoice-ai-production-https-20261102.json), [cuatro combinaciones de interfaz y temas](verification/invoice-ai-visual-20261102.json).

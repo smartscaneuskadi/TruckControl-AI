@@ -50,3 +50,7 @@ La versión 15 incorpora tipo, vencimiento, antelación, búsqueda, filtros y ar
 ## Consultar facturas en la versión 16
 
 En **Correo y facturas → Facturas y revisión**, busca proveedor/número, combina estado/origen/fechas y exporta el filtro a CSV. Usa **Actualizar facturas** tras recibir nuevos documentos. Las facturas sin fecha quedan fuera de los filtros de fecha y los importes desconocidos no se presentan como cero. Solo quien tiene permiso de escritura puede confirmar el gasto. [Guía y límites](INVOICE_INBOX.md). La versión 15 se conserva; guarda tus ediciones antes de aceptar **Actualizar**.
+
+## Lectura IA de facturas guardadas, versión 17
+
+En **Correo y facturas → Facturas y revisión**, una cuenta con IA autorizada y consentimiento puede pulsar **Solicitar lectura IA** en un original pendiente. Confirma el envío, revisa los campos propuestos y registra el gasto únicamente cuando los hayas comprobado. No necesitas conectar Gmail para esta lectura; requiere internet y cuota disponible. Si la solicitud queda incierta no se repite el consumo automáticamente. [Guía](INVOICE_AI.md). Guarda los formularios antes de aceptar **Actualizar**.

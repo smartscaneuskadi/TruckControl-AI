@@ -1,6 +1,6 @@
 # Bandeja de correo y facturas
 
-La siguiente entrega añade [lectura IA de originales guardados](INVOICE_AI.md), con confirmación y sin necesitar Gmail. El estado de publicación actual se consulta en [entrega vigente](CURRENT_DELIVERY.md); los datos de v16 que siguen son la evidencia de esta fase original.
+La versión 17 añade [lectura IA de originales guardados](INVOICE_AI.md), con confirmación y sin necesitar Gmail. El estado de publicación actual se consulta en [entrega vigente](CURRENT_DELIVERY.md); los datos de v16 que siguen son la evidencia de esta fase original.
 
 **Publicada 0.5.9-rc.1 / versión 16 en https://truckcontrolai.com.** Conserva producción v15 y demo v6. La publicación y sus comprobaciones se registran en [entrega vigente](CURRENT_DELIVERY.md), el [inventario de alojamiento](deployment/candidate-hosting.json), el checkpoint `/workspace/artifacts/truckcontrol-invoice-inbox-20261102/checkpoint.json` y los [checks de PR #24](https://github.com/smartscaneuskadi/TruckControl-AI/pull/24/checks).
 

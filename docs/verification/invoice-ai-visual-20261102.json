@@ -1,0 +1,39 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "provider_requests": 0,
+  "real_invoice_reads": 0,
+  "source_build": "5b51dbdcbc08654489cc9cbf309d1a3e309eefec",
+  "new_cases": 4,
+  "saas_total": 52,
+  "unit_sql_total": 538,
+  "themes": [
+    "light",
+    "cockpit"
+  ],
+  "profiles": [
+    "Windows Chrome emulated",
+    "Android Pixel 7 emulated"
+  ],
+  "axe_aa_violations": 0,
+  "horizontal_overflow": false,
+  "flows": [
+    "cancel without inference",
+    "confirm once",
+    "Gmail unconfigured does not block",
+    "uncertain result not retried",
+    "opt out removes action",
+    "human review prefilled without booking"
+  ],
+  "screenshot_paths": [
+    "saas-ai-visual/platform-lectura-IA-de-fac-3c799-tado-y-sin-gasto-autom\u00e1tico-saas-android/invoice-ai-light.png",
+    "saas-ai-visual/platform-lectura-IA-de-fac-3c799-tado-y-sin-gasto-autom\u00e1tico-saas-android/invoice-ai-cockpit.png",
+    "saas-ai-visual/platform-lectura-IA-de-fac-3c799-tado-y-sin-gasto-autom\u00e1tico-saas-windows/invoice-ai-light.png",
+    "saas-ai-visual/platform-lectura-IA-de-fac-3c799-tado-y-sin-gasto-autom\u00e1tico-saas-windows/invoice-ai-cockpit.png"
+  ],
+  "physical_devices": false,
+  "scope": "Authenticated company UI tested with isolated fixtures; source build differs only in hosting manifest and release provenance.",
+  "new_action_screenshots_reviewed": [
+    "android/light",
+    "windows/cockpit"
+  ]
+}
