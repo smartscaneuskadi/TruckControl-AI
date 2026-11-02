@@ -1,0 +1,53 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "verified_at": "2026-11-02T15:01:01.819Z",
+  "migration_local": "20261102143339",
+  "migration_remote": "20261102145944",
+  "proof_sql": "invoice-ai-rollback.sql",
+  "proof": [
+    {
+      "test": "native_invoice_ai_rollback",
+      "fixture_users_absent": true,
+      "fixture_documents_absent": true,
+      "fixture_invoices_absent": true,
+      "fixture_reservations_absent": true
+    }
+  ],
+  "unchanged": true,
+  "before": {
+    "ai_calls": 3,
+    "migrations": 55,
+    "plans_hash": "81a09b182007db9969d503582e319923",
+    "budget_hash": "dfb464fa1ac303cabfcdb7ddac20ccfb",
+    "finance_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "invoice_rows": 3,
+    "ai_calls_hash": "b0b19737fccc16ce4694073760bddbfd",
+    "invoices_hash": "9c3679efb123298d6ab64fc8e297f06d",
+    "provider_hash": "a4cb02761e4170389d0419c55b2c91cc",
+    "settings_hash": "f275865d7be202b7b0a2bc5b4081eff7",
+    "customers_hash": "b83d48e0287ed6475e8c09e3c32b18b1",
+    "documents_hash": "e9bdcf5b61fc10db67d4da684c78356a",
+    "apply_function_hash": "04477f099ff1972cf60b8f08dcdbf0c5",
+    "budget_function_hash": "da422d4e517efac35a702513edf93774"
+  },
+  "after": {
+    "ai_calls": 3,
+    "migrations": 56,
+    "plans_hash": "81a09b182007db9969d503582e319923",
+    "budget_hash": "dfb464fa1ac303cabfcdb7ddac20ccfb",
+    "finance_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "invoice_rows": 3,
+    "ai_calls_hash": "b0b19737fccc16ce4694073760bddbfd",
+    "invoices_hash": "9c3679efb123298d6ab64fc8e297f06d",
+    "provider_hash": "a4cb02761e4170389d0419c55b2c91cc",
+    "settings_hash": "f275865d7be202b7b0a2bc5b4081eff7",
+    "customers_hash": "b83d48e0287ed6475e8c09e3c32b18b1",
+    "documents_hash": "e9bdcf5b61fc10db67d4da684c78356a",
+    "apply_function_hash": "04477f099ff1972cf60b8f08dcdbf0c5",
+    "budget_function_hash": "da422d4e517efac35a702513edf93774"
+  },
+  "provider_requests": 0,
+  "storage_writes": 0,
+  "real_customer_mutations": 0,
+  "note": "Internal synthetic AI reservation rolled back; no provider request or billable inference."
+}

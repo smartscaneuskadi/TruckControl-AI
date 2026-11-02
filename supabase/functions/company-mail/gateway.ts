@@ -29,6 +29,22 @@ export function createMailGateway(
     environmentKey,
   );
   return {
+    async invoiceAI(action, data) {
+      const { data: result, error } = await client.rpc(
+        "company_invoice_ai_server",
+        { p_action: action, p_data: data },
+      );
+      if (error) throw new Error("Invoice AI state unavailable");
+      return result;
+    },
+    async download(path) {
+      const { data, error } = await client.storage
+        .from("truckcontrol-documents")
+        .download(path);
+      if (error || !data || data.size < 1 || data.size > 6 * 1024 * 1024)
+        throw new Error("Invoice original unavailable");
+      return new Uint8Array(await data.arrayBuffer());
+    },
     async authenticate(token) {
       const { data, error } = await client.auth.getUser(token);
       return error ? null : data.user;

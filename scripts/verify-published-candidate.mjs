@@ -145,7 +145,12 @@ try {
             // The real browser verifies each service's OPTIONS response too.
             const checks = await page.evaluate(async (key) => {
               const result = [];
-              for (const service of ["company-mail", "company-assistant"]) {
+              for (const [service, action] of [
+                ["company-mail", "status"],
+                ["company-assistant", "status"],
+                ["company-mail", "invoice_ai_status"],
+                ["company-mail", "analyze_invoice"],
+              ]) {
                 const response = await fetch(
                   `https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/${service}`,
                   {
@@ -155,11 +160,12 @@ try {
                       "content-type": "application/json",
                       "x-client-info": "truckcontrol-public-mail-validation",
                     },
-                    body: JSON.stringify({ action: "status" }),
+                    body: JSON.stringify({ action }),
                   },
                 );
                 result.push({
                   service,
+                  action,
                   status: response.status,
                   code: (await response.json()).error,
                 });

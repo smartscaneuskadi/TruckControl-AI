@@ -93,6 +93,9 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     backupDocuments: [] as CompanyDocument[],
     invoiceRows: [] as CompanyInvoice[],
     invoiceFailure: false,
+    invoiceAiEnabled: true,
+    invoiceAiAttempted: new Set<string>(),
+    invoiceAiUncertain: false,
     conflict: false,
     recurring: {
       configured: false,
@@ -414,7 +417,78 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       url.pathname === "/rest/v1/rpc/tc_team_control"
     )
       data = [];
-    else if (url.pathname === "/functions/v1/company-gmail")
+    else if (url.pathname === "/functions/v1/company-mail") {
+      const a = access(identity!);
+      if (!a.active || !a.features.gmail || body?.organization_id !== org) {
+        status = 403;
+        data = { error: "company_access_denied" };
+      } else if (body.action === "status")
+        data = {
+          upload_ready: true,
+          forwarding_ready: false,
+          ai_enabled: a.features.invoice_ai && controls.invoiceAiEnabled,
+          inbox: null,
+        };
+      else if (body.action === "invoice_ai_status")
+        data = {
+          enabled: controls.invoiceAiEnabled,
+          states: controls.invoiceRows
+            .filter((i) => (body.invoice_ids as string[]).includes(i.id))
+            .map((i) => ({
+              invoice_id: i.id,
+              state:
+                i.status === "approved"
+                  ? "approved"
+                  : controls.invoiceAiAttempted.has(i.id)
+                    ? "attempted"
+                    : "available",
+              can_analyze:
+                a.can_write &&
+                a.features.invoice_ai &&
+                i.status !== "approved" &&
+                !controls.invoiceAiAttempted.has(i.id),
+            })),
+        };
+      else if (body.action === "analyze_invoice") {
+        const invoice = controls.invoiceRows.find(
+          (i) => i.id === body.invoice_id,
+        );
+        if (!a.can_write || !a.features.invoice_ai || body.confirmed !== true) {
+          status = 403;
+          data = { error: "company_access_denied" };
+        } else if (!controls.invoiceAiEnabled) {
+          status = 503;
+          data = { error: "invoice_ai_unavailable" };
+        } else if (
+          !invoice ||
+          invoice.status === "approved" ||
+          controls.invoiceAiAttempted.has(invoice.id)
+        ) {
+          status = 409;
+          data = { error: "invoice_ai_already_attempted" };
+        } else {
+          controls.invoiceAiAttempted.add(invoice.id);
+          if (controls.invoiceAiUncertain) {
+            status = 502;
+            data = { error: "invoice_ai_not_completed" };
+          } else {
+            Object.assign(invoice, {
+              supplier: "Proveedor extraído ficticio",
+              invoice_date: "2026-11-02",
+              net_cents: 10000,
+              tax_cents: 2100,
+              total_cents: 12100,
+              review_note:
+                "Extracción ficticia de prueba. Revisa con el original.",
+            });
+            data = { analyzed: true };
+          }
+        }
+      } else {
+        status = 400;
+        data = { error: "invalid_request" };
+      }
+    } else if (url.pathname === "/functions/v1/company-gmail")
       data = { oauth_ready: false, ai_enabled: false };
     else if (url.pathname === "/functions/v1/truckcontrol-subscriptions") {
       if (body?.action === "status") data = controls.recurring;
@@ -1463,4 +1537,195 @@ test("bandeja completa: más de 200 facturas, filtros, CSV y permiso de consulta
     page.getByRole("alert").filter({ hasText: /bandeja autorizada/ }),
   ).toBeVisible();
   await expect(register.locator("article.document-card")).toHaveCount(0);
+});
+
+function storedInvoiceForAi(n: number): CompanyInvoice {
+  return {
+    id: `e9000000-0000-4000-8000-${String(n).padStart(12, "0")}`,
+    organization_id: org,
+    message_id: `stored-ai-${n}`,
+    attachment_id: String(n),
+    content_hash: n.toString(16).padStart(64, "0"),
+    document_id: `e9100000-0000-4000-8000-${String(n).padStart(12, "0")}`,
+    supplier: `Original guardado ficticio ${n}`,
+    invoice_number: `GUARDADA-${n}`,
+    invoice_date: null,
+    net_cents: null,
+    tax_cents: null,
+    total_cents: null,
+    currency: "EUR",
+    status: "needs_review",
+    review_note: "Sin extracción previa",
+    finance_entry_id: null,
+    created_at: stamp,
+    import_source: "forwarded_email",
+  };
+}
+test("lectura IA de factura guardada sin Gmail: permiso, confirmación, estado y sin gasto automático", async ({
+  page,
+}, testInfo) => {
+  const f = await fixtures(page);
+  Object.assign(f.snapshot.customers[0], { ai_allowed: true, ai_opt_in: true });
+  f.snapshot.modules.find((m) => m.id === "invoice_ai")!.enabled = true;
+  f.controls.invoiceRows = [storedInvoiceForAi(1)];
+  await login(page, "customer@example.com");
+  await expect(page.locator(".sidebar")).toBeVisible();
+  await page.evaluate(() => {
+    location.hash = "/invoices";
+  });
+  await expect(
+    page.getByText(
+      "La conexión Gmail está pendiente de activación por el administrador.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  const register = page.getByRole("region", {
+    name: "Bandeja de facturas",
+    exact: true,
+  });
+  const request = register.getByRole("button", {
+    name: "Solicitar lectura IA",
+    exact: true,
+  });
+  await expect(request).toBeEnabled();
+  const stateRequests = f.calls.filter(
+    (c) => c.body?.action === "invoice_ai_status",
+  );
+  expect(stateRequests.length).toBeGreaterThan(0);
+  expect(
+    stateRequests.every(
+      (c) =>
+        JSON.stringify(c.body?.invoice_ids) ===
+        JSON.stringify([f.controls.invoiceRows[0].id]),
+    ),
+  ).toBe(true);
+  await request.click();
+  const modal = page.getByRole("dialog", {
+    name: "Solicitar lectura IA del original",
+  });
+  await expect(modal).toContainText("no se registrará ningún gasto");
+  expect(f.calls.some((c) => c.body?.action === "analyze_invoice")).toBe(false);
+  expect(
+    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze())
+      .violations,
+  ).toEqual([]);
+  await modal.getByRole("button", { name: "Cancelar", exact: true }).click();
+  expect(f.calls.some((c) => c.body?.action === "analyze_invoice")).toBe(false);
+  await request.click();
+  await modal
+    .getByRole("button", { name: "Confirmar lectura IA", exact: true })
+    .click();
+  await expect(modal).toHaveCount(0);
+  await expect(
+    page.getByRole("status").filter({ hasText: "Lectura IA guardada" }),
+  ).toBeVisible();
+  await expect(
+    register.getByRole("heading", {
+      name: "Proveedor extraído ficticio",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    register.getByRole("button", { name: "Solicitar lectura IA", exact: true }),
+  ).toBeDisabled();
+  await expect(register).toContainText("Lectura IA ya solicitada");
+  expect(
+    f.calls.filter((c) => c.body?.action === "analyze_invoice"),
+  ).toHaveLength(1);
+  expect(f.calls.some((c) => c.path.includes("approve_company_invoice"))).toBe(
+    false,
+  );
+  expect(f.controls.invoiceRows[0].finance_entry_id).toBeNull();
+  expect(f.controls.invoiceRows[0].status).toBe("needs_review");
+  expect(
+    f.calls.find((c) => c.body?.action === "analyze_invoice")?.body,
+  ).toEqual({
+    action: "analyze_invoice",
+    organization_id: org,
+    invoice_id: f.controls.invoiceRows[0].id,
+    confirmed: true,
+  });
+  await register
+    .getByRole("button", { name: "Revisar factura", exact: true })
+    .click();
+  const review = page.getByRole("dialog", {
+    name: "Revisar y registrar factura",
+  });
+  await expect(review.getByLabel("Base sin IVA (€)")).toHaveValue("100,00");
+  await review.getByRole("button", { name: "Cancelar", exact: true }).click();
+  for (const theme of ["light", "cockpit"]) {
+    await page.evaluate(
+      (t) => (document.documentElement.dataset.theme = t),
+      theme,
+    );
+    expect(
+      (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze())
+        .violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await page.screenshot({
+      path: testInfo.outputPath(`invoice-ai-${theme}.png`),
+      fullPage: true,
+    });
+  }
+});
+test("lectura IA incierta no se repite; desactivar el consentimiento retira la acción", async ({
+  page,
+}) => {
+  const f = await fixtures(page);
+  Object.assign(f.snapshot.customers[0], { ai_allowed: true, ai_opt_in: true });
+  f.snapshot.modules.find((m) => m.id === "invoice_ai")!.enabled = true;
+  f.controls.invoiceRows = [storedInvoiceForAi(2)];
+  f.controls.invoiceAiUncertain = true;
+  await login(page, "customer@example.com");
+  await expect(page.locator(".sidebar")).toBeVisible();
+  await page.evaluate(() => {
+    location.hash = "/invoices";
+  });
+  const register = page.getByRole("region", {
+    name: "Bandeja de facturas",
+    exact: true,
+  });
+  await expect(
+    register.getByRole("button", { name: "Solicitar lectura IA", exact: true }),
+  ).toBeEnabled();
+  await register
+    .getByRole("button", { name: "Solicitar lectura IA", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Confirmar lectura IA", exact: true })
+    .click();
+  await expect(
+    page
+      .getByRole("alert")
+      .filter({ hasText: "No se ha podido confirmar el resultado" }),
+  ).toBeVisible();
+  await expect(
+    register.getByRole("button", { name: "Solicitar lectura IA", exact: true }),
+  ).toBeDisabled();
+  expect(
+    f.calls.filter((c) => c.body?.action === "analyze_invoice"),
+  ).toHaveLength(1);
+  await page
+    .getByRole("checkbox", { name: /Usar lectura IA para mis facturas/ })
+    .click();
+  await expect(
+    page.getByRole("checkbox", { name: /Usar lectura IA para mis facturas/ }),
+  ).not.toBeChecked();
+  await expect(
+    register.getByRole("button", { name: "Solicitar lectura IA", exact: true }),
+  ).toHaveCount(0);
+  await register.getByRole("button", { name: "Actualizar facturas" }).click();
+  await expect(
+    register.getByRole("button", { name: "Solicitar lectura IA", exact: true }),
+  ).toHaveCount(0);
+  expect(
+    f.calls.filter((c) => c.body?.action === "analyze_invoice"),
+  ).toHaveLength(1);
+  expect(f.calls.some((c) => c.path.includes("approve_company_invoice"))).toBe(
+    false,
+  );
 });

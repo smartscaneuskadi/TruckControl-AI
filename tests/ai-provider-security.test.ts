@@ -386,3 +386,299 @@ describe("presupuesto IA: permisos y cargos desconocidos en PostgreSQL", () => {
     ).toBe(24200);
   });
 });
+
+async function savedState(action: string, data: Record<string, unknown>) {
+  return role(
+    "service_role",
+    async () =>
+      (
+        await db.query<{ v: unknown }>(
+          "select public.company_invoice_ai_server($1,$2::jsonb) v",
+          [
+            action,
+            JSON.stringify({ organization_id: org, user_id: owner, ...data }),
+          ],
+        )
+      ).rows[0].v,
+  );
+}
+describe("preparación de facturas guardadas para una primera lectura IA", () => {
+  it("las funciones son invoker, privadas para el backend y no amplían permisos de clientes", async () => {
+    const functions = (
+      await db.query<{
+        definer: boolean;
+        anon: boolean;
+        client: boolean;
+        server: boolean;
+      }>(
+        "select prosecdef definer,has_function_privilege('anon',oid,'execute') anon,has_function_privilege('authenticated',oid,'execute') client,has_function_privilege('service_role',oid,'execute') server from pg_proc where oid in ('public.company_invoice_ai_server(text,jsonb)'::regprocedure,'private.tc_invoice_ai_server(text,jsonb)'::regprocedure)",
+      )
+    ).rows;
+    expect(functions).toHaveLength(2);
+    expect(
+      functions.every((f) => !f.definer && !f.anon && !f.client && f.server),
+    ).toBe(true);
+    for (const name of ["anon", "authenticated"])
+      await role(name, async () => {
+        await expect(
+          db.query("select public.company_invoice_ai_server('prepare','{}')"),
+        ).rejects.toThrow(/permission denied/);
+      });
+  });
+  it("solo prepara el original de su empresa sin consumir, modificar ni contabilizar", async () => {
+    const invoice_id = await newInvoice();
+    const before = (
+      await db.query(
+        "select to_jsonb(i) v from private.invoice_documents i where id=$1",
+        [invoice_id],
+      )
+    ).rows;
+    const financeBefore = (
+      await db.query(
+        "select to_jsonb(e) v from public.finance_entries e order by id",
+      )
+    ).rows;
+    const prepared = (await savedState("prepare", { invoice_id })) as {
+      state: string;
+      invoice_id: string;
+      document: { object_path: string };
+    };
+    expect(prepared.state).toBe("available");
+    expect(prepared.invoice_id).toBe(invoice_id);
+    expect(prepared.document.object_path.startsWith(org + "/")).toBe(true);
+    expect(
+      (await db.query("select id from private.tc_ai_calls")).rows,
+    ).toHaveLength(0);
+    expect(
+      (
+        await db.query(
+          "select to_jsonb(i) v from private.invoice_documents i where id=$1",
+          [invoice_id],
+        )
+      ).rows,
+    ).toEqual(before);
+    expect(
+      (
+        await db.query(
+          "select to_jsonb(e) v from public.finance_entries e order by id",
+        )
+      ).rows,
+    ).toEqual(financeBefore);
+  });
+  it("el estado solo devuelve facturas de su empresa, sin rutas ni contabilidad del proveedor", async () => {
+    const invoice_id = await newInvoice();
+    const states = await savedState("status", {
+      invoice_ids: [invoice_id, crypto.randomUUID()],
+    });
+    expect(states).toEqual([
+      { invoice_id, state: "available", can_analyze: true },
+    ]);
+    expect(
+      await savedState("prepare", { invoice_id: crypto.randomUUID() }),
+    ).toBeNull();
+    await expect(
+      savedState("prepare", { invoice_id, user_id: other }),
+    ).rejects.toThrow(/no autorizada/);
+    await expect(
+      savedState("status", {
+        organization_id: foreign,
+        invoice_ids: [invoice_id],
+      }),
+    ).rejects.toThrow(/no autorizada/);
+    expect(
+      await savedState("status", {
+        organization_id: foreign,
+        user_id: other,
+        invoice_ids: [invoice_id],
+      }),
+    ).toEqual([]);
+  });
+  it("un intento reservado o liquidado impide nuevas lecturas y mantiene la reserva incierta", async () => {
+    const invoice_id = await newInvoice();
+    const args = {
+      organization_id: org,
+      user_id: owner,
+      invoice_id,
+      kind: "invoice",
+      model: "gpt-6-luna",
+    };
+    const call = await role(
+      "service_role",
+      async () =>
+        (
+          await db.query<{ v: { id: string } }>(
+            "select public.company_ai_budget_server('reserve',$1::jsonb) v",
+            [JSON.stringify(args)],
+          )
+        ).rows[0].v,
+    );
+    expect(call).toBeTruthy();
+    expect(await savedState("prepare", { invoice_id })).toEqual({
+      state: "attempted",
+    });
+    expect(await savedState("status", { invoice_ids: [invoice_id] })).toEqual([
+      { invoice_id, state: "attempted", can_analyze: false },
+    ]);
+    await settle(call.id, 1000, 100);
+    expect(await savedState("prepare", { invoice_id })).toEqual({
+      state: "attempted",
+    });
+    const repeat = await role(
+      "service_role",
+      async () =>
+        (
+          await db.query<{ v: unknown }>(
+            "select public.company_ai_budget_server('reserve',$1::jsonb) v",
+            [JSON.stringify(args)],
+          )
+        ).rows[0].v,
+    );
+    expect(repeat).toBeNull();
+    expect(
+      (
+        await db.query(
+          "select id from private.tc_ai_calls where invoice_id=$1",
+          [invoice_id],
+        )
+      ).rows,
+    ).toHaveLength(1);
+  });
+  it("desactivar consentimiento o el módulo deniega la preparación sin perder el original", async () => {
+    const invoice_id = await newInvoice();
+    await db.query(
+      "update private.tc_customers set ai_opt_in=false where user_id=$1",
+      [owner],
+    );
+    await expect(savedState("prepare", { invoice_id })).rejects.toThrow(
+      /no autorizada/,
+    );
+    expect(await savedState("status", { invoice_ids: [invoice_id] })).toEqual([
+      { invoice_id, state: "available", can_analyze: false },
+    ]);
+    await db.query(
+      "update private.tc_customers set ai_opt_in=true where user_id=$1",
+      [owner],
+    );
+    await db.exec(
+      "update private.tc_modules set enabled=false where id='gmail'",
+    );
+    await expect(
+      savedState("status", { invoice_ids: [invoice_id] }),
+    ).rejects.toThrow(/no autorizada/);
+    expect(
+      (
+        await db.query(
+          "select document_id from private.invoice_documents where id=$1",
+          [invoice_id],
+        )
+      ).rows,
+    ).toHaveLength(1);
+  });
+  it("un usuario de consulta puede ver estados pero no preparar una lectura", async () => {
+    const invoice_id = await newInvoice();
+    await db.query(
+      "insert into private.tc_memberships(organization_id,user_id,role,status,invited_by) values($1,$2,'viewer','active',$3)",
+      [org, other, owner],
+    );
+    try {
+      expect(
+        await savedState("status", {
+          user_id: other,
+          invoice_ids: [invoice_id],
+        }),
+      ).toEqual([{ invoice_id, state: "available", can_analyze: false }]);
+      await expect(
+        savedState("prepare", { user_id: other, invoice_id }),
+      ).rejects.toThrow(/no autorizada/);
+    } finally {
+      await db.query(
+        "delete from private.tc_memberships where organization_id=$1 and user_id=$2",
+        [org, other],
+      );
+    }
+  });
+  it("limita el lote y distingue archivos de más de 6 MB sin cambiar el límite de subida", async () => {
+    const invoice_id = await newInvoice();
+    await db.query(
+      "update private.company_documents set size_bytes=7*1024*1024 where id=(select document_id from private.invoice_documents where id=$1)",
+      [invoice_id],
+    );
+    expect(await savedState("prepare", { invoice_id })).toEqual({
+      state: "too_large",
+    });
+    expect(await savedState("status", { invoice_ids: [invoice_id] })).toEqual([
+      { invoice_id, state: "too_large", can_analyze: false },
+    ]);
+    await expect(savedState("status", { invoice_ids: [] })).rejects.toThrow(
+      /no valida/,
+    );
+    await expect(
+      savedState("status", { invoice_ids: Array(201).fill(invoice_id) }),
+    ).rejects.toThrow(/no valida/);
+  });
+});
+
+describe("factura registrada: protección de la lectura posterior", () => {
+  it("la confirmación humana bloquea la lectura y conserva su gasto e importes", async () => {
+    const invoice_id = await newInvoice(),
+      truck = crypto.randomUUID();
+    await db.query(
+      "insert into public.trucks(id,organization_id,plate,brand,model,year,inspection_due_on) values($1,$2,$3,'Marca ficticia','Modelo de prueba',2026,'2028-01-01')",
+      [truck, org, "AI" + truck.slice(0, 8)],
+    );
+    await role("authenticated", async () => {
+      await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
+        owner,
+      ]);
+      await db.query("select public.approve_company_invoice($1,$2,$3::jsonb)", [
+        org,
+        invoice_id,
+        JSON.stringify({
+          truck_id: truck,
+          concept: "Factura manual ficticia",
+          date: "2026-11-02",
+          category: "other",
+          net_cents: 10000,
+          tax_cents: 2100,
+          total_cents: 12100,
+        }),
+      ]);
+    });
+    const before = (
+      await db.query(
+        "select to_jsonb(i) v from private.invoice_documents i where id=$1",
+        [invoice_id],
+      )
+    ).rows;
+    expect(await savedState("prepare", { invoice_id })).toEqual({
+      state: "approved",
+    });
+    expect(await savedState("status", { invoice_ids: [invoice_id] })).toEqual([
+      { invoice_id, state: "approved", can_analyze: false },
+    ]);
+    expect(
+      (
+        await db.query(
+          "select to_jsonb(i) v from private.invoice_documents i where id=$1",
+          [invoice_id],
+        )
+      ).rows,
+    ).toEqual(before);
+    expect(
+      (
+        await db.query(
+          "select amount_cents,payment_status from public.finance_entries where truck_id=$1",
+          [truck],
+        )
+      ).rows,
+    ).toEqual([{ amount_cents: 10000, payment_status: "pending" }]);
+    expect(
+      (
+        await db.query(
+          "select id from private.tc_ai_calls where invoice_id=$1",
+          [invoice_id],
+        )
+      ).rows,
+    ).toHaveLength(0);
+  });
+});

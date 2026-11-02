@@ -310,6 +310,13 @@ p.form-error {
 .invoice-register-body .document-grid {
   margin: 0;
 }
+.invoice-register-body .document-card .inline-actions {
+  flex-wrap: wrap;
+}
+.invoice-register-body .document-card .inline-actions .button {
+  max-width: 100%;
+  white-space: normal;
+}
 @media (max-width: 600px) {
   .invoice-register-body {
     padding: 16px;

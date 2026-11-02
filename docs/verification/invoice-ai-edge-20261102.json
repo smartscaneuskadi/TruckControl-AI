@@ -1,0 +1,19 @@
+{
+  "verified_at": "2026-11-02T15:02:25.826Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "function": "company-mail",
+  "version": 12,
+  "status": "ACTIVE",
+  "verify_jwt": false,
+  "auth": "createMailHandler verifies getUser and tenant/role/consent on every action",
+  "ezbr_sha256": "ad3523949407b33406221727a88ac53e712de3fe2c009aef5810109799ab9282",
+  "files_verified": 11,
+  "source_content_matches": true,
+  "previous_version": 11,
+  "previous_sources": "/workspace/artifacts/truckcontrol-invoice-ai-20261102/company-mail-v11",
+  "unchanged_functions": [
+    "company-auth v4",
+    "company-gmail v11",
+    "company-assistant v10"
+  ]
+}
