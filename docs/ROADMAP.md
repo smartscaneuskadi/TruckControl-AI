@@ -1,10 +1,10 @@
 # Estado y continuación — 02/11/2026
 
-La entrega vigente es **v15 / 0.5.8-rc.1**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y la producción anterior v14 permanece recuperable.
+La entrega vigente es **v16 / 0.5.9-rc.1**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y la producción anterior v15 permanece recuperable.
 
 ## Implementado y comprobado
 
-React/TypeScript y PWA para Android y Windows, Fleet Light y Fleet Cockpit, panel, camiones, conductores, remolques, clientes, viajes, combustible, mantenimiento, ingresos, gastos y rentabilidad. Límite inicial de 50 camiones por empresa, roles, módulos y RLS. Las pruebas de aislamiento usan datos ficticios y rollback; FIXPilot permanece separado. Hay 54 migraciones aplicadas y registradas.
+React/TypeScript y PWA para Android y Windows, Fleet Light y Fleet Cockpit, panel, camiones, conductores, remolques, clientes, viajes, combustible, mantenimiento, ingresos, gastos y rentabilidad. Límite inicial de 50 camiones por empresa, roles, módulos y RLS. Las pruebas de aislamiento usan datos ficticios y rollback; FIXPilot permanece separado. Hay 55 migraciones aplicadas y registradas.
 
 Registro abierto con aceptación legal inmutable y confirmación por correo; cuenta propietaria verificada. Confirmación y recuperación funcionan mediante Resend y enlaces nativos Supabase, sin depender de SMTP Migadu. Las nuevas altas obtienen **10 días de Básico**, sin elevar permisos por solicitar Full. Precios aprobados: **Básico 300 €/mes + IVA 21 %; Full 700 €/mes + IVA 21 %**. Los períodos históricos se conservan y los cobros automáticos siguen desactivados.
 
@@ -14,10 +14,12 @@ Offline: copia empresarial cifrada opcional y cola de operaciones, límites temp
 
 Receptor de facturas por reenvío desde distintos proveedores, webhooks firmados, originales privados, duplicados e aislamiento comprobados. IA opcional en backend con consentimiento, cuotas y presupuesto global aprobado de 10 USD/mes antes de impuestos, sin recarga automática. Las propuestas requieren revisión humana antes de contabilizar. [Correo general](GENERAL_EMAIL.md).
 
+La bandeja permite búsqueda, filtros, CSV y páginas de doce tarjetas; carga más de 200 registros con una RPC nueva, valida empresa/cursor y no mantiene una lista parcial ante errores. Usuarios de consulta sin aprobación de gastos; importes sin medir y monedas separados. Importación y asistente admiten también las PWA del hostname técnico. [Guía y límites](INVOICE_INBOX.md).
+
 ## Pendientes concretos
 
 - **Gmail directo:** backend v11 y cuatro retornos permitidos comprobados; el diagnóstico real sigue `configured=false`. El propietario debe completar el cliente Google en Administración → Servicios. Después se podrá verificar el consentimiento de un buzón autorizado y la revisión Google necesaria para clientes externos. El reenvío general funciona por separado.
-- **Migadu:** dominio activo según titular, pero los tres destinos DKIM bajo migadu.com siguen devolviendo SERVFAIL/DNSSEC a las 09:05 UTC. Soporte ya informado; buzones y entrega pendientes de verificación. No cambiar DNSSEC ni contratar de nuevo.
+- **Migadu:** dominio activo según titular, pero los tres destinos DKIM bajo migadu.com siguen devolviendo SERVFAIL/DNSSEC a las 13:44 UTC. Soporte ya informado; buzones y entrega pendientes de verificación. No cambiar DNSSEC ni contratar de nuevo.
 - **SMS y pagos:** proveedores, renovaciones y cobros reales pendientes de autorización y aceptación; permanecen apagados.
 - **Aceptación operativa:** dispositivos físicos Android/Windows, restauración integral del servicio gestionado, SLA de copias y revisión jurídica externa. Las emulaciones y las copias cifradas comprobadas no sustituyen esas verificaciones.
 
@@ -25,4 +27,4 @@ Receptor de facturas por reenvío desde distintos proveedores, webhooks firmados
 
 GitHub permite escritura, ramas, commits, PR, CI y merge. La administración de Pages y protección de ramas necesita permisos administrativos distintos; no se eluden. Sites aloja la PWA por HTTPS y conserva versiones para recuperación. No hay instaladores nativos ni publicación en tiendas.
 
-El CI conserva las 64 pruebas iniciales y verifica código, permisos, copias, temas y navegadores. [PR #23](https://github.com/smartscaneuskadi/TruckControl-AI/pull/23/checks) registra la aceptación pública posterior de v15. Las alertas actuales son internas; correo/SMS/push automáticos requieren su propia implementación y aceptación.
+El CI conserva las 64 pruebas iniciales y verifica código, permisos, copias, temas y navegadores. [PR #24](https://github.com/smartscaneuskadi/TruckControl-AI/pull/24/checks) registra la aceptación pública posterior de v16. Las alertas actuales son internas; correo/SMS/push automáticos requieren su propia implementación y aceptación.

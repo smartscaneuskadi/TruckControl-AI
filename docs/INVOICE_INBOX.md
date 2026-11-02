@@ -1,6 +1,6 @@
 # Bandeja de correo y facturas
 
-Mejora 0.5.9-rc.1 sobre la producción v15 existente. El estado de publicación y sus comprobaciones se registran en [entrega vigente](CURRENT_DELIVERY.md), el [inventario de alojamiento](deployment/candidate-hosting.json) y los checks del PR correspondiente. No sustituir la versión publicada hasta superar las comprobaciones críticas.
+**Publicada 0.5.9-rc.1 / versión 16 en https://truckcontrolai.com.** Conserva producción v15 y demo v6. La publicación y sus comprobaciones se registran en [entrega vigente](CURRENT_DELIVERY.md), el [inventario de alojamiento](deployment/candidate-hosting.json), el checkpoint `/workspace/artifacts/truckcontrol-invoice-inbox-20261102/checkpoint.json` y los [checks de PR #24](https://github.com/smartscaneuskadi/TruckControl-AI/pull/24/checks).
 
 ## Consultar y exportar
 
@@ -34,8 +34,10 @@ La producción v15 y la demo v6 se conservan. Una recuperación de interfaz no r
 
 ## Evidencia
 
-Pasan 514 pruebas unitarias/SQL, las 64 iniciales conservan once hashes y 48 recorridos SaaS emulados Android/Windows pasan. El caso nuevo incluye 205 facturas, filtros, CSV, modo consulta, revocación, ambos temas y cero infracciones Axe AA. Los checks de GitHub registran el conjunto completo y la aceptación pública.
+Pasan 514 pruebas unitarias/SQL, las 64 iniciales conservan once hashes y 48 recorridos SaaS emulados Android/Windows pasan. El caso nuevo incluye 205 facturas, filtros, CSV, modo consulta, revocación, ambos temas y cero infracciones Axe AA. El código y la fuente exacta pasan 720 controles previos al despliegue; los checks de PR #24 registran la aceptación pública posterior de v16. Los 72 hashes HTTPS coinciden con el paquete, y la demo permanece intacta.
 
 El [ensayo nativo](verification/invoice-inbox-rollback.sql) comprueba paginación, aislamiento, consulta, membresía revocada, módulo desactivado, RPC antigua y acceso anónimo. Revierte todas sus identidades y registros; las huellas de facturas, documentos, clientes, planes, ajustes y contabilidad permanecen iguales. [Resultado](verification/invoice-inbox-native-20261102.json). Los controles HTTP posteriores conservan la exigencia de autenticación y rechazan dominios ajenos, sin consumo IA.
 
 Gmail OAuth real, buzones Migadu/DKIM, SMS, cobros recurrentes, aceptación en dispositivos físicos, recuperación integral del servicio gestionado y revisión jurídica externa continúan pendientes según la entrega vigente.
+
+La revisión visual del paquete exacto corrigió el espaciado de los filtros antes de publicar y distingue expresamente «Sin importes disponibles» de un cero conocido. [Cuatro perfiles/temas](verification/invoice-inbox-visual-20261102.json), [HTTPS](verification/invoice-inbox-production-https-20261102.json).
