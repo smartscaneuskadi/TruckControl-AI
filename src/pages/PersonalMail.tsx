@@ -121,6 +121,7 @@ function PersonalMailView() {
     const generation = ++loadGeneration.current;
     setLoading(true);
     setError("");
+    setSelected(null);
     setRows([]);
     setNext(null);
     void mailbox
@@ -140,7 +141,8 @@ function PersonalMailView() {
         setRows([]);
         setNext(null);
         setError(errorMessage(e));
-        if (e instanceof MailError && e.code === "expired") account.expire();
+        if (e instanceof MailError && ["expired", "denied"].includes(e.code))
+          account.expire();
       })
       .finally(() => {
         if (active && generation === loadGeneration.current) setLoading(false);
@@ -161,7 +163,8 @@ function PersonalMailView() {
     } catch (e) {
       if (mounted.current) {
         setError(errorMessage(e));
-        if (e instanceof MailError && e.code === "expired") account.expire();
+        if (e instanceof MailError && ["expired", "denied"].includes(e.code))
+          account.expire();
       }
     } finally {
       lock.current = false;

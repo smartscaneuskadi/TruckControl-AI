@@ -618,6 +618,7 @@ async function personalMailFixture(
     invoice_ai: false,
   };
   const apiCalls: { path: string; method: string; body: unknown }[] = [];
+  const mailControl = { denied: false };
   let sent = false;
   await page.route(
     "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-gmail/browser-config",
@@ -686,6 +687,15 @@ async function personalMailFixture(
         "Bearer synthetic-personal-mail-token",
       );
       expect(request.headers().apikey).toBeUndefined();
+      if (mailControl.denied) {
+        await route.fulfill({
+          status: 403,
+          headers: cors,
+          contentType: "application/json",
+          body: JSON.stringify({ error: "permission_removed" }),
+        });
+        return;
+      }
       if (url.pathname.endsWith("/profile"))
         data = { emailAddress: "mailbox@example.invalid" };
       else if (url.pathname.endsWith("/messages/send")) {
@@ -724,7 +734,7 @@ async function personalMailFixture(
       });
     },
   );
-  return { ...f, apiCalls };
+  return { ...f, apiCalls, mailControl };
 }
 
 async function openPersonalMail(page: Page) {
@@ -1009,6 +1019,17 @@ test("correo personal autoservicio: consulta sin Gmail/IA de empresa y envío co
         c.path.includes("confirm_company_invoice"),
     ),
   ).toBe(false);
+  f.mailControl.denied = true;
+  await page
+    .getByRole("button", { name: "Actualizar buzón", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "mailbox@example.invalid", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator(".personal-mail-reader")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Entrar con Google", exact: true }),
+  ).toBeVisible();
 });
 
 test("correo personal: un consentimiento tardío después de cerrar sesión no abre el buzón", async ({
