@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "bcffa56f0b3a3f851af4e9f433223b49bad7ed9c",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_d7260142a7348191becab426ffd540ac",
-  "published_version_number": 9,
-  "deployment_id": "appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e",
-  "previous_deployment_id": "appgdep_6ae77f9666388191a9fa987bed562089",
+  "published_commit": "e5ce8e662dc8ef8466025f5d90ba0884298ff5f4",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_717c0b314ea4819195eea84328516235",
+  "published_version_number": 10,
+  "deployment_id": "appgdep_6ae7cc64f8b88191b6856c51b08f0da0",
+  "previous_deployment_id": "appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -30,12 +30,12 @@
       }
     ]
   },
-  "deployed_at": "2026-11-01T22:31:27.540781+00:00",
+  "deployed_at": "2026-11-01T23:34:09.979339+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 41356880182,
+  "source_ci_run": 41361898380,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -64,7 +64,16 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "60398b60c7136abb8f7608471677fcc7f478f6d9",
+  "source_ci_commit": "d3d2ff6055c47cc718b7b9bc948396d2f2ba48e9",
   "production_source_manifest_only_diff": true,
-  "owner_verified_at": "2026-11-01T22:42:43.543501+00:00"
+  "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
+  "previous_production": {
+    "version": 9,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_d7260142a7348191becab426ffd540ac",
+    "source_commit": "bcffa56f0b3a3f851af4e9f433223b49bad7ed9c",
+    "deployment_id": "appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e"
+  },
+  "source_deployment_ci_run": 41362141114,
+  "app_version": "0.5.4-rc.1",
+  "expected_company_backup": true
 }

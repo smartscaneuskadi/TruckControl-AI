@@ -29,6 +29,7 @@ import type {
 import { money } from "../lib/format";
 import { parseMoney } from "../domain/finance";
 import { useAppearance } from "../app/AppearanceContext";
+import { ProviderSetup } from "../components/ProviderSetup";
 
 export function AdminConsole({
   email,
@@ -116,6 +117,7 @@ export function AdminConsole({
     { id: "modules", label: "Módulos", icon: Blocks },
     { id: "plans", label: "Planes y cobros", icon: CreditCard },
     { id: "activity", label: "Actividad", icon: Activity },
+    { id: "providers", label: "Servicios", icon: ShieldCheck },
   ];
   return (
     <main className="admin-page">
@@ -223,6 +225,7 @@ export function AdminConsole({
               </Button>
             ))}
           </nav>
+          {tab === "providers" && <ProviderSetup />}
           {tab === "customers" && (
             <section className="card admin-section">
               <div className="admin-section-heading">
@@ -556,6 +559,8 @@ export function AdminConsole({
                             plan: "Edición de plan",
                             settings: "Configuración",
                             manual_payment: "Pago confirmado",
+                            provider_google_set:
+                              "Configuración de Gmail actualizada",
                           } as Record<string, string>
                         )[a.action] ?? a.action}
                       </strong>

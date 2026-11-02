@@ -2,7 +2,7 @@
 
 **Aplicación conectada publicada: https://truckcontrolai.com.** El propietario verificó su correo, eligió su contraseña y accedió con administración global; las tres condiciones están comprobadas en Supabase. El registro de clientes está abierto, con consentimiento legal y confirmación de correo. **Cobros automáticos y SMS desactivados.**
 
-**Continuación 0.5.4-rc.1:** copia cifrada de registros y originales autorizados, comprobación y recuperación local sin sobrescribir producción; ensayo aislado con 50 camiones y pruebas RLS remotas con rollback. La migración de paginación ya está aplicada una vez: 49 en total. La interfaz pública sigue en v9 hasta validar y publicar el nuevo paquete. [Alcance y guía](COMPANY_RECOVERY.md).
+**Publicada 0.5.4-rc.1, versión alojada 10:** copia cifrada de registros y originales autorizados, comprobación y recuperación local sin sobrescribir producción; ensayo aislado con 50 camiones y pruebas RLS remotas con rollback. La migración de paginación ya está aplicada una vez: 49 en total. El nuevo paquete está publicado por HTTPS y sus 72 hashes coinciden. La versión 9 queda recuperable. [Alcance y guía](COMPANY_RECOVERY.md).
 
 ## Acceso y oferta
 
@@ -12,13 +12,13 @@ Oferta aprobada: **10 días Full gratuitos; Básico 300 €/mes + IVA 21 % = 363
 
 ## Publicación y recuperación
 
-Versión alojada **9**, canal production, fuente `bcffa56f0b3a3f851af4e9f433223b49bad7ed9c`, rama `deploy/client-launch-20261101`. Despliegue `appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e`, 01/11/2026 22:31 UTC. El código coincide con el CI `41356880182`, salvo el manifiesto de alojamiento. Tres orígenes sirven los mismos 24 archivos: **72 hashes coincidentes con TLS validado**. [Informe](verification/client-production-https-20261101.json), [inventario](deployment/candidate-hosting.json).
+Versión alojada **10**, canal production, fuente `e5ce8e662dc8ef8466025f5d90ba0884298ff5f4`, rama `deploy/company-recovery-20261101`. Despliegue `appgdep_6ae7cc64f8b88191b6856c51b08f0da0`, 01/11/2026 23:34 UTC. El código coincide con el CI `41361898380`, salvo el manifiesto de alojamiento. La rama exacta de despliegue también pasa CI `41362141114`. Tres orígenes sirven los mismos 24 archivos: **72 hashes coincidentes con TLS validado**. [Informe](verification/company-recovery-production-https-20261101.json), [inventario](deployment/candidate-hosting.json).
 
 También responden https://www.truckcontrolai.com y https://truckcontrol-ai-candidata.earlymug513.chatgpt.site. Este último hostname sirve la producción conectada, pese a su nombre histórico. La **candidata 8 queda guardada para recuperación**. La **demo estable v6** continúa intacta en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. Producción ofrece «Explorar la demo» con datos ficticios separados.
 
 ## Datos, autenticación y seguridad
 
-Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **49 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261101-company-recovery.json), [correspondencias](deployment/recovered-migrations.json).
+Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **51 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261102-provider-setup.json), [correspondencias](deployment/recovered-migrations.json).
 
 Confirmación y recuperación usan enlaces nativos Supabase enviados por API Resend, sin depender de SMTP Migadu. La aceptación real probó verificación, enlace de un uso, contraseña, inicio de sesión, recuperación y cierre global. El consentimiento inmutable del servidor impide activar empresas mediante metadatos editables. La prueba remota de dos empresas pasa con rollback completo. [Evidencia](verification/client-auth-acceptance-20261101.json).
 
@@ -34,7 +34,9 @@ OpenAI funciona en backend con credencial existente, límite global **10 USD/mes
 
 ## Pruebas y límites
 
-El [CI del código desplegado](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41356880182) pasó **548 comprobaciones**: 364 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 30 SaaS, 14 candidata, 16 producción y seis recorridos públicos de la candidata anterior. TypeScript, Deno y PWA pasan. **64 originales conservadas**, once hashes. La prueba pública adicional de v9 con el registro abierto se registra por separado; no atribuir a v9 las pruebas de la versión anterior.
+El [CI del código desplegado](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41361898380) pasó **587 comprobaciones**: 397 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 36 SaaS, 14 candidata, 16 producción y seis recorridos públicos de la versión 9 anterior. El [CI final de PR #19](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41363640394) volvió a pasar las 587 e incluye los [seis recorridos de v10](verification/company-recovery-public-browser-20261101.json) con registro abierto y TLS validado. TypeScript, Deno y PWA pasan. **64 originales conservadas**, once hashes.
+
+La mejora **Administración → Servicios** está preparada en `feat/provider-admin-setup`, con backend comprobado y migraciones aplicadas. Permite guardar Google sin acudir a menús técnicos ni compartir secretos por chat. [Guía y alcance](PROVIDER_ADMIN.md), [verificación](verification/provider-admin-20261102.json). Su publicación se documentará después de CI. Google ya tiene un cliente web; su secreto sigue oculto y Vault permanece intacto. No duplicar el cliente.
 
 Fleet Light/Cockpit, configuración del dispositivo y movimiento reducido están disponibles. Android/Windows son emulaciones, no dispositivos físicos. La copia offline empresarial es cifrada, necesita preparación y revalida permisos antes de sincronizar; instalar la PWA no la activa.
 

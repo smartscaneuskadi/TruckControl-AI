@@ -1,0 +1,39 @@
+{
+  "checked_at": "2026-11-02T00:00:00Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "app_version": "0.5.5-rc.1",
+  "published": false,
+  "checks": {
+    "migration_count": 51,
+    "google_id_unchanged": true,
+    "google_secret_unchanged": true,
+    "aes_key_unchanged": true,
+    "anon_execute": false,
+    "authenticated_execute": true,
+    "public_invoker": true,
+    "official_vault_compatibility": true,
+    "verification": "provider_admin_passed_and_rolled_back",
+    "fixture_users_remaining": 0,
+    "fixture_audit_remaining": 0,
+    "recent_archives_remaining": 0,
+    "launch_safeguards_preserved": true,
+    "unit_sql": 418,
+    "new_provider_tests": 21,
+    "saas_browser_before_compact_layout": 42,
+    "compact_layout_recheck": "passed",
+    "physical_devices": false,
+    "saas_browser": 42
+  },
+  "security_advisor": {
+    "new_warnings": 0,
+    "existing_warning": "auth_leaked_password_protection"
+  },
+  "limits": {
+    "ai_budget_usd_month": 10,
+    "payments_enabled": false,
+    "sms_enabled": false,
+    "google_credentials_ready": false,
+    "real_google_consent_tested": false
+  },
+  "ci_pending": true
+}

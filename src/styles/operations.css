@@ -249,3 +249,41 @@ p.form-error {
   color: var(--theme-muted);
   line-height: 1.6;
 }
+.provider-secret-form {
+  display: grid;
+  gap: 1rem;
+  margin: 1.25rem 0;
+  max-width: 48rem;
+}
+.provider-setup > h3 {
+  margin-top: 1.5rem;
+}
+.provider-setup code {
+  overflow-wrap: anywhere;
+}
+.provider-setup .settings-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.provider-setup .settings-card {
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 1px solid var(--theme-border);
+  border-radius: 0.8rem;
+}
+.provider-setup .settings-card > .badge {
+  position: static;
+}
+.provider-setup .settings-card p {
+  margin: 0;
+}
+@media (max-width: 900px) {
+  .provider-setup .settings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 560px) {
+  .provider-setup .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
