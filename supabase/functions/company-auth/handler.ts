@@ -32,6 +32,9 @@ export interface AuthMailGateway {
 const origins = new Set([
   "https://truckcontrolai.com",
   "https://www.truckcontrolai.com",
+  // The existing production hostname is also used by previously installed PWAs.
+  // Keep this exact origin; the separate fictitious-data demo must not send mail.
+  "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
 ]);
 const encoder = new TextEncoder();
 export function validAuthEmail(value: unknown): value is string {

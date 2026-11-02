@@ -1,6 +1,6 @@
 # Registro de reanudación — 31 de octubre de 2026
 
-**Estado vigente:** producción conectada 12 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
+**Estado vigente:** producción conectada 13 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
 
 Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI
 
@@ -329,3 +329,19 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Verificados 72 hashes por HTTPS en tres orígenes, índice de la demo sin cambios y rechazo anónimo 401/42501 de tc_provider_control. Cloudflare rechazaba Python urllib con código 1010, también en la demo anterior; curl ordinario funcionó con el mismo proxy y TLS, sin cambiar permisos ni seguridad del alojamiento.
 - Actualizadas las guías de correo/administración, preservando el documento anterior en historial. Google sigue sin secreto completo y sin prueba OAuth de buzón; el receptor general y la IA conservan su funcionamiento y límites. Migadu continúa con SERVFAIL/DNSSEC en los tres destinos DKIM a las 00:05 UTC.
 - La aceptación pública de v12 se ejecuta mediante los checks finales de PR #20. Mantener registro abierto, cobros y SMS apagados; no ampliar presupuestos.
+
+# 2026-11-02 — altas automáticas con Básico
+
+- Nuevas solicitudes con datos/correo y consentimiento v2026-11-02; al confirmar y elegir contraseña se crea empresa y prueba Básico de diez días. Full solicitado es interés comercial, no licencia. Titulares y miembros siguen el plan calculado por PostgreSQL.
+- Migración local 20261102062634 / remota 20261102064908 aplicada una vez, 52 en total. Columna trial_plan_id conserva Full anterior y establece limited para nuevas filas. Huellas anteriores/posteriores confirman clientes, planes y ajustes intactos. Ensayo remoto: dos empresas, 50 camiones admitidos y el 51 rechazado, aislamiento y cero residuos tras rollback.
+- Corregidos enlaces de correo recibidos en una PWA abierta y el reinicio del formulario de contraseña al cargar su empresa. Prueba completa con solicitud Full → correo → contraseña → Básico → solicitud Full sin elevación en Android/Windows emulados.
+- CI 41401436616 y fuente exacta 41401528305 pasan 628 controles; los seis públicos aún eran v12. Publicada 0.5.6-rc.1, alojada 13, fuente 26ec8048293249d5ccde0b57eb58c1a1c2404a0f, despliegue appgdep_6ae832885420819189a54e68f521c723. V12 y demo v6 conservadas. TLS y 72 hashes coinciden; catálogo público limited/10 días y cobros apagados. Verificación pública final en checks de PR #21.
+- No se han enviado correos de prueba reales en esta fase ni cambiado el transporte nativo existente, presupuestos IA, SMS o cobros. Asesor sin incidencias nuevas; permanece el aviso previo de contraseñas filtradas. Continuidad en /workspace/artifacts/truckcontrol-basic-access-20261102/checkpoint.json.
+# 2026-11-02 — reparación del alta desde el hostname de producción de la PWA
+
+- Incidencia reproducida: el hostname técnico devolvía 403 en el preflight de company-auth; principal y www funcionaban. No se copiaron datos personales del cliente al repositorio.
+- Copia persistente del historial y del servidor anterior en `/workspace/artifacts/truckcontrol-signup-fix-20261102`. Nueva rama `fix/client-registration-origin`; 52 migraciones intactas.
+- Desplegado company-auth v4 con los tres orígenes exactos de producción. Ocho comprobaciones HTTP reales confirman preflight, validación y rechazo de origen ajeno. No se generan usuarios ni correos en esos controles.
+- Interfaz 0.5.7-rc.1 preparada con mensajes seguros, reintento conservando datos y tamaño corregido de la casilla de consentimiento. Las pruebas públicas de CI comprueban ahora el CORS real desde el navegador; antes el registro estaba cubierto por fixtures.
+- Pasan 447 unitarias/SQL, TypeScript, compilación PWA, retención de las 64 pruebas originales y 32 Python. Publicación de interfaz y CI completo en curso; ver `SIGNUP_CORS_FIX.md` y el checkpoint persistente.
+

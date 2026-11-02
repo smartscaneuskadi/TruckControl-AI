@@ -112,6 +112,13 @@
       "name": "provider_vault_compatibility",
       "sha256": "11b2bb43f94af1016f1131942258c660d67b6703a2512574d9ccbce4c5c13561",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261102062634_basic_client_onboarding.sql",
+      "version": "20261102064908",
+      "name": "basic_client_onboarding",
+      "sha256": "fd47aa7e76cb0b8e5332b93d7a0ea5994cec0ea4c9f8b7bca5f2a394b54c9452",
+      "already_applied": true
     }
   ]
 }

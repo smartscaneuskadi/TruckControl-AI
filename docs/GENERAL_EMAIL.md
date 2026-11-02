@@ -44,4 +44,4 @@ La configuración de Google se administra mediante [Servicios](PROVIDER_ADMIN.md
 
 Confirmación de cuentas y recuperación usan Supabase Auth y Resend. Son independientes de Gmail y de los buzones Migadu. Migadu mantiene un fallo DNSSEC en los destinos DKIM de su proveedor; no desactivar DNSSEC ni considerar su envío verificado por tener el dominio activo.
 
-Las funciones de servidor y migraciones vigentes se consultan en [CURRENT_DELIVERY](CURRENT_DELIVERY.md) y en el [inventario](deployment/remote-migrations-20261102-provider-setup.json). No repetir migraciones para reproducir estados antiguos. El documento anterior y la primera activación se conservan en [historial](history/20261102-pre-provider-setup/GENERAL_EMAIL.md).
+Las funciones de servidor y migraciones vigentes se consultan en [CURRENT_DELIVERY](CURRENT_DELIVERY.md) y en el [inventario](deployment/remote-migrations-20261102-basic-access.json). No repetir migraciones para reproducir estados antiguos. El documento anterior y la primera activación se conservan en [historial](history/20261102-pre-provider-setup/GENERAL_EMAIL.md).
