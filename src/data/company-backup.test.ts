@@ -96,6 +96,7 @@ async function fixture() {
 }
 
 describe("copias cifradas de empresa", () => {
+  // Keep the full PBKDF2/AES round-trip; shared CI CPUs can exceed Vitest's 5s default.
   it("cifra y recupera un original de 3 MB sin desbordar el validador", async () => {
     const f = await fixture(),
       bytes = new Uint8Array(3 * 1024 * 1024);
@@ -112,7 +113,7 @@ describe("copias cifradas de empresa", () => {
       restored = await decryptCompanyBackup(text, phrase, org);
     expect(restored.documents[0].size_bytes).toBe(bytes.length);
     expect(restored.files[0].sha256).toBe(hash);
-  });
+  }, 20_000);
   it("recupera cincuenta camiones, operaciones, facturas y originales sin alterar los importes", async () => {
     const f = await fixture(),
       before = structuredClone(f.records),
