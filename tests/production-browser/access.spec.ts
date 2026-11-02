@@ -208,6 +208,13 @@ test("alta sin contraseña previa, consentimiento versionado y ninguna llamada S
     .click();
   await fillSignup(page);
   await expect(page.locator('input[name="password"]')).toHaveCount(0);
+  const checkbox = page.getByRole("checkbox", {
+    name: /He leído la privacidad/,
+  });
+  const bounds = await checkbox.boundingBox();
+  expect(bounds?.width).toBeGreaterThanOrEqual(18);
+  expect(bounds?.width).toBeLessThanOrEqual(24);
+  expect(bounds?.height).toBeLessThanOrEqual(24);
   await page
     .getByRole("button", {
       name: "Solicitar acceso Básico",
@@ -235,6 +242,60 @@ test("alta sin contraseña previa, consentimiento versionado y ninguna llamada S
   await expect(
     page.getByRole("link", { name: "Privacidad", exact: true }),
   ).toHaveAttribute("href", "/?legal=privacy");
+});
+test("un fallo de correo muestra su causa y conserva la solicitud para reintentar", async ({
+  page,
+}) => {
+  await fixtures(page);
+  let attempts = 0;
+  await page.route(
+    "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-auth",
+    (route) => {
+      attempts++;
+      return route.fulfill({
+        status: attempts === 1 ? 503 : 202,
+        headers: { "access-control-allow-origin": "*" },
+        contentType: "application/json",
+        body: JSON.stringify(
+          attempts === 1
+            ? {
+                error: "auth_mail_unavailable",
+                debug: "fictitious-private-detail",
+              }
+            : { accepted: true },
+        ),
+      });
+    },
+  );
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Pedir acceso Básico", exact: true })
+    .click();
+  await fillSignup(page);
+  await page.getByRole("checkbox", { name: /He leído la privacidad/ }).check();
+  const submit = page.getByRole("button", {
+    name: "Solicitar acceso Básico",
+    exact: true,
+  });
+  await submit.click();
+  await expect(page.getByRole("alert")).toContainText(
+    "servicio de confirmación",
+  );
+  await expect(page.getByRole("alert")).not.toContainText(
+    "fictitious-private-detail",
+  );
+  await expect(
+    page.getByLabel("NIF / CIF de la empresa", { exact: true }),
+  ).toHaveValue("DEMO-001");
+  await expect(
+    page.getByLabel("Correo electrónico", { exact: true }),
+  ).toHaveValue("fixture@company.invalid");
+  await expect(
+    page.getByRole("checkbox", { name: /He leído la privacidad/ }),
+  ).toBeChecked();
+  await submit.click();
+  await expect(page.getByRole("status")).toContainText("Confirma tu correo");
+  expect(attempts).toBe(2);
 });
 test("registro cerrado y precios visibles sin ofrecer un alta falsa", async ({
   page,

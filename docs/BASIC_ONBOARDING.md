@@ -20,3 +20,5 @@ Doce pruebas SQL nuevas comprueban la conservación de Full anterior, Básico tr
 La migración se añade al historial sin editar las 51 anteriores. Antes de publicarla se guardan una copia Git y las huellas de los clientes existentes. Las comprobaciones remotas usan identidades ficticias y rollback. La demo estable queda separada.
 
 Para recuperar una incidencia de interfaz se conserva la versión publicada anterior. No restablecer el aprovisionamiento antiguo de Full después del cambio de política: podría conceder acceso indebido a nuevas altas. Las nuevas licencias y recibos deben conservarse durante cualquier reparación.
+
+El incidente del 02/11 al solicitar acceso desde el hostname de instalaciones anteriores está corregido por `company-auth` v4 y la interfaz v14, sin cambiar esta política de Básico ni migraciones. [Diagnóstico y verificación](SIGNUP_CORS_FIX.md).
