@@ -1,4 +1,9 @@
 import { detectDocumentType } from "../../supabase/functions/_shared/invoice.ts";
+import { documentTrackingInput } from "../domain/documents";
+import type {
+  DocumentTracking,
+  DocumentTrackingInput,
+} from "../domain/documents";
 
 export interface DemoDocument {
   id: string;
@@ -8,6 +13,7 @@ export interface DemoDocument {
   driverId: string;
   createdAt: string;
   file: Blob;
+  tracking?: DocumentTracking;
 }
 const databaseName = "truckcontrol-demo-documents-v1";
 async function database() {
@@ -45,7 +51,9 @@ export async function saveDemoDocument(
   file: File,
   truckId: string,
   driverId: string,
+  tracking?: DocumentTrackingInput,
 ) {
+  const metadata = tracking ? documentTrackingInput.parse(tracking) : null;
   if (file.size < 1 || file.size > 10 * 1024 * 1024)
     throw Error("El documento debe tener entre 1 byte y 10 MB.");
   const type = detectDocumentType(
@@ -61,6 +69,15 @@ export async function saveDemoDocument(
     driverId,
     createdAt: new Date().toISOString(),
     file: new Blob([file], { type }),
+    ...(metadata
+      ? {
+          tracking: {
+            ...metadata,
+            row_version: 1,
+            updated_at: new Date().toISOString(),
+          },
+        }
+      : {}),
   };
   const db = await database();
   try {
@@ -99,6 +116,49 @@ export async function saveDemoDocument(
               : "No se ha podido guardar el documento de prueba.",
           ),
         );
+    });
+  } finally {
+    db.close();
+  }
+}
+export async function updateDemoDocument(
+  organizationId: string,
+  id: string,
+  tracking: DocumentTrackingInput,
+  version: number,
+) {
+  const metadata = documentTrackingInput.parse(tracking),
+    db = await database();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction("files", "readwrite"),
+        store = tx.objectStore("files"),
+        read = store.get(id);
+      let failure = "No se ha podido actualizar la ficha documental.";
+      read.onsuccess = () => {
+        const doc = read.result as DemoDocument | undefined;
+        if (!doc || doc.organizationId !== organizationId) {
+          tx.abort();
+          return;
+        }
+        if ((doc.tracking?.row_version ?? 0) !== version) {
+          failure =
+            "La ficha ha cambiado. Pulsa Actualizar antes de volver a editarla.";
+          tx.abort();
+          return;
+        }
+        store.put({
+          ...doc,
+          tracking: {
+            ...metadata,
+            row_version: version + 1,
+            updated_at: new Date().toISOString(),
+          },
+        });
+      };
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(Error(failure));
+      tx.onabort = () => reject(Error(failure));
     });
   } finally {
     db.close();

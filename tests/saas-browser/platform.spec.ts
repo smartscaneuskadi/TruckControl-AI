@@ -340,7 +340,8 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
         records.set(id, record);
         data = record;
       }
-    } else if (url.pathname === "/rest/v1/rpc/tc_backup_page")
+    } else if (url.pathname === "/rest/v1/rpc/tc_document_page") data = [];
+    else if (url.pathname === "/rest/v1/rpc/tc_backup_page_v2")
       data = body?.p_kind === "documents" ? controls.backupDocuments : [];
     else if (
       /^\/storage\/v1\/object\/(?:authenticated\/)?truckcontrol-documents\//.test(
@@ -773,7 +774,7 @@ test("revocar administración impide exportar y un operador no muestra controles
   await expect(page.locator(".company-backup-card [role=alert]")).toContainText(
     "administradora activa",
   );
-  expect(f.calls.some((c) => c.path.endsWith("tc_backup_page"))).toBe(false);
+  expect(f.calls.some((c) => c.path.endsWith("tc_backup_page_v2"))).toBe(false);
   await page.reload();
   await expect(
     page.getByRole("heading", { name: "Configuración", exact: true }),

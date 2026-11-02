@@ -68,6 +68,7 @@ import type { Feature } from "../domain/subscriptions";
 import { useOffline } from "./OfflineContext";
 import { useOperations } from "./OperationsProvider";
 import { operationalAlerts } from "../domain/operations";
+import { useDocuments } from "./DocumentsProvider";
 import { useCurrentDay } from "../lib/use-current-day";
 import { isCandidateRelease } from "../domain/release";
 
@@ -156,6 +157,7 @@ function Workspace() {
   const subscription = useSubscription();
   const access = useCompany();
   const operations = useOperations();
+  const documents = useDocuments();
   const day = useCurrentDay();
   const cloud = access.mode === "company";
   const location = useLocation();
@@ -173,9 +175,12 @@ function Workspace() {
     !operations.error &&
     (!subscription.enabled || subscription.features.alerts);
   const operational = operationsReady
-    ? operationalAlerts(snapshot, operations.rows, day).filter(
-        (a) => !subscription.enabled || subscription.features[a.source],
-      )
+    ? operationalAlerts(
+        snapshot,
+        operations.rows,
+        day,
+        documents.documents,
+      ).filter((a) => !subscription.enabled || subscription.features[a.source])
     : [];
   const insights = [
     ...operational.map((a) => ({
@@ -621,6 +626,12 @@ function Workspace() {
           onClose={() => setNotifications(false)}
         >
           <div className="notification-list">
+            {documents.error && (
+              <p role="status">
+                No se han podido comprobar los vencimientos documentales. Revisa
+                el archivo de Documentos.
+              </p>
+            )}
             {insights.slice(0, 20).map((insight) => (
               <Link
                 key={insight.id}

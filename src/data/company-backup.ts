@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { documentTrackingSchema } from "../domain/documents";
 import { dateSchema, validateSnapshot } from "../domain/models";
 import type { FleetSnapshot } from "../domain/models";
 import { validateOperations } from "../domain/operations";
@@ -69,6 +70,7 @@ export const backupDocumentSchema = z
     truck_id: z.uuid().nullable(),
     driver_id: z.uuid().nullable(),
     created_at: timestamp,
+    tracking: documentTrackingSchema.optional(),
   })
   .strict()
   .refine(
@@ -119,7 +121,7 @@ const coverageSchema = z
 export type BackupCoverage = z.infer<typeof coverageSchema>;
 export interface CompanyBackup extends BackupRecords {
   format: "truckcontrol-company-records";
-  version: 1;
+  version: 1 | 2;
   project: typeof backupProject;
   exportedAt: string;
   coverage: BackupCoverage;
@@ -128,7 +130,7 @@ export interface CompanyBackup extends BackupRecords {
 const packageSchema = z
   .object({
     format: z.literal("truckcontrol-company-records"),
-    version: z.literal(1),
+    version: z.union([z.literal(1), z.literal(2)]),
     project: z.literal(backupProject),
     exportedAt: timestamp,
     coverage: coverageSchema,
@@ -202,7 +204,11 @@ export function validateBackupRecords(
         !entry ||
         entry.kind !== "expense" ||
         booked.has(entry.id) ||
-        (i.currency === "EUR" && entry.amountCents !== i.total_cents)
+        i.currency !== "EUR" ||
+        i.net_cents === null ||
+        i.tax_cents === null ||
+        i.total_cents === null ||
+        entry.amountCents !== i.net_cents
       )
         throw Error("El movimiento de una factura no es coherente.");
       booked.add(entry.id);
@@ -223,6 +229,8 @@ export async function validateCompanyBackup(
       },
       organizationId,
     );
+  if (p.version === 1 && p.documents.some((d) => d.tracking))
+    throw Error("Los metadatos documentales requieren una copia de versión 2.");
   if (encoder.encode(JSON.stringify(p)).byteLength > maxCompanyBackupBytes)
     throw Error("La copia supera el máximo de 20 MB.");
   if (
@@ -430,7 +438,7 @@ export async function collectCompanyBackup(
     {
       ...records,
       format: "truckcontrol-company-records",
-      version: 1,
+      version: records.documents.some((d) => d.tracking) ? 2 : 1,
       project: backupProject,
       exportedAt: new Date().toISOString(),
       coverage: auth.coverage,

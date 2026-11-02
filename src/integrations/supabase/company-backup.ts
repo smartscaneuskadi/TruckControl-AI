@@ -56,7 +56,7 @@ export class SupabaseCompanyBackup implements CompanyBackupGateway {
         data,
         error,
       }: { data: Json | null; error: { code?: string } | null } =
-        await this.client.rpc("tc_backup_page", {
+        await this.client.rpc("tc_backup_page_v2", {
           p_org: this.organization.id,
           p_kind: kind,
           p_after: after,

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useFleet, errorMessage } from "../app/FleetProvider";
 import { useOperations } from "../app/OperationsProvider";
+import { useDocuments } from "../app/DocumentsProvider";
 import { useSubscription } from "../app/SubscriptionContext";
 import {
   Badge,
@@ -53,6 +54,7 @@ export function Operations({ kind }: { kind: OperationKind }) {
     fleet = useFleet(),
     subscription = useSubscription();
   const day = useCurrentDay();
+  const documents = useDocuments();
   const [alertFilter, setAlertFilter] = useState("all"),
     [alertSearch, setAlertSearch] = useState("");
   const [search, setSearch] = useState(""),
@@ -127,7 +129,12 @@ export function Operations({ kind }: { kind: OperationKind }) {
   }
   const alerts =
     kind === "alerts"
-      ? operationalAlerts(fleet.snapshot, operations.rows, day).filter(
+      ? operationalAlerts(
+          fleet.snapshot,
+          operations.rows,
+          day,
+          documents.documents,
+        ).filter(
           (a) => !subscription.enabled || subscription.features[a.source],
         )
       : [];
@@ -217,6 +224,12 @@ export function Operations({ kind }: { kind: OperationKind }) {
           </Button>
         )}
       </PageHeading>
+      {kind === "alerts" && documents.error && (
+        <p role="status" className="form-error">
+          No se han podido comprobar los vencimientos documentales. Actualiza el
+          archivo de Documentos.
+        </p>
+      )}
       {(error || operations.error) && (
         <p role="alert" className="form-error">
           {error || operations.error}
@@ -281,11 +294,13 @@ export function Operations({ kind }: { kind: OperationKind }) {
                         Ver{" "}
                         {alert.source === "trucks"
                           ? "camiones"
-                          : alert.source === "drivers"
-                            ? "conductores"
-                            : operationLabels[alert.source].toLocaleLowerCase(
-                                "es",
-                              )}
+                          : alert.source === "documents"
+                            ? "documentos"
+                            : alert.source === "drivers"
+                              ? "conductores"
+                              : operationLabels[alert.source].toLocaleLowerCase(
+                                  "es",
+                                )}
                       </Link>
                     </div>
                     {writable && (

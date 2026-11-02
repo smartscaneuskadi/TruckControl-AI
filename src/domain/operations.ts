@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { dateSchema, normalizePlate } from "./models";
 import type { FleetSnapshot } from "./models";
+import type { TrackedDocument } from "./documents";
+import { documentState } from "./documents";
 
 const text = (max = 160) => z.string().trim().min(1).max(max);
 const optionalText = (max = 500) => z.string().trim().max(max).default("");
@@ -260,7 +262,13 @@ export interface OperationalAlert {
   truckId: string | null;
   urgent: boolean;
   source:
-    "trucks" | "drivers" | "trailers" | "deadlines" | "maintenance" | "alerts";
+    | "trucks"
+    | "drivers"
+    | "trailers"
+    | "deadlines"
+    | "maintenance"
+    | "alerts"
+    | "documents";
   sourceId: string;
   reason: "date" | "kilometres";
   currentKm?: number;
@@ -270,6 +278,7 @@ export function operationalAlerts(
   fleet: FleetSnapshot,
   rows: OperationRecord[],
   now: string,
+  documents: TrackedDocument[] = [],
 ): OperationalAlert[] {
   const limit = new Date(`${now}T12:00:00Z`);
   limit.setUTCDate(limit.getUTCDate() + 30);
@@ -409,6 +418,21 @@ export function operationalAlerts(
         r.id,
         d.priority === "urgent",
       );
+  }
+  for (const document of documents) {
+    const state = documentState(document, now);
+    if (state !== "expired" && state !== "due") continue;
+    const dueOn = document.tracking!.expires_on!;
+    out.push({
+      key: `document:${document.id}:${dueOn}`,
+      title: `Documento · ${document.name}`,
+      dueOn,
+      truckId: document.truck_id,
+      urgent: state === "expired",
+      source: "documents",
+      sourceId: document.id,
+      reason: "date",
+    });
   }
   const acknowledged = new Set(
     rows
