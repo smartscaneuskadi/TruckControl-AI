@@ -2066,4 +2066,20 @@ test("neumáticos demo: copia con historial y recarga sin peticiones de empresa"
   expect(backup.version).toBe(2);
   expect(backup.tyres.rows[0].data.code).toBe("DEMO-STOCK-SIN-MEDICIONES");
   expect(backup.tyres.history).toHaveLength(1);
+  await page
+    .getByRole("button", { name: "Restablecer demostración", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, restablecer", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.evaluate(() => {
+    location.hash = "/tyres";
+  });
+  await expect(
+    page.getByRole("heading", {
+      name: "DEMO-STOCK-SIN-MEDICIONES",
+      exact: true,
+    }),
+  ).toHaveCount(0);
 });

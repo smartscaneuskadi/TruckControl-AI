@@ -33,3 +33,5 @@ Antes de aplicar hay una copia recuperable del código en `/workspace/artifacts/
 Esta función no contrata servicios, no activa cobros y no amplía presupuestos. Los límites externos de Gmail, Migadu, SMS, pagos, dispositivos físicos y recuperación integral siguen descritos en la entrega vigente.
 
 El [ensayo nativo con rollback](verification/tyres-native-20261102.json) deja cero identidades, camiones, cubiertas o revisiones ficticias. Las huellas de los datos anteriores, ajustes, planes, presupuesto y funciones de permisos permanecen iguales.
+
+El restablecimiento explícito de la demo limpia sus neumáticos y permite recuperar un archivo dañado. La candidata alojada 18 detectó una regresión en ese flujo durante CI y nunca se publicó; se conserva como evidencia. Los dos recorridos originales de recuperación vuelven a pasar sin modificar las pruebas retenidas.
