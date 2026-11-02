@@ -20,7 +20,10 @@ import type {
 import { money } from "../lib/format";
 import { errorMessage } from "../app/FleetProvider";
 import { isCandidateRelease } from "../domain/release";
-import { customAuthMail } from "../integrations/supabase/auth-mail";
+import {
+  authRequestError,
+  customAuthMail,
+} from "../integrations/supabase/auth-mail";
 import { legalVersion } from "../domain/legal";
 import { LegalLinks } from "../components/LegalPage";
 import { CompleteRegistration } from "../components/CompleteRegistration";
@@ -124,17 +127,7 @@ export function Registration({
         if (error) throw error;
       }
     } catch (e) {
-      const code =
-        e && typeof e === "object" && "code" in e ? String(e.code) : "";
-      setError(
-        e && typeof e === "object" && "issues" in e
-          ? "Revisa los datos y escribe el teléfono con prefijo internacional, por ejemplo +34."
-          : code === "email_not_confirmed"
-            ? "Confirma el correo antes de entrar."
-            : code === "invalid_credentials"
-              ? "El correo o la contraseña no son correctos."
-              : "No se ha podido completar la solicitud. Comprueba tus datos y la conexión. El envío de mensajes debe estar habilitado por el administrador.",
-      );
+      setError(await authRequestError(e));
     } finally {
       setBusy(false);
     }

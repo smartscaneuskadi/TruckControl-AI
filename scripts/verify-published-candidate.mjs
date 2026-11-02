@@ -1,4 +1,4 @@
-/** Read-only QA of the published, fictitious-data candidate. No account or provider access. */
+/** Published UI and non-mutating auth validation. Never creates accounts or sends mail. */
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { chromium, devices } from "@playwright/test";
 const config = JSON.parse(
@@ -79,6 +79,17 @@ try {
       });
       try {
         const page = await context.newPage();
+        let publishableKey;
+        page.on("request", (request) => {
+          if (
+            request.url() ===
+            "https://kkkemaycedexymrpaqtp.supabase.co/rest/v1/rpc/tc_public_catalog"
+          ) {
+            const key = request.headers().apikey;
+            if (/^sb_publishable_[A-Za-z0-9_-]+$/.test(key || ""))
+              publishableKey = key;
+          }
+        });
         await page.goto(target.origin, { waitUntil: "networkidle" });
         if (!production)
           await page
@@ -100,6 +111,35 @@ try {
           metadata.registrationForcedClosed !== !production
         )
           throw new Error("Published provenance or isolation mismatch");
+        let authMailCorsChecked = false;
+        if (production) {
+          if (!publishableKey)
+            throw new Error("Published app did not load its public catalog");
+          // An empty email fails before reservation, Auth, consent or Resend.
+          // Using the real browser catches preflight failures that route fixtures hide.
+          const validation = await page.evaluate(async (key) => {
+            const response = await fetch(
+              "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-auth",
+              {
+                method: "POST",
+                headers: {
+                  apikey: key,
+                  authorization: `Bearer ${key}`,
+                  "content-type": "application/json",
+                  "x-client-info": "truckcontrol-public-auth-validation",
+                },
+                body: JSON.stringify({ action: "signup", email: "" }),
+              },
+            );
+            const body = await response.json();
+            return { status: response.status, code: body.error };
+          }, publishableKey);
+          if (validation.status !== 400 || validation.code !== "invalid_email")
+            throw new Error(
+              "Published signup cannot reach server-side validation",
+            );
+          authMailCorsChecked = true;
+        }
         if (
           (await page
             .getByRole("button", {
@@ -345,6 +385,7 @@ try {
           themes: checkedThemes,
           gmailCallback: gmailCallbackChecked,
           universalMailOffline: universalMailChecked,
+          authMailCors: authMailCorsChecked,
           passed: true,
         });
         console.log(

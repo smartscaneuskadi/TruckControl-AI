@@ -73,6 +73,20 @@
   outline: 2px solid #69dfaf;
   outline-offset: 2px;
 }
+.access-form label.checkbox-line {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.access-form .checkbox-line input[type="checkbox"] {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin: 0;
+  padding: 0;
+  accent-color: #37b681;
+}
 .access-form small,
 .integration-card small {
   color: #a7b9cd;

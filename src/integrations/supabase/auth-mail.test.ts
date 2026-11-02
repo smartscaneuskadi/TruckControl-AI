@@ -175,6 +175,67 @@ describe("correo nativo de acceso, sin SMTP ni claves en clientes", () => {
     ).toBe(403);
     expect(s.config).not.toHaveBeenCalled();
   });
+  it.each([
+    "https://truckcontrolai.com",
+    "https://www.truckcontrolai.com",
+    "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+  ])(
+    "permite preflight y alta desde el origen publicado %s",
+    async (origin) => {
+      const s = setup();
+      const preflight = await s.handler(
+        new Request("https://edge.invalid/company-auth", {
+          method: "OPTIONS",
+          headers: {
+            Origin: origin,
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers":
+              "apikey,authorization,content-type,x-client-info",
+          },
+        }),
+      );
+      expect(preflight.status).toBe(200);
+      expect(preflight.headers.get("Access-Control-Allow-Origin")).toBe(origin);
+      for (const header of [
+        "apikey",
+        "authorization",
+        "content-type",
+        "x-client-info",
+      ])
+        expect(
+          preflight.headers.get("Access-Control-Allow-Headers")?.split(","),
+        ).toContain(header);
+      expect(s.config).not.toHaveBeenCalled();
+      expect(s.reserve).not.toHaveBeenCalled();
+      const response = await s.handler(request(signup(), origin));
+      expect(response.status).toBe(202);
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe(origin);
+      expect(s.transport).toHaveBeenCalledTimes(1);
+    },
+  );
+  it.each([
+    "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+    "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site.evil.invalid",
+    "https://truckcontrolai.com.evil.invalid",
+    "http://truckcontrolai.com",
+    "null",
+  ])("mantiene bloqueado el correo para el origen ajeno %s", async (origin) => {
+    const s = setup();
+    for (const method of ["OPTIONS", "POST"]) {
+      const response = await s.handler(
+        method === "POST"
+          ? request(signup(), origin)
+          : new Request("https://edge.invalid/company-auth", {
+              method,
+              headers: { Origin: origin },
+            }),
+      );
+      expect(response.status).toBe(403);
+      expect(response.headers.has("Access-Control-Allow-Origin")).toBe(false);
+    }
+    expect(s.config).not.toHaveBeenCalled();
+    expect(s.transport).not.toHaveBeenCalled();
+  });
   it("rechaza peticiones públicas sin origen", async () => {
     const s = setup();
     expect((await s.handler(request(signup(), null))).status).toBe(403);
