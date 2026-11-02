@@ -4,12 +4,12 @@ Abre **https://truckcontrolai.com**. El registro de empresas está abierto; los 
 
 ## Crear una empresa
 
-1. Pulsa **Probar Full gratis 10 días** y completa los datos de contacto y empresa.
+1. Pulsa **Pedir acceso Básico** y completa los datos de contacto y empresa.
 2. Acepta privacidad y condiciones. No se pide contraseña antes de verificar tu correo.
 3. Abre **Confirma tu acceso a TruckControl AI**, pulsa **Continuar en TruckControl AI** y después **Confirmar y continuar**.
-4. Elige tu contraseña y entra. El enlace es personal y de un solo uso; no lo compartas.
+4. Elige tu contraseña y entra en tu cuenta con Básico desbloqueado. El enlace es personal y de un solo uso; no lo compartas.
 
-Prueba Full diez días. Básico: 300 €/mes + IVA 21 % (363 €). Full: 700 €/mes + IVA 21 % (847 €). Vencer la prueba no genera un cargo automático. Los datos y archivos están separados por empresa; cada servicio requiere permiso.
+Las nuevas cuentas tienen prueba Básico de diez días. Full requiere activación posterior; elegirlo como interés no lo desbloquea. Las cuentas y períodos anteriores se conservan. Básico: 300 €/mes + IVA 21 % (363 €). Full: 700 €/mes + IVA 21 % (847 €). Vencer la prueba no genera un cargo automático. Los datos y archivos están separados por empresa; cada servicio requiere permiso.
 
 Si olvidas la contraseña, usa **He olvidado la contraseña** y abre el mensaje de recuperación. La respuesta de solicitud es genérica y no revela si existe la cuenta.
 

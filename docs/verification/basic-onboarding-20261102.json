@@ -1,0 +1,58 @@
+{
+  "checked_at": "2026-11-02T06:50:00Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "app_version": "0.5.6-rc.1",
+  "published_version": 13,
+  "source_commit": "26ec8048293249d5ccde0b57eb58c1a1c2404a0f",
+  "deployment_id": "appgdep_6ae832885420819189a54e68f521c723",
+  "policy": {
+    "new_trial_plan": "limited",
+    "trial_days": 10,
+    "preserve_existing_trials": true,
+    "legal_version": "2026-11-02",
+    "payments_enabled": false,
+    "sms_enabled": false
+  },
+  "remote_checks": {
+    "migration_count": 52,
+    "existing_customers_unchanged": true,
+    "plans_unchanged": true,
+    "settings_unchanged": true,
+    "mail_guards_unchanged": true,
+    "legal_version": "2026-11-02",
+    "legacy_grants_preserved": true,
+    "new_trial_default": "'limited'::text",
+    "verification": "basic_onboarding_passed_and_rolled_back",
+    "fixture_users_remaining": 0,
+    "fixture_trucks_remaining": 0,
+    "safeguards_preserved": true
+  },
+  "local_checks": {
+    "unit_sql": 430,
+    "new_sql_cases": 12,
+    "production_browser": 18,
+    "original_tests_retained": 64
+  },
+  "ci": {
+    "source": 41401436616,
+    "exact_source": 41401528305,
+    "conclusion": "success",
+    "total": 628,
+    "public_before_deploy_version": 12,
+    "public_after_deploy": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/21/checks"
+  },
+  "public_checks": {
+    "tls_verified": true,
+    "hashes_matched": 72,
+    "trial_plan": "limited",
+    "trial_days": 10,
+    "demo_unchanged": true
+  },
+  "limits": {
+    "new_live_email_delivery_tested": false,
+    "native_email_transport_previously_verified": true,
+    "physical_devices": false,
+    "new_security_advisor_warnings": 0,
+    "existing_warning": "auth_leaked_password_protection"
+  }
+}
