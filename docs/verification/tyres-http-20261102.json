@@ -1,0 +1,70 @@
+{
+  "verified_at": "2026-11-02T18:43:19.353876+00:00",
+  "tls_verified": true,
+  "provider_calls": 0,
+  "checks": [
+    {
+      "origin": "https://truckcontrolai.com",
+      "rpc": "tc_tyre_page",
+      "kind": "tyres",
+      "status": 401,
+      "anonymous_denied": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "rpc": "tc_tyre_page",
+      "kind": "history",
+      "status": 401,
+      "anonymous_denied": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "rpc": "tc_save_tyre",
+      "kind": null,
+      "status": 401,
+      "anonymous_denied": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "rpc": "tc_tyre_page",
+      "kind": "tyres",
+      "status": 401,
+      "anonymous_denied": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "rpc": "tc_tyre_page",
+      "kind": "history",
+      "status": 401,
+      "anonymous_denied": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "rpc": "tc_save_tyre",
+      "kind": null,
+      "status": 401,
+      "anonymous_denied": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "rpc": "tc_tyre_page",
+      "kind": "tyres",
+      "status": 401,
+      "anonymous_denied": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "rpc": "tc_tyre_page",
+      "kind": "history",
+      "status": 401,
+      "anonymous_denied": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "rpc": "tc_save_tyre",
+      "kind": null,
+      "status": 401,
+      "anonymous_denied": true
+    }
+  ]
+}

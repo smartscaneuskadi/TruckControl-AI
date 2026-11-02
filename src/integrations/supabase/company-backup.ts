@@ -4,6 +4,7 @@ import type { SubscriptionAccess } from "../../domain/subscriptions";
 import { SupabaseFleetRepository } from "./repository";
 import { CloudOperationRepository } from "../../data/operations";
 import { DOCUMENT_BUCKET } from "./documents";
+import { loadCompanyTyres, loadTyrePageSet } from "./tyres";
 import {
   backupDocumentSchema,
   backupInvoiceSchema,
@@ -39,6 +40,7 @@ export class SupabaseCompanyBackup implements CompanyBackupGateway {
           ? "invoice-attachments"
           : "none",
       invoices: access.features?.gmail === true,
+      ...(access.features?.maintenance === true ? { tyres: true } : {}),
     };
     return {
       active: access.active === true,
@@ -99,11 +101,26 @@ export class SupabaseCompanyBackup implements CompanyBackupGateway {
         : Promise.resolve([]),
       this.coverage.invoices ? this.page("invoices") : Promise.resolve([]),
     ]);
+    const tyreRecords = this.coverage.tyres
+      ? {
+          tyres: await loadCompanyTyres(
+            this.client,
+            this.organization.id,
+            fleet,
+          ),
+          tyreHistory: await loadTyrePageSet(
+            this.client,
+            this.organization.id,
+            "history",
+          ),
+        }
+      : {};
     return {
       fleet,
       operations,
       documents: documents.map((d) => backupDocumentSchema.parse(d)),
       invoices: invoices.map((i) => backupInvoiceSchema.parse(i)),
+      ...tyreRecords,
     };
   }
   async download(document: BackupDocument): Promise<Uint8Array> {

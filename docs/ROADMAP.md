@@ -1,10 +1,10 @@
 # Estado y continuación — 02/11/2026
 
-La entrega vigente es **v16 / 0.5.9-rc.1**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y la producción anterior v15 permanece recuperable.
+La entrega vigente es **v17 / 0.5.10-rc.1**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y la producción anterior v16 permanece recuperable. Se prepara el registro de [neumáticos](TYRES.md) en 0.5.11-rc.1, con la migración 57 ya comprobada mediante rollback.
 
 ## Implementado y comprobado
 
-React/TypeScript y PWA para Android y Windows, Fleet Light y Fleet Cockpit, panel, camiones, conductores, remolques, clientes, viajes, combustible, mantenimiento, ingresos, gastos y rentabilidad. Límite inicial de 50 camiones por empresa, roles, módulos y RLS. Las pruebas de aislamiento usan datos ficticios y rollback; FIXPilot permanece separado. Hay 55 migraciones aplicadas y registradas.
+React/TypeScript y PWA para Android y Windows, Fleet Light y Fleet Cockpit, panel, camiones, conductores, remolques, clientes, viajes, combustible, mantenimiento, ingresos, gastos y rentabilidad. Límite inicial de 50 camiones por empresa, roles, módulos y RLS. Las pruebas de aislamiento usan datos ficticios y rollback; FIXPilot permanece separado. Hay 57 migraciones aplicadas y registradas; el nuevo registro de neumáticos conserva producción v17 mientras se verifica la interfaz candidata.
 
 Registro abierto con aceptación legal inmutable y confirmación por correo; cuenta propietaria verificada. Confirmación y recuperación funcionan mediante Resend y enlaces nativos Supabase, sin depender de SMTP Migadu. Las nuevas altas obtienen **10 días de Básico**, sin elevar permisos por solicitar Full. Precios aprobados: **Básico 300 €/mes + IVA 21 %; Full 700 €/mes + IVA 21 %**. Los períodos históricos se conservan y los cobros automáticos siguen desactivados.
 

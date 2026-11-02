@@ -37,7 +37,9 @@ export function Field({
       <label htmlFor={id}>{label}</label>
       {Children.map(children, (child) =>
         isValidElement(child) &&
-        (child.type === "input" || child.type === "select")
+        (child.type === "input" ||
+          child.type === "select" ||
+          child.type === "textarea")
           ? cloneElement(child as ReactElement<{ id?: string }>, { id })
           : child,
       )}

@@ -3,6 +3,8 @@ import { dateSchema, normalizePlate } from "./models";
 import type { FleetSnapshot } from "./models";
 import type { TrackedDocument } from "./documents";
 import { documentState } from "./documents";
+import type { TyreRecord } from "./tyres";
+import { tyreWarnings } from "./tyres";
 
 const text = (max = 160) => z.string().trim().min(1).max(max);
 const optionalText = (max = 500) => z.string().trim().max(max).default("");
@@ -270,15 +272,17 @@ export interface OperationalAlert {
     | "alerts"
     | "documents";
   sourceId: string;
-  reason: "date" | "kilometres";
+  reason: "date" | "kilometres" | "measurement";
   currentKm?: number;
   thresholdKm?: number;
+  href?: string;
 }
 export function operationalAlerts(
   fleet: FleetSnapshot,
   rows: OperationRecord[],
   now: string,
   documents: TrackedDocument[] = [],
+  tyres: TyreRecord[] = [],
 ): OperationalAlert[] {
   const limit = new Date(`${now}T12:00:00Z`);
   limit.setUTCDate(limit.getUTCDate() + 30);
@@ -434,6 +438,22 @@ export function operationalAlerts(
       reason: "date",
     });
   }
+  for (const tyre of tyres)
+    for (const warning of tyreWarnings(tyre, now))
+      out.push({
+        key: `tyre:${tyre.id}:${tyre.version}:${warning.reason}`,
+        title: `Neumático ${tyre.data.code} · ${warning.title}`,
+        dueOn: warning.dueOn,
+        truckId: tyre.data.truckId,
+        urgent: warning.urgent,
+        source: "maintenance",
+        sourceId: tyre.id,
+        reason: "date",
+        href: "/tyres",
+        ...(warning.reason !== "date"
+          ? { reason: "measurement" as const }
+          : {}),
+      });
   const acknowledged = new Set(
     rows
       .filter((r) => r.kind === "alerts" && r.data.status === "acknowledged")

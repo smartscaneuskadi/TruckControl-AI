@@ -365,9 +365,27 @@ export type Database = {
         };
         Returns: Json;
       };
+      tc_save_tyre: {
+        Args: {
+          p_data: Json;
+          p_expected?: number;
+          p_id: string;
+          p_org: string;
+        };
+        Returns: Json;
+      };
       tc_set_ai_opt_in: { Args: { p_enabled: boolean }; Returns: Json };
       tc_team_control: {
         Args: { p_action: string; p_data?: Json; p_org: string };
+        Returns: Json;
+      };
+      tc_tyre_page: {
+        Args: {
+          p_after?: string;
+          p_kind?: string;
+          p_org: string;
+          p_tyre?: string;
+        };
         Returns: Json;
       };
       tc_update_document_metadata: {

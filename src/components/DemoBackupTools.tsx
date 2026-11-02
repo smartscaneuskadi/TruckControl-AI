@@ -13,12 +13,15 @@ import {
 } from "../data/demo-backup";
 import type { DemoBackup, DemoRestorePreview } from "../data/demo-backup";
 import { demoRestoreViewKey } from "../data/demo-keys";
+import { readDemoTyreArchive } from "../data/demo-workspace";
+import { useTyres } from "../app/TyresProvider";
 import { downloadFile } from "../lib/export";
 import { Badge, Button, Field, Modal } from "./ui";
 
 export function DemoBackupTools() {
   const fleet = useFleet(),
     operations = useOperations();
+  const tyres = useTyres();
   const [preview, setPreview] = useState<DemoRestorePreview | null>(null),
     [legacy, setLegacy] = useState(false),
     [filename, setFilename] = useState(""),
@@ -31,7 +34,10 @@ export function DemoBackupTools() {
     fleet.busy ||
     operations.busy ||
     operations.loading ||
-    Boolean(operations.error);
+    Boolean(operations.error) ||
+    tyres.loading ||
+    tyres.busy ||
+    Boolean(tyres.error);
   useEffect(() => {
     try {
       setRecovery(readDemoRecovery(localStorage));
@@ -43,7 +49,12 @@ export function DemoBackupTools() {
   }, []);
   function downloadCurrent() {
     try {
-      const backup = createDemoBackup(fleet.snapshot, operations.rows);
+      const backup = createDemoBackup(
+        fleet.snapshot,
+        operations.rows,
+        undefined,
+        readDemoTyreArchive(localStorage, fleet.snapshot) ?? undefined,
+      );
       downloadFile(
         `truckcontrol-demo-registros-${new Date().toISOString().slice(0, 10)}.json`,
         JSON.stringify(backup, null, 2),

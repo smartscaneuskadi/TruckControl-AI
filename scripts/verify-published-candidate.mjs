@@ -289,6 +289,7 @@ try {
         }
         let universalMailChecked = false;
         let invoiceInboxChecked = false;
+        let tyresOfflineChecked = false;
         if (config.expected_universal_mail === true) {
           await page.goto(`${target.origin}/#/invoices`, {
             waitUntil: "networkidle",
@@ -383,6 +384,66 @@ try {
                 .click();
               invoiceInboxChecked = true;
             }
+            if (config.expected_tyres === true) {
+              await page.evaluate(() => {
+                location.hash = "/tyres";
+              });
+              await page
+                .getByRole("button", { name: "Añadir neumático", exact: true })
+                .click();
+              const modal = page.getByRole("dialog", {
+                name: "Añadir neumático",
+                exact: true,
+              });
+              await modal
+                .getByLabel("Código o número de serie")
+                .fill("DEMO-PUBLIC-TYRE");
+              await modal
+                .getByRole("button", { name: "Guardar neumático", exact: true })
+                .click();
+              await page
+                .getByRole("heading", { name: "DEMO-PUBLIC-TYRE", exact: true })
+                .waitFor();
+              const pending = page.waitForEvent("download");
+              await page
+                .getByRole("button", {
+                  name: "Exportar neumáticos",
+                  exact: true,
+                })
+                .click();
+              if (
+                (await pending).suggestedFilename() !==
+                "truckcontrol-neumaticos.csv"
+              )
+                throw Error("Published tyre export unavailable");
+              const archive = await page.evaluate(
+                () =>
+                  JSON.parse(localStorage.getItem("truckcontrol.demo.v1"))
+                    .demoTyresV1,
+              );
+              if (
+                archive.rows.length !== 1 ||
+                archive.history.length !== 1 ||
+                archive.rows[0].data.pressureKpa !== null ||
+                archive.rows[0].data.treadTenthsMm !== null
+              )
+                throw Error(
+                  "Published tyre history or unknown measurements incorrect",
+                );
+              await page.screenshot({
+                path: `${dir}/${name}-tyres-offline.png`,
+              });
+              tyresOfflineChecked = true;
+              await page.evaluate(() => {
+                location.hash = "/invoices";
+              });
+              await page
+                .getByRole("region", {
+                  name: "Bandeja de facturas",
+                  exact: true,
+                })
+                .waitFor();
+            }
             const after = await page.evaluate(
               () =>
                 JSON.parse(localStorage.getItem("truckcontrol.demo.v1")).entries
@@ -462,6 +523,7 @@ try {
           authMailCors: authMailCorsChecked,
           mailServicesCors: mailServicesCorsChecked,
           invoiceInbox: invoiceInboxChecked,
+          tyresOffline: tyresOfflineChecked,
           passed: true,
         });
         console.log(
