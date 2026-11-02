@@ -1,6 +1,6 @@
 # Mi correo — acceso personal sin aprobación de TruckControl
 
-Publicado en 0.5.12-rc.1, versión alojada 23, con Gmail real pendiente de configuración y verificación del proveedor. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
+Publicado en 0.5.12-rc.1, versión alojada 23. El ID Google está configurado y la entrada a la autorización oficial comprobada; el consentimiento de un buzón real y la verificación pública del proveedor siguen pendientes. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
 
 ## Cómo funciona
 
@@ -28,7 +28,7 @@ Se reutiliza el cliente web existente del proyecto Google **468881730124**. El i
 
 El acceso personal no necesita el secreto del cliente web. Se puede obtener su ID desde la configuración de Google existente o `truckcontrol_google_client_id` de Vault; se valida incluso si el titular guardó el JSON web completo. No se publican ni se leen en el navegador sus demás campos. No crear otro proyecto o cliente ni cambiar las credenciales de FIXPilot.
 
-En la comprobación del 02/11/2026, el identificador guardado no es válido y el conector empresarial devuelve `configured=false`. Se ha pedido al titular únicamente el ID público existente. No se presume autorización por no recibir respuesta. La app muestra la disponibilidad real y no simula un consentimiento válido.
+El 02/11/2026 a las 21:28 UTC se guardó el ID público del cliente existente aportado por el titular. Se modificó únicamente `truckcontrol_google_client_id`, conservando el secreto Google y la clave AES. A las 21:29 UTC, `browser-config` devuelve `configured=true` y el ID exacto en los tres orígenes de producción, con CORS y `no-store`; `/health` empresarial también devuelve `configured=true`. La solicitud oficial de autorización llega a la pantalla de inicio de sesión de Google sin errores conocidos de cliente. Esto no acredita consentimiento, acceso a un buzón, origen GIS autorizado o verificación pública. [Evidencia](verification/google-public-id-20261102.json). No ha sido necesario publicar otra versión ni realizar migraciones. Para probar desde el dominio principal: **Mi correo → Preparar conexión con Google → Entrar con Google**.
 
 También deben estar habilitados Gmail API, los orígenes JavaScript que se usarán y el consentimiento externo con `gmail.modify`. El origen principal ya solicitado al titular es `https://truckcontrolai.com`; www y las instalaciones del hostname técnico necesitan sus propios orígenes autorizados. No se puede eludir la verificación de Google ni las restricciones de una organización Workspace. La disponibilidad pública para todos los clientes depende de ese proceso oficial. [Permisos](https://developers.google.com/workspace/gmail/api/auth/scopes), [verificación](https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification). No se ha contratado una evaluación ni otro servicio de pago.
 

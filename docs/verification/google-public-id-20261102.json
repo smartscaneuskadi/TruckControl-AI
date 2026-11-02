@@ -1,0 +1,136 @@
+{
+  "public_configuration": {
+    "checked_at": "2026-11-02T21:29:15.132409+00:00",
+    "project_id": "kkkemaycedexymrpaqtp",
+    "public_client_id": "468881730124-ss24lmbcjdronuogra584saigfj8sb0t.apps.googleusercontent.com",
+    "browser_config": [
+      {
+        "origin": "https://truckcontrolai.com",
+        "curl_exit": 0,
+        "configured": true,
+        "public_id_matches": true,
+        "exact_public_keys": true,
+        "personal_browser": true,
+        "cors_matches": true,
+        "no_store": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "curl_exit": 0,
+        "configured": true,
+        "public_id_matches": true,
+        "exact_public_keys": true,
+        "personal_browser": true,
+        "cors_matches": true,
+        "no_store": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "curl_exit": 0,
+        "configured": true,
+        "public_id_matches": true,
+        "exact_public_keys": true,
+        "personal_browser": true,
+        "cors_matches": true,
+        "no_store": true
+      }
+    ],
+    "google_authorization_entry": {
+      "curl_exit": 0,
+      "http_status": "200",
+      "final_origin": "https://accounts.google.com",
+      "final_path": "/v3/signin/identifier",
+      "known_configuration_errors": [],
+      "sign_in_page": true,
+      "mailbox_consent_performed": false
+    },
+    "secret_values_read_or_printed": false,
+    "mailboxes_accessed": 0,
+    "messages_sent": 0
+  },
+  "vault_update": {
+    "project_id": "kkkemaycedexymrpaqtp",
+    "public_id_configuration": {
+      "named_rows": 1,
+      "configured_id_matches": true
+    },
+    "updated_at": "2026-11-02T21:28:21.777796+00:00",
+    "preserved": [
+      {
+        "name": "truckcontrol_google_client_secret",
+        "unchanged": true
+      },
+      {
+        "name": "truckcontrol_gmail_token_encryption_key",
+        "unchanged": true
+      }
+    ],
+    "changed_field": "truckcontrol_google_client_id",
+    "schema_changes": 0,
+    "secret_values_disclosed": false
+  },
+  "security": {
+    "checked_at": "2026-11-02T21:29:57.022209+00:00",
+    "protected_checks": [
+      {
+        "kind": "anonymous_protected",
+        "origin": "https://truckcontrolai.com",
+        "http_status": 401,
+        "expected_status": 401,
+        "passed": true,
+        "tls_verified": true
+      },
+      {
+        "kind": "anonymous_protected",
+        "origin": "https://www.truckcontrolai.com",
+        "http_status": 401,
+        "expected_status": 401,
+        "passed": true,
+        "tls_verified": true
+      },
+      {
+        "kind": "anonymous_protected",
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "http_status": 401,
+        "expected_status": 401,
+        "passed": true,
+        "tls_verified": true
+      },
+      {
+        "kind": "foreign_origin",
+        "origin": "https://foreign.invalid",
+        "http_status": 403,
+        "expected_status": 403,
+        "passed": true,
+        "tls_verified": true
+      },
+      {
+        "kind": "legacy_health",
+        "origin": "https://truckcontrolai.com",
+        "http_status": 200,
+        "expected_status": 200,
+        "passed": true,
+        "tls_verified": true,
+        "configured": true
+      }
+    ],
+    "demo": {
+      "curl_exit": 0,
+      "index_sha256": "51cb89019392cc32c280f28ed675f5cce5450a08458297c019c2c483b8d4b492",
+      "unchanged": true
+    },
+    "mailboxes_accessed": 0,
+    "messages_sent": 0
+  },
+  "limitations": [
+    "No real mailbox consent, reading or sending was performed.",
+    "A Google sign-in page does not prove GIS origin authorization or public OAuth verification.",
+    "Google public verification and other mail providers remain pending."
+  ],
+  "production_unchanged": {
+    "sites_version": 23,
+    "source_commit": "620c8d51136662a694f6f58e32d6b6b184a3c0e9",
+    "existing_successful_ci": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41524793473",
+    "existing_passing_checks": 816
+  }
+}

@@ -71,6 +71,7 @@ Pendientes respuestas del titular: remitente (pedidos@smartscaneuskadi.com o dir
 Preparado: plantillas de confirmación/recuperación en español, redirección local HTTPS y script de plan/comprobación/aplicación parcial de ajustes Auth. El script limita proyecto y organización, conserva SMTP/secretos, no abre registros y comprueba la lectura posterior. Siete pruebas Python pasan. Cambio Free de junio 2026 verificado: se omiten plantillas alojadas hasta que exista SMTP propio. Ver `AUTH_MAIL_SETUP.md`.
 
 Siguiente paso: reanudar la autorización oficial pendiente, comprobar configuración de TruckControl y aplicar primero los ajustes seguros. Si SMTP sigue vacío, solicitar únicamente la conexión segura del proveedor elegida por el titular. No afirmar entrega real hasta probar un envío autorizado y los dos flujos. Mantener cerrados el alta empresarial, pagos, SMS y modelos IA; no tocar FIXPilot.
+
 # 2026-10-31 — orden de lanzamiento comercial y dominio definitivo
 
 - Se conserva la demo pública v6 y se verifica otra copia completa del historial Git en `/workspace/artifacts/truckcontrol-commercial-baseline-20261031.bundle`.
@@ -82,6 +83,7 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - 179 pruebas unitarias/SQL y 7 de correo aprobadas; hashes de las 64 pruebas originales verificados; TypeScript y compilación correctos. Falta aceptación de navegador de la nueva interfaz y CI final.
 - El propietario autoriza abrir el selector seguro de OpenAI sin consumo. Se inicia el flujo oficial después de guardar este punto; aún no hay clave ni autorización de gasto variable.
 - Reanudación y bloqueos: `docs/COMMERCIAL_LAUNCH.md`. No se declara una versión comercial terminada ni entrega SMTP verificada.
+
 # 2026-10-31 — candidata 0.4, seguridad y publicación separada
 
 - CI de `4ceb74a` aprobado en GitHub. Se conserva PR #5 y todo el historial, sin sustituir la demo v6.
@@ -159,7 +161,6 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Se detecta que el paquete anterior abría directamente la demo. Se conserva la candidata 1 mientras se verifica la corrección: build:candidate fija la entrada de planes y Vite impide crear candidatas sin ella. No se declara corregido un paquete inmutable solo por reenviarlo con el mismo commit. La publicación nueva utilizará una fuente distinta y comprobada.
 - La oferta de diez días, 300 € / 700 € más IVA del 21 % ya está aplicada una sola vez en Supabase (40 migraciones), con desglose y ensayos reales transaccionales revertidos. Altas y cobros permanecen cerrados. La demo estable v6 y los paquetes anteriores se conservan.
 
-
 # 2026-11-01 — dos temas profesionales y preferencia por usuario
 
 - Fleet Light y Fleet Cockpit reutilizan los componentes existentes y una capa central de variables. Se añade modo del dispositivo, vistas previas y opción de reducir o desactivar movimiento. El selector puede abrirse sobre un formulario sin perder el borrador; los diálogos tienen identificadores únicos.
@@ -167,7 +168,6 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Cabecera alpina, fotografías optimizadas con procedencia, tarjetas con series económicas existentes, estadísticas operativas, objetivo personal con progreso calculado y repostajes reales. El mapa OpenStreetMap se carga voluntariamente, sin enviar datos de flota; se declara que no hay fuente GPS conectada.
 - Pasan 198 unitarias/SQL, 23 Python, 56 recorridos de la demo, 10 de empresas y 8 de candidata; administración ampliada y revisión de las zonas inferiores en curso. Se conservan los once archivos de las 64 pruebas iniciales. Los fallos de contraste detectados en el tema claro y el desbordamiento móvil se corrigen antes de publicar.
 - La candidata pública actual es la versión 3, fuente 736ef9e3, con CI 41302653156 aprobado y los nuevos precios. La versión de dos temas aún requiere CI de su fuente exacta y un paquete guardado nuevo. La demo estable v6 permanece reservada e intacta. Copia del trabajo en los artefactos de esta entrega.
-
 
 # 2026-11-01 — candidata 4 publicada: Fleet Light y Fleet Cockpit
 
@@ -244,7 +244,6 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - El CI de la fuente de despliegue 2c104916 detecta contraste transitorio al cambiar de tema (4,06:1 en un botón). Se conserva la candidata publicada 6; la versión guardada 7 no se despliega. Se eliminan las interpolaciones de colores en controles/tarjetas y se conservan las animaciones de gráficos y movimiento reducido. Se ejecuta nuevamente la accesibilidad antes de preparar otra versión.
 
 - Corrección de contraste aprobada en seis recorridos locales y CI exacto 41334469182 (415 comprobaciones, seis sobre la publicación previa). Candidata 8 publicada a las 18:06:28 UTC desde ba7a226f; 72/72 recursos HTTPS coinciden y la demo estable conserva su hash. La versión 7 se conserva guardada sin publicarse. El CI antiguo de la rama encontró el inventario v6 después de publicar v8; se actualiza el inventario y se exige la prueba pública específica de importación sin red. Resultado final en los checks del PR #13 y sus artefactos.
-
 
 # 2026-11-01 — activación de IA y receptor, preparación 0.5.3-rc.1
 
@@ -337,6 +336,7 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Corregidos enlaces de correo recibidos en una PWA abierta y el reinicio del formulario de contraseña al cargar su empresa. Prueba completa con solicitud Full → correo → contraseña → Básico → solicitud Full sin elevación en Android/Windows emulados.
 - CI 41401436616 y fuente exacta 41401528305 pasan 628 controles; los seis públicos aún eran v12. Publicada 0.5.6-rc.1, alojada 13, fuente 26ec8048293249d5ccde0b57eb58c1a1c2404a0f, despliegue appgdep_6ae832885420819189a54e68f521c723. V12 y demo v6 conservadas. TLS y 72 hashes coinciden; catálogo público limited/10 días y cobros apagados. Verificación pública final en checks de PR #21.
 - No se han enviado correos de prueba reales en esta fase ni cambiado el transporte nativo existente, presupuestos IA, SMS o cobros. Asesor sin incidencias nuevas; permanece el aviso previo de contraseñas filtradas. Continuidad en /workspace/artifacts/truckcontrol-basic-access-20261102/checkpoint.json.
+
 # 2026-11-02 — reparación del alta desde el hostname de producción de la PWA
 
 - Incidencia reproducida: el hostname técnico devolvía 403 en el preflight de company-auth; principal y www funcionaban. No se copiaron datos personales del cliente al repositorio.
@@ -344,7 +344,6 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Desplegado company-auth v4 con los tres orígenes exactos de producción. Ocho comprobaciones HTTP reales confirman preflight, validación y rechazo de origen ajeno. No se generan usuarios ni correos en esos controles.
 - Interfaz 0.5.7-rc.1 preparada con mensajes seguros, reintento conservando datos y tamaño corregido de la casilla de consentimiento. Las pruebas públicas de CI comprueban ahora el CORS real desde el navegador; antes el registro estaba cubierto por fixtures.
 - Pasan 647 controles en GitHub tanto en código como en fuente exacta: 447 unitarias/SQL, 32 Python y 168 de navegador. Se conservan las 64 originales. Publicada v14 / 0.5.7-rc.1 a las 07:34 UTC, fuente 76c4306024d9a1cdea7074b0d219b1475bdd5471, con 72 hashes HTTPS y demo estable intacta. Los seis controles públicos anteriores cubrieron v13 con backend v4; el PR #22 registra la comprobación pública posterior de v14. Ver `SIGNUP_CORS_FIX.md` y el checkpoint persistente.
-
 
 # 2026-11-02 — documentación, vencimientos y nuevos informes
 
@@ -373,6 +372,7 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Código 7998cb7 (CI 41455396125) y fuente exacta a4a4fc4 (CI 41455442975) pasan 720 controles: 514 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 48 SaaS, 14 candidata, 20 producción y seis públicos de v15 antes del despliegue.
 - Paquete exacto revisado en cuatro perfiles/temas, CSV y Axe AA; se corrigió el espaciado antes de guardar. Publicada v16 a las 13:53 UTC, despliegue appgdep_6ae895d56a3481919c1a384c1e133d17; 72 hashes HTTPS correctos, demo v6 intacta y v15 recuperable.
 - Aceptación pública posterior de v16 y merge: checks de PR #24. Gmail directo continúa pendiente de Google y Migadu sigue SERVFAIL a las 13:44 UTC; no se cambian credenciales, cuotas ni gastos.
+
 # 2026-11-02 — lectura IA de originales guardados
 
 Continuación desde main 6aa0403, rama feat/invoice-ai-on-demand. Copia anterior persistente en `/workspace/artifacts/truckcontrol-invoice-ai-20261102/before-invoice-ai.bundle`. Nueva lectura a petición para PDF/imágenes recibidos por reenvío o importación; independiente de OAuth Gmail. Reutiliza proveedor, cuotas y presupuesto aprobados. Confirmación explícita, hash/tipo/tamaño verificados, nueva comprobación de acceso, única reserva por factura y revisión humana antes de registrar el gasto.
@@ -402,3 +402,9 @@ Petición del titular: cada cliente debe entrar en su propio buzón sin aprobaci
 Pasan 589 unitarias/SQL y ocho recorridos nuevos de Android/Windows emulados; dos temas con cero infracciones Axe AA y sin desbordamiento. Se corrigió una carrera de configuración pública al recargar en StrictMode. El conector empresarial anterior mantiene sus permisos de solo lectura e importación. Se prepara un endpoint público que expone solo un ID de aplicación Google validado, sin necesitar el secreto para el buzón personal. No hay nuevas migraciones, llamadas al modelo, correos reales, cambios comerciales o costes. Google sigue sin ID público válido; se pidió únicamente ese identificador del cliente web existente, no secretos. Verificación Google y otros proveedores siguen pendientes. Fuente/CI/publicación por completar, manteniendo v19 estable y demo6.
 
 Publicada v23 / 0.5.12-rc.1, fuente 620c8d51136662a694f6f58e32d6b6b184a3c0e9, despliegue appgdep_6ae8fa685030819185de7651e9dddadf. Código/fuente 41523414330/41523413112 pasan 816 controles: 590 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 68 SaaS, 14 candidata, 20 producción y seis perfiles públicos previos de v19. Los 72 hashes TLS coinciden; v19 y demo6 se conservan. company-gmail v12 añade solo configuración pública; seis fuentes nativas y 17 HTTP verificados. Sin nuevas migraciones, llamadas IA o correo real. Candidatas 20, 21 y 22 nunca publicadas; versión final incluye privacidad pública y retirada de permisos que borra contenido. El ID Google sigue inválido y su aprobación pública permanece pendiente; no se presenta el fixture como conexión real. La aceptación pública posterior de PR #27 incluye correo ficticio offline, configuración/CORS y verificaciones anteriores.
+
+# 2026-11-02 — ID Google configurado, sin acceso a buzones
+
+El titular facilitó el ID público del cliente web existente del proyecto 468881730124. Guardado a las 21:28 UTC únicamente en truckcontrol_google_client_id de Vault de TruckControl; secreto Google y AES conservan sus metadatos. Sin migraciones ni nueva publicación: producción sigue v23 y demo6 mantiene el mismo SHA-256. A las 21:29 UTC los tres orígenes reciben el ID exacto con configured=true, CORS y no-store; la salud empresarial también pasa a true. Entrada oficial Google 200 hasta inicio de sesión, sin errores conocidos de cliente. Tres llamadas anónimas siguen 401 y un origen ajeno 403. [Evidencia](verification/google-public-id-20261102.json).
+
+No se ha realizado consentimiento ni lectura/envío de correo, ni llamadas IA, cambios de planes, permisos o costes. El código conserva los 816 controles aprobados de la entrega v23. Falta comprobar un consentimiento real y la publicación/verificación de Google; la página de inicio de sesión por sí sola no certifica orígenes GIS ni acceso para todos los clientes. Outlook/IMAP/SMTP continúan pendientes. No volver a pedir el ID ni un secreto para el acceso personal.
