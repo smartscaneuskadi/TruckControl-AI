@@ -1,0 +1,52 @@
+{
+  "verified_at": "2026-11-02T21:03:10.453012+00:00",
+  "pre_publication": [
+    {
+      "verified_at": "2026-11-02T21:00:59.561031+00:00",
+      "run_id": 41523414330,
+      "sha": "eeafc6df3e33a176bce32525a192579ffe4878c6",
+      "units_sql": 590,
+      "python": 32,
+      "browsers": [
+        64,
+        22,
+        68,
+        14,
+        20
+      ],
+      "public_profiles": 6,
+      "total": 816,
+      "passed": true,
+      "public_version_before_publish": 19
+    },
+    {
+      "verified_at": "2026-11-02T21:01:46.741677+00:00",
+      "run_id": 41523413112,
+      "sha": "620c8d51136662a694f6f58e32d6b6b184a3c0e9",
+      "units_sql": 590,
+      "python": 32,
+      "browsers": [
+        64,
+        22,
+        68,
+        14,
+        20
+      ],
+      "public_profiles": 6,
+      "total": 816,
+      "passed": true,
+      "public_version_before_publish": 19
+    }
+  ],
+  "retained_original_tests": 64,
+  "retained_hashes": 11,
+  "physical_devices": false,
+  "live_provider_calls_this_release": 0,
+  "real_mail_read": 0,
+  "real_mail_sent": 0,
+  "google_consent_real_tested": false,
+  "google_browser_configured": false,
+  "new_migrations": false,
+  "unpublished_candidate_20_deployed": false,
+  "unpublished_candidate_21_deployed": false
+}

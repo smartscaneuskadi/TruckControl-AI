@@ -7,6 +7,7 @@ import { CompanyOfflineContext } from "./CompanyAccess";
 import { FleetProvider, errorMessage } from "./FleetProvider";
 import { OperationsProvider } from "./OperationsProvider";
 import { TyresProvider } from "./TyresProvider";
+import { PersonalMailProvider } from "./PersonalMailProvider";
 import { SubscriptionProvider } from "./SubscriptionContext";
 import { OfflineContext } from "./OfflineContext";
 import { listVaultScopes, VaultSession } from "../data/offline-vault";
@@ -234,7 +235,9 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
               >
                 <OperationsProvider>
                   <TyresProvider>
-                    <App />
+                    <PersonalMailProvider>
+                      <App />
+                    </PersonalMailProvider>
                   </TyresProvider>
                 </OperationsProvider>
               </FleetProvider>

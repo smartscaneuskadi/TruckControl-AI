@@ -1,0 +1,142 @@
+{
+  "verified_at": "2026-11-02T19:28:51.792046+00:00",
+  "project": "kkkemaycedexymrpaqtp",
+  "function": "company-gmail",
+  "version": 12,
+  "checks": [
+    {
+      "origin": "https://truckcontrolai.com",
+      "path": "/health",
+      "method": "GET",
+      "status": 200,
+      "tls_verified": true,
+      "legacy_health_unchanged": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "path": "/health",
+      "method": "OPTIONS",
+      "status": 204,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "path": "/browser-config",
+      "method": "GET",
+      "status": 200,
+      "tls_verified": true,
+      "public_fields_only": true,
+      "configured": false
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "path": "/browser-config",
+      "method": "OPTIONS",
+      "status": 204,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "path": "/health",
+      "method": "GET",
+      "status": 200,
+      "tls_verified": true,
+      "legacy_health_unchanged": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "path": "/health",
+      "method": "OPTIONS",
+      "status": 204,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "path": "/browser-config",
+      "method": "GET",
+      "status": 200,
+      "tls_verified": true,
+      "public_fields_only": true,
+      "configured": false
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "path": "/browser-config",
+      "method": "OPTIONS",
+      "status": 204,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "path": "/health",
+      "method": "GET",
+      "status": 200,
+      "tls_verified": true,
+      "legacy_health_unchanged": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "path": "/health",
+      "method": "OPTIONS",
+      "status": 204,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "path": "/browser-config",
+      "method": "GET",
+      "status": 200,
+      "tls_verified": true,
+      "public_fields_only": true,
+      "configured": false
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "path": "/browser-config",
+      "method": "OPTIONS",
+      "status": 204,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "path": "/",
+      "method": "POST",
+      "status": 401,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "path": "/",
+      "method": "POST",
+      "status": 401,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "path": "/",
+      "method": "POST",
+      "status": 401,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://truckcontrolai.com.attacker.invalid",
+      "path": "/health",
+      "method": "GET",
+      "status": 403,
+      "tls_verified": true
+    },
+    {
+      "origin": "https://truckcontrolai.com.attacker.invalid",
+      "path": "/browser-config",
+      "method": "GET",
+      "status": 403,
+      "tls_verified": true
+    }
+  ],
+  "real_mail_read": 0,
+  "real_mail_sent": 0,
+  "google_calls": 0,
+  "live_model_calls": 0,
+  "migrations": 57,
+  "secrets_returned": false
+}

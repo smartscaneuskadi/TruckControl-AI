@@ -1,7 +1,10 @@
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { bucket, createGmailHandler } from "./handler.ts";
 import type { GmailConfig, GmailGateway } from "./handler.ts";
-import { createGmailConfigResolver } from "./config.ts";
+import {
+  createGmailConfigResolver,
+  createGmailBrowserConfigResolver,
+} from "./config.ts";
 import { createAiRuntimeResolver } from "../_shared/ai-runtime.ts";
 import { productionGmailOrigins, withGmailHealth } from "./health.ts";
 
@@ -109,4 +112,18 @@ const config: GmailConfig = {
   resolveAI: (organization_id, user_id) =>
     aiRuntime.resolve({ organization_id, user_id, kind: "invoice" }),
 };
-Deno.serve(withGmailHealth(createGmailHandler(gateway, config), resolveOAuth));
+const resolveBrowserId = createGmailBrowserConfigResolver(
+  Deno.env.get("GOOGLE_CLIENT_ID"),
+  async () => {
+    const { data, error } = await client.rpc("gmail_runtime_config");
+    if (error) throw new Error("Mail configuration unavailable");
+    return data;
+  },
+);
+Deno.serve(
+  withGmailHealth(
+    createGmailHandler(gateway, config),
+    resolveOAuth,
+    resolveBrowserId,
+  ),
+);

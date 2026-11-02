@@ -14,6 +14,54 @@ type StoredConfig = {
   encryption_key?: unknown;
 };
 
+/** Public OAuth identifier only. No client secret or token is exposed to the browser. */
+export function gmailBrowserClientId(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  let id = value.trim();
+  if (id.length > 32768) return undefined;
+  if (id.startsWith("{")) {
+    try {
+      const parsed = JSON.parse(id);
+      id = parsed.web?.client_id ?? "";
+    } catch {
+      return undefined;
+    }
+  }
+  return typeof id === "string" &&
+    /^468881730124-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(id)
+    ? id
+    : undefined;
+}
+
+export function createGmailBrowserConfigResolver(
+  environmentId: string | undefined,
+  readVault: () => Promise<StoredConfig | null>,
+  now: () => number = Date.now,
+) {
+  let cached: string | undefined;
+  let expiresAt = 0;
+  let pending: Promise<string | undefined> | null = null;
+  return async () => {
+    const environment = gmailBrowserClientId(environmentId);
+    if (environment) return environment;
+    if (now() < expiresAt) return cached;
+    pending ??= (async () => {
+      try {
+        return gmailBrowserClientId((await readVault())?.client_id);
+      } catch {
+        return undefined;
+      }
+    })();
+    try {
+      cached = await pending;
+      expiresAt = now() + 60000;
+      return cached;
+    } finally {
+      pending = null;
+    }
+  };
+}
+
 function valid(
   value: Environment,
   expectedProjectNumber?: string,

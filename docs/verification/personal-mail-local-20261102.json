@@ -1,0 +1,48 @@
+{
+  "verified_at": "2026-11-02T20:54:49.156198+00:00",
+  "profiles": [
+    "Android",
+    "Windows"
+  ],
+  "themes": [
+    "light",
+    "cockpit"
+  ],
+  "screenshots": [
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-mailbox-20261102/mail-final/platform-correo-personal-a-96a48--empresa-y-env\u00edo-confirmado-saas-android/personal-mail-cockpit.png",
+      "sha256": "b285120a0a85c9d4bfc44ba7640bbbdfba1ea8c169a40d77c821248df2ce944f",
+      "bytes": 196214
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-mailbox-20261102/mail-final/platform-correo-personal-a-96a48--empresa-y-env\u00edo-confirmado-saas-android/personal-mail-light.png",
+      "sha256": "cd47c92c10d92e6d2b74920621f2d8c642c684716b970546d80cd32839b62bff",
+      "bytes": 188375
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-mailbox-20261102/mail-final/platform-correo-personal-a-96a48--empresa-y-env\u00edo-confirmado-saas-windows/personal-mail-cockpit.png",
+      "sha256": "2542efd3b16a32bd1b096335547a2df7f1bf1093d4927fc553ef882d1ea37204",
+      "bytes": 144613
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-mailbox-20261102/mail-final/platform-correo-personal-a-96a48--empresa-y-env\u00edo-confirmado-saas-windows/personal-mail-light.png",
+      "sha256": "906bc70d50b1ddcf6dbd0592ffa4d2300c96102744c168cd661bd794774a690f",
+      "bytes": 145247
+    }
+  ],
+  "new_browser_profile_cases_passed": 8,
+  "unit_sql_passed_before_final_small_compatibility_changes": 589,
+  "new_unit_cases": 22,
+  "axe_wcag_aa_violations": 0,
+  "horizontal_overflow": false,
+  "provider_calls": 0,
+  "real_mail_sent": 0,
+  "physical_devices": false,
+  "known_runtime_google_configured": false,
+  "provider_consent_real_tested": false,
+  "focused_new_unit_cases": 23,
+  "synchronous_logout_with_server_pending": true,
+  "negative_old_bundle_reproduces_issue": true,
+  "abort_stops_old_session_references": true,
+  "source": "eeafc6df3e33a176bce32525a192579ffe4878c6"
+}

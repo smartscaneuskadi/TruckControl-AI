@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ReactNode, FormEvent } from "react";
 import type { User } from "@supabase/supabase-js";
 import { Building2, LogIn, ShieldCheck, Truck } from "lucide-react";
@@ -19,6 +26,7 @@ import { LegalPage } from "../components/LegalPage";
 import type { LegalDocument } from "../domain/legal";
 import { demoRestoreViewKey } from "../data/demo-keys";
 import { isCandidateRelease } from "../domain/release";
+import { endPrivateSessions } from "./session-events";
 import {
   chooseCompany,
   readCompanySelection,
@@ -65,7 +73,10 @@ export function CompanyOfflineContext({
         select: onExit,
         newCompany: onExit,
         refreshCompanies: onExit,
-        signOut: async () => onExit(),
+        signOut: async () => {
+          endPrivateSessions();
+          onExit();
+        },
         portal: onExit,
       }}
     >
@@ -102,6 +113,7 @@ if (initialEmailAction)
     window.location.pathname + window.location.search,
   );
 export function CompanyAccessProvider({ children }: { children: ReactNode }) {
+  const observedUserId = useRef<string | null>(null);
   const [emailAction, setEmailAction] = useState(initialEmailAction);
   const [client] = useState(getSupabaseClient);
   const [mode, setMode] = useState<"demo" | "company" | "portal">(() =>
@@ -151,6 +163,9 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     let authRevision = 0;
     function receive(user: User | null) {
       if (!active) return;
+      const nextUserId = user?.id ?? null;
+      if (observedUserId.current !== nextUserId) endPrivateSessions();
+      observedUserId.current = nextUserId;
       setAccount((old) =>
         old.user?.id === user?.id
           ? { ...old, user }
@@ -167,6 +182,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
         setMode("company");
       }
       if (event === "SIGNED_OUT") {
+        endPrivateSessions();
         setRecovery(false);
         setSelected(null);
       }
@@ -232,6 +248,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
       rememberCompanySelection(userId, organization.id);
   }, [userId, organization?.id]);
   function changeMode(next: "demo" | "company" | "portal") {
+    if (next !== mode) endPrivateSessions();
     setMode(next);
     try {
       sessionStorage.removeItem(demoRestoreViewKey);
@@ -253,17 +270,25 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     portal: () => changeMode("portal"),
     demo: () => changeMode("demo"),
     select: (id) => {
-      if (account.organizations.some((o) => o.id === id)) setSelected(id);
+      if (account.organizations.some((o) => o.id === id)) {
+        if (id !== selected) endPrivateSessions();
+        setSelected(id);
+      }
     },
     newCompany: () => {
+      endPrivateSessions();
       setSelected(null);
       changeMode("company");
     },
     refreshCompanies: (selectedId) => {
-      if (selectedId) setSelected(selectedId);
+      if (selectedId) {
+        if (selectedId !== selected) endPrivateSessions();
+        setSelected(selectedId);
+      }
       setRevision((n) => n + 1);
     },
     signOut: async () => {
+      endPrivateSessions();
       if (!client) return;
       const { error } = await client.auth.signOut();
       if (error)

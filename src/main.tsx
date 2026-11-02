@@ -7,6 +7,7 @@ import { PwaTools } from "./components/PwaTools";
 import { OperationsProvider } from "./app/OperationsProvider";
 import { DocumentsProvider } from "./app/DocumentsProvider";
 import { TyresProvider } from "./app/TyresProvider";
+import { PersonalMailProvider } from "./app/PersonalMailProvider";
 import { OfflineApplication } from "./app/OfflineApplication";
 import { AppearanceProvider } from "./app/AppearanceProvider";
 import {
@@ -62,7 +63,9 @@ createRoot(document.getElementById("root")!).render(
                 <OperationsProvider>
                   <DocumentsProvider>
                     <TyresProvider>
-                      <App />
+                      <PersonalMailProvider>
+                        <App />
+                      </PersonalMailProvider>
                     </TyresProvider>
                   </DocumentsProvider>
                 </OperationsProvider>

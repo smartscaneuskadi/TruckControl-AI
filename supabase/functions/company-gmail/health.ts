@@ -7,10 +7,13 @@ export const productionGmailOrigins = [
 export function withGmailHealth(
   handler: (request: Request) => Promise<Response>,
   resolve: () => Promise<unknown>,
+  resolveBrowserId?: () => Promise<string | undefined>,
 ) {
   return async (request: Request): Promise<Response> => {
+    const path = new URL(request.url).pathname;
+    const browserConfig = path.endsWith("/browser-config");
     if (
-      !new URL(request.url).pathname.endsWith("/health") ||
+      !(path.endsWith("/health") || browserConfig) ||
       !["GET", "OPTIONS"].includes(request.method)
     )
       return handler(request);
@@ -35,6 +38,31 @@ export function withGmailHealth(
       });
     if (request.method === "OPTIONS")
       return new Response(null, { status: 204, headers });
+    if (browserConfig) {
+      let clientId: string | undefined;
+      try {
+        clientId = await resolveBrowserId?.();
+      } catch {
+        /* Never echo a resolver error. */
+      }
+      // Even a faulty resolver cannot return a secret or another project's identifier.
+      if (
+        !clientId ||
+        !/^468881730124-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(
+          clientId,
+        )
+      )
+        clientId = undefined;
+      return Response.json(
+        {
+          configured: Boolean(clientId),
+          client_id: clientId ?? null,
+          provider: "google",
+          mode: "personal_browser",
+        },
+        { headers },
+      );
+    }
     let configured = false;
     try {
       configured = Boolean(await resolve());
