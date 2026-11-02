@@ -37,3 +37,7 @@ El asesor mantiene el aviso previo de contraseñas filtradas, cuya función aloj
 `company-gmail` v11 añade `GET /functions/v1/company-gmail/health`, sin caché y sin claves en su respuesta: solo `configured`. Esta comprobación incluye el entorno de la función y Vault mediante el resolver existente. No prueba consentimiento, revisión de Google ni entrega. A 02/11/2026 el resultado real es false y no hay conexiones Gmail. Debe completarse el guardado seguro del cliente Google; no volver a crear otro cliente ni mostrar secretos.
 
 Los tres orígenes de producción ya son compatibles con el preflight y el retorno OAuth; se conserva también el retorno heredado para no invalidar estados existentes. El servidor mantiene autenticación, permisos por empresa, PKCE, estado de un uso y cifrado. El ensayo nativo comprueba esos enlaces/bindings y revierte sus fixtures; no llama a Google ni activa IA.
+
+## Acceso desde instalaciones anteriores
+
+`company-mail` v11 y `company-assistant` v10 aceptan los tres orígenes exactos de producción. Su autenticación, firma del receptor, módulos y presupuesto permanecen igual. Pasan 21 comprobaciones HTTP sin llamar a proveedores y las fuentes desplegadas coinciden con las verificadas. Este cambio es independiente de las credenciales Gmail pendientes. [Evidencia](verification/invoice-origins-http-20261102.json). Migadu sigue con SERVFAIL en sus tres destinos DKIM según Google y Cloudflare a 02/11/2026 13:44 UTC; no se cambian DNS ni se contrata otro plan.

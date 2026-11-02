@@ -112,6 +112,7 @@ try {
         )
           throw new Error("Published provenance or isolation mismatch");
         let authMailCorsChecked = false;
+        let mailServicesCorsChecked = false;
         if (production) {
           if (!publishableKey)
             throw new Error("Published app did not load its public catalog");
@@ -139,6 +140,42 @@ try {
               "Published signup cannot reach server-side validation",
             );
           authMailCorsChecked = true;
+          if (config.expected_mail_service_cors === true) {
+            // No user token: fail before reading a tenant, provider or budget.
+            // The real browser verifies each service's OPTIONS response too.
+            const checks = await page.evaluate(async (key) => {
+              const result = [];
+              for (const service of ["company-mail", "company-assistant"]) {
+                const response = await fetch(
+                  `https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/${service}`,
+                  {
+                    method: "POST",
+                    headers: {
+                      apikey: key,
+                      "content-type": "application/json",
+                      "x-client-info": "truckcontrol-public-mail-validation",
+                    },
+                    body: JSON.stringify({ action: "status" }),
+                  },
+                );
+                result.push({
+                  service,
+                  status: response.status,
+                  code: (await response.json()).error,
+                });
+              }
+              return result;
+            }, publishableKey);
+            if (
+              checks.some(
+                (c) => c.status !== 401 || c.code !== "authentication_required",
+              )
+            )
+              throw Error(
+                "Published mail or assistant origin cannot reach protected validation",
+              );
+            mailServicesCorsChecked = true;
+          }
         }
         if (
           (await page
@@ -245,6 +282,7 @@ try {
           checkedThemes.push(theme);
         }
         let universalMailChecked = false;
+        let invoiceInboxChecked = false;
         if (config.expected_universal_mail === true) {
           await page.goto(`${target.origin}/#/invoices`, {
             waitUntil: "networkidle",
@@ -309,6 +347,36 @@ try {
             await imported
               .getByRole("button", { name: "Revisar factura", exact: true })
               .waitFor();
+            if (config.expected_invoice_inbox === true) {
+              const register = page.getByRole("region", {
+                name: "Bandeja de facturas",
+                exact: true,
+              });
+              await register
+                .getByLabel("Buscar factura", { exact: true })
+                .fill("Proveedor pendiente");
+              await register
+                .getByLabel("Filtrar origen de factura")
+                .selectOption("email_upload");
+              await imported
+                .getByRole("button", { name: "Revisar factura", exact: true })
+                .waitFor();
+              const pending = page.waitForEvent("download");
+              await register
+                .getByRole("button", { name: "Exportar facturas", exact: true })
+                .click();
+              if (
+                (await pending).suggestedFilename() !==
+                "truckcontrol-facturas.csv"
+              )
+                throw Error("Published invoice export unavailable");
+              await register
+                .getByRole("button", {
+                  name: "Restablecer filtros de facturas",
+                })
+                .click();
+              invoiceInboxChecked = true;
+            }
             const after = await page.evaluate(
               () =>
                 JSON.parse(localStorage.getItem("truckcontrol.demo.v1")).entries
@@ -386,6 +454,8 @@ try {
           gmailCallback: gmailCallbackChecked,
           universalMailOffline: universalMailChecked,
           authMailCors: authMailCorsChecked,
+          mailServicesCors: mailServicesCorsChecked,
+          invoiceInbox: invoiceInboxChecked,
           passed: true,
         });
         console.log(

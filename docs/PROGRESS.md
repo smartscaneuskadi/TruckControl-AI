@@ -360,3 +360,16 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Corregido además el retorno Gmail del hostname de producción: migración 54 local 20261102085143 / remota 20261102085701, conserva todos los destinos anteriores. company-gmail v11 desplegado y readback idéntico; salud booleana sin secretos y 14 controles HTTP pasan. El ensayo de estados por empresa/usuario y de un uso termina en rollback con cero residuos.
 - El runtime confirma configured=false y cero buzones Gmail. Credenciales y AES existentes se conservan. La solicitud pendiente del titular pide completar el guardado directamente en Servicios, sin valores en chat. No bloquea correo general, documentos ni informes.
 - Pasan 487 unitarias/SQL, TypeScript/PWA y 32 Python, con las 64 originales conservadas. Los checks finales de PR #23 verifican v15 después de publicar y el backend actualizado. No pagos, nuevos costes, emails de prueba ni llamadas IA. Los tres destinos DKIM de Migadu siguen SERVFAIL en Google/Cloudflare a las 09:05 UTC; DNS sin cambios.
+
+### 02/11/2026 — bandeja completa y acceso de correo desde PWA
+
+- Copia Git previa persistente, rama feat/invoice-inbox-workflow, 0.5.9-rc.1. 514 unitarias/SQL y 48 SaaS pasan; 64 originales conservadas. La primera ejecución local de navegador no arrancó por ruta de Chromium ausente; se seleccionó el navegador existente y la batería completa pasó.
+- Migración 55 local 20261102131804 / remota 20261102132728 aplicada una vez. 205 facturas ficticias y aislamiento probados en Supabase con rollback completo; huellas comerciales y contrato anterior sin cambios.
+- company-mail v11 y company-assistant v10 activos con tres orígenes productivos exactos; 21 controles HTTP, sin llamadas a proveedores ni cambios de cuotas. Ruta de import_map relativa explícita corrige el intento inicial de despliegue que heredaba una ruta temporal anterior.
+- Nueva búsqueda, filtros, paginación y CSV; importes desconocidos y monedas separados, consulta sin aprobación, cancelación de carga y ocultación del listado tras revocación. Pendiente finalizar CI, publicar preservando v15/demo y guardar evidencia pública.
+
+### 02/11/2026 — publicación de la bandeja, v16
+
+- Código 7998cb7 (CI 41455396125) y fuente exacta a4a4fc4 (CI 41455442975) pasan 720 controles: 514 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 48 SaaS, 14 candidata, 20 producción y seis públicos de v15 antes del despliegue.
+- Paquete exacto revisado en cuatro perfiles/temas, CSV y Axe AA; se corrigió el espaciado antes de guardar. Publicada v16 a las 13:53 UTC, despliegue appgdep_6ae895d56a3481919c1a384c1e133d17; 72 hashes HTTPS correctos, demo v6 intacta y v15 recuperable.
+- Aceptación pública posterior de v16 y merge: checks de PR #24. Gmail directo continúa pendiente de Google y Migadu sigue SERVFAIL a las 13:44 UTC; no se cambian credenciales, cuotas ni gastos.

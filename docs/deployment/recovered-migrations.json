@@ -133,6 +133,13 @@
       "name": "gmail_production_return_origin",
       "sha256": "67c47d8f2c342114ae04d3a068aacc4bdceea9d523cc570ec42727d9d111b872",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261102131804_invoice_inbox_pagination.sql",
+      "version": "20261102132728",
+      "name": "invoice_inbox_pagination",
+      "sha256": "6290b4597363c94c2cb9c2acc6736118819eb18f6ef1734d17e6adb558b99f65",
+      "already_applied": true
     }
   ]
 }

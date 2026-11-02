@@ -6,7 +6,10 @@ import {
   decryptCompanyBackup,
   encryptCompanyBackup,
 } from "../../src/data/company-backup";
-import type { CompanyDocument } from "../../src/integrations/supabase/database.types";
+import type {
+  CompanyDocument,
+  CompanyInvoice,
+} from "../../src/integrations/supabase/database.types";
 import type { ProviderStatus } from "../../src/integrations/supabase/provider-setup";
 import AxeBuilder from "@axe-core/playwright";
 import type { RecurringStatus } from "../../src/components/RecurringSubscription";
@@ -88,6 +91,8 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     } as ProviderStatus,
     companyRole: "owner" as "owner" | "admin" | "operator" | "viewer",
     backupDocuments: [] as CompanyDocument[],
+    invoiceRows: [] as CompanyInvoice[],
+    invoiceFailure: false,
     conflict: false,
     recurring: {
       configured: false,
@@ -174,7 +179,8 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       max_trucks: 50,
       requires_phone_verification: smsReady && !verified,
       company_role: controls.companyRole,
-      can_write: (!smsReady || verified) && active,
+      can_write:
+        (!smsReady || verified) && active && controls.companyRole !== "viewer",
       can_manage:
         (!smsReady || verified) &&
         active &&
@@ -340,6 +346,19 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
         records.set(id, record);
         data = record;
       }
+    } else if (url.pathname === "/rest/v1/rpc/tc_invoice_page") {
+      if (body?.p_org !== org || controls.invoiceFailure) {
+        status = 403;
+        data = { message: "Synthetic access denied" };
+      } else
+        data = controls.invoiceRows
+          .filter(
+            (i) =>
+              i.organization_id === body.p_org &&
+              (!body.p_after || i.id > body.p_after),
+          )
+          .sort((a, b) => a.id.localeCompare(b.id))
+          .slice(0, 200);
     } else if (url.pathname === "/rest/v1/rpc/tc_document_page") data = [];
     else if (url.pathname === "/rest/v1/rpc/tc_backup_page_v2")
       data = body?.p_kind === "documents" ? controls.backupDocuments : [];
@@ -1340,4 +1359,108 @@ test.describe("contratación y renovación mensual", () => {
       path: testInfo.outputPath("monthly-subscription.png"),
     });
   });
+});
+
+test("bandeja completa: más de 200 facturas, filtros, CSV y permiso de consulta", async ({
+  page,
+}) => {
+  const f = await fixtures(page);
+  f.controls.companyRole = "viewer";
+  f.controls.invoiceRows = Array.from({ length: 205 }, (_, n) => ({
+    id: `f6000000-0000-4000-8000-${String(n + 1).padStart(12, "0")}`,
+    organization_id: org,
+    message_id: `fictitious-${n}`,
+    attachment_id: String(n),
+    content_hash: (n + 1).toString(16).padStart(64, "0"),
+    document_id: `f7000000-0000-4000-8000-${String(n + 1).padStart(12, "0")}`,
+    supplier:
+      n === 204 ? "Tálleres últimos · ficticio" : `Proveedor ficticio ${n}`,
+    invoice_number: `TEST-${n}`,
+    invoice_date: n === 204 ? "2026-10-31" : "2026-10-01",
+    net_cents: n === 204 ? 10000 : null,
+    tax_cents: n === 204 ? 2100 : null,
+    total_cents: n === 204 ? 12100 : null,
+    currency: "EUR",
+    status: "needs_review",
+    review_note: "",
+    finance_entry_id: null,
+    created_at: "2026-11-02T00:00:00Z",
+    import_source: n === 204 ? "forwarded_email" : "file_upload",
+  }));
+  await login(page, "customer@example.com");
+  await expect(page.locator(".sidebar")).toBeVisible();
+  await page.evaluate(() => {
+    location.hash = "/invoices";
+  });
+  const register = page.getByRole("region", {
+    name: "Bandeja de facturas",
+    exact: true,
+  });
+  await expect(register).toContainText("205 facturas en el filtro");
+  await expect(register.locator("article.document-card")).toHaveCount(12);
+  expect(
+    f.calls
+      .filter((c) => c.path === "/rest/v1/rpc/tc_invoice_page")
+      .some((c) => Boolean(c.body?.p_after)),
+  ).toBe(true);
+  await register
+    .getByLabel("Buscar factura", { exact: true })
+    .fill("talleres ultimos");
+  await expect(register.locator("article.document-card")).toHaveCount(1);
+  await register
+    .getByLabel("Filtrar origen de factura")
+    .selectOption("forwarded_email");
+  await register.getByLabel("Fecha de factura desde").fill("2026-10-31");
+  await register.getByLabel("Fecha de factura hasta").fill("2026-10-31");
+  await expect(
+    register.getByRole("button", { name: "Revisar factura", exact: true }),
+  ).toBeDisabled();
+  const pending = page.waitForEvent("download");
+  await register
+    .getByRole("button", { name: "Exportar facturas", exact: true })
+    .click();
+  const download = await pending,
+    stream = await download.createReadStream(),
+    chunks: Buffer[] = [];
+  if (!stream) throw Error("Missing CSV download");
+  for await (const chunk of stream) chunks.push(Buffer.from(chunk));
+  const csv = Buffer.concat(chunks).toString("utf8");
+  expect(csv.trim().split(/\r?\n/)).toHaveLength(2);
+  expect(csv).toContain('"TEST-204"');
+  expect(csv).toContain('"100,00";"21,00";"121,00"');
+  expect(csv).not.toContain('"TEST-203"');
+  await register.getByLabel("Fecha de factura desde").fill("2026-11-01");
+  await expect(register.getByRole("alert")).toHaveText(
+    "La fecha inicial no puede ser posterior a la final.",
+  );
+  await expect(
+    register.getByRole("button", { name: "Exportar facturas", exact: true }),
+  ).toBeDisabled();
+  await register
+    .getByRole("button", { name: "Restablecer filtros de facturas" })
+    .click();
+  await register.getByRole("button", { name: "Página siguiente" }).click();
+  await expect(register).toContainText("Página 2 de 18");
+  for (const theme of ["light", "cockpit"]) {
+    await page.evaluate(
+      (theme) => (document.documentElement.dataset.theme = theme),
+      theme,
+    );
+    expect(
+      (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze())
+        .violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+  }
+  expect(f.calls.some((c) => c.path.includes("approve_company_invoice"))).toBe(
+    false,
+  );
+  f.controls.invoiceFailure = true;
+  await register.getByRole("button", { name: "Actualizar facturas" }).click();
+  await expect(
+    page.getByRole("alert").filter({ hasText: /bandeja autorizada/ }),
+  ).toBeVisible();
+  await expect(register.locator("article.document-card")).toHaveCount(0);
 });

@@ -1,0 +1,48 @@
+{
+  "checked_at": "2026-11-02T13:44:20.062754+00:00",
+  "results": [
+    {
+      "resolver": "google",
+      "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "authenticated": false,
+      "txt_records": 0
+    },
+    {
+      "resolver": "google",
+      "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "authenticated": false,
+      "txt_records": 0
+    },
+    {
+      "resolver": "google",
+      "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "authenticated": false,
+      "txt_records": 0
+    },
+    {
+      "resolver": "cloudflare",
+      "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "authenticated": false,
+      "txt_records": 0
+    },
+    {
+      "resolver": "cloudflare",
+      "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "authenticated": false,
+      "txt_records": 0
+    },
+    {
+      "resolver": "cloudflare",
+      "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "authenticated": false,
+      "txt_records": 0
+    }
+  ],
+  "dns_changes": false
+}

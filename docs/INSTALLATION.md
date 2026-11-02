@@ -46,3 +46,7 @@ La corrección de servidor ya admite los tres enlaces oficiales de producción, 
 ## Documentos e informes
 
 La versión 15 incorpora tipo, vencimiento, antelación, búsqueda, filtros y archivo de documentos conservando originales. Los avisos aparecen en Alertas y en la campana cuando el plan y los permisos permiten la documentación. Informes permite exportar indicadores por camión y gastos por categoría, con los datos registrados. Las copias con metadatos usan registros versión 2 y requieren esta versión o posterior; las copias 1 siguen admitidas. [Guía](DOCUMENT_REGISTER.md).
+
+## Consultar facturas en la versión 16
+
+En **Correo y facturas → Facturas y revisión**, busca proveedor/número, combina estado/origen/fechas y exporta el filtro a CSV. Usa **Actualizar facturas** tras recibir nuevos documentos. Las facturas sin fecha quedan fuera de los filtros de fecha y los importes desconocidos no se presentan como cero. Solo quien tiene permiso de escritura puede confirmar el gasto. [Guía y límites](INVOICE_INBOX.md). La versión 15 se conserva; guarda tus ediciones antes de aceptar **Actualizar**.

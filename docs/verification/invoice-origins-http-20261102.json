@@ -1,0 +1,192 @@
+{
+  "checked_at": "2026-11-02T13:31:48.189117+00:00",
+  "checks": [
+    {
+      "service": "company-mail",
+      "origin": "https://truckcontrolai.com",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowed_origin": "https://truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://truckcontrolai.com",
+      "method": "POST",
+      "status": 401,
+      "allowed_origin": "https://truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://www.truckcontrolai.com",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowed_origin": "https://www.truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://www.truckcontrolai.com",
+      "method": "POST",
+      "status": 401,
+      "allowed_origin": "https://www.truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowed_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "POST",
+      "status": 401,
+      "allowed_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowed_origin": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      "method": "POST",
+      "status": 401,
+      "allowed_origin": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://truckcontrolai.com.evil.invalid",
+      "method": "OPTIONS",
+      "status": 403,
+      "allowed_origin": null,
+      "passed": true
+    },
+    {
+      "service": "company-mail",
+      "origin": "https://truckcontrolai.com.evil.invalid",
+      "method": "POST",
+      "status": 403,
+      "allowed_origin": null,
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://truckcontrolai.com",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowed_origin": "https://truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://truckcontrolai.com",
+      "method": "POST",
+      "status": 401,
+      "allowed_origin": "https://truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://www.truckcontrolai.com",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowed_origin": "https://www.truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://www.truckcontrolai.com",
+      "method": "POST",
+      "status": 401,
+      "allowed_origin": "https://www.truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowed_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "POST",
+      "status": 401,
+      "allowed_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      "method": "OPTIONS",
+      "status": 204,
+      "allowed_origin": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      "method": "POST",
+      "status": 401,
+      "allowed_origin": "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://truckcontrolai.com.evil.invalid",
+      "method": "OPTIONS",
+      "status": 403,
+      "allowed_origin": "https://truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "company-assistant",
+      "origin": "https://truckcontrolai.com.evil.invalid",
+      "method": "POST",
+      "status": 403,
+      "allowed_origin": "https://truckcontrolai.com",
+      "passed": true
+    },
+    {
+      "service": "tc_invoice_page",
+      "method": "POST",
+      "authenticated": false,
+      "status": 401,
+      "passed": true
+    }
+  ],
+  "no_provider_calls": true,
+  "assistant_readiness": {
+    "configured": true,
+    "enabled": true
+  },
+  "no_payment_or_ai_policy_changes": true,
+  "runtimes": [
+    {
+      "name": "company-mail",
+      "version": 11,
+      "hash": "f8a9ad135ba36802eaee5dd04893b36c05ba2d702f3316c6d0bf4de3938392d6",
+      "files_match": true
+    },
+    {
+      "name": "company-assistant",
+      "version": 10,
+      "hash": "82270926b40a12bed2f2ea903063b381cbfc41d1c1b9bafc08294c8b3415628b",
+      "files_match": true
+    }
+  ]
+}

@@ -287,3 +287,34 @@ p.form-error {
     grid-template-columns: 1fr;
   }
 }
+
+/* Invoice controls use the same card spacing in both appearance themes. */
+.invoice-register-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px;
+}
+.invoice-register-body .list-toolbar {
+  padding: 0;
+  margin: 0;
+}
+.invoice-register-body .integration-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+.invoice-register-body > p {
+  margin: 0;
+}
+.invoice-register-body .document-grid {
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .invoice-register-body {
+    padding: 16px;
+  }
+  .invoice-register-body .integration-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
