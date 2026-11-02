@@ -36,10 +36,11 @@ export function writeDemoWorkspace(
   storage: DemoStorage,
   fleet: FleetSnapshot,
   operations: OperationRecord[] | null,
-  tyres?: DemoTyreArchive,
+  tyres?: DemoTyreArchive | null,
 ) {
   const valid = validateSnapshot(fleet);
-  const archive = tyres ?? readDemoTyreArchive(storage, valid);
+  const archive =
+    tyres === undefined ? readDemoTyreArchive(storage, valid) : tyres;
   const value =
     operations === null
       ? valid

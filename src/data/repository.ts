@@ -53,7 +53,12 @@ export class LocalFleetRepository implements FleetRepository {
   async reset() {
     const snapshot = validateSnapshot(this.seed());
     try {
-      writeDemoWorkspace(this.storage, snapshot, demoOperations(snapshot));
+      writeDemoWorkspace(
+        this.storage,
+        snapshot,
+        demoOperations(snapshot),
+        null,
+      );
     } catch {
       throw new Error(
         "No se ha podido restablecer. Los datos anteriores se conservan.",

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createDemo } from "./demo";
+import { LocalFleetRepository } from "./repository";
 import { STORAGE_KEY } from "./demo-keys";
 import { emptyTyreData } from "../domain/tyres";
 import { loadDemoTyres, saveDemoTyre } from "./tyres";
@@ -31,6 +32,24 @@ function fixture() {
 }
 afterEach(() => vi.unstubAllGlobals());
 describe("persistencia y recuperación de neumáticos demo", () => {
+  it("el restablecimiento explícito limpia los neumáticos y permite recuperar una demo dañada", async () => {
+    const f = fixture();
+    saveDemoTyre(
+      f.org,
+      f.fleet,
+      f.id,
+      { ...emptyTyreData, code: "DEMO-RESET" },
+      null,
+    );
+    const repository = new LocalFleetRepository(f.storage);
+    await repository.reset();
+    expect(loadDemoTyres(f.org).rows).toEqual([]);
+    expect(loadDemoTyres(f.org).history).toEqual([]);
+    f.storage.setItem(STORAGE_KEY, "{corrupto");
+    const reset = await repository.reset();
+    expect(reset.trucks).toHaveLength(50);
+    expect(loadDemoTyres(f.org).rows).toEqual([]);
+  });
   it("una edición de flota conserva fichas y revisiones en una sola escritura", () => {
     const f = fixture();
     const first = saveDemoTyre(

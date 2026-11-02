@@ -16,12 +16,14 @@ import { Link } from "react-router-dom";
 import { OfflineSettings } from "../components/OfflineSettings";
 import { DemoBackupTools } from "../components/DemoBackupTools";
 import { useOperations } from "../app/OperationsProvider";
+import { useTyres } from "../app/TyresProvider";
 import { AppearanceSettings } from "../components/AppearanceSettings";
 import { CompanyBackupTools } from "../components/CompanyBackupTools";
 
 export function Settings() {
   const { snapshot, reset, refresh, busy, notify } = useFleet();
   const operations = useOperations();
+  const tyres = useTyres();
   const access = useCompany();
   const cloud = access.mode === "company";
   const { install, installed } = useInstall();
@@ -224,7 +226,7 @@ export function Settings() {
             <div className="push-right inline-actions">
               <Button
                 variant="secondary"
-                disabled={busy || operations.busy}
+                disabled={busy || operations.busy || tyres.busy}
                 onClick={() => setConfirm(false)}
               >
                 Cancelar
@@ -235,6 +237,7 @@ export function Settings() {
                 onClick={() => {
                   void reset()
                     .then(() => operations.refresh())
+                    .then(() => tyres.refresh())
                     .then(() => {
                       setConfirm(false);
                       notify("Flota de demostración restablecida.");
