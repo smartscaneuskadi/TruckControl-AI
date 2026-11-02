@@ -54,3 +54,7 @@ En **Correo y facturas → Facturas y revisión**, busca proveedor/número, comb
 ## Lectura IA de facturas guardadas, versión 17
 
 En **Correo y facturas → Facturas y revisión**, una cuenta con IA autorizada y consentimiento puede pulsar **Solicitar lectura IA** en un original pendiente. Confirma el envío, revisa los campos propuestos y registra el gasto únicamente cuando los hayas comprobado. No necesitas conectar Gmail para esta lectura; requiere internet y cuota disponible. Si la solicitud queda incierta no se repite el consumo automáticamente. [Guía](INVOICE_AI.md). Guarda los formularios antes de aceptar **Actualizar**.
+
+## Neumáticos, versión 19
+
+Guarda tus formularios y acepta **Actualizar** cuando aparezca. En **Neumáticos**, una cuenta con Mantenimiento autorizado puede registrar montaje, posición, mediciones manuales y próxima revisión; consultar/exportar fichas e historial. Los valores desconocidos quedan vacíos. La empresa necesita conexión; la demo funciona offline. Pasar a almacén o retirado libera la posición sin borrar historial ni generar gastos. Las copias cifradas de empresa v3 y de demo v2 incluyen este registro y siguen aceptando formatos anteriores. [Guía](TYRES.md).

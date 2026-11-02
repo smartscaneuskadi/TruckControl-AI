@@ -13,6 +13,8 @@ import type {
 import type { ProviderStatus } from "../../src/integrations/supabase/provider-setup";
 import AxeBuilder from "@axe-core/playwright";
 import type { RecurringStatus } from "../../src/components/RecurringSubscription";
+import type { TyreRecord, TyreHistory } from "../../src/domain/tyres";
+import { emptyTyreData } from "../../src/domain/tyres";
 import { exampleCatalog, featureLabels } from "../../src/domain/subscriptions";
 import type {
   AdminSnapshot,
@@ -92,6 +94,9 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     companyRole: "owner" as "owner" | "admin" | "operator" | "viewer",
     backupDocuments: [] as CompanyDocument[],
     invoiceRows: [] as CompanyInvoice[],
+    tyreRows: [] as TyreRecord[],
+    tyreHistory: [] as TyreHistory[],
+    tyreDenied: false,
     invoiceFailure: false,
     invoiceAiEnabled: true,
     invoiceAiAttempted: new Set<string>(),
@@ -362,6 +367,69 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
           )
           .sort((a, b) => a.id.localeCompare(b.id))
           .slice(0, 200);
+    } else if (url.pathname === "/rest/v1/rpc/tc_tyre_page") {
+      const a = access(identity!);
+      if (
+        controls.tyreDenied ||
+        !a.active ||
+        !a.features.maintenance ||
+        body?.p_org !== org
+      ) {
+        status = 403;
+        data = { code: "42501" };
+      } else
+        data = (
+          body?.p_kind === "history"
+            ? controls.tyreHistory.filter(
+                (h) => !body.p_tyre || h.tyreId === body.p_tyre,
+              )
+            : controls.tyreRows
+        )
+          .filter(
+            (r) =>
+              r.organizationId === org &&
+              (!body.p_after || r.id > String(body.p_after)),
+          )
+          .sort((a, b) => a.id.localeCompare(b.id))
+          .slice(0, 200);
+    } else if (url.pathname === "/rest/v1/rpc/tc_save_tyre") {
+      const a = access(identity!),
+        old = controls.tyreRows.find((r) => r.id === body?.p_id);
+      if (
+        !a.active ||
+        !a.can_write ||
+        !a.features.maintenance ||
+        body?.p_org !== org
+      ) {
+        status = 403;
+        data = { code: "42501" };
+      } else if (
+        controls.conflict ||
+        (old && old.version !== body?.p_expected)
+      ) {
+        status = 409;
+        data = { code: "40001" };
+      } else {
+        const row: TyreRecord = {
+          id: String(body?.p_id),
+          organizationId: org,
+          data: body?.p_data as TyreRecord["data"],
+          version: (old?.version ?? 0) + 1,
+          updatedAt: new Date().toISOString(),
+        };
+        controls.tyreRows = controls.tyreRows
+          .filter((r) => r.id !== row.id)
+          .concat(row);
+        controls.tyreHistory.push({
+          id: crypto.randomUUID(),
+          organizationId: org,
+          tyreId: row.id,
+          data: structuredClone(row.data),
+          version: row.version,
+          changedAt: row.updatedAt,
+        });
+        data = row;
+      }
     } else if (url.pathname === "/rest/v1/rpc/tc_document_page") data = [];
     else if (url.pathname === "/rest/v1/rpc/tc_backup_page_v2")
       data = body?.p_kind === "documents" ? controls.backupDocuments : [];
@@ -1728,4 +1796,290 @@ test("lectura IA incierta no se repite; desactivar el consentimiento retira la a
   expect(f.calls.some((c) => c.path.includes("approve_company_invoice"))).toBe(
     false,
   );
+});
+
+function storedTyre(n: number): TyreRecord {
+  return {
+    id: `ee100000-0000-4000-8000-${String(n).padStart(12, "0")}`,
+    organizationId: org,
+    data: { ...emptyTyreData, code: `CUBIERTA-FICTICIA-${n}` },
+    version: 1,
+    updatedAt: stamp,
+  };
+}
+test("neumáticos: montaje, mediciones, avisos, historial y retirada sin gastos", async ({
+  page,
+}, testInfo) => {
+  const f = await fixtures(page);
+  await login(page, "customer@example.com");
+  await expect(page.locator(".sidebar")).toBeVisible();
+  await page.evaluate(() => {
+    location.hash = "/tyres";
+  });
+  await page
+    .getByRole("button", { name: "Añadir neumático", exact: true })
+    .click();
+  let modal = page.getByRole("dialog", { name: "Añadir neumático" });
+  await modal.getByLabel("Código o número de serie").fill("CUBIERTA-DEMO-1");
+  await modal.getByLabel("Estado del neumático").selectOption("mounted");
+  await modal
+    .getByLabel("Camión del montaje")
+    .selectOption("40000000-0000-4000-8000-000000000082");
+  await modal.getByLabel("Posición del neumático").fill("Eje 1 izquierda");
+  await modal.getByLabel("Fecha de medición").fill("2000-01-02");
+  await modal.getByLabel("Dibujo medido (mm)").fill("1,5");
+  await modal.getByLabel("Presión medida (bar)").fill("8,5");
+  await modal.getByLabel("Umbral de dibujo (mm)").fill("2,0");
+  await modal.getByLabel("Presión mínima configurada (bar)").fill("9,0");
+  await modal.getByLabel("Presión máxima configurada (bar)").fill("10,0");
+  expect(
+    (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze())
+      .violations,
+  ).toEqual([]);
+  await modal
+    .getByRole("button", { name: "Guardar neumático", exact: true })
+    .click();
+  await expect(modal).toHaveCount(0);
+  let card = page.locator("article.tyre-card").filter({
+    has: page.getByRole("heading", { name: "CUBIERTA-DEMO-1", exact: true }),
+  });
+  await expect(card).toContainText("8,5 bar");
+  await expect(card).toContainText("1,5 mm");
+  await expect(card).toContainText("Dibujo en el umbral");
+  const save = f.calls.find((c) => c.path.endsWith("tc_save_tyre"));
+  expect(save?.body?.p_org).toBe(org);
+  expect((save?.body?.p_data as Record<string, unknown>).pressureKpa).toBe(850);
+  expect((save?.body?.p_data as Record<string, unknown>).treadTenthsMm).toBe(
+    15,
+  );
+  await page.evaluate(() => {
+    location.hash = "/alerts";
+  });
+  const alert = page
+    .locator(".operation-alert")
+    .filter({ hasText: "Dibujo en el umbral" });
+  await expect(alert).toContainText("Medición manual");
+  await alert.getByRole("button", { name: "Revisado", exact: true }).click();
+  await expect(alert).toHaveCount(0);
+  await page.evaluate(() => {
+    location.hash = "/tyres";
+  });
+  await card
+    .getByRole("button", { name: "Editar neumático", exact: true })
+    .click();
+  modal = page.getByRole("dialog", { name: "Editar neumático" });
+  await modal.getByLabel("Presión medida (bar)").fill("9,5");
+  await modal
+    .getByRole("button", { name: "Guardar neumático", exact: true })
+    .click();
+  await expect(modal).toHaveCount(0);
+  for (const theme of ["light", "cockpit"]) {
+    await page.evaluate((t) => {
+      document.documentElement.dataset.theme = t;
+    }, theme);
+    expect(
+      (await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze())
+        .violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await page.screenshot({ path: testInfo.outputPath(`tyres-${theme}.png`) });
+  }
+  await card
+    .getByRole("button", { name: "Ver historial", exact: true })
+    .click();
+  modal = page.getByRole("dialog", { name: "Historial de CUBIERTA-DEMO-1" });
+  await expect(modal).toContainText("Versión 2");
+  await expect(modal).toContainText("Versión 1");
+  await expect(modal).toContainText("8,5 bar");
+  await expect(modal).toContainText("9,5 bar");
+  await modal.getByRole("button", { name: "Cerrar ventana" }).click();
+  await card
+    .getByRole("button", { name: "Editar neumático", exact: true })
+    .click();
+  modal = page.getByRole("dialog", { name: "Editar neumático" });
+  await modal.getByLabel("Estado del neumático").selectOption("retired");
+  await modal
+    .getByRole("button", { name: "Guardar neumático", exact: true })
+    .click();
+  await expect(card).toContainText("Retirado");
+  expect(f.controls.tyreRows[0].data.truckId).toBeNull();
+  expect(f.controls.tyreHistory).toHaveLength(3);
+  await page
+    .getByRole("combobox", { name: "Filtrar estado de neumáticos" })
+    .selectOption("retired");
+  const pending = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Exportar neumáticos", exact: true })
+    .click();
+  const file = await pending;
+  expect(file.suggestedFilename()).toBe("truckcontrol-neumaticos.csv");
+  expect(await readFile((await file.path())!, "utf8")).toContain(
+    "CUBIERTA-DEMO-1",
+  );
+  expect(f.calls.some((c) => c.path.endsWith("tc_book_record"))).toBe(false);
+});
+test("neumáticos: consulta sin edición y módulo revocado no muestra datos", async ({
+  page,
+}) => {
+  const f = await fixtures(page);
+  f.controls.companyRole = "viewer";
+  f.controls.tyreRows = [storedTyre(1)];
+  f.controls.tyreHistory = [
+    {
+      id: crypto.randomUUID(),
+      organizationId: org,
+      tyreId: storedTyre(1).id,
+      data: storedTyre(1).data,
+      version: 1,
+      changedAt: stamp,
+    },
+  ];
+  await login(page, "customer@example.com");
+  await page.evaluate(() => {
+    location.hash = "/tyres";
+  });
+  await expect(
+    page.getByRole("heading", { name: "CUBIERTA-FICTICIA-1", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Añadir neumático", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Editar neumático", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Ver historial", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toContainText("Versión 1");
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Cerrar ventana" })
+    .click();
+  f.snapshot.modules.find((m) => m.id === "maintenance")!.enabled = false;
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "CUBIERTA-FICTICIA-1", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Neumáticos", exact: true }),
+  ).toHaveCount(0);
+  expect(f.calls.some((c) => c.path.endsWith("tc_save_tyre"))).toBe(false);
+});
+test("neumáticos: conflicto conserva el formulario y una revocación retira la lista", async ({
+  page,
+}) => {
+  const f = await fixtures(page);
+  f.controls.tyreRows = [storedTyre(2)];
+  f.controls.conflict = true;
+  await login(page, "customer@example.com");
+  await page.evaluate(() => {
+    location.hash = "/tyres";
+  });
+  await page
+    .getByRole("button", { name: "Editar neumático", exact: true })
+    .click();
+  const modal = page.getByRole("dialog", { name: "Editar neumático" });
+  await modal
+    .getByLabel("Notas del neumático")
+    .fill("Conservar este borrador ficticio");
+  await modal
+    .getByRole("button", { name: "Guardar neumático", exact: true })
+    .click();
+  await expect(modal.getByRole("alert")).toContainText("Otro dispositivo");
+  await expect(modal.getByLabel("Notas del neumático")).toHaveValue(
+    "Conservar este borrador ficticio",
+  );
+  expect(f.calls.filter((c) => c.path.endsWith("tc_save_tyre"))).toHaveLength(
+    1,
+  );
+  await modal.getByRole("button", { name: "Cancelar", exact: true }).click();
+  f.controls.tyreDenied = true;
+  await page
+    .getByRole("button", { name: "Actualizar neumáticos", exact: true })
+    .click();
+  await expect(page.locator("article.tyre-card")).toHaveCount(0);
+  await expect(page.getByRole("alert")).toContainText("No tienes acceso");
+});
+test("neumáticos demo: copia con historial y recarga sin peticiones de empresa", async ({
+  page,
+}) => {
+  const f = await fixtures(page);
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Explorar la demo", exact: true })
+    .click();
+  await page.evaluate(() => {
+    location.hash = "/tyres";
+  });
+  await page
+    .getByRole("button", { name: "Añadir neumático", exact: true })
+    .click();
+  const modal = page.getByRole("dialog", { name: "Añadir neumático" });
+  await modal
+    .getByLabel("Código o número de serie")
+    .fill("DEMO-STOCK-SIN-MEDICIONES");
+  await modal
+    .getByRole("button", { name: "Guardar neumático", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "DEMO-STOCK-SIN-MEDICIONES",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Explorar la demo", exact: true })
+    .click();
+  await page.evaluate(() => {
+    location.hash = "/tyres";
+  });
+  await expect(
+    page.getByRole("heading", {
+      name: "DEMO-STOCK-SIN-MEDICIONES",
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem("truckcontrol.demo.v1")!).demoTyresV1
+          .history.length,
+    ),
+  ).toBe(1);
+  expect(
+    f.calls.some(
+      (c) => c.path.includes("tc_tyre_") || c.path.endsWith("tc_save_tyre"),
+    ),
+  ).toBe(false);
+  await page.evaluate(() => {
+    location.hash = "/settings";
+  });
+  const pending = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Descargar copia de registros", exact: true })
+    .click();
+  const file = await pending;
+  const backup = JSON.parse(await readFile((await file.path())!, "utf8"));
+  expect(backup.version).toBe(2);
+  expect(backup.tyres.rows[0].data.code).toBe("DEMO-STOCK-SIN-MEDICIONES");
+  expect(backup.tyres.history).toHaveLength(1);
+  await page
+    .getByRole("button", { name: "Restablecer demostración", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, restablecer", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.evaluate(() => {
+    location.hash = "/tyres";
+  });
+  await expect(
+    page.getByRole("heading", {
+      name: "DEMO-STOCK-SIN-MEDICIONES",
+      exact: true,
+    }),
+  ).toHaveCount(0);
 });

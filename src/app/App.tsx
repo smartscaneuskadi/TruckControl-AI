@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronRight,
   CircleHelp,
+  CircleDot,
   Download,
   LayoutDashboard,
   Menu,
@@ -56,6 +57,7 @@ import { Settings } from "../pages/Settings";
 import { Documents } from "../pages/Documents";
 import { Invoices } from "../pages/Invoices";
 import { Operations } from "../pages/Operations";
+import { Tyres } from "../pages/Tyres";
 import { Team } from "../pages/Team";
 import { Reports } from "../pages/Reports";
 import type { OperationKind } from "../domain/operations";
@@ -69,6 +71,7 @@ import { useOffline } from "./OfflineContext";
 import { useOperations } from "./OperationsProvider";
 import { operationalAlerts } from "../domain/operations";
 import { useDocuments } from "./DocumentsProvider";
+import { useTyres } from "./TyresProvider";
 import { useCurrentDay } from "../lib/use-current-day";
 import { isCandidateRelease } from "../domain/release";
 
@@ -122,6 +125,12 @@ const navigation = [
   },
   { to: "/fuel", label: "Combustible", icon: Fuel, feature: "fuel" },
   {
+    to: "/tyres",
+    label: "Neumáticos",
+    icon: CircleDot,
+    feature: "maintenance",
+  },
+  {
     to: "/deadlines",
     label: "Vencimientos",
     icon: CalendarClock,
@@ -158,6 +167,7 @@ function Workspace() {
   const access = useCompany();
   const operations = useOperations();
   const documents = useDocuments();
+  const tyres = useTyres();
   const day = useCurrentDay();
   const cloud = access.mode === "company";
   const location = useLocation();
@@ -180,6 +190,7 @@ function Workspace() {
         operations.rows,
         day,
         documents.documents,
+        tyres.rows,
       ).filter((a) => !subscription.enabled || subscription.features[a.source])
     : [];
   const insights = [
@@ -188,9 +199,11 @@ function Workspace() {
       level: a.urgent ? ("warning" as const) : ("info" as const),
       title: a.title,
       description:
-        a.reason === "kilometres"
-          ? `Kilometraje registrado: ${a.currentKm} km. Revisión prevista desde ${a.thresholdKm} km.`
-          : `Fecha: ${a.dueOn}. ${a.dueOn < day ? "Vencido" : a.dueOn === day ? "Vence hoy" : "Próximo vencimiento"}.`,
+        a.reason === "measurement"
+          ? `Medición manual del ${a.dueOn}. Comprueba el neumático y los umbrales configurados.`
+          : a.reason === "kilometres"
+            ? `Kilometraje registrado: ${a.currentKm} km. Revisión prevista desde ${a.thresholdKm} km.`
+            : `Fecha: ${a.dueOn}. ${a.dueOn < day ? "Vencido" : a.dueOn === day ? "Vence hoy" : "Próximo vencimiento"}.`,
       href: "/alerts",
     })),
     ...new LocalInsightProvider()
@@ -466,6 +479,14 @@ function Workspace() {
         <main id="main-content" tabIndex={-1} className="page-content">
           <Routes>
             <Route
+              path="/tyres"
+              element={
+                <FeatureGate feature="maintenance">
+                  <Tyres key={`${cloud}:${snapshot.organization.id}`} />
+                </FeatureGate>
+              }
+            />
+            <Route
               path="/reports"
               element={
                 <FeatureGate feature="profitability">
@@ -630,6 +651,12 @@ function Workspace() {
               <p role="status">
                 No se han podido comprobar los vencimientos documentales. Revisa
                 el archivo de Documentos.
+              </p>
+            )}
+            {(tyres.error || tyres.onlineRequired) && (
+              <p role="status">
+                No se han podido comprobar los neumáticos. Conecta y actualiza
+                su registro para revisar todos sus avisos.
               </p>
             )}
             {insights.slice(0, 20).map((insight) => (

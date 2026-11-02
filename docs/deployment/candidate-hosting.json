@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "5b51dbdcbc08654489cc9cbf309d1a3e309eefec",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_74ebf01f9efc81918e7fa7f0b11b3517",
-  "published_version_number": 17,
-  "deployment_id": "appgdep_6ae8a89406e08191b84c1e2d245f7d5d",
-  "previous_deployment_id": "appgdep_6ae895d56a3481919c1a384c1e133d17",
+  "published_commit": "2212cb3956ab96f4463fdad45c9fd23f18e50ece",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_7c07af15b6988191856f042f0de0a7e9",
+  "published_version_number": 19,
+  "deployment_id": "appgdep_6ae8de12c194819198a47736820b7449",
+  "previous_deployment_id": "appgdep_6ae8a89406e08191b84c1e2d245f7d5d",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -21,7 +21,7 @@
     "vat_rate_bps": 2100,
     "plans": [
       {
-        "name": "Básico",
+        "name": "B\u00e1sico",
         "monthly_cents": 30000
       },
       {
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-02T15:13:33.958943+00:00",
+  "deployed_at": "2026-11-02T19:01:49.908835+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 41468200441,
+  "source_ci_run": 41504867338,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "d09d6eddb03fe335bbf0c2208791f113ee78f581",
+  "source_ci_commit": "f1072f87a1cc8cae07925fb64b72098eab4eca80",
   "production_source_manifest_only_diff": true,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 16,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_730f680b02b8819184016d94dd5e806d",
-    "source_commit": "a4a4fc49897e307cb335fa2e0d28c4e748d2bdd5",
-    "deployment_id": "appgdep_6ae895d56a3481919c1a384c1e133d17",
-    "app_version": "0.5.9-rc.1"
+    "version": 17,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_74ebf01f9efc81918e7fa7f0b11b3517",
+    "source_commit": "5b51dbdcbc08654489cc9cbf309d1a3e309eefec",
+    "deployment_id": "appgdep_6ae8a89406e08191b84c1e2d245f7d5d",
+    "app_version": "0.5.10-rc.1"
   },
-  "source_deployment_ci_run": 41468271123,
-  "app_version": "0.5.10-rc.1",
+  "source_deployment_ci_run": 41504864364,
+  "app_version": "0.5.11-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -126,6 +126,13 @@
       "source_commit": "a4a4fc49897e307cb335fa2e0d28c4e748d2bdd5",
       "deployment_id": "appgdep_6ae895d56a3481919c1a384c1e133d17",
       "app_version": "0.5.9-rc.1"
+    },
+    {
+      "version": 17,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_74ebf01f9efc81918e7fa7f0b11b3517",
+      "source_commit": "5b51dbdcbc08654489cc9cbf309d1a3e309eefec",
+      "deployment_id": "appgdep_6ae8a89406e08191b84c1e2d245f7d5d",
+      "app_version": "0.5.10-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -143,6 +150,14 @@
   "gmail_function_version": 11,
   "expected_mail_service_cors": true,
   "expected_invoice_inbox": true,
-  "mail_function_version": 11,
-  "assistant_function_version": 10
+  "mail_function_version": 12,
+  "assistant_function_version": 10,
+  "expected_tyres": true,
+  "unpublished_tyre_candidate": {
+    "version": 18,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_f1e4db3a0dd481918554eff5e35d821a",
+    "source_commit": "af2b60075f50390555eab33699affabdcf6cf0e5",
+    "deployed": false,
+    "reason": "CI detected damaged demo recovery regression; original tests retained, corrected in v19"
+  }
 }

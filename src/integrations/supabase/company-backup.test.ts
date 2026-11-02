@@ -52,6 +52,7 @@ function fixture() {
           error: null,
         };
       if (name === "tc_list_records") return { data: [], error: null };
+      if (name === "tc_tyre_page") return { data: [], error: null };
       if (name === "tc_backup_page_v2") {
         let rows =
           args.p_kind === "documents"
@@ -105,6 +106,9 @@ describe("lectura autorizada para copias", () => {
       backup = await collectCompanyBackup(f.gateway, org);
     expect(backup.documents).toHaveLength(201);
     expect(backup.files).toHaveLength(201);
+    expect(backup.version).toBe(3);
+    expect(backup.tyres).toEqual([]);
+    expect(backup.tyreHistory).toEqual([]);
     expect(f.download).toHaveBeenCalledTimes(201);
     expect(
       f.rpc.mock.calls.some(

@@ -6,31 +6,37 @@ import type { OperationRecord } from "../domain/operations";
 import { demoOrganizationId } from "./demo";
 import { STORAGE_KEY, demoOperationKey, demoRecoveryKey } from "./demo-keys";
 import { readDemoOperations, writeDemoWorkspace } from "./demo-workspace";
+import { readDemoTyreArchive } from "./demo-workspace";
+import type { DemoTyreArchive } from "./demo-workspace";
+import { validateTyreArchive } from "../domain/tyres";
 import type { DemoStorage } from "./demo-workspace";
 
 export const maxDemoBackupBytes = 10 * 1024 * 1024;
 export interface DemoBackup {
   format: "truckcontrol-demo-records";
-  version: 1;
+  version: 1 | 2;
   exportedAt: string;
   attachmentsIncluded: false;
   fleet: FleetSnapshot;
   operations: OperationRecord[];
+  tyres?: DemoTyreArchive;
 }
 const envelope = z
   .object({
     format: z.literal("truckcontrol-demo-records"),
-    version: z.literal(1),
+    version: z.union([z.literal(1), z.literal(2)]),
     exportedAt: z.iso.datetime(),
     attachmentsIncluded: z.literal(false),
     fleet: z.unknown(),
     operations: z.array(z.unknown()).max(50_000),
+    tyres: z.unknown().optional(),
   })
   .strict();
 export function createDemoBackup(
   fleet: FleetSnapshot,
   operations: OperationRecord[],
   exportedAt = new Date().toISOString(),
+  tyres?: DemoTyreArchive,
 ): DemoBackup {
   const valid = validateSnapshot(fleet);
   if (valid.organization.id !== demoOrganizationId)
@@ -45,14 +51,25 @@ export function createDemoBackup(
         "Un registro contabilizado no tiene su movimiento económico. Revisa la copia antes de restaurarla.",
       );
   z.iso.datetime().parse(exportedAt);
-  return {
+  const backup: DemoBackup = {
     format: "truckcontrol-demo-records",
-    version: 1,
+    version: tyres ? 2 : 1,
     exportedAt,
     attachmentsIncluded: false,
     fleet: valid,
     operations: records,
+    ...(tyres
+      ? { tyres: validateTyreArchive(tyres, valid.organization.id, valid) }
+      : {}),
   };
+  if (
+    new TextEncoder().encode(JSON.stringify(backup)).byteLength >
+    maxDemoBackupBytes
+  )
+    throw Error(
+      "La copia supera el máximo de 10 MB. No se ha generado una copia parcial.",
+    );
+  return backup;
 }
 export function parseDemoBackupText(text: string): {
   backup: DemoBackup;
@@ -76,16 +93,21 @@ export function parseDemoBackupText(text: string): {
         backup: createDemoBackup(
           validateSnapshot(value),
           (legacy.demoOperationsV1 as OperationRecord[]) ?? [],
+          undefined,
+          legacy.demoTyresV1 as DemoTyreArchive | undefined,
         ),
         legacy: true,
       };
     }
     const parsed = envelope.parse(value);
+    if ((parsed.version === 2) !== (parsed.tyres !== undefined))
+      throw Error("La versión de la copia no corresponde a sus neumáticos.");
     return {
       backup: createDemoBackup(
         validateSnapshot(parsed.fleet),
         parsed.operations as OperationRecord[],
         parsed.exportedAt,
+        parsed.tyres as DemoTyreArchive | undefined,
       ),
       legacy: false,
     };
@@ -110,11 +132,15 @@ export function prepareDemoRestore(
     backup.fleet,
     backup.operations,
     backup.exportedAt,
+    backup.tyres,
   );
   const current = storage.getItem(STORAGE_KEY);
   if (current === null) throw Error("No se encuentra la demostración actual.");
   const fleet = validateSnapshot(JSON.parse(current));
   createDemoBackup(fleet, readDemoOperations(storage, fleet) ?? []);
+  const tyres = readDemoTyreArchive(storage, fleet);
+  if (!valid.tyres && tyres)
+    validateTyreArchive(tyres, valid.fleet.organization.id, valid.fleet);
   return {
     backup: valid,
     expectedCore: current,
@@ -129,6 +155,7 @@ export function restoreDemoBackup(
     preview.backup.fleet,
     preview.backup.operations,
     preview.backup.exportedAt,
+    preview.backup.tyres,
   );
   const unchanged = () =>
     storage.getItem(STORAGE_KEY) === preview.expectedCore &&
@@ -141,6 +168,8 @@ export function restoreDemoBackup(
   const recovery = createDemoBackup(
     fleet,
     readDemoOperations(storage, fleet) ?? [],
+    undefined,
+    readDemoTyreArchive(storage, fleet) ?? undefined,
   );
   try {
     storage.setItem(demoRecoveryKey, JSON.stringify(recovery));
@@ -156,7 +185,7 @@ export function restoreDemoBackup(
   try {
     // One atomic write replaces both record sets. A failed write leaves the
     // previous workspace intact; no staged or half-restored state is exposed.
-    writeDemoWorkspace(storage, valid.fleet, valid.operations);
+    writeDemoWorkspace(storage, valid.fleet, valid.operations, valid.tyres);
   } catch {
     throw Error(
       "No se ha podido guardar la restauración. La demostración anterior se conserva.",

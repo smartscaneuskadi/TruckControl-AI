@@ -115,6 +115,24 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_tyre_page: {
+        Args: {
+          p_org: string;
+          p_kind?: string;
+          p_after?: string | null;
+          p_tyre?: string | null;
+        };
+        Returns: Json;
+      };
+      tc_save_tyre: {
+        Args: {
+          p_org: string;
+          p_id: string;
+          p_data: Json;
+          p_expected: number | null;
+        };
+        Returns: Json;
+      };
       tc_invoice_page: {
         Args: { p_org: string; p_after?: string | null };
         Returns: Json;

@@ -202,9 +202,9 @@ export function CompanyBackupTools() {
         <Badge tone="green">Copia cifrada de empresa</Badge>
         <h2>Conserva registros y originales</h2>
         <p>
-          Incluye fichas, movimientos, operaciones y los documentos y facturas
-          que tu cuenta puede leer. Cada original se comprueba con su huella
-          digital.
+          Incluye fichas, movimientos, operaciones, neumáticos con su historial
+          y los documentos y facturas que tu cuenta puede leer. Cada original se
+          comprueba con su huella digital.
         </p>
         <p>
           No incluye usuarios, contraseñas, conexiones de proveedores ni todo el
@@ -302,8 +302,11 @@ export function CompanyBackupTools() {
             {preview.fleet.trucks.length} camiones ·{" "}
             {preview.fleet.drivers.length} conductores ·{" "}
             {preview.fleet.entries.length} movimientos ·{" "}
-            {preview.operations.length} operaciones · {preview.files.length}{" "}
-            originales · {preview.invoices.length} facturas.
+            {preview.operations.length} operaciones ·{" "}
+            {preview.tyres?.length ?? 0} neumáticos ·{" "}
+            {preview.tyreHistory?.length ?? 0} revisiones ·{" "}
+            {preview.files.length} originales · {preview.invoices.length}{" "}
+            facturas.
           </p>
           <p>
             Los datos se han descifrado y validado en esta ventana. La empresa

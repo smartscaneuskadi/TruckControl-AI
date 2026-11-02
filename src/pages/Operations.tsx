@@ -14,6 +14,7 @@ import {
 import { useFleet, errorMessage } from "../app/FleetProvider";
 import { useOperations } from "../app/OperationsProvider";
 import { useDocuments } from "../app/DocumentsProvider";
+import { useTyres } from "../app/TyresProvider";
 import { useSubscription } from "../app/SubscriptionContext";
 import {
   Badge,
@@ -55,6 +56,7 @@ export function Operations({ kind }: { kind: OperationKind }) {
     subscription = useSubscription();
   const day = useCurrentDay();
   const documents = useDocuments();
+  const tyres = useTyres();
   const [alertFilter, setAlertFilter] = useState("all"),
     [alertSearch, setAlertSearch] = useState("");
   const [search, setSearch] = useState(""),
@@ -134,6 +136,7 @@ export function Operations({ kind }: { kind: OperationKind }) {
           operations.rows,
           day,
           documents.documents,
+          tyres.rows,
         ).filter(
           (a) => !subscription.enabled || subscription.features[a.source],
         )
@@ -230,6 +233,18 @@ export function Operations({ kind }: { kind: OperationKind }) {
           archivo de Documentos.
         </p>
       )}
+      {kind === "alerts" && tyres.error && (
+        <p role="status" className="form-error">
+          No se han podido comprobar los neumáticos. Actualiza su registro antes
+          de dar por completos los avisos.
+        </p>
+      )}
+      {kind === "alerts" && tyres.onlineRequired && (
+        <p role="status" className="form-error">
+          Conecta para comprobar los neumáticos; este registro no forma parte de
+          la copia offline.
+        </p>
+      )}
       {(error || operations.error) && (
         <p role="alert" className="form-error">
           {error || operations.error}
@@ -283,24 +298,28 @@ export function Operations({ kind }: { kind: OperationKind }) {
                     <div>
                       <strong>{alert.title}</strong>
                       <span>
-                        {alert.reason === "kilometres"
-                          ? `${number(alert.currentKm!)} km · revisión desde ${number(alert.thresholdKm!)} km`
-                          : `${alert.dueOn} · ${alert.dueOn < day ? "Vencido" : alert.dueOn === day ? "Vence hoy" : "Próximo vencimiento"}`}
+                        {alert.reason === "measurement"
+                          ? `Medición manual: ${alert.dueOn} · umbrales de tu empresa`
+                          : alert.reason === "kilometres"
+                            ? `${number(alert.currentKm!)} km · revisión desde ${number(alert.thresholdKm!)} km`
+                            : `${alert.dueOn} · ${alert.dueOn < day ? "Vencido" : alert.dueOn === day ? "Vence hoy" : "Próximo vencimiento"}`}
                       </span>
                       <Badge tone={alert.urgent ? "red" : "blue"}>
                         {alert.urgent ? "Urgente" : "Seguimiento"}
                       </Badge>
-                      <Link to={`/${alert.source}`}>
+                      <Link to={alert.href ?? `/${alert.source}`}>
                         Ver{" "}
-                        {alert.source === "trucks"
-                          ? "camiones"
-                          : alert.source === "documents"
-                            ? "documentos"
-                            : alert.source === "drivers"
-                              ? "conductores"
-                              : operationLabels[alert.source].toLocaleLowerCase(
-                                  "es",
-                                )}
+                        {alert.href === "/tyres"
+                          ? "neumáticos"
+                          : alert.source === "trucks"
+                            ? "camiones"
+                            : alert.source === "documents"
+                              ? "documentos"
+                              : alert.source === "drivers"
+                                ? "conductores"
+                                : operationLabels[
+                                    alert.source
+                                  ].toLocaleLowerCase("es")}
                       </Link>
                     </div>
                     {writable && (

@@ -325,3 +325,108 @@ p.form-error {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.tyre-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.tyre-register {
+  margin-top: 20px;
+  min-width: 0;
+}
+.tyre-register-body {
+  padding: 20px;
+}
+.tyre-card {
+  padding: 24px;
+  min-width: 0;
+}
+.tyre-card h2 {
+  font-size: 16px;
+  margin: 18px 0 12px;
+  overflow-wrap: anywhere;
+}
+.tyre-card p:not(.invoice-review-note) {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.tyre-card .badge {
+  float: right;
+}
+.tyre-editor .form-span {
+  grid-column: 1 / -1;
+}
+.tyre-editor textarea {
+  width: 100%;
+  min-height: 100px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--theme-surface);
+  color: var(--text);
+  font: inherit;
+}
+@media (max-width: 650px) {
+  .tyre-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.tyre-toolbar,
+.tyre-toolbar .inline-actions,
+.tyre-card .inline-actions {
+  flex-wrap: wrap;
+}
+.tyre-card .button {
+  max-width: 100%;
+  white-space: normal;
+}
+.tyre-readings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.tyre-readings dt {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.tyre-readings dd {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.tyre-history {
+  padding-left: 22px;
+}
+.tyre-history li {
+  margin: 18px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.tyre-history p {
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1000px) {
+  .tyre-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .tyre-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tyre-register-body {
+    padding: 16px;
+  }
+  .tyre-toolbar select {
+    max-width: 100%;
+  }
+}
