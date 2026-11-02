@@ -1,6 +1,6 @@
 # Registro de reanudación — 31 de octubre de 2026
 
-**Estado vigente:** producción conectada 10 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
+**Estado vigente:** producción conectada 12 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
 
 Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI
 
@@ -321,3 +321,11 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - 418 unitarias/SQL pasan. El ensayo remoto con dos identidades ficticias y escritura real en Vault termina revertido, con cero usuarios/auditorías de prueba; las claves Google/AES y las condiciones de acceso siguen intactas. Asesor sin avisos nuevos, permanece el previo de contraseñas filtradas.
 - Google: proyecto truckcontrolai, un único cliente TruckControl AI Gmail creado con origen y retorno canónicos. El procedimiento oficial terminó sin poder recuperar el secreto permanentemente enmascarado; no cambió ajustes ni credenciales. Automatización acumulada estimada 1,5586 USD (95 pasos/1158 segundos), inferior al máximo aprobado de 2 USD; sin recargas. No repetir ni duplicar el cliente.
 - Publicación de la mejora pendiente de CI y verificación pública. No confundir formato de credenciales con consentimiento Gmail real. Reenvío general e IA existente continúan disponibles con sus permisos y límites.
+
+# 2026-11-02 — Servicios publicados, versión 12
+
+- CI de PR 41365321617 y fuente exacta 41365370169 pasan 614 comprobaciones. El primer intento encontró el límite predeterminado de cinco segundos en el round-trip criptográfico de 3 MB; se dio un plazo explícito de veinte segundos, sin reducir iteraciones ni aserciones.
+- Publicada 0.5.5-rc.1, fuente 63258ac0a705300d2f589f84b8bad274aaa6f83c, versión alojada 12, despliegue appgdep_6ae7d5f1fc8081918189edc9b488a869. La 11 se guardó antes de completar CI y no se desplegó; 10/9 y demo v6 conservadas.
+- Verificados 72 hashes por HTTPS en tres orígenes, índice de la demo sin cambios y rechazo anónimo 401/42501 de tc_provider_control. Cloudflare rechazaba Python urllib con código 1010, también en la demo anterior; curl ordinario funcionó con el mismo proxy y TLS, sin cambiar permisos ni seguridad del alojamiento.
+- Actualizadas las guías de correo/administración, preservando el documento anterior en historial. Google sigue sin secreto completo y sin prueba OAuth de buzón; el receptor general y la IA conservan su funcionamiento y límites. Migadu continúa con SERVFAIL/DNSSEC en los tres destinos DKIM a las 00:05 UTC.
+- La aceptación pública de v12 se ejecuta mediante los checks finales de PR #20. Mantener registro abierto, cobros y SMS apagados; no ampliar presupuestos.

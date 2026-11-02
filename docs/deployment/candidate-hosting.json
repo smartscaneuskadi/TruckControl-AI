@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "e5ce8e662dc8ef8466025f5d90ba0884298ff5f4",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_717c0b314ea4819195eea84328516235",
-  "published_version_number": 10,
-  "deployment_id": "appgdep_6ae7cc64f8b88191b6856c51b08f0da0",
-  "previous_deployment_id": "appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e",
+  "published_commit": "63258ac0a705300d2f589f84b8bad274aaa6f83c",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_2d490effebe081919ef334d6913b39fc",
+  "published_version_number": 12,
+  "deployment_id": "appgdep_6ae7d5f1fc8081918189edc9b488a869",
+  "previous_deployment_id": "appgdep_6ae7cc64f8b88191b6856c51b08f0da0",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -21,7 +21,7 @@
     "vat_rate_bps": 2100,
     "plans": [
       {
-        "name": "Básico",
+        "name": "B\u00e1sico",
         "monthly_cents": 30000
       },
       {
@@ -30,12 +30,12 @@
       }
     ]
   },
-  "deployed_at": "2026-11-01T23:34:09.979339+00:00",
+  "deployed_at": "2026-11-02T00:14:56.003151+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 41361898380,
+  "source_ci_run": 41365321617,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -64,16 +64,40 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "d3d2ff6055c47cc718b7b9bc948396d2f2ba48e9",
+  "source_ci_commit": "8f6bd585309bc79db818900d4aa94dc09d48eab3",
   "production_source_manifest_only_diff": true,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 9,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_d7260142a7348191becab426ffd540ac",
-    "source_commit": "bcffa56f0b3a3f851af4e9f433223b49bad7ed9c",
-    "deployment_id": "appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e"
+    "version": 10,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_717c0b314ea4819195eea84328516235",
+    "source_commit": "e5ce8e662dc8ef8466025f5d90ba0884298ff5f4",
+    "deployment_id": "appgdep_6ae7cc64f8b88191b6856c51b08f0da0",
+    "app_version": "0.5.4-rc.1"
   },
-  "source_deployment_ci_run": 41362141114,
-  "app_version": "0.5.4-rc.1",
-  "expected_company_backup": true
+  "source_deployment_ci_run": 41365370169,
+  "app_version": "0.5.5-rc.1",
+  "expected_company_backup": true,
+  "production_history": [
+    {
+      "version": 9,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_d7260142a7348191becab426ffd540ac",
+      "source_commit": "bcffa56f0b3a3f851af4e9f433223b49bad7ed9c",
+      "deployment_id": "appgdep_6ae7bdb248cc8191acb4a7c3ac33a03e"
+    },
+    {
+      "version": 10,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_717c0b314ea4819195eea84328516235",
+      "source_commit": "e5ce8e662dc8ef8466025f5d90ba0884298ff5f4",
+      "deployment_id": "appgdep_6ae7cc64f8b88191b6856c51b08f0da0",
+      "app_version": "0.5.4-rc.1"
+    }
+  ],
+  "expected_provider_admin": true,
+  "pre_validation_saved_version": {
+    "version": 11,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_583d804de5488191bc8c45afb975e0fb",
+    "source_commit": "6ca4142b6e6d0c2ab28ec8874da83f212ec81f61",
+    "deployed": false,
+    "reason": "Saved before completing CI; final source gives the large-file crypto test 20 seconds on shared runners, preserving crypto and assertions."
+  }
 }
