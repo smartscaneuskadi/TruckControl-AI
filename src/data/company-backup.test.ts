@@ -96,6 +96,46 @@ async function fixture() {
 }
 
 describe("copias cifradas de empresa", () => {
+  it("conserva metadatos documentales en la copia 2 y sigue abriendo la copia 1", async () => {
+    const f = await fixture();
+    expect((await validateCompanyBackup(f.backup, org)).version).toBe(1);
+    f.records.documents[0].tracking = {
+      category: "insurance",
+      status: "active",
+      expires_on: "2027-01-01",
+      remind_days: 15,
+      row_version: 2,
+      updated_at: new Date().toISOString(),
+    };
+    const backup = await collectCompanyBackup(f.gateway, org);
+    expect(backup.version).toBe(2);
+    const recovered = await decryptCompanyBackup(
+      await encryptCompanyBackup(backup, phrase),
+      phrase,
+      org,
+    );
+    expect(recovered.documents[0].tracking).toEqual(
+      f.records.documents[0].tracking,
+    );
+    await expect(
+      validateCompanyBackup({ ...backup, version: 1 }, org),
+    ).rejects.toThrow(/versión 2/);
+  }, 20000);
+  it("acepta el gasto de una factura aprobada por su base sin IVA y rechaza usar el total", async () => {
+    const f = await fixture(),
+      entry = f.backup.fleet.entries.find((e) => e.kind === "expense")!;
+    const invoice = f.backup.invoices[0];
+    invoice.status = "approved";
+    invoice.finance_entry_id = entry.id;
+    entry.amountCents = invoice.net_cents!;
+    await expect(validateCompanyBackup(f.backup, org)).resolves.toMatchObject({
+      invoices: [{ status: "approved" }],
+    });
+    entry.amountCents = invoice.total_cents!;
+    await expect(validateCompanyBackup(f.backup, org)).rejects.toThrow(
+      /no es coherente/,
+    );
+  });
   // Keep the full PBKDF2/AES round-trip; shared CI CPUs can exceed Vitest's 5s default.
   it("cifra y recupera un original de 3 MB sin desbordar el validador", async () => {
     const f = await fixture(),

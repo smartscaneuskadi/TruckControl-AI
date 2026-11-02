@@ -3,6 +3,7 @@ import { bucket, createGmailHandler } from "./handler.ts";
 import type { GmailConfig, GmailGateway } from "./handler.ts";
 import { createGmailConfigResolver } from "./config.ts";
 import { createAiRuntimeResolver } from "../_shared/ai-runtime.ts";
+import { productionGmailOrigins, withGmailHealth } from "./health.ts";
 
 const url = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -99,8 +100,7 @@ const config: GmailConfig = {
   enforceEntitlements: true,
   appOrigin,
   additionalOrigins: [
-    "https://truckcontrolai.com",
-    "https://www.truckcontrolai.com",
+    ...productionGmailOrigins,
     "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
   ],
   callbackUrl: `${appOrigin}/gmail-callback`,
@@ -109,4 +109,4 @@ const config: GmailConfig = {
   resolveAI: (organization_id, user_id) =>
     aiRuntime.resolve({ organization_id, user_id, kind: "invoice" }),
 };
-Deno.serve(createGmailHandler(gateway, config));
+Deno.serve(withGmailHealth(createGmailHandler(gateway, config), resolveOAuth));

@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Download, FileCheck2, FileUp, Trash2 } from "lucide-react";
+import { FileUp, Trash2 } from "lucide-react";
 import { errorMessage, useFleet } from "../app/FleetProvider";
 import {
   clearDemoDocuments,
   listDemoDocuments,
   saveDemoDocument,
+  updateDemoDocument,
 } from "../data/demo-documents";
+import {
+  DocumentRegister,
+  DocumentTrackingFields,
+  readDocumentTracking,
+} from "./DocumentRegister";
+import { useDocuments } from "../app/DocumentsProvider";
 import type { DemoDocument } from "../data/demo-documents";
-import { Badge, Button, Empty, Modal } from "./ui";
+import { Button, Empty, Modal } from "./ui";
 
 export function DemoDocuments() {
   const { snapshot, notify } = useFleet();
+  const register = useDocuments();
   const [documents, setDocuments] = useState<DemoDocument[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -50,9 +58,11 @@ export function DemoDocuments() {
         file,
         String(data.get("truck") || ""),
         String(data.get("driver") || ""),
+        readDocumentTracking(data),
       );
       form.reset();
       setRevision((n) => n + 1);
+      await register.refresh();
       notify("Documento ficticio guardado en este navegador.");
     } catch (e) {
       setError(errorMessage(e));
@@ -110,6 +120,7 @@ export function DemoDocuments() {
             <input type="checkbox" name="fictitious" required /> Confirmo que el
             archivo contiene únicamente datos ficticios.
           </label>
+          <DocumentTrackingFields />
           <small>
             PDF, JPG, PNG o WebP. Máximo 10 MB por archivo y 50 MB en esta
             biblioteca de prueba. Cada subida crea un archivo independiente.
@@ -126,42 +137,46 @@ export function DemoDocuments() {
       )}
       {documents.length ? (
         <>
-          <div className="document-grid">
-            {documents.map((doc) => (
-              <article className="card document-card" key={doc.id}>
-                <FileCheck2 size={25} />
-                <Badge tone="blue">Solo en este navegador</Badge>
-                <h2>{doc.name}</h2>
-                <p>
-                  {(doc.file.size / 1024).toFixed(1)} KB ·{" "}
-                  {new Date(doc.createdAt).toLocaleDateString("es-ES")}
-                </p>
-                <p>
-                  {snapshot.trucks.find((t) => t.id === doc.truckId)?.plate ??
-                    "Sin camión asignado"}
-                  {doc.driverId
-                    ? ` · ${snapshot.drivers.find((d) => d.id === doc.driverId)?.name ?? "Conductor"}`
-                    : ""}
-                </p>
-                <Button
-                  variant="secondary"
-                  icon={Download}
-                  onClick={() => {
-                    const url = URL.createObjectURL(doc.file),
-                      link = document.createElement("a");
-                    link.href = url;
-                    link.download = doc.name;
-                    document.body.appendChild(link);
-                    link.click();
-                    link.remove();
-                    setTimeout(() => URL.revokeObjectURL(url), 1000);
-                  }}
-                >
-                  Descargar
-                </Button>
-              </article>
-            ))}
-          </div>
+          <DocumentRegister
+            cloud={false}
+            busy={busy}
+            documents={documents.map((d) => ({
+              id: d.id,
+              organization_id: d.organizationId,
+              name: d.name,
+              object_path: `${d.organizationId}/${d.id}/demo`,
+              content_type: d.file.type,
+              size_bytes: d.file.size,
+              truck_id: d.truckId || null,
+              driver_id: d.driverId || null,
+              created_at: d.createdAt,
+              tracking: d.tracking,
+            }))}
+            onRefresh={async () => {
+              setRevision((n) => n + 1);
+              await register.refresh();
+            }}
+            onSave={async (doc, value) => {
+              await updateDemoDocument(
+                snapshot.organization.id,
+                doc.id,
+                value,
+                doc.tracking?.row_version ?? 0,
+              );
+              setRevision((n) => n + 1);
+              await register.refresh();
+            }}
+            onDownload={(doc) => {
+              const original = documents.find((d) => d.id === doc.id);
+              if (!original) throw Error("Documento no disponible.");
+              const url = URL.createObjectURL(original.file),
+                link = document.createElement("a");
+              link.href = url;
+              link.download = doc.name;
+              link.click();
+              setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }}
+          />
           <Button
             variant="secondary"
             icon={Trash2}
@@ -204,9 +219,10 @@ export function DemoDocuments() {
                 setBusy(true);
                 setError("");
                 void clearDemoDocuments(snapshot.organization.id)
-                  .then(() => {
+                  .then(async () => {
                     setClear(false);
                     setRevision((n) => n + 1);
+                    await register.refresh();
                   })
                   .catch((e) => setError(errorMessage(e)))
                   .finally(() => setBusy(false));

@@ -1,0 +1,116 @@
+{
+  "company_gmail_version": 11,
+  "checks": [
+    {
+      "origin": "https://truckcontrolai.com",
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "configured": false,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "method": "OPTIONS",
+      "path": "/health",
+      "status": 204,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "method": "OPTIONS",
+      "path": "/",
+      "status": 204,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "method": "POST",
+      "path": "/",
+      "status": 401,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "configured": false,
+      "passed": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "method": "OPTIONS",
+      "path": "/health",
+      "status": 204,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "method": "OPTIONS",
+      "path": "/",
+      "status": 204,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "method": "POST",
+      "path": "/",
+      "status": 401,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "configured": false,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "OPTIONS",
+      "path": "/health",
+      "status": 204,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "OPTIONS",
+      "path": "/",
+      "status": 204,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "POST",
+      "path": "/",
+      "status": 401,
+      "configured": null,
+      "passed": true
+    },
+    {
+      "origin": null,
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "passed": true
+    },
+    {
+      "origin": "https://evil.invalid",
+      "method": "GET",
+      "path": "/health",
+      "status": 403,
+      "passed": true
+    }
+  ],
+  "no_google_or_ai_requests": true
+}

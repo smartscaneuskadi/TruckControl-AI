@@ -31,3 +31,9 @@ El consentimiento Google continúa en pruebas; usuarios de prueba y revisión de
 El ensayo remoto [provider-admin-rollback.sql](verification/provider-admin-rollback.sql) usa dos identidades y credenciales ficticias dentro de una transacción revertida. Verifica escritura real en Vault, rechazo de clientes/anónimos/no verificados, auditoría sin valores y confirmación de sustitución. Termina con cero usuarios y auditorías de prueba y las claves previas intactas. No llama a Google ni vincula buzones.
 
 El asesor mantiene el aviso previo de contraseñas filtradas, cuya función alojada requiere un plan superior. No se ha contratado. Las pruebas de navegador no equivalen a aceptación en dispositivos físicos.
+
+## Diagnóstico del servidor Gmail
+
+`company-gmail` v11 añade `GET /functions/v1/company-gmail/health`, sin caché y sin claves en su respuesta: solo `configured`. Esta comprobación incluye el entorno de la función y Vault mediante el resolver existente. No prueba consentimiento, revisión de Google ni entrega. A 02/11/2026 el resultado real es false y no hay conexiones Gmail. Debe completarse el guardado seguro del cliente Google; no volver a crear otro cliente ni mostrar secretos.
+
+Los tres orígenes de producción ya son compatibles con el preflight y el retorno OAuth; se conserva también el retorno heredado para no invalidar estados existentes. El servidor mantiene autenticación, permisos por empresa, PKCE, estado de un uso y cifrado. El ensayo nativo comprueba esos enlaces/bindings y revierte sus fixtures; no llama a Google ni activa IA.

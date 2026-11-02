@@ -345,3 +345,18 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Interfaz 0.5.7-rc.1 preparada con mensajes seguros, reintento conservando datos y tamaño corregido de la casilla de consentimiento. Las pruebas públicas de CI comprueban ahora el CORS real desde el navegador; antes el registro estaba cubierto por fixtures.
 - Pasan 647 controles en GitHub tanto en código como en fuente exacta: 447 unitarias/SQL, 32 Python y 168 de navegador. Se conservan las 64 originales. Publicada v14 / 0.5.7-rc.1 a las 07:34 UTC, fuente 76c4306024d9a1cdea7074b0d219b1475bdd5471, con 72 hashes HTTPS y demo estable intacta. Los seis controles públicos anteriores cubrieron v13 con backend v4; el PR #22 registra la comprobación pública posterior de v14. Ver `SIGNUP_CORS_FIX.md` y el checkpoint persistente.
 
+
+# 2026-11-02 — documentación, vencimientos y nuevos informes
+
+- 0.5.8-rc.1, rama feat/document-expiry-reports, PR #23. Documentos clasificados, fechas, antelación, archivo conservando originales, búsquedas, filtros y CSV. Avisos integrados con campana/Alertas, sin activar mensajes externos.
+- Metadatos privados separados, RLS por empresa, rol, licencia y versión. RPC anteriores intactas. Migración local 20261102080257 → remota 20261102082309 aplicada una vez; 53 totales. La aceptación nativa crea dos empresas ficticias y revierte todo; originales, clientes, planes y ajustes conservan sus huellas. Cero fixtures o metadatos nuevos restantes.
+- Informes por camión con contabilidad registrada, viajes sin contabilizar, litros repostados y consumo solo cuando hay medición. Desglose por categoría y estado documental. Copias de registros v2 conservan metadatos, mantienen lectura de v1 y validan facturas aprobadas contra su base sin IVA, igual que el servidor.
+- Pasan 476 unitarias/SQL, 32 Python y 46 recorridos SaaS, incluidos documentos e informes en Android/Windows emulados. Las 64 iniciales conservan sus once hashes. CI completo y publicación en curso; producción v14 y demo v6 intactas. No nuevos costes, envíos, solicitudes IA, claves ni cobros.
+- Guía y evidencia: DOCUMENT_REGISTER.md, verification/document-tracking-20261102.json y checkpoint /workspace/artifacts/truckcontrol-documents-20261102/checkpoint.json. Gmail directo sigue sin credenciales de formato válido; no se modifica ni se simula conexión.
+
+# 2026-11-02 — publicación de documentos e informes y preparación Gmail
+
+- Publicada 0.5.8-rc.1, v15, fuente 9d079a01043efa183aaed379fe5448018069f7dd, a las 08:40 UTC. Código 41413577289 y fuente exacta 41413758873 pasan 680 comprobaciones; HTTPS confirma 72 hashes y demo v6 intacta. Cuatro revisiones del paquete exacto en ambos temas y perfiles Android/Windows: cero infracciones Axe y cero peticiones privadas desde demo.
+- Corregido además el retorno Gmail del hostname de producción: migración 54 local 20261102085143 / remota 20261102085701, conserva todos los destinos anteriores. company-gmail v11 desplegado y readback idéntico; salud booleana sin secretos y 14 controles HTTP pasan. El ensayo de estados por empresa/usuario y de un uso termina en rollback con cero residuos.
+- El runtime confirma configured=false y cero buzones Gmail. Credenciales y AES existentes se conservan. La solicitud pendiente del titular pide completar el guardado directamente en Servicios, sin valores en chat. No bloquea correo general, documentos ni informes.
+- Pasan 487 unitarias/SQL, TypeScript/PWA y 32 Python, con las 64 originales conservadas. Los checks finales de PR #23 verifican v15 después de publicar y el backend actualizado. No pagos, nuevos costes, emails de prueba ni llamadas IA. Los tres destinos DKIM de Migadu siguen SERVFAIL en Google/Cloudflare a las 09:05 UTC; DNS sin cambios.

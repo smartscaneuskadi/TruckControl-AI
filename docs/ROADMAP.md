@@ -1,21 +1,28 @@
-# Estado y continuación
+# Estado y continuación — 02/11/2026
+
+La entrega vigente es **v15 / 0.5.8-rc.1**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y la producción anterior v14 permanece recuperable.
 
 ## Implementado y comprobado
 
-Base React/TypeScript y PWA, diseño oscuro profesional, panel y fichas de 50 camiones ficticios, conductores, finanzas, rentabilidad, remolques, clientes, viajes, mantenimiento, combustible, documentación, vencimientos, alertas, exportaciones e informes. Contabilización de operaciones con confirmación humana y sin duplicados. Biblioteca de prueba funcional sin transmitir archivos.
+React/TypeScript y PWA para Android y Windows, Fleet Light y Fleet Cockpit, panel, camiones, conductores, remolques, clientes, viajes, combustible, mantenimiento, ingresos, gastos y rentabilidad. Límite inicial de 50 camiones por empresa, roles, módulos y RLS. Las pruebas de aislamiento usan datos ficticios y rollback; FIXPilot permanece separado. Hay 54 migraciones aplicadas y registradas.
 
-Código SaaS: registro, prueba de 30 días, plan inicial de ejemplo de 10 €/mes, administrador global, roles y equipo por empresa, RLS, archivos privados, versiones concurrentes y restricciones de módulos. Supabase independiente operativo; no se toca FIXPilot. Las comprobaciones reales de aislamiento se ejecutan con datos sintéticos y rollback.
+Registro abierto con aceptación legal inmutable y confirmación por correo; cuenta propietaria verificada. Confirmación y recuperación funcionan mediante Resend y enlaces nativos Supabase, sin depender de SMTP Migadu. Las nuevas altas obtienen **10 días de Básico**, sin elevar permisos por solicitar Full. Precios aprobados: **Básico 300 €/mes + IVA 21 %; Full 700 €/mes + IVA 21 %**. Los períodos históricos se conservan y los cobros automáticos siguen desactivados.
 
-Offline: copia comercial cifrada opcional y cola de operaciones, límites temporales, bloqueo por inactividad, conflictos conservados y revalidación antes de sincronizar. Los documentos privados y apuntes contables no se editan offline.
+Documentos privados clasificados, archivables y con vencimiento, avisos dentro de la app, filtros y CSV. Informes por camión y kilómetro con datos registrados; consumo solo entre repostajes completos del período, sin inventar mediciones. Copias cifradas incluyen los metadatos y mantienen lectura del formato anterior. [Guía](DOCUMENT_REGISTER.md).
 
-## Apertura comercial pendiente de proveedores
+Offline: copia empresarial cifrada opcional y cola de operaciones, límites temporales, bloqueo por inactividad, conflictos conservados y revalidación antes de sincronizar. Los documentos privados y apuntes contables no se editan offline. Instalar la PWA no activa esa copia.
 
-Configurar SMTP, URL y redirecciones de Auth y comprobar correo real y cuenta administradora. Configurar y verificar Google OAuth por empresa, con revisión de Google cuando corresponda. Ejecutar aceptación con cuentas autorizadas en dos dispositivos físicos y recuperación de una copia en un destino de prueba autorizado. No abrir el registro real antes de estas comprobaciones.
+Receptor de facturas por reenvío desde distintos proveedores, webhooks firmados, originales privados, duplicados e aislamiento comprobados. IA opcional en backend con consentimiento, cuotas y presupuesto global aprobado de 10 USD/mes antes de impuestos, sin recarga automática. Las propuestas requieren revisión humana antes de contabilizar. [Correo general](GENERAL_EMAIL.md).
 
-SMS y modelos IA son opcionales: necesitan credenciales, política de datos, pruebas y autorización de costes. La facturación recurrente requiere terminar el contrato de renovación, pasarela y pruebas de cobro; los pagos siguen apagados.
+## Pendientes concretos
+
+- **Gmail directo:** backend v11 y cuatro retornos permitidos comprobados; el diagnóstico real sigue `configured=false`. El propietario debe completar el cliente Google en Administración → Servicios. Después se podrá verificar el consentimiento de un buzón autorizado y la revisión Google necesaria para clientes externos. El reenvío general funciona por separado.
+- **Migadu:** dominio activo según titular, pero los tres destinos DKIM bajo migadu.com siguen devolviendo SERVFAIL/DNSSEC a las 09:05 UTC. Soporte ya informado; buzones y entrega pendientes de verificación. No cambiar DNSSEC ni contratar de nuevo.
+- **SMS y pagos:** proveedores, renovaciones y cobros reales pendientes de autorización y aceptación; permanecen apagados.
+- **Aceptación operativa:** dispositivos físicos Android/Windows, restauración integral del servicio gestionado, SLA de copias y revisión jurídica externa. Las emulaciones y las copias cifradas comprobadas no sustituyen esas verificaciones.
 
 ## Operación continua
 
-El CI comprueba código y navegadores en GitHub. La conexión permite escribir y gestionar PR; la administración de Pages y protección de ramas sigue denegada por permisos de integración. Se conserva Sites como alojamiento público y sus versiones para recuperación. No se habilita alojamiento de pago.
+GitHub permite escritura, ramas, commits, PR, CI y merge. La administración de Pages y protección de ramas necesita permisos administrativos distintos; no se eluden. Sites aloja la PWA por HTTPS y conserva versiones para recuperación. No hay instaladores nativos ni publicación en tiendas.
 
-Las alertas son visibles dentro de la aplicación; el envío automático por correo/SMS/push requiere proveedor y programación autorizados. Los bots remotos amplían las reglas locales, no se anuncian como activos sin proveedor. No hay instaladores nativos ni publicación en tiendas; la distribución actual es PWA por HTTPS.
+El CI conserva las 64 pruebas iniciales y verifica código, permisos, copias, temas y navegadores. [PR #23](https://github.com/smartscaneuskadi/TruckControl-AI/pull/23/checks) registra la aceptación pública posterior de v15. Las alertas actuales son internas; correo/SMS/push automáticos requieren su propia implementación y aceptación.

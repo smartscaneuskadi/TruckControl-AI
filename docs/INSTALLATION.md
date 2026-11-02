@@ -42,3 +42,7 @@ El superadministrador puede abrir **Administración → Servicios** para comprob
 ## Si una solicitud anterior mostraba un error de registro
 
 La corrección de servidor ya admite los tres enlaces oficiales de producción, incluidas las PWA instaladas desde el hostname técnico. Abre https://truckcontrolai.com y vuelve a solicitar acceso con tus datos. No necesitas cambiar el NIF/CIF por ese fallo. Si aparece **Actualizar**, guarda primero cualquier trabajo pendiente y acepta la nueva versión. La interfaz conserva el formulario tras un error y permite reintentar. La confirmación llega por correo; revisa también la carpeta de spam. [Detalle y pruebas](SIGNUP_CORS_FIX.md).
+
+## Documentos e informes
+
+La versión 15 incorpora tipo, vencimiento, antelación, búsqueda, filtros y archivo de documentos conservando originales. Los avisos aparecen en Alertas y en la campana cuando el plan y los permisos permiten la documentación. Informes permite exportar indicadores por camión y gastos por categoría, con los datos registrados. Las copias con metadatos usan registros versión 2 y requieren esta versión o posterior; las copias 1 siguen admitidas. [Guía](DOCUMENT_REGISTER.md).

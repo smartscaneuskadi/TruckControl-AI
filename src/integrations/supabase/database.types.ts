@@ -27,6 +27,7 @@ export interface CompanyDocument {
   truck_id: string | null;
   driver_id: string | null;
   created_at: string;
+  tracking?: import("../../domain/documents").DocumentTracking;
 }
 export interface CompanyInvoice {
   id: string;
@@ -114,6 +115,27 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_document_page: {
+        Args: { p_org: string; p_after?: string | null };
+        Returns: Json;
+      };
+      tc_update_document_metadata: {
+        Args: {
+          p_org: string;
+          p_document: string;
+          p_data: Json;
+          p_expected: number;
+        };
+        Returns: Json;
+      };
+      tc_register_document: {
+        Args: { p_org: string; p_document: Json; p_tracking: Json };
+        Returns: string;
+      };
+      tc_backup_page_v2: {
+        Args: { p_org: string; p_kind: string; p_after?: string | null };
+        Returns: Json;
+      };
       tc_provider_control: {
         Args: { p_action: string; p_data?: Json };
         Returns: Json;

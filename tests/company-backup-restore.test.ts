@@ -90,7 +90,8 @@ it("restaura registros, relaciones y PDF en un entorno aislado y conserva el ais
       kind: "expense",
       concept: "Factura ficticia recuperada",
       date: "2026-11-01",
-      amountCents: 12100,
+      // approve_company_invoice books v_net; recover the same amount without IVA.
+      amountCents: 10000,
       category: "maintenance",
       paymentStatus: "pending",
       distanceKm: 0,
