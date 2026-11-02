@@ -996,7 +996,16 @@ test("correo personal autoservicio: consulta sin Gmail/IA de empresa y envío co
     f.apiCalls.filter((c) => c.path.endsWith("/messages/send")),
   ).toHaveLength(0);
   const confirmation = page.getByRole("dialog", { name: "Confirmar envío" });
+  const afterSendRefresh = page.waitForResponse(
+    (response) =>
+      response
+        .url()
+        .startsWith(
+          "https://gmail.googleapis.com/gmail/v1/users/me/messages?",
+        ) && response.request().method() === "GET",
+  );
   await confirmation.getByRole("button", { name: "Enviar ahora" }).click();
+  await afterSendRefresh;
   await expect(
     page
       .getByRole("status")
@@ -1019,6 +1028,9 @@ test("correo personal autoservicio: consulta sin Gmail/IA de empresa y envío co
         c.path.includes("confirm_company_invoice"),
     ),
   ).toBe(false);
+  await expect(
+    page.getByRole("button", { name: "Actualizar buzón", exact: true }),
+  ).toBeEnabled();
   f.mailControl.denied = true;
   await page
     .getByRole("button", { name: "Actualizar buzón", exact: true })
