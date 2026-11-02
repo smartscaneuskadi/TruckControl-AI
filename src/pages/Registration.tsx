@@ -102,7 +102,7 @@ export function Registration({
             });
         if (error) throw error;
         setMessage(
-          "Solicitud recibida. Confirma tu correo con el enlace que recibirás si procede. Tu empresa se activará después de completar las verificaciones indicadas.",
+          "Solicitud recibida. Confirma tu correo con el enlace que recibirás si procede y elige tu contraseña. Tu cuenta de empresa se activará con Básico tras completar la verificación.",
         );
       } else if (view === "reset") {
         const { error } = customAuthMail
@@ -178,10 +178,11 @@ export function Registration({
         </div>
         {view === "signup" && !recovery && (
           <p>
-            {catalog.trial_days} días gratis con acceso Full. Tu prueba
+            {catalog.trial_days} días gratis con acceso Básico. Tu prueba
             comenzará al confirmar
             {catalog.sms_ready ? " correo y teléfono" : " tu correo"}. Después
-            podrás elegir el plan que prefieras.
+            podrás solicitar un cambio de plan; Full no se activa
+            automáticamente.
           </p>
         )}
         <form onSubmit={submit} className="access-form">
@@ -315,7 +316,7 @@ export function Registration({
               : recovery
                 ? "Guardar contraseña"
                 : view === "signup"
-                  ? `Solicitar prueba Full de ${catalog.trial_days} días`
+                  ? "Solicitar acceso Básico"
                   : view === "reset"
                     ? "Enviar enlace de recuperación"
                     : "Entrar"}

@@ -42,6 +42,7 @@ export interface Plan {
 export interface Catalog {
   app_name: string;
   trial_days: number;
+  trial_plan?: Plan["id"];
   prices_are_examples: boolean;
   payments_enabled: boolean;
   sms_ready: boolean;
@@ -61,6 +62,7 @@ export function subscriptionPrice(netCents: number) {
 export const exampleCatalog: Catalog = {
   app_name: "TruckControl AI",
   trial_days: 10,
+  trial_plan: "limited",
   prices_are_examples: false,
   payments_enabled: false,
   sms_ready: false,
@@ -75,6 +77,7 @@ export const exampleCatalog: Catalog = {
       modules: {
         ...demoFeatures,
         invoice_ai: false,
+        document_ai: false,
       },
       revision: 1,
     },
@@ -106,6 +109,7 @@ export const registrationSchema = z.object({
 });
 export type Registration = z.infer<typeof registrationSchema>;
 export interface Customer extends Registration {
+  trial_plan_id?: Plan["id"];
   user_id: string;
   email: string;
   paid_plan: Plan["id"] | null;

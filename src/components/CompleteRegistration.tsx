@@ -63,7 +63,7 @@ export function CompleteRegistration({
         <h1>Completa tu empresa</h1>
         <p>
           Correo confirmado: {user.email}. Completa los datos y acepta las
-          condiciones para activar la prueba.
+          condiciones para activar la prueba del plan Básico.
         </p>
         <form className="access-form" onSubmit={submit}>
           {(
