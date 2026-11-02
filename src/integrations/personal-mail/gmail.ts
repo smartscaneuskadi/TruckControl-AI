@@ -342,6 +342,7 @@ async function boundedJson(response: Response) {
 export function createGmailMailbox(
   token: string,
   fetcher: typeof fetch = fetch,
+  sessionSignal?: AbortSignal,
 ): Mailbox {
   if (!token || token.length > 4096 || /\s/.test(token))
     throw new MailError("invalid");
@@ -350,6 +351,8 @@ export function createGmailMailbox(
     options: RequestInit = {},
     signal?: AbortSignal,
   ) {
+    sessionSignal?.throwIfAborted();
+    signal?.throwIfAborted();
     const response = await fetcher(
       `https://gmail.googleapis.com/gmail/v1/users/me/${path}`,
       {
@@ -362,9 +365,11 @@ export function createGmailMailbox(
         cache: "no-store",
         redirect: "error",
         referrerPolicy: "no-referrer",
-        signal: signal
-          ? AbortSignal.any([signal, AbortSignal.timeout(20000)])
-          : AbortSignal.timeout(20000),
+        signal: AbortSignal.any([
+          ...(sessionSignal ? [sessionSignal] : []),
+          ...(signal ? [signal] : []),
+          AbortSignal.timeout(20000),
+        ]),
       },
     );
     if (response.status === 401) throw new MailError("expired");

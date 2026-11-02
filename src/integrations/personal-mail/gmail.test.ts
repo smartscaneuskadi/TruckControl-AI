@@ -42,6 +42,22 @@ const msg = (id = "abc001") => ({
   },
 });
 describe("correo personal directo y aislado", () => {
+  it("una sesión cerrada impide nuevas consultas aunque se conserve una referencia antigua", async () => {
+    const controller = new AbortController(),
+      fetcher = vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(json({ emailAddress: "owner@example.invalid" }));
+    const mailbox = createGmailMailbox("synthetic", fetcher, controller.signal);
+    expect(await mailbox.profile()).toBe("owner@example.invalid");
+    controller.abort();
+    await expect(mailbox.list("inbox", "")).rejects.toMatchObject({
+      name: "AbortError",
+    });
+    await expect(mailbox.read("abc001")).rejects.toMatchObject({
+      name: "AbortError",
+    });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
   it("solo acepta el identificador público del proyecto autorizado", () => {
     expect(
       publicGoogleClientId("468881730124-demo.apps.googleusercontent.com"),

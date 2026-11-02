@@ -1049,15 +1049,54 @@ test("correo personal: un consentimiento tardío después de cerrar sesión no a
 }) => {
   const f = await personalMailFixture(page, { delayed: true });
   await openPersonalMail(page);
+  let finishLogout: () => Promise<void> = async () => {};
+  let signalLogout!: () => void;
+  const logoutStarted = new Promise<void>((resolve) => {
+    signalLogout = resolve;
+  });
+  await page.route("http://127.0.0.1:9999/auth/v1/logout**", async (route) => {
+    if (route.request().method() !== "POST") {
+      await route.fallback();
+      return;
+    }
+    finishLogout = () =>
+      route.fulfill({
+        status: 200,
+        headers: {
+          "access-control-allow-origin": "http://127.0.0.1:4194",
+          "content-type": "application/json",
+        },
+        body: "{}",
+      });
+    signalLogout();
+  });
+  await page.evaluate(() => {
+    const w = window as typeof window & { __personalProfileStarts: number };
+    w.__personalProfileStarts = 0;
+    const original = window.fetch.bind(window);
+    window.fetch = (input, options) => {
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof Request
+            ? input.url
+            : input.href;
+      if (url.startsWith("https://gmail.googleapis.com/gmail/v1/users/me/"))
+        w.__personalProfileStarts++;
+      return original(input, options);
+    };
+  });
   await page.evaluate(() => {
     location.hash = "/settings";
   });
   await page
     .getByRole("button", { name: "Cerrar sesión", exact: true })
     .click();
-  await page.evaluate(() => {
+  await logoutStarted;
+  const initiated = await page.evaluate(() => {
     const w = window as unknown as {
       __personalMailOptions: { callback(response: unknown): void };
+      __personalProfileStarts: number;
     };
     w.__personalMailOptions.callback({
       access_token: "synthetic-personal-mail-token",
@@ -1065,7 +1104,10 @@ test("correo personal: un consentimiento tardío después de cerrar sesión no a
       expires_in: 3600,
       scope: "https://www.googleapis.com/auth/gmail.modify",
     });
+    return w.__personalProfileStarts;
   });
+  expect(initiated).toBe(0);
+  await finishLogout();
   await expect(
     page.getByRole("heading", { name: "mailbox@example.invalid", exact: true }),
   ).toHaveCount(0);
