@@ -1,0 +1,43 @@
+{
+  "verified_at": "2026-11-02T19:24:15.105453+00:00",
+  "profiles": [
+    "Android",
+    "Windows"
+  ],
+  "themes": [
+    "light",
+    "cockpit"
+  ],
+  "screenshots": [
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-mailbox-20261102/saas-fixed/platform-correo-personal-a-96a48--empresa-y-env\u00edo-confirmado-saas-android/personal-mail-cockpit.png",
+      "sha256": "0808e9721eb91ad7ae4675a8afde246a08c071cd4c2b8190b36c779e122dc6f7",
+      "bytes": 194106
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-mailbox-20261102/saas-fixed/platform-correo-personal-a-96a48--empresa-y-env\u00edo-confirmado-saas-android/personal-mail-light.png",
+      "sha256": "ddf960c5cc7b729b3781220a9822d539d06dba1eebc8ce4a346407d83311ea72",
+      "bytes": 186153
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-mailbox-20261102/saas-fixed/platform-correo-personal-a-96a48--empresa-y-env\u00edo-confirmado-saas-windows/personal-mail-cockpit.png",
+      "sha256": "64b8830fd35d6d3e5b4822fa0ec351cd63b373bb933413fcdec7029c4e141668",
+      "bytes": 144489
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-mailbox-20261102/saas-fixed/platform-correo-personal-a-96a48--empresa-y-env\u00edo-confirmado-saas-windows/personal-mail-light.png",
+      "sha256": "2bb715fee54b773729c850f7fe51787cc0d0a61c93e207e44baab44bf7a95ca7",
+      "bytes": 144974
+    }
+  ],
+  "new_browser_profile_cases_passed": 8,
+  "unit_sql_passed_before_final_small_compatibility_changes": 589,
+  "new_unit_cases": 22,
+  "axe_wcag_aa_violations": 0,
+  "horizontal_overflow": false,
+  "provider_calls": 0,
+  "real_mail_sent": 0,
+  "physical_devices": false,
+  "known_runtime_google_configured": false,
+  "provider_consent_real_tested": false
+}

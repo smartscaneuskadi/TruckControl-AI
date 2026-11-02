@@ -92,6 +92,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       sms_enabled: false,
     } as ProviderStatus,
     companyRole: "owner" as "owner" | "admin" | "operator" | "viewer",
+    companyPlan: "full" as "full" | "limited",
     backupDocuments: [] as CompanyDocument[],
     invoiceRows: [] as CompanyInvoice[],
     tyreRows: [] as TyreRecord[],
@@ -172,7 +173,10 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       (Boolean(c) &&
         c!.status !== "suspended" &&
         Date.parse(c!.trial_ends_at) > Date.now());
-    const features = { ...exampleCatalog.plans[1].modules };
+    const features = {
+      ...exampleCatalog.plans.find((plan) => plan.id === controls.companyPlan)!
+        .modules,
+    };
     for (const m of snapshot.modules)
       features[m.id] =
         active && m.enabled && (c?.module_overrides[m.id] ?? true);
@@ -183,7 +187,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       active: (!smsReady || verified) && active,
       features,
       profile: !smsReady || verified ? c : null,
-      plan: "full",
+      plan: controls.companyPlan,
       max_trucks: 50,
       requires_phone_verification: smsReady && !verified,
       company_role: controls.companyRole,
@@ -596,6 +600,147 @@ async function login(page: Page, email: string) {
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
 }
 
+async function personalMailFixture(
+  page: Page,
+  options: { delayed?: boolean; uncertain?: boolean } = {},
+) {
+  const cors = {
+    "access-control-allow-origin": "http://127.0.0.1:4194",
+    "access-control-allow-headers": "authorization,content-type",
+    "access-control-allow-methods": "GET,POST,OPTIONS",
+  };
+  const f = await fixtures(page);
+  f.controls.companyRole = "viewer";
+  f.controls.companyPlan = "limited";
+  f.snapshot.customers[0].trial_plan_id = "limited";
+  f.snapshot.customers[0].module_overrides = {
+    gmail: false,
+    invoice_ai: false,
+  };
+  const apiCalls: { path: string; method: string; body: unknown }[] = [];
+  let sent = false;
+  await page.route(
+    "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-gmail/browser-config",
+    (route) =>
+      route.fulfill({
+        status: 200,
+        headers: cors,
+        contentType: "application/json",
+        body: JSON.stringify({
+          configured: true,
+          client_id: "468881730124-synthetic.apps.googleusercontent.com",
+          provider: "google",
+          mode: "personal_browser",
+        }),
+      }),
+  );
+  await page.route("https://accounts.google.com/gsi/client", (route) =>
+    route.fulfill({
+      contentType: "application/javascript",
+      body: `window.__personalMailOptions=null;window.google={accounts:{oauth2:{initTokenClient(options){window.__personalMailOptions=options;return {requestAccessToken(){${options.delayed ? "" : "options.callback({access_token:'synthetic-personal-mail-token',token_type:'Bearer',expires_in:3600,scope:'https://www.googleapis.com/auth/gmail.modify'});"}}};},revoke(){throw new Error('Unexpected automatic revoke');}}}};`,
+    }),
+  );
+  const message = (id = "abc001") => ({
+    id,
+    threadId: "thread001",
+    labelIds: id === "sent001" ? ["SENT"] : ["INBOX", "UNREAD"],
+    snippet: "Mensaje ficticio de correo personal",
+    payload: {
+      mimeType: "text/html",
+      headers: [
+        { name: "From", value: "sender@example.invalid" },
+        { name: "To", value: "mailbox@example.invalid" },
+        {
+          name: "Subject",
+          value:
+            id === "sent001"
+              ? "Mensaje de prueba personal"
+              : "Correo personal ficticio",
+        },
+        { name: "Date", value: "Mon, 02 Nov 2026 08:00:00 +0100" },
+        { name: "Message-ID", value: "<mail001@example.invalid>" },
+      ],
+      body: {
+        data: Buffer.from(
+          '<p>Contenido ficticio seguro</p><img src="https://mail-tracker.invalid/pixel"><script>window.mailInjected=true</script>',
+        ).toString("base64url"),
+      },
+    },
+  });
+  await page.route(
+    "https://gmail.googleapis.com/gmail/v1/users/me/**",
+    async (route) => {
+      const request = route.request(),
+        url = new URL(request.url());
+      if (request.method() === "OPTIONS") {
+        await route.fulfill({ status: 204, headers: cors, body: "" });
+        return;
+      }
+      apiCalls.push({
+        path: url.pathname,
+        method: request.method(),
+        body: request.postDataJSON(),
+      });
+      let data: unknown;
+      expect(request.headers().authorization).toBe(
+        "Bearer synthetic-personal-mail-token",
+      );
+      expect(request.headers().apikey).toBeUndefined();
+      if (url.pathname.endsWith("/profile"))
+        data = { emailAddress: "mailbox@example.invalid" };
+      else if (url.pathname.endsWith("/messages/send")) {
+        sent = true;
+        if (options.uncertain) {
+          await route.fulfill({
+            status: 503,
+            headers: cors,
+            contentType: "application/json",
+            body: JSON.stringify({ error: "uncertain_synthetic" }),
+          });
+          return;
+        }
+        data = { id: "sent001" };
+      } else if (url.pathname.endsWith("/messages"))
+        data = {
+          messages:
+            url.searchParams.get("labelIds") === "SENT"
+              ? sent
+                ? [{ id: "sent001" }]
+                : []
+              : [{ id: "abc001" }],
+        };
+      else if (
+        url.pathname.endsWith("/modify") ||
+        url.pathname.endsWith("/trash") ||
+        url.pathname.endsWith("/untrash")
+      )
+        data = { id: "abc001" };
+      else data = message(url.pathname.split("/").at(-1));
+      await route.fulfill({
+        status: 200,
+        headers: cors,
+        contentType: "application/json",
+        body: JSON.stringify(data),
+      });
+    },
+  );
+  return { ...f, apiCalls };
+}
+
+async function openPersonalMail(page: Page) {
+  await login(page, "customer@example.com");
+  await expect(page).toHaveURL(/#\/dashboard/);
+  await page.evaluate(() => {
+    location.hash = "/mailbox";
+  });
+  await page
+    .getByRole("button", { name: "Preparar conexión con Google", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Entrar con Google", exact: true })
+    .click();
+}
+
 async function openRecovery(page: Page) {
   await login(page, "customer@example.com");
   await expect(page).toHaveURL(/#\/dashboard/);
@@ -772,6 +917,263 @@ test("el servidor rechaza a quien pierde administración y el cliente no ve este
   await expect(
     page.getByRole("button", { name: "Servicios", exact: true }),
   ).toHaveCount(0);
+});
+
+test("correo personal autoservicio: consulta sin Gmail/IA de empresa y envío confirmado", async ({
+  page,
+}, info) => {
+  const f = await personalMailFixture(page);
+  const trackers: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("mail-tracker.invalid"))
+      trackers.push(request.url());
+  });
+  await openPersonalMail(page);
+  await expect(
+    page.getByRole("heading", { name: "mailbox@example.invalid", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button")
+    .filter({ hasText: "Correo personal ficticio" })
+    .click();
+  await expect(page.locator(".personal-mail-text")).toContainText(
+    "Contenido ficticio seguro",
+  );
+  expect(trackers).toEqual([]);
+  expect(
+    await page.evaluate(() =>
+      Boolean((window as unknown as { mailInjected?: boolean }).mailInjected),
+    ),
+  ).toBe(false);
+  expect(f.apiCalls.some((c) => c.path.endsWith("/modify"))).toBe(false);
+  for (const [name, theme] of [
+    ["Fleet Light", "light"],
+    ["Fleet Cockpit", "cockpit"],
+  ]) {
+    await page
+      .getByRole("button", { name: "Cambiar apariencia", exact: true })
+      .click();
+    const dialog = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+    });
+    await dialog.getByRole("radio", { name, exact: true }).check();
+    await dialog.getByRole("button", { name: "Aplicar apariencia" }).click();
+    await dialog.getByRole("button", { name: "Cerrar ventana" }).click();
+    expect(
+      (await new AxeBuilder({ page }).include(".personal-mail-page").analyze())
+        .violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await page.screenshot({
+      path: info.outputPath(`personal-mail-${theme}.png`),
+    });
+  }
+  await page.getByRole("button", { name: "Redactar", exact: true }).click();
+  const composer = page.getByRole("dialog", { name: "Redactar correo" });
+  await composer
+    .getByLabel("Para", { exact: true })
+    .fill("recipient@example.invalid");
+  await composer
+    .getByLabel("Asunto", { exact: true })
+    .fill("Mensaje de prueba personal");
+  await composer
+    .getByLabel("Mensaje", { exact: true })
+    .fill("Texto privado ficticio para el envío confirmado.");
+  await composer.getByRole("button", { name: "Revisar envío" }).click();
+  expect(
+    f.apiCalls.filter((c) => c.path.endsWith("/messages/send")),
+  ).toHaveLength(0);
+  const confirmation = page.getByRole("dialog", { name: "Confirmar envío" });
+  await confirmation.getByRole("button", { name: "Enviar ahora" }).click();
+  await expect(
+    page
+      .getByRole("status")
+      .filter({ hasText: "Google ha confirmado el envío." }),
+  ).toBeVisible();
+  expect(
+    f.apiCalls.filter((c) => c.path.endsWith("/messages/send")),
+  ).toHaveLength(1);
+  const storage = await page.evaluate(() =>
+    JSON.stringify({ ...localStorage, ...sessionStorage }),
+  );
+  expect(storage).not.toMatch(
+    /synthetic-personal-mail-token|Texto privado ficticio|mailbox@example.invalid|recipient@example.invalid/,
+  );
+  expect(
+    f.calls.some(
+      (c) =>
+        c.path.includes("company-assistant") ||
+        c.path.includes("company-mail") ||
+        c.path.includes("confirm_company_invoice"),
+    ),
+  ).toBe(false);
+});
+
+test("correo personal: un consentimiento tardío después de cerrar sesión no abre el buzón", async ({
+  page,
+}) => {
+  const f = await personalMailFixture(page, { delayed: true });
+  await openPersonalMail(page);
+  await page.evaluate(() => {
+    location.hash = "/settings";
+  });
+  await page
+    .getByRole("button", { name: "Cerrar sesión", exact: true })
+    .click();
+  await page.evaluate(() => {
+    const w = window as unknown as {
+      __personalMailOptions: { callback(response: unknown): void };
+    };
+    w.__personalMailOptions.callback({
+      access_token: "synthetic-personal-mail-token",
+      token_type: "Bearer",
+      expires_in: 3600,
+      scope: "https://www.googleapis.com/auth/gmail.modify",
+    });
+  });
+  await expect(
+    page.getByRole("heading", { name: "mailbox@example.invalid", exact: true }),
+  ).toHaveCount(0);
+  expect(f.apiCalls).toHaveLength(0);
+  expect(
+    await page.evaluate(() =>
+      JSON.stringify({ ...localStorage, ...sessionStorage }),
+    ),
+  ).not.toContain("synthetic-personal-mail-token");
+});
+
+test("correo personal: envío incierto bloqueado y recarga sin tokens ni mensajes privados", async ({
+  page,
+}) => {
+  const f = await personalMailFixture(page, { uncertain: true });
+  await openPersonalMail(page);
+  await expect(
+    page.getByRole("heading", { name: "mailbox@example.invalid", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Redactar", exact: true }).click();
+  let dialog = page.getByRole("dialog", { name: "Redactar correo" });
+  await dialog
+    .getByLabel("Para", { exact: true })
+    .fill("recipient@example.invalid");
+  await dialog
+    .getByLabel("Asunto", { exact: true })
+    .fill("Envío incierto ficticio");
+  await dialog
+    .getByLabel("Mensaje", { exact: true })
+    .fill("No repetir esta solicitud ficticia.");
+  await dialog.getByRole("button", { name: "Revisar envío" }).click();
+  await page
+    .getByRole("dialog", { name: "Confirmar envío" })
+    .getByRole("button", { name: "Enviar ahora" })
+    .click();
+  dialog = page.getByRole("dialog", { name: "Redactar correo" });
+  await expect(
+    dialog.getByText("Envío incierto.", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByRole("button", { name: "Revisar envío" }),
+  ).toBeDisabled();
+  expect(
+    f.apiCalls.filter((c) => c.path.endsWith("/messages/send")),
+  ).toHaveLength(1);
+  page.on("dialog", (dialog) => dialog.accept());
+  await dialog.getByRole("button", { name: "Cerrar ventana" }).click();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Mi correo", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "mailbox@example.invalid", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Preparar conexión con Google" }),
+  ).toBeVisible();
+  expect(
+    f.apiCalls.filter((c) => c.path.endsWith("/messages/send")),
+  ).toHaveLength(1);
+});
+
+test("correo personal demo: enviar responder y papelera son ficticios y no alteran la empresa", async ({
+  page,
+}) => {
+  const f = await fixtures(page);
+  const external: string[] = [];
+  page.on("request", (request) => {
+    if (/googleapis\.com|accounts\.google\.com/.test(request.url()))
+      external.push(request.url());
+  });
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Explorar la demo", exact: true })
+    .click();
+  await page.evaluate(() => {
+    location.hash = "/mailbox";
+  });
+  await page
+    .getByRole("button", { name: "Abrir buzón ficticio", exact: true })
+    .click();
+  const before = await page.evaluate(() =>
+    localStorage.getItem("truckcontrol.demo.v1"),
+  );
+  await page
+    .getByRole("button")
+    .filter({ hasText: "Revisión de mantenimiento · ejemplo ficticio" })
+    .click();
+  await page.getByRole("button", { name: "Responder", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Redactar correo" });
+  await expect(dialog.getByLabel("Para", { exact: true })).toHaveValue(
+    "taller@example.invalid",
+  );
+  await dialog
+    .getByLabel("Mensaje", { exact: true })
+    .fill("Respuesta de demostración.");
+  await dialog.getByRole("button", { name: "Revisar envío" }).click();
+  await page
+    .getByRole("button", { name: "Simular envío", exact: true })
+    .click();
+  await page.getByLabel("Carpeta", { exact: true }).selectOption("sent");
+  await expect(page.locator(".personal-mail-list")).toContainText(
+    "Re: Revisión de mantenimiento",
+  );
+  await page.getByLabel("Carpeta", { exact: true }).selectOption("inbox");
+  await page
+    .getByRole("button")
+    .filter({ hasText: "Revisión de mantenimiento · ejemplo ficticio" })
+    .click();
+  await page.getByRole("button", { name: "Papelera", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: "Mover a papelera", exact: true })
+    .getByRole("button", { name: "Cancelar", exact: true })
+    .click();
+  await expect(page.locator(".personal-mail-reader")).toContainText(
+    "Revisión de mantenimiento",
+  );
+  await page.getByRole("button", { name: "Papelera", exact: true }).click();
+  await page
+    .getByRole("dialog", { name: "Mover a papelera", exact: true })
+    .getByRole("button", { name: "Confirmar papelera", exact: true })
+    .click();
+  await page.getByLabel("Carpeta", { exact: true }).selectOption("trash");
+  await page
+    .getByRole("button")
+    .filter({ hasText: "Revisión de mantenimiento · ejemplo ficticio" })
+    .click();
+  await page
+    .getByRole("button", { name: "Sacar de papelera", exact: true })
+    .click();
+  await page.getByLabel("Carpeta", { exact: true }).selectOption("inbox");
+  await expect(page.locator(".personal-mail-list")).toContainText(
+    "Revisión de mantenimiento",
+  );
+  expect(
+    await page.evaluate(() => localStorage.getItem("truckcontrol.demo.v1")),
+  ).toBe(before);
+  expect(
+    f.calls.filter((call) => call.path !== "/rest/v1/rpc/tc_public_catalog"),
+  ).toHaveLength(0);
+  expect(external).toEqual([]);
 });
 async function downloadRecovery(page: Page) {
   const phrase = "Frase-ficticia-copia-2026";

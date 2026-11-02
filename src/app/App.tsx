@@ -58,6 +58,7 @@ import { Documents } from "../pages/Documents";
 import { Invoices } from "../pages/Invoices";
 import { Operations } from "../pages/Operations";
 import { Tyres } from "../pages/Tyres";
+import { PersonalMail } from "../pages/PersonalMail";
 import { Team } from "../pages/Team";
 import { Reports } from "../pages/Reports";
 import type { OperationKind } from "../domain/operations";
@@ -109,6 +110,7 @@ const navigation = [
     feature: "documents",
   },
   { to: "/invoices", label: "Correo y facturas", icon: Mail, feature: "gmail" },
+  { to: "/mailbox", label: "Mi correo", icon: Mail, feature: null },
   { to: "/trailers", label: "Remolques", icon: Container, feature: "trailers" },
   {
     to: "/customers",
@@ -327,6 +329,7 @@ function Workspace() {
             .filter(
               (item) =>
                 !subscription.enabled ||
+                item.feature === null ||
                 subscription.features[item.feature as Feature],
             )
             .map((item) => (
@@ -581,6 +584,7 @@ function Workspace() {
               }
             />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/mailbox" element={<PersonalMail />} />
             <Route
               path="/documents"
               element={

@@ -113,6 +113,8 @@ try {
           throw new Error("Published provenance or isolation mismatch");
         let authMailCorsChecked = false;
         let mailServicesCorsChecked = false;
+        let personalMailConfigChecked = false;
+        let personalMailReady = false;
         if (production) {
           if (!publishableKey)
             throw new Error("Published app did not load its public catalog");
@@ -288,8 +290,46 @@ try {
           checkedThemes.push(theme);
         }
         let universalMailChecked = false;
+        if (production && config.expected_personal_mail === true) {
+          const readiness = await page.evaluate(async () => {
+            const response = await fetch(
+              "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-gmail/browser-config",
+              {
+                credentials: "omit",
+                cache: "no-store",
+                referrerPolicy: "no-referrer",
+              },
+            );
+            const data = await response.json();
+            const validKeys =
+              Object.keys(data).sort().join(",") ===
+              "client_id,configured,mode,provider";
+            const validId =
+              data.client_id === null ||
+              /^468881730124-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(
+                data.client_id,
+              );
+            return {
+              status: response.status,
+              valid:
+                validKeys &&
+                validId &&
+                data.provider === "google" &&
+                data.mode === "personal_browser" &&
+                data.configured === Boolean(data.client_id),
+              ready: data.configured === true,
+            };
+          });
+          if (readiness.status !== 200 || !readiness.valid)
+            throw Error(
+              "Public personal-mail configuration failed CORS or disclosed unexpected fields",
+            );
+          personalMailConfigChecked = true;
+          personalMailReady = readiness.ready;
+        }
         let invoiceInboxChecked = false;
         let tyresOfflineChecked = false;
+        let personalMailOfflineChecked = false;
         if (config.expected_universal_mail === true) {
           await page.goto(`${target.origin}/#/invoices`, {
             waitUntil: "networkidle",
@@ -314,7 +354,16 @@ try {
           );
           let providerRequests = 0;
           const providerRequest = (request) => {
-            if (new URL(request.url()).hostname.endsWith(".supabase.co"))
+            const hostname = new URL(request.url()).hostname;
+            if (
+              hostname.endsWith(".supabase.co") ||
+              [
+                "gmail.googleapis.com",
+                "accounts.google.com",
+                "api.openai.com",
+                "api.resend.com",
+              ].includes(hostname)
+            )
               providerRequests++;
           };
           page.on("request", providerRequest);
@@ -444,6 +493,80 @@ try {
                 })
                 .waitFor();
             }
+            if (config.expected_personal_mail === true) {
+              const original = await page.evaluate(() =>
+                localStorage.getItem("truckcontrol.demo.v1"),
+              );
+              await page.evaluate(() => {
+                location.hash = "/mailbox";
+              });
+              await page
+                .getByRole("heading", { name: "Mi correo", exact: true })
+                .waitFor();
+              await page
+                .getByRole("button", {
+                  name: "Abrir buzón ficticio",
+                  exact: true,
+                })
+                .click();
+              await page
+                .getByRole("button", { name: "Redactar", exact: true })
+                .click();
+              const editor = page.getByRole("dialog", {
+                name: "Redactar correo",
+                exact: true,
+              });
+              await editor
+                .getByLabel("Para", { exact: true })
+                .fill("public-test@example.invalid");
+              await editor
+                .getByLabel("Asunto", { exact: true })
+                .fill("Correo de demostración pública");
+              await editor
+                .getByLabel("Mensaje", { exact: true })
+                .fill("Mensaje ficticio local sin envío real.");
+              await editor
+                .getByRole("button", { name: "Revisar envío", exact: true })
+                .click();
+              await page
+                .getByRole("button", { name: "Simular envío", exact: true })
+                .click();
+              await page
+                .getByLabel("Carpeta", { exact: true })
+                .selectOption("sent");
+              await page
+                .locator(".personal-mail-list")
+                .getByText("Correo de demostración pública", { exact: true })
+                .waitFor();
+              if (
+                (await page.evaluate(() =>
+                  localStorage.getItem("truckcontrol.demo.v1"),
+                )) !== original
+              )
+                throw Error("Personal mail demo modified company data");
+              if (
+                await page.evaluate(() =>
+                  JSON.stringify({
+                    ...localStorage,
+                    ...sessionStorage,
+                  }).includes("Mensaje ficticio local sin envío real."),
+                )
+              )
+                throw Error("Personal mail body was persisted");
+              await page.screenshot({
+                path: `${dir}/${name}-personal-mail-offline.png`,
+              });
+              personalMailOfflineChecked = true;
+              await page.evaluate(() => {
+                location.hash = "/invoices";
+              });
+              await page
+                .getByRole("region", {
+                  name: "Bandeja de facturas",
+                  exact: true,
+                })
+                .waitFor();
+            }
             const after = await page.evaluate(
               () =>
                 JSON.parse(localStorage.getItem("truckcontrol.demo.v1")).entries
@@ -522,8 +645,11 @@ try {
           universalMailOffline: universalMailChecked,
           authMailCors: authMailCorsChecked,
           mailServicesCors: mailServicesCorsChecked,
+          personalMailConfig: personalMailConfigChecked,
+          personalMailReady,
           invoiceInbox: invoiceInboxChecked,
           tyresOffline: tyresOfflineChecked,
+          personalMailOffline: personalMailOfflineChecked,
           passed: true,
         });
         console.log(
