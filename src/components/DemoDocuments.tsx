@@ -219,9 +219,10 @@ export function DemoDocuments() {
                 setBusy(true);
                 setError("");
                 void clearDemoDocuments(snapshot.organization.id)
-                  .then(() => {
+                  .then(async () => {
                     setClear(false);
                     setRevision((n) => n + 1);
+                    await register.refresh();
                   })
                   .catch((e) => setError(errorMessage(e)))
                   .finally(() => setBusy(false));

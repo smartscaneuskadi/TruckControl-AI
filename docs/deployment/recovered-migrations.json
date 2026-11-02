@@ -119,6 +119,13 @@
       "name": "basic_client_onboarding",
       "sha256": "fd47aa7e76cb0b8e5332b93d7a0ea5994cec0ea4c9f8b7bca5f2a394b54c9452",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261102080257_document_tracking_and_expiry.sql",
+      "version": "20261102082309",
+      "name": "document_tracking_and_expiry",
+      "sha256": "c26e59f71a93f6516dc149132e3029c6b3aca6bda1b835a44437600d00fe36f0",
+      "already_applied": true
     }
   ]
 }

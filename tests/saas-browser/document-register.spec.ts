@@ -100,6 +100,19 @@ test("archivo documental: vencimiento, aviso, modificación, archivo y original 
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();
   expect(axe.violations).toEqual([]);
+  await page
+    .getByRole("button", { name: "Vaciar biblioteca de prueba", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Confirmar vaciado", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Sin documentos de prueba",
+      exact: true,
+    }),
+  ).toBeVisible();
 });
 test("informe de camiones exporta las cifras registradas y distingue consumo sin medición", async ({
   page,
