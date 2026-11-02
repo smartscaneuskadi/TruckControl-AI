@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-02",
+  "project": "kkkemaycedexymrpaqtp",
+  "migration": {
+    "local": "20261102131804",
+    "remote": "20261102132728",
+    "sha256": "6290b4597363c94c2cb9c2acc6736118819eb18f6ef1734d17e6adb558b99f65"
+  },
+  "nativeRollback": [
+    {
+      "test": "native_invoice_inbox_rollback",
+      "fixture_users_absent": true,
+      "fixture_documents_absent": true,
+      "fixture_invoices_absent": true
+    }
+  ],
+  "assertions": [
+    "205 invoices paginated without overlap",
+    "legacy 200-row RPC preserved",
+    "foreign tenants denied with and without cursor",
+    "viewer access read only",
+    "revoked member denied on subsequent page",
+    "module suspension denied",
+    "anonymous RPC denied",
+    "no financial entry created",
+    "all fixtures rolled back"
+  ],
+  "before": {
+    "migrations": 54,
+    "plans_hash": "81a09b182007db9969d503582e319923",
+    "invoice_rls": true,
+    "finance_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "invoice_rows": 3,
+    "invoices_hash": "9c3679efb123298d6ab64fc8e297f06d",
+    "settings_hash": "f275865d7be202b7b0a2bc5b4081eff7",
+    "customers_hash": "b83d48e0287ed6475e8c09e3c32b18b1",
+    "documents_hash": "e9bdcf5b61fc10db67d4da684c78356a",
+    "documents_rows": 3,
+    "legacy_list_hash": "cb9c12864b573a33b6b156525e5dcc3e"
+  },
+  "after": {
+    "migrations": 55,
+    "plans_hash": "81a09b182007db9969d503582e319923",
+    "invoice_rls": true,
+    "finance_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "invoice_rows": 3,
+    "invoices_hash": "9c3679efb123298d6ab64fc8e297f06d",
+    "settings_hash": "f275865d7be202b7b0a2bc5b4081eff7",
+    "customers_hash": "b83d48e0287ed6475e8c09e3c32b18b1",
+    "documents_hash": "e9bdcf5b61fc10db67d4da684c78356a",
+    "documents_rows": 3,
+    "legacy_list_hash": "cb9c12864b573a33b6b156525e5dcc3e"
+  },
+  "businessFingerprintsUnchanged": true
+}

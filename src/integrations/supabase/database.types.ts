@@ -115,6 +115,10 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_invoice_page: {
+        Args: { p_org: string; p_after?: string | null };
+        Returns: Json;
+      };
       tc_document_page: {
         Args: { p_org: string; p_after?: string | null };
         Returns: Json;

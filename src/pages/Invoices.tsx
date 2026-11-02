@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import { FileText, Mail, RefreshCw, ShieldCheck, Unplug } from "lucide-react";
+import { Mail, RefreshCw, ShieldCheck, Unplug } from "lucide-react";
 import { useCompany } from "../app/CompanyAccess";
 import { useSubscription } from "../app/SubscriptionContext";
 import { errorMessage, useFleet } from "../app/FleetProvider";
@@ -10,17 +10,11 @@ import type {
   CompanyInvoice,
 } from "../integrations/supabase/database.types";
 import { downloadCompanyDocument } from "../integrations/supabase/documents";
-import {
-  Badge,
-  Button,
-  Empty,
-  Field,
-  Modal,
-  PageHeading,
-} from "../components/ui";
+import { Badge, Button, Field, Modal, PageHeading } from "../components/ui";
 import { categories, entrySchema } from "../domain/models";
 import { parseMoney } from "../domain/finance";
-import { money } from "../lib/format";
+import { loadCompanyInvoices } from "../integrations/supabase/invoices";
+import { InvoiceRegister } from "../components/InvoiceRegister";
 import { GmailConnectionGuide } from "../components/GmailConnectionGuide";
 import { UniversalMailIntake } from "../components/UniversalMailIntake";
 import type { ParsedMail } from "../../supabase/functions/_shared/mail.ts";
@@ -112,11 +106,15 @@ export function Invoices() {
   useEffect(() => {
     if (!cloud || !client) return;
     let active = true;
+    const controller = new AbortController();
     setLoading(true);
     setError("");
+    setInvoices([]);
+    setConnection(null);
+    setStatus(null);
     void Promise.all([
       client.rpc("get_company_gmail", { p_organization_id: org }),
-      client.rpc("list_company_invoices", { p_organization_id: org }),
+      loadCompanyInvoices(client, org, controller.signal),
       client.functions.invoke<IntegrationStatus>("company-gmail", {
         body: { action: "status", organization_id: org },
       }),
@@ -124,22 +122,26 @@ export function Invoices() {
       .then(([gmail, docs, config]) => {
         if (!active) return;
         setLoading(false);
-        if (gmail.error || docs.error) {
+        if (gmail.error) {
           setError("No se ha podido cargar la bandeja de esta empresa.");
           return;
         }
         setConnection(gmail.data?.[0] ?? null);
-        setInvoices(docs.data ?? []);
+        setInvoices(docs);
         setStatus(config.error ? null : config.data);
       })
-      .catch(() => {
+      .catch((e) => {
         if (active) {
           setLoading(false);
-          setError("No se puede conectar con la bandeja de facturas.");
+          setInvoices([]);
+          setConnection(null);
+          setStatus(null);
+          setError(errorMessage(e));
         }
       });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [cloud, client, org, revision]);
   async function gmailAction(action: "start" | "sync" | "disconnect") {
@@ -271,6 +273,10 @@ export function Invoices() {
     });
   }
   async function approve(invoice: CompanyInvoice, form: FormData) {
+    if (invoice.organization_id !== org || !canWrite)
+      throw Error(
+        "No tienes permiso para registrar esta factura en la empresa activa.",
+      );
     const net = parseMoney(String(form.get("net")));
     const taxText = String(form.get("tax")).trim();
     const tax = /^0([.,]0{1,2})?$/.test(taxText) ? 0 : parseMoney(taxText);
@@ -529,94 +535,20 @@ export function Invoices() {
       )}
       {loading ? (
         <p role="status">Cargando facturas…</p>
-      ) : rows.length ? (
-        <div className="document-grid">
-          {rows.map((invoice) => (
-            <article className="card document-card" key={invoice.id}>
-              <FileText size={25} />
-              {invoice.import_source && invoice.import_source !== "gmail" && (
-                <Badge tone="blue">
-                  {invoice.import_source === "forwarded_email"
-                    ? "Correo reenviado"
-                    : invoice.import_source === "email_upload"
-                      ? "Archivo de correo"
-                      : "Archivo importado"}
-                </Badge>
-              )}
-              <Badge tone={invoice.status === "approved" ? "green" : "amber"}>
-                {invoice.status === "approved" ? "Registrada" : "Revisar"}
-              </Badge>
-              <h2>{invoice.supplier || "Proveedor pendiente"}</h2>
-              <p>
-                {invoice.invoice_number || "Sin número"} ·{" "}
-                {invoice.invoice_date || "Fecha pendiente"}
-              </p>
-              <div className="invoice-amounts">
-                <span>
-                  Base
-                  <strong>
-                    {invoice.net_cents === null
-                      ? "—"
-                      : money(invoice.net_cents, true)}
-                  </strong>
-                </span>
-                <span>
-                  IVA
-                  <strong>
-                    {invoice.tax_cents === null
-                      ? "—"
-                      : money(invoice.tax_cents, true)}
-                  </strong>
-                </span>
-                <span>
-                  Total
-                  <strong>
-                    {invoice.total_cents === null
-                      ? "—"
-                      : money(invoice.total_cents, true)}
-                  </strong>
-                </span>
-              </div>
-              {invoice.review_note && (
-                <p className="invoice-review-note">{invoice.review_note}</p>
-              )}
-              {invoice.currency !== "EUR" && (
-                <p className="invoice-review-note">
-                  Moneda {invoice.currency}: el registro requiere conversión
-                  manual y no está disponible en esta versión.
-                </p>
-              )}
-              <div className="inline-actions">
-                <Button
-                  disabled={
-                    busy ||
-                    invoice.status === "approved" ||
-                    invoice.currency !== "EUR"
-                  }
-                  onClick={() => setReview(invoice)}
-                >
-                  Revisar factura
-                </Button>
-                {(cloud ||
-                  currentDemoImports.some((i) => i.id === invoice.id)) && (
-                  <Button
-                    variant="secondary"
-                    disabled={busy}
-                    onClick={() => void download(invoice)}
-                  >
-                    Ver original
-                  </Button>
-                )}
-              </div>
-            </article>
-          ))}
-        </div>
       ) : (
-        <section className="card">
-          <Empty title="Sin facturas importadas">
-            Importa un correo, PDF o imagen, o conecta Gmail para empezar.
-          </Empty>
-        </section>
+        <InvoiceRegister
+          key={`${cloud}:${org}`}
+          invoices={rows}
+          organizationId={org}
+          busy={busy}
+          canWrite={canWrite}
+          canDownload={(invoice) =>
+            cloud || currentDemoImports.some((i) => i.id === invoice.id)
+          }
+          onDownload={(invoice) => void download(invoice)}
+          onReview={setReview}
+          onRefresh={() => setRevision((n) => n + 1)}
+        />
       )}
       {review && (
         <InvoiceReview

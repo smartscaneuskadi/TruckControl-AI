@@ -323,6 +323,10 @@ export type Database = {
         Returns: Json;
       };
       tc_finish_registration: { Args: never; Returns: Json };
+      tc_invoice_page: {
+        Args: { p_after?: string; p_org: string };
+        Returns: Json;
+      };
       tc_list_records: {
         Args: { p_after?: string; p_org: string };
         Returns: Json;

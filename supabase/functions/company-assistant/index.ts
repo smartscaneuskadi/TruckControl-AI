@@ -2,6 +2,10 @@ import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createAssistantHandler } from "./handler.ts";
 import type { AssistantGateway } from "./handler.ts";
 import { createAiRuntimeResolver } from "../_shared/ai-runtime.ts";
+import {
+  productionAppOrigins,
+  legacyDemoOrigin,
+} from "../_shared/app-origins.ts";
 const url = Deno.env.get("SUPABASE_URL")!;
 const publicKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 const service = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
@@ -69,11 +73,8 @@ const runtime = createAiRuntimeResolver(
   [Deno.env.get("OPENAI_API_KEY"), Deno.env.get("truckcontrol_openai_api_key")],
 );
 const handler = createAssistantHandler(gateway, {
-  appOrigin: "https://truckcontrolai.com",
-  additionalOrigins: [
-    "https://www.truckcontrolai.com",
-    "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
-  ],
+  appOrigin: productionAppOrigins[0],
+  additionalOrigins: [...productionAppOrigins.slice(1), legacyDemoOrigin],
   resolveAI: (organization_id, user_id) =>
     runtime.resolve({ organization_id, user_id, kind: "document" }),
 });

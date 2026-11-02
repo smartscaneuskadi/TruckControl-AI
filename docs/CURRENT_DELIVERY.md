@@ -2,7 +2,7 @@
 
 **Aplicación conectada publicada: https://truckcontrolai.com.** El propietario verificó su correo, eligió su contraseña y accedió con administración global; las tres condiciones están comprobadas en Supabase. El registro de clientes está abierto, con consentimiento legal y confirmación de correo. **Cobros automáticos y SMS desactivados.**
 
-**Publicada 0.5.8-rc.1, versión alojada 15:** nuevas altas con **Básico después de confirmar el correo**, diez días de prueba y cuenta de empresa automática. Solicitar Full no lo desbloquea. Se conservan las condiciones de las cuentas anteriores, los dos temas, Servicios y las copias cifradas. **54 migraciones** aplicadas una vez. Documentos clasificados y archivables, fechas y avisos, informes por camión y copias con metadatos disponibles. [Guía](DOCUMENT_REGISTER.md). Corregido el registro desde el hostname técnico de instalaciones previas: `company-auth` v4 admite los tres orígenes exactos de producción. El formulario conserva sus datos ante errores y muestra mensajes seguros. [Corrección del registro](SIGNUP_CORS_FIX.md), [Alta Básico](BASIC_ONBOARDING.md), [Servicios](PROVIDER_ADMIN.md), [copias](COMPANY_RECOVERY.md).
+**Publicada 0.5.8-rc.1, versión alojada 15:** nuevas altas con **Básico después de confirmar el correo**, diez días de prueba y cuenta de empresa automática. Solicitar Full no lo desbloquea. Se conservan las condiciones de las cuentas anteriores, los dos temas, Servicios y las copias cifradas. **55 migraciones** aplicadas una vez. Documentos clasificados y archivables, fechas y avisos, informes por camión y copias con metadatos disponibles. [Guía](DOCUMENT_REGISTER.md). Corregido el registro desde el hostname técnico de instalaciones previas: `company-auth` v4 admite los tres orígenes exactos de producción. El formulario conserva sus datos ante errores y muestra mensajes seguros. [Corrección del registro](SIGNUP_CORS_FIX.md), [Alta Básico](BASIC_ONBOARDING.md), [Servicios](PROVIDER_ADMIN.md), [copias](COMPANY_RECOVERY.md).
 
 ## Acceso y oferta
 
@@ -18,7 +18,7 @@ También responden https://www.truckcontrolai.com y https://truckcontrol-ai-cand
 
 ## Datos, autenticación y seguridad
 
-Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **54 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261102-documents-gmail.json), [correspondencias](deployment/recovered-migrations.json).
+Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **55 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261102-invoice-inbox.json), [correspondencias](deployment/recovered-migrations.json).
 
 Confirmación y recuperación usan enlaces nativos Supabase enviados por API Resend, sin depender de SMTP Migadu. La aceptación real probó verificación, enlace de un uso, contraseña, inicio de sesión, recuperación y cierre global. El consentimiento inmutable del servidor impide activar empresas mediante metadatos editables. La prueba remota de dos empresas pasa con rollback completo. [Evidencia](verification/client-auth-acceptance-20261101.json).
 
@@ -45,3 +45,7 @@ El [ensayo remoto de Servicios](verification/provider-admin-20261102.json) compr
 Fleet Light/Cockpit, configuración del dispositivo y movimiento reducido están disponibles. Android/Windows son emulaciones, no dispositivos físicos. La copia offline empresarial es cifrada, necesita preparación y revalida permisos antes de sincronizar; instalar la PWA no la activa.
 
 Pendientes: Gmail OAuth directo y revisión Google; SMS; pagos recurrentes reales; buzones Migadu/DKIM; restauración integral del servicio gestionado y SLA de copias; aceptación física y revisión jurídica externa. Los textos legales incorporan los datos de ELEVADANCOR S.L. facilitados por el titular. No declarar certificación integral ni integraciones sin evidencia. [Guías anteriores conservadas](history/20261101-pre-client-production/CURRENT_DELIVERY.md).
+
+## Continuación de correo y bandeja
+
+Backend compatible actualizado: `company-mail` v11 y `company-assistant` v10 admiten los tres orígenes de producción conservando autenticación, empresas, presupuesto y el origen heredado. Pasan 21 controles HTTP sin llamadas a proveedores; la IA conserva su disponibilidad y autorización previa. La migración 55 añade una consulta invoker e índice sin cambiar facturas ni el contrato anterior. La nueva bandeja 0.5.9-rc.1 con filtros, CSV y lectura de más de 200 facturas está verificada localmente y pendiente de publicación. [Guía y límites](INVOICE_INBOX.md). Ver el checkpoint `/workspace/artifacts/truckcontrol-invoice-inbox-20261102/checkpoint.json` y los checks del PR de esta mejora antes de afirmar que está publicada.

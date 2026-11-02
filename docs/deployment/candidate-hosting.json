@@ -123,5 +123,6 @@
   "expected_auth_mail_cors": true,
   "auth_mail_function_version": 4,
   "expected_document_tracking": true,
-  "gmail_function_version": 11
+  "gmail_function_version": 11,
+  "expected_mail_service_cors": true
 }
