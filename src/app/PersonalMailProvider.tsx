@@ -1,8 +1,16 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type { ReactNode } from "react";
 import { useCompany } from "./CompanyAccess";
 import { useFleet } from "./FleetProvider";
 import { useSubscription } from "./SubscriptionContext";
+import { sessionExitEvent } from "./session-events";
 import {
   createGmailMailbox,
   personalMailScope,
@@ -67,6 +75,18 @@ export function PersonalMailProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setConnecting(false);
   };
+  useLayoutEffect(() => {
+    const stop = () => {
+      clear();
+      setError("");
+    };
+    window.addEventListener(sessionExitEvent, stop);
+    window.addEventListener("pagehide", stop);
+    return () => {
+      window.removeEventListener(sessionExitEvent, stop);
+      window.removeEventListener("pagehide", stop);
+    };
+  }, []);
   useEffect(() => {
     const update = () => setOnline(navigator.onLine);
     window.addEventListener("online", update);
@@ -201,7 +221,7 @@ export function PersonalMailProvider({ children }: { children: ReactNode }) {
           void (async () => {
             try {
               const grant = grantedMailToken(response),
-                mailbox = createGmailMailbox(grant.token);
+                mailbox = createGmailMailbox(grant.token, fetch, signal);
               const email = await mailbox.profile(signal);
               if (
                 version !== generation.current ||
