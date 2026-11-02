@@ -1,6 +1,6 @@
 # Registro de reanudación — 31 de octubre de 2026
 
-**Estado vigente:** producción conectada 9 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
+**Estado vigente:** producción conectada 10 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
 
 Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI
 
@@ -312,3 +312,12 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Guardada y publicada versión 10, paquete 0.5.4-rc.1, despliegue appgdep_6ae7cc64f8b88191b6856c51b08f0da0. Los 72 hashes HTTPS coinciden y la demo estable conserva su hash. v9 y candidata8 recuperables; backend49 aditivo sin cambiar datos ni servicios de pago.
 - Se actualiza inventario para ejecutar la aceptación pública de v10. La verificación privada del nuevo flujo ya cubre Android/Windows emulados y ambos temas con 36 recorridos SaaS; no hay dispositivos físicos.
 - Google: ya se creó un único cliente web en el proyecto468881730124 con origen/retorno canónicos. La respuesta mantiene el secreto enmascarado; no se han modificado los campos existentes de Vault. Transferencia segura pendiente de comprobar en su pantalla oficial. No publicar ni registrar valores secretos en evidencias.
+
+# 2026-11-02 — administración de servicios y compatibilidad Vault
+
+- PR #19 integrado en main (633e4087), v10 publicada y demo estable conservada. El CI final 41363640394 pasa 587 controles e incluye seis recorridos públicos reales de v10. Artefacto descargado y SHA-256 comprobado para conservar evidencia después de su caducidad en Actions.
+- Se continúa en feat/provider-admin-setup, 0.5.5-rc.1. Nueva pestaña Servicios reservada a administración global verificada; estado de proveedores y entrada de credenciales Google mediante JSON oficial o formulario, sin valores en respuestas, Web Storage ni auditoría.
+- Migraciones 50/51 aplicadas una vez y conservadas. La prueba remota detectó que FOR UPDATE sobre Vault requiere permisos que el rol de proyecto no posee. Se corrigió mediante una migración adicional que utiliza create_secret/update_secret oficiales, sin conceder UPDATE sobre las tablas gestionadas. Se añadió una prueba con rol restringido para reproducir esa condición.
+- 418 unitarias/SQL pasan. El ensayo remoto con dos identidades ficticias y escritura real en Vault termina revertido, con cero usuarios/auditorías de prueba; las claves Google/AES y las condiciones de acceso siguen intactas. Asesor sin avisos nuevos, permanece el previo de contraseñas filtradas.
+- Google: proyecto truckcontrolai, un único cliente TruckControl AI Gmail creado con origen y retorno canónicos. El procedimiento oficial terminó sin poder recuperar el secreto permanentemente enmascarado; no cambió ajustes ni credenciales. Automatización acumulada estimada 1,5586 USD (95 pasos/1158 segundos), inferior al máximo aprobado de 2 USD; sin recargas. No repetir ni duplicar el cliente.
+- Publicación de la mejora pendiente de CI y verificación pública. No confundir formato de credenciales con consentimiento Gmail real. Reenvío general e IA existente continúan disponibles con sus permisos y límites.

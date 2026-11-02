@@ -18,7 +18,7 @@ También responden https://www.truckcontrolai.com y https://truckcontrol-ai-cand
 
 ## Datos, autenticación y seguridad
 
-Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **49 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261101-company-recovery.json), [correspondencias](deployment/recovered-migrations.json).
+Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **51 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261102-provider-setup.json), [correspondencias](deployment/recovered-migrations.json).
 
 Confirmación y recuperación usan enlaces nativos Supabase enviados por API Resend, sin depender de SMTP Migadu. La aceptación real probó verificación, enlace de un uso, contraseña, inicio de sesión, recuperación y cierre global. El consentimiento inmutable del servidor impide activar empresas mediante metadatos editables. La prueba remota de dos empresas pasa con rollback completo. [Evidencia](verification/client-auth-acceptance-20261101.json).
 
@@ -34,7 +34,9 @@ OpenAI funciona en backend con credencial existente, límite global **10 USD/mes
 
 ## Pruebas y límites
 
-El [CI del código desplegado](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41361898380) pasó **587 comprobaciones**: 397 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 36 SaaS, 14 candidata, 16 producción y seis recorridos públicos de la versión 9 anterior. TypeScript, Deno y PWA pasan. **64 originales conservadas**, once hashes. La prueba pública adicional de v10 con el registro abierto se registra por separado; no atribuir a v10 los recorridos que verificaron v9.
+El [CI del código desplegado](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41361898380) pasó **587 comprobaciones**: 397 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 36 SaaS, 14 candidata, 16 producción y seis recorridos públicos de la versión 9 anterior. El [CI final de PR #19](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41363640394) volvió a pasar las 587 e incluye los [seis recorridos de v10](verification/company-recovery-public-browser-20261101.json) con registro abierto y TLS validado. TypeScript, Deno y PWA pasan. **64 originales conservadas**, once hashes.
+
+La mejora **Administración → Servicios** está preparada en `feat/provider-admin-setup`, con backend comprobado y migraciones aplicadas. Permite guardar Google sin acudir a menús técnicos ni compartir secretos por chat. [Guía y alcance](PROVIDER_ADMIN.md), [verificación](verification/provider-admin-20261102.json). Su publicación se documentará después de CI. Google ya tiene un cliente web; su secreto sigue oculto y Vault permanece intacto. No duplicar el cliente.
 
 Fleet Light/Cockpit, configuración del dispositivo y movimiento reducido están disponibles. Android/Windows son emulaciones, no dispositivos físicos. La copia offline empresarial es cifrada, necesita preparación y revalida permisos antes de sincronizar; instalar la PWA no la activa.
 
