@@ -51,6 +51,14 @@ export const legalDocuments: Record<
         text: "Se utiliza Supabase para identidad, base de datos y almacenamiento privado (proyecto eu-west-2, Reino Unido); OpenAI Sites e infraestructura Cloudflare para alojamiento web; Resend para entrega y recepción de correo (dominio receptor en eu-west-1); y OpenAI para las funciones IA que autorices. Los proveedores pueden tratar datos fuera del Espacio Económico Europeo conforme a sus contratos y garantías aplicables. No se promete residencia exclusivamente dentro de la UE. El envío a IA se limita a los documentos y consultas autorizados; desactivar IA no impide completar una factura manualmente.",
       },
       {
+        title: "Correo personal conectado con Google",
+        text: "Mi correo es opcional. Tú eliges la cuenta Gmail o Google Workspace y autorizas directamente a Google a leer, enviar y gestionar sus mensajes, sin borrado definitivo. Los mensajes, adjuntos consultados y el permiso temporal de este apartado se mantienen en la memoria del navegador y se intercambian directamente con Google; no se envían al backend de TruckControl, al administrador ni a la IA. No se guardan en las copias offline. La sesión se elimina al salir, recargar, cambiar de usuario o empresa o caducar. Los borradores de esta pantalla no se guardan automáticamente. Puedes retirar el permiso en la configuración de seguridad de tu cuenta Google.",
+      },
+      {
+        title: "Uso limitado de los datos de Google",
+        text: "Los datos de Mi correo se utilizan únicamente para las funciones de correo que solicitas. No se venden ni se utilizan para publicidad, perfiles publicitarios o entrenamiento de modelos generales de inteligencia artificial. El uso de información recibida de las API de Google se ajustará a la Política de datos de usuario de los servicios de las API de Google, incluidos sus requisitos de uso limitado (Limited Use). El receptor de facturas y la importación empresarial constituyen funciones separadas: solo los documentos que autorices para esas funciones se incorporan a tu empresa y su lectura IA exige su propia habilitación y consentimiento.",
+      },
+      {
         title: "Conservación y devolución",
         text: "Se conserva la información mientras sea necesaria para prestar el servicio, mantener su seguridad y cumplir obligaciones legales. La suspensión no equivale a borrar la empresa. Puedes exportar los datos disponibles en la app y solicitar devolución o supresión al contacto del responsable; se gestionará verificando tu identidad y respetando la información que deba conservarse legalmente y las copias de recuperación.",
       },
