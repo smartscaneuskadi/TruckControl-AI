@@ -140,6 +140,13 @@
       "name": "invoice_inbox_pagination",
       "sha256": "6290b4597363c94c2cb9c2acc6736118819eb18f6ef1734d17e6adb558b99f65",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261102143339_invoice_ai_on_demand.sql",
+      "version": "20261102145944",
+      "name": "invoice_ai_on_demand",
+      "sha256": "b8f0185b218ea584925838a6029f57876efc3eb9941d5d22bd55d50238f679c1",
+      "already_applied": true
     }
   ]
 }

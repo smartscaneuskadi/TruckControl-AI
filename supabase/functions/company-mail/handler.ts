@@ -12,6 +12,7 @@ import {
   MAX_MAIL_BYTES,
   parseMailFile,
 } from "../_shared/mail.ts";
+import { savedInvoiceAi } from "./saved-ai.ts";
 
 type Data = Record<string, unknown>;
 export interface MailAccess {
@@ -21,6 +22,8 @@ export interface MailAccess {
   features: Record<string, boolean>;
 }
 export interface MailGateway {
+  invoiceAI?(action: "status" | "prepare", data: Data): Promise<unknown>;
+  download?(path: string): Promise<Uint8Array>;
   authenticate(token: string): Promise<{ id: string } | null>;
   access(org: string, user: string): Promise<MailAccess | null>;
   server<T>(action: string, data: Data): Promise<T>;
@@ -419,12 +422,22 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
       if (
         !body ||
         !isUuid(body.organization_id) ||
-        !["status", "enable_inbox", "disable_inbox"].includes(
-          String(body.action),
-        )
+        ![
+          "status",
+          "enable_inbox",
+          "disable_inbox",
+          "invoice_ai_status",
+          "analyze_invoice",
+        ].includes(String(body.action))
       )
         return json({ error: "invalid_request" }, 400);
       const org = body.organization_id;
+      if (
+        ["invoice_ai_status", "analyze_invoice"].includes(String(body.action))
+      ) {
+        const outcome = await savedInvoiceAi(gateway, user.id, body);
+        return json(outcome.body, outcome.status);
+      }
       const access = await allowed(
         org,
         user.id,

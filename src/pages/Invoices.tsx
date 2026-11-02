@@ -15,6 +15,7 @@ import { categories, entrySchema } from "../domain/models";
 import { parseMoney } from "../domain/finance";
 import { loadCompanyInvoices } from "../integrations/supabase/invoices";
 import { InvoiceRegister } from "../components/InvoiceRegister";
+import { analyzeStoredInvoice } from "../integrations/supabase/invoice-ai";
 import { GmailConnectionGuide } from "../components/GmailConnectionGuide";
 import { UniversalMailIntake } from "../components/UniversalMailIntake";
 import type { ParsedMail } from "../../supabase/functions/_shared/mail.ts";
@@ -46,6 +47,11 @@ export function Invoices() {
   const [loading, setLoading] = useState(cloud);
   const [review, setReview] = useState<CompanyInvoice | null>(null);
   const [disconnect, setDisconnect] = useState(false);
+  const [analysis, setAnalysis] = useState<CompanyInvoice | null>(null);
+  const [aiNotice, setAiNotice] = useState<{
+    error: boolean;
+    message: string;
+  } | null>(null);
   const org = snapshot.organization.id;
   const [callback] = useState(() => {
     const params = new URLSearchParams(
@@ -333,6 +339,38 @@ export function Invoices() {
     );
     setReview(null);
   }
+  async function analyze() {
+    if (!analysis || busy || !cloud || !client) return;
+    const invoice = analysis;
+    setBusy(true);
+    setAiNotice(null);
+    try {
+      if (
+        invoice.organization_id !== org ||
+        !canWrite ||
+        !subscription.features.invoice_ai
+      )
+        throw Error(
+          "La lectura IA necesita autorización y consentimiento para esta cuenta.",
+        );
+      if (!navigator.onLine)
+        throw Error(
+          "Conéctate a internet para solicitar la lectura IA de tu factura.",
+        );
+      await analyzeStoredInvoice(client, org, invoice.id);
+      setAiNotice({
+        error: false,
+        message:
+          "Lectura IA guardada. Revisa los datos con el original antes de confirmar el gasto.",
+      });
+    } catch (e) {
+      setAiNotice({ error: true, message: errorMessage(e) });
+    } finally {
+      setBusy(false);
+      setAnalysis(null);
+      setRevision((n) => n + 1);
+    }
+  }
   async function download(invoice: CompanyInvoice) {
     if (!cloud) {
       const imported = currentDemoImports.find((i) => i.id === invoice.id);
@@ -533,6 +571,14 @@ export function Invoices() {
           {error}
         </p>
       )}
+      {aiNotice && (
+        <p
+          role={aiNotice.error ? "alert" : "status"}
+          className={aiNotice.error ? "form-error" : "mail-success"}
+        >
+          {aiNotice.message}
+        </p>
+      )}
       {loading ? (
         <p role="status">Cargando facturas…</p>
       ) : (
@@ -542,6 +588,9 @@ export function Invoices() {
           organizationId={org}
           busy={busy}
           canWrite={canWrite}
+          cloud={cloud}
+          aiAllowed={subscription.features.invoice_ai}
+          onAnalyze={setAnalysis}
           canDownload={(invoice) =>
             cloud || currentDemoImports.some((i) => i.id === invoice.id)
           }
@@ -557,6 +606,41 @@ export function Invoices() {
           onApprove={approve}
           cloud={cloud}
         />
+      )}
+      {analysis && (
+        <Modal
+          title="Solicitar lectura IA del original"
+          onClose={() => {
+            if (!busy) setAnalysis(null);
+          }}
+        >
+          <p>
+            Se enviará únicamente el original de esta factura al proveedor de IA
+            de TruckControl. Consume la cuota habilitada para tu cuenta y no
+            necesita conectar Gmail.
+          </p>
+          <p>
+            Solo se permite una solicitud con consumo por factura. Si se
+            interrumpe, no se repite automáticamente. Los datos seguirán
+            pendientes de revisión y no se registrará ningún gasto sin tu
+            confirmación.
+          </p>
+          <div className="modal-actions">
+            <Button
+              variant="secondary"
+              disabled={busy}
+              onClick={() => setAnalysis(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              disabled={busy || !canWrite || !subscription.features.invoice_ai}
+              onClick={() => void analyze()}
+            >
+              {busy ? "Leyendo documento…" : "Confirmar lectura IA"}
+            </Button>
+          </div>
+        </Modal>
       )}
       {disconnect && (
         <Modal

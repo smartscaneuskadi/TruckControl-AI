@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Download, FileText, RefreshCw } from "lucide-react";
+import { Download, FileText, RefreshCw, Sparkles } from "lucide-react";
+import { useInvoiceAiStates } from "./useInvoiceAiStates";
 import type { CompanyInvoice } from "../integrations/supabase/database.types";
 import {
   defaultInvoiceFilters,
@@ -19,6 +20,9 @@ export function InvoiceRegister({
   organizationId,
   busy,
   canWrite,
+  cloud = false,
+  aiAllowed = false,
+  onAnalyze,
   canDownload,
   onDownload,
   onReview,
@@ -28,6 +32,9 @@ export function InvoiceRegister({
   organizationId: string;
   busy: boolean;
   canWrite: boolean;
+  cloud?: boolean;
+  aiAllowed?: boolean;
+  onAnalyze?(invoice: CompanyInvoice): void;
   canDownload(invoice: CompanyInvoice): boolean;
   onDownload(invoice: CompanyInvoice): void;
   onReview(invoice: CompanyInvoice): void;
@@ -50,6 +57,12 @@ export function InvoiceRegister({
     : filterInvoices(invoices, organizationId, filters);
   const summary = summarizeInvoices(rows);
   const actual = Math.min(page, Math.max(1, Math.ceil(rows.length / 12)));
+  const visible = rows.slice((actual - 1) * 12, actual * 12);
+  const ai = useInvoiceAiStates(
+    organizationId,
+    visible.map((i) => i.id),
+    cloud && aiAllowed && canWrite,
+  );
   return (
     <section
       className="card operation-register invoice-register"
@@ -85,6 +98,20 @@ export function InvoiceRegister({
         </div>
       </div>
       <div className="invoice-register-body">
+        <p>
+          La lectura IA de documentos guardados no necesita conectar Gmail.
+          Requiere permiso y consentimiento de tu cuenta.
+        </p>
+        {cloud && aiAllowed && canWrite && (
+          <p role={ai.error ? "alert" : "status"}>
+            {ai.error ||
+              (ai.loading
+                ? "Comprobando la lectura IA de esta página…"
+                : ai.ready
+                  ? "Puedes solicitar una primera lectura IA de los originales pendientes y revisar sus datos antes de registrar el gasto."
+                  : "La lectura IA no está disponible ahora. Puedes completar las facturas manualmente.")}
+          </p>
+        )}
         <div className="list-toolbar">
           <SearchField
             label="Buscar factura"
@@ -190,7 +217,7 @@ export function InvoiceRegister({
           </Empty>
         ) : (
           <div className="document-grid">
-            {rows.slice((actual - 1) * 12, actual * 12).map((invoice) => (
+            {visible.map((invoice) => (
               <article className="card document-card" key={invoice.id}>
                 <FileText size={25} aria-hidden="true" />
                 <Badge tone="blue">
@@ -231,6 +258,25 @@ export function InvoiceRegister({
                     manual y no está disponible en esta versión.
                   </p>
                 )}
+                {ai.states[invoice.id]?.state === "attempted" && (
+                  <p className="invoice-review-note">
+                    Lectura IA ya solicitada. Revisa los datos disponibles; no
+                    se repetirá automáticamente.
+                  </p>
+                )}
+                {ai.states[invoice.id]?.state === "too_large" && (
+                  <p className="invoice-review-note">
+                    Lectura IA: el original supera 6 MB. Puedes completar sus
+                    datos manualmente.
+                  </p>
+                )}
+                {ai.states[invoice.id]?.state === "approved" &&
+                  invoice.status !== "approved" && (
+                    <p className="invoice-review-note">
+                      La factura se ha registrado en otra sesión. Actualiza la
+                      bandeja.
+                    </p>
+                  )}
                 <div className="inline-actions">
                   <Button
                     disabled={
@@ -252,6 +298,24 @@ export function InvoiceRegister({
                       Ver original
                     </Button>
                   )}
+                  {cloud &&
+                    aiAllowed &&
+                    canWrite &&
+                    invoice.status !== "approved" && (
+                      <Button
+                        variant="secondary"
+                        icon={Sparkles}
+                        disabled={
+                          busy ||
+                          ai.loading ||
+                          !ai.ready ||
+                          !ai.states[invoice.id]?.can_analyze
+                        }
+                        onClick={() => onAnalyze?.(invoice)}
+                      >
+                        Solicitar lectura IA
+                      </Button>
+                    )}
                 </div>
               </article>
             ))}

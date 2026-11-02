@@ -237,6 +237,10 @@ export type Database = {
       };
       company_auth_mail_reserve: { Args: { p_data: Json }; Returns: string };
       company_invoice_ai_apply: { Args: { p_data: Json }; Returns: boolean };
+      company_invoice_ai_server: {
+        Args: { p_action: string; p_data: Json };
+        Returns: Json;
+      };
       company_mail_server: {
         Args: { p_action: string; p_data: Json };
         Returns: Json;

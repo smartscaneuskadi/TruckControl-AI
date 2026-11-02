@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "a4a4fc49897e307cb335fa2e0d28c4e748d2bdd5",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_730f680b02b8819184016d94dd5e806d",
-  "published_version_number": 16,
-  "deployment_id": "appgdep_6ae895d56a3481919c1a384c1e133d17",
-  "previous_deployment_id": "appgdep_6ae84c5d8c648191811df635afcea37a",
+  "published_commit": "5b51dbdcbc08654489cc9cbf309d1a3e309eefec",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_74ebf01f9efc81918e7fa7f0b11b3517",
+  "published_version_number": 17,
+  "deployment_id": "appgdep_6ae8a89406e08191b84c1e2d245f7d5d",
+  "previous_deployment_id": "appgdep_6ae895d56a3481919c1a384c1e133d17",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,9 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-02T13:53:34.324409+00:00",
-  "expected_themes": ["light", "cockpit"],
-  "source_ci_run": 41455396125,
+  "deployed_at": "2026-11-02T15:13:33.958943+00:00",
+  "expected_themes": [
+    "light",
+    "cockpit"
+  ],
+  "source_ci_run": 41468200441,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -62,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "7998cb78272152b23fe1a80715f2e7b659d56451",
+  "source_ci_commit": "d09d6eddb03fe335bbf0c2208791f113ee78f581",
   "production_source_manifest_only_diff": true,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 15,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_423bca93fed8819198b893dd9e060c12",
-    "source_commit": "9d079a01043efa183aaed379fe5448018069f7dd",
-    "deployment_id": "appgdep_6ae84c5d8c648191811df635afcea37a",
-    "app_version": "0.5.8-rc.1"
+    "version": 16,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_730f680b02b8819184016d94dd5e806d",
+    "source_commit": "a4a4fc49897e307cb335fa2e0d28c4e748d2bdd5",
+    "deployment_id": "appgdep_6ae895d56a3481919c1a384c1e133d17",
+    "app_version": "0.5.9-rc.1"
   },
-  "source_deployment_ci_run": 41455442975,
-  "app_version": "0.5.9-rc.1",
+  "source_deployment_ci_run": 41468271123,
+  "app_version": "0.5.10-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -116,6 +119,13 @@
       "source_commit": "9d079a01043efa183aaed379fe5448018069f7dd",
       "deployment_id": "appgdep_6ae84c5d8c648191811df635afcea37a",
       "app_version": "0.5.8-rc.1"
+    },
+    {
+      "version": 16,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_730f680b02b8819184016d94dd5e806d",
+      "source_commit": "a4a4fc49897e307cb335fa2e0d28c4e748d2bdd5",
+      "deployment_id": "appgdep_6ae895d56a3481919c1a384c1e133d17",
+      "app_version": "0.5.9-rc.1"
     }
   ],
   "expected_provider_admin": true,
