@@ -325,6 +325,10 @@ export type Database = {
         Args: { p_action: string; p_data: Json };
         Returns: Json;
       };
+      tc_provider_control: {
+        Args: { p_action: string; p_data?: Json };
+        Returns: Json;
+      };
       tc_public_catalog: { Args: never; Returns: Json };
       tc_recurring_billing: {
         Args: { p_action: string; p_data: Json };

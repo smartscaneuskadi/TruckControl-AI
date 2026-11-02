@@ -98,6 +98,20 @@
       "name": "company_backup_pagination",
       "sha256": "afc0b4656c25362a37fecbb22bc923a506c4c52930a33bff9562c3922f8f428e",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101234809_provider_admin_setup.sql",
+      "version": "20261101235749",
+      "name": "provider_admin_setup",
+      "sha256": "4cd1c27f9481040bae57af6ddc67955252892935439f42ac7436f89bca6a9d07",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261101235857_provider_vault_compatibility.sql",
+      "version": "20261101235932",
+      "name": "provider_vault_compatibility",
+      "sha256": "11b2bb43f94af1016f1131942258c660d67b6703a2512574d9ccbce4c5c13561",
+      "already_applied": true
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Registro de reanudación — 31 de octubre de 2026
 
-**Estado vigente:** producción conectada 9 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
+**Estado vigente:** producción conectada 12 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
 
 Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI
 
@@ -312,3 +312,20 @@ Siguiente paso: reanudar la autorización oficial pendiente, comprobar configura
 - Guardada y publicada versión 10, paquete 0.5.4-rc.1, despliegue appgdep_6ae7cc64f8b88191b6856c51b08f0da0. Los 72 hashes HTTPS coinciden y la demo estable conserva su hash. v9 y candidata8 recuperables; backend49 aditivo sin cambiar datos ni servicios de pago.
 - Se actualiza inventario para ejecutar la aceptación pública de v10. La verificación privada del nuevo flujo ya cubre Android/Windows emulados y ambos temas con 36 recorridos SaaS; no hay dispositivos físicos.
 - Google: ya se creó un único cliente web en el proyecto468881730124 con origen/retorno canónicos. La respuesta mantiene el secreto enmascarado; no se han modificado los campos existentes de Vault. Transferencia segura pendiente de comprobar en su pantalla oficial. No publicar ni registrar valores secretos en evidencias.
+
+# 2026-11-02 — administración de servicios y compatibilidad Vault
+
+- PR #19 integrado en main (633e4087), v10 publicada y demo estable conservada. El CI final 41363640394 pasa 587 controles e incluye seis recorridos públicos reales de v10. Artefacto descargado y SHA-256 comprobado para conservar evidencia después de su caducidad en Actions.
+- Se continúa en feat/provider-admin-setup, 0.5.5-rc.1. Nueva pestaña Servicios reservada a administración global verificada; estado de proveedores y entrada de credenciales Google mediante JSON oficial o formulario, sin valores en respuestas, Web Storage ni auditoría.
+- Migraciones 50/51 aplicadas una vez y conservadas. La prueba remota detectó que FOR UPDATE sobre Vault requiere permisos que el rol de proyecto no posee. Se corrigió mediante una migración adicional que utiliza create_secret/update_secret oficiales, sin conceder UPDATE sobre las tablas gestionadas. Se añadió una prueba con rol restringido para reproducir esa condición.
+- 418 unitarias/SQL pasan. El ensayo remoto con dos identidades ficticias y escritura real en Vault termina revertido, con cero usuarios/auditorías de prueba; las claves Google/AES y las condiciones de acceso siguen intactas. Asesor sin avisos nuevos, permanece el previo de contraseñas filtradas.
+- Google: proyecto truckcontrolai, un único cliente TruckControl AI Gmail creado con origen y retorno canónicos. El procedimiento oficial terminó sin poder recuperar el secreto permanentemente enmascarado; no cambió ajustes ni credenciales. Automatización acumulada estimada 1,5586 USD (95 pasos/1158 segundos), inferior al máximo aprobado de 2 USD; sin recargas. No repetir ni duplicar el cliente.
+- Publicación de la mejora pendiente de CI y verificación pública. No confundir formato de credenciales con consentimiento Gmail real. Reenvío general e IA existente continúan disponibles con sus permisos y límites.
+
+# 2026-11-02 — Servicios publicados, versión 12
+
+- CI de PR 41365321617 y fuente exacta 41365370169 pasan 614 comprobaciones. El primer intento encontró el límite predeterminado de cinco segundos en el round-trip criptográfico de 3 MB; se dio un plazo explícito de veinte segundos, sin reducir iteraciones ni aserciones.
+- Publicada 0.5.5-rc.1, fuente 63258ac0a705300d2f589f84b8bad274aaa6f83c, versión alojada 12, despliegue appgdep_6ae7d5f1fc8081918189edc9b488a869. La 11 se guardó antes de completar CI y no se desplegó; 10/9 y demo v6 conservadas.
+- Verificados 72 hashes por HTTPS en tres orígenes, índice de la demo sin cambios y rechazo anónimo 401/42501 de tc_provider_control. Cloudflare rechazaba Python urllib con código 1010, también en la demo anterior; curl ordinario funcionó con el mismo proxy y TLS, sin cambiar permisos ni seguridad del alojamiento.
+- Actualizadas las guías de correo/administración, preservando el documento anterior en historial. Google sigue sin secreto completo y sin prueba OAuth de buzón; el receptor general y la IA conservan su funcionamiento y límites. Migadu continúa con SERVFAIL/DNSSEC en los tres destinos DKIM a las 00:05 UTC.
+- La aceptación pública de v12 se ejecuta mediante los checks finales de PR #20. Mantener registro abierto, cobros y SMS apagados; no ampliar presupuestos.

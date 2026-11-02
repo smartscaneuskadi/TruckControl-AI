@@ -1,0 +1,62 @@
+{
+  "checked_at": "2026-11-02T00:00:00Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "app_version": "0.5.5-rc.1",
+  "published": true,
+  "checks": {
+    "migration_count": 51,
+    "google_id_unchanged": true,
+    "google_secret_unchanged": true,
+    "aes_key_unchanged": true,
+    "anon_execute": false,
+    "authenticated_execute": true,
+    "public_invoker": true,
+    "official_vault_compatibility": true,
+    "verification": "provider_admin_passed_and_rolled_back",
+    "fixture_users_remaining": 0,
+    "fixture_audit_remaining": 0,
+    "recent_archives_remaining": 0,
+    "launch_safeguards_preserved": true,
+    "unit_sql": 418,
+    "new_provider_tests": 21,
+    "compact_layout_recheck": "passed",
+    "physical_devices": false,
+    "saas_browser": 42
+  },
+  "security_advisor": {
+    "new_warnings": 0,
+    "existing_warning": "auth_leaked_password_protection"
+  },
+  "limits": {
+    "ai_budget_usd_month": 10,
+    "payments_enabled": false,
+    "sms_enabled": false,
+    "google_credentials_ready": false,
+    "real_google_consent_tested": false
+  },
+  "ci_pending": false,
+  "published_version": 12,
+  "source": "63258ac0a705300d2f589f84b8bad274aaa6f83c",
+  "deployment_id": "appgdep_6ae7d5f1fc8081918189edc9b488a869",
+  "ci": {
+    "run": 41365321617,
+    "exact_source_run": 41365370169,
+    "conclusion": "success",
+    "total": 614,
+    "unit_sql": 418,
+    "python": 32,
+    "demo_browser": 64,
+    "company_browser": 22,
+    "saas_browser": 42,
+    "candidate_browser": 14,
+    "production_browser": 16,
+    "public_browser_before_deployment_v10": 6
+  },
+  "public_verification": {
+    "tls_verified": true,
+    "hashes_matched": 72,
+    "demo_unchanged": true,
+    "anonymous_provider_denied": true,
+    "post_deployment_browser_acceptance": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/20/checks"
+  }
+}

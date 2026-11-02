@@ -1,8 +1,8 @@
-# TruckControl AI — entrega vigente, 1 de noviembre de 2026
+# TruckControl AI — entrega vigente, 2 de noviembre de 2026
 
 **Aplicación conectada publicada: https://truckcontrolai.com.** El propietario verificó su correo, eligió su contraseña y accedió con administración global; las tres condiciones están comprobadas en Supabase. El registro de clientes está abierto, con consentimiento legal y confirmación de correo. **Cobros automáticos y SMS desactivados.**
 
-**Publicada 0.5.4-rc.1, versión alojada 10:** copia cifrada de registros y originales autorizados, comprobación y recuperación local sin sobrescribir producción; ensayo aislado con 50 camiones y pruebas RLS remotas con rollback. La migración de paginación ya está aplicada una vez: 49 en total. El nuevo paquete está publicado por HTTPS y sus 72 hashes coinciden. La versión 9 queda recuperable. [Alcance y guía](COMPANY_RECOVERY.md).
+**Publicada 0.5.5-rc.1, versión alojada 12:** nueva sección **Administración → Servicios** para comprobar proveedores y guardar Google desde la app, sin devolver secretos. Conserva las copias cifradas y la recuperación local de registros/originales autorizados. **51 migraciones** aplicadas una vez; ensayo real de Vault revertido y claves anteriores intactas. [Servicios](PROVIDER_ADMIN.md), [copias](COMPANY_RECOVERY.md).
 
 ## Acceso y oferta
 
@@ -12,13 +12,13 @@ Oferta aprobada: **10 días Full gratuitos; Básico 300 €/mes + IVA 21 % = 363
 
 ## Publicación y recuperación
 
-Versión alojada **10**, canal production, fuente `e5ce8e662dc8ef8466025f5d90ba0884298ff5f4`, rama `deploy/company-recovery-20261101`. Despliegue `appgdep_6ae7cc64f8b88191b6856c51b08f0da0`, 01/11/2026 23:34 UTC. El código coincide con el CI `41361898380`, salvo el manifiesto de alojamiento. La rama exacta de despliegue también pasa CI `41362141114`. Tres orígenes sirven los mismos 24 archivos: **72 hashes coincidentes con TLS validado**. [Informe](verification/company-recovery-production-https-20261101.json), [inventario](deployment/candidate-hosting.json).
+Versión alojada **12**, canal production, fuente `63258ac0a705300d2f589f84b8bad274aaa6f83c`, rama `deploy/provider-services-20261102`. Despliegue `appgdep_6ae7d5f1fc8081918189edc9b488a869`, 02/11/2026 00:14 UTC. El código coincide con el CI `41365321617`, salvo el manifiesto de alojamiento; la fuente exacta también pasa `41365370169`. Tres orígenes sirven los mismos 24 archivos: **72 hashes coincidentes con TLS validado**. [Informe](verification/provider-admin-production-https-20261102.json), [inventario](deployment/candidate-hosting.json). Las versiones 9/10 siguen recuperables; 11 se guardó antes de completar CI y nunca se publicó.
 
 También responden https://www.truckcontrolai.com y https://truckcontrol-ai-candidata.earlymug513.chatgpt.site. Este último hostname sirve la producción conectada, pese a su nombre histórico. La **candidata 8 queda guardada para recuperación**. La **demo estable v6** continúa intacta en https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site. Producción ofrece «Explorar la demo» con datos ficticios separados.
 
 ## Datos, autenticación y seguridad
 
-Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **49 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261101-company-recovery.json), [correspondencias](deployment/recovered-migrations.json).
+Único Supabase: `truckcontrol-ai / kkkemaycedexymrpaqtp`, organización fixpilot-dev. **51 migraciones**, inspeccionadas y aplicadas una vez. FIXPilot permanece separado. No ejecutar `db push` a ciegas ni editar migraciones aplicadas. [Inventario](deployment/remote-migrations-20261102-provider-setup.json), [correspondencias](deployment/recovered-migrations.json).
 
 Confirmación y recuperación usan enlaces nativos Supabase enviados por API Resend, sin depender de SMTP Migadu. La aceptación real probó verificación, enlace de un uso, contraseña, inicio de sesión, recuperación y cierre global. El consentimiento inmutable del servidor impide activar empresas mediante metadatos editables. La prueba remota de dos empresas pasa con rollback completo. [Evidencia](verification/client-auth-acceptance-20261101.json).
 
@@ -34,7 +34,9 @@ OpenAI funciona en backend con credencial existente, límite global **10 USD/mes
 
 ## Pruebas y límites
 
-El [CI del código desplegado](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41361898380) pasó **587 comprobaciones**: 397 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 36 SaaS, 14 candidata, 16 producción y seis recorridos públicos de la versión 9 anterior. TypeScript, Deno y PWA pasan. **64 originales conservadas**, once hashes. La prueba pública adicional de v10 con el registro abierto se registra por separado; no atribuir a v10 los recorridos que verificaron v9.
+Los [controles del código](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41365321617) y de la [fuente exacta](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/41365370169) pasan **614 comprobaciones**: 418 unitarias/SQL, 32 Python, 64 demo, 22 empresas, 42 SaaS, 14 candidata, 16 producción y seis recorridos públicos de v10 anteriores al despliegue. Las **64 originales se conservan**, con once hashes. La aceptación pública del paquete v12 se comprueba en [checks de PR #20](https://github.com/smartscaneuskadi/TruckControl-AI/pull/20/checks). No atribuir a v12 los recorridos anteriores de v10. El ensayo independiente de v12 confirma 72 hashes HTTPS, demo intacta y rechazo HTTP del acceso anónimo a servicios.
+
+El [ensayo remoto de Servicios](verification/provider-admin-20261102.json) comprueba identidad, rol, correo, escritura real en Vault y auditoría sin secretos, con rollback completo y cero identidades de prueba restantes. Google tiene un único cliente web y mantiene oculto su secreto. La app permite guardarlo de forma segura, pero su formato no acredita todavía un consentimiento Gmail real.
 
 Fleet Light/Cockpit, configuración del dispositivo y movimiento reducido están disponibles. Android/Windows son emulaciones, no dispositivos físicos. La copia offline empresarial es cifrada, necesita preparación y revalida permisos antes de sincronizar; instalar la PWA no la activa.
 

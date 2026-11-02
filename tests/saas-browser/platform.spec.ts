@@ -7,6 +7,7 @@ import {
   encryptCompanyBackup,
 } from "../../src/data/company-backup";
 import type { CompanyDocument } from "../../src/integrations/supabase/database.types";
+import type { ProviderStatus } from "../../src/integrations/supabase/provider-setup";
 import AxeBuilder from "@axe-core/playwright";
 import type { RecurringStatus } from "../../src/components/RecurringSubscription";
 import { exampleCatalog, featureLabels } from "../../src/domain/subscriptions";
@@ -67,6 +68,22 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     }
   >();
   const controls = {
+    providerDenied: false,
+    providerStatus: {
+      google: {
+        client_id: null,
+        id_valid: false,
+        secret_valid: false,
+        configured: false,
+        vault_available: true,
+        connections: 0,
+      },
+      auth_mail: { enabled: true, legal_ready: true },
+      ai: { enabled: true, monthly_budget_cents: 1000 },
+      receiving: { enabled: true, domain: "facturas.truckcontrolai.com" },
+      payments_enabled: false,
+      sms_enabled: false,
+    } as ProviderStatus,
     companyRole: "owner" as "owner" | "admin" | "operator" | "viewer",
     backupDocuments: [] as CompanyDocument[],
     conflict: false,
@@ -235,7 +252,35 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       url.pathname === "/rest/v1/rpc/tc_organization_access"
     )
       data = access(identity ?? customerId);
-    else if (url.pathname === "/rest/v1/rpc/tc_admin_control") {
+    else if (url.pathname === "/rest/v1/rpc/tc_provider_control") {
+      if (identity !== admin || controls.providerDenied) {
+        status = 403;
+        data = { code: "42501", message: "Global operator required" };
+      } else {
+        if (body?.p_action === "set_google") {
+          const values = body.p_data as Record<string, unknown>;
+          if (
+            !/^468881730124-[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(
+              String(values.client_id),
+            ) ||
+            !/^GOCSPX[-_][A-Za-z0-9_-]{16,240}$/.test(
+              String(values.client_secret),
+            )
+          ) {
+            status = 400;
+            data = { code: "23514", message: "Invalid synthetic credentials" };
+          } else {
+            Object.assign(controls.providerStatus.google, {
+              client_id: values.client_id,
+              id_valid: true,
+              secret_valid: true,
+              configured: true,
+            });
+            data = structuredClone(controls.providerStatus);
+          }
+        } else data = structuredClone(controls.providerStatus);
+      }
+    } else if (url.pathname === "/rest/v1/rpc/tc_admin_control") {
       if (identity !== admin) {
         status = 403;
         data = { code: "42501", message: "Administrator required" };
@@ -398,6 +443,176 @@ async function openRecovery(page: Page) {
     }),
   ).toBeVisible();
 }
+
+async function openProviders(page: Page) {
+  await login(page, "pedidos@smartscaneuskadi.com");
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Servicios", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Servicios y conexiones", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Guardar Google de forma segura",
+      exact: true,
+    }),
+  ).toBeEnabled();
+}
+test("el propietario importa Google en el panel sin guardar ni devolver el secreto al navegador", async ({
+  page,
+}) => {
+  const f = await fixtures(page),
+    secret = "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00000",
+    clientId = "468881730124-synthetic-browser.apps.googleusercontent.com";
+  await openProviders(page);
+  await page
+    .getByLabel("Importar JSON del cliente web Google")
+    .setInputFiles({
+      name: "google.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(
+        JSON.stringify({
+          web: {
+            project_id: "truckcontrolai",
+            client_id: clientId,
+            client_secret: secret,
+            redirect_uris: ["https://truckcontrolai.com/gmail-callback"],
+          },
+        }),
+      ),
+    });
+  await expect(
+    page.getByLabel("ID del cliente web de TruckControl"),
+  ).toHaveValue(clientId);
+  await page
+    .getByRole("button", {
+      name: "Guardar Google de forma segura",
+      exact: true,
+    })
+    .click();
+  expect(
+    f.calls.filter(
+      (c) =>
+        c.path.endsWith("tc_provider_control") &&
+        c.body?.p_action === "set_google",
+    ),
+  ).toHaveLength(0);
+  await page
+    .getByLabel("Confirmo que guardaré la configuración de TruckControl")
+    .check();
+  await page
+    .getByRole("button", {
+      name: "Guardar Google de forma segura",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("status").filter({ hasText: "Credenciales guardadas" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Secreto nuevo de Google")).toHaveValue("");
+  expect(JSON.stringify(f.controls.providerStatus)).not.toContain(secret);
+  expect(
+    await page.evaluate(
+      (p) =>
+        JSON.stringify({
+          local: { ...localStorage },
+          session: { ...sessionStorage },
+        }).includes(p),
+      secret,
+    ),
+  ).toBe(false);
+  expect(
+    f.calls.filter(
+      (c) =>
+        c.path.endsWith("tc_provider_control") &&
+        c.body?.p_action === "set_google",
+    ),
+  ).toHaveLength(1);
+  expect(f.calls.filter((c) => c.path.includes("functions/v1"))).toEqual([]);
+});
+test("el panel rechaza archivos ajenos y soporta ambos temas sin desbordarse", async ({
+  page,
+}, info) => {
+  const f = await fixtures(page);
+  await openProviders(page);
+  await page
+    .getByLabel("Importar JSON del cliente web Google")
+    .setInputFiles({
+      name: "otro.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(
+        JSON.stringify({
+          web: {
+            project_id: "fixpilot",
+            client_id: "123-wrong.apps.googleusercontent.com",
+            client_secret: "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000",
+          },
+        }),
+      ),
+    });
+  await expect(page.locator(".provider-setup [role=alert]")).toContainText(
+    "no corresponde",
+  );
+  expect(f.calls.some((c) => c.body?.p_action === "set_google")).toBe(false);
+  for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+    await page.getByRole("button", { name: "Apariencia", exact: true }).click();
+    const dialog = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+    });
+    await dialog.getByRole("radio", { name: theme, exact: true }).check();
+    await dialog.getByRole("button", { name: "Aplicar apariencia" }).click();
+    await dialog.getByRole("button", { name: "Cerrar ventana" }).click();
+    expect(
+      (await new AxeBuilder({ page }).include(".provider-setup").analyze())
+        .violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await page.screenshot({
+      path: info.outputPath(
+        `provider-${theme === "Fleet Light" ? "light" : "cockpit"}.png`,
+      ),
+    });
+  }
+});
+test("el servidor rechaza a quien pierde administración y el cliente no ve este panel", async ({
+  page,
+}) => {
+  const f = await fixtures(page);
+  await openProviders(page);
+  f.controls.providerDenied = true;
+  await page
+    .getByLabel("ID del cliente web de TruckControl")
+    .fill("468881730124-synthetic-browser.apps.googleusercontent.com");
+  await page
+    .getByLabel("Secreto nuevo de Google")
+    .fill("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00000");
+  await page
+    .getByLabel("Confirmo que guardaré la configuración de TruckControl")
+    .check();
+  await page
+    .getByRole("button", {
+      name: "Guardar Google de forma segura",
+      exact: true,
+    })
+    .click();
+  await expect(page.locator(".provider-setup [role=alert]")).toContainText(
+    "No se ha guardado",
+  );
+  expect(f.controls.providerStatus.google.configured).toBe(false);
+  await page.getByRole("button", { name: "Salir", exact: true }).click();
+  await login(page, "customer@example.com");
+  await expect(page).toHaveURL(/#\/dashboard/);
+  await expect(
+    page.getByRole("button", { name: "Servicios", exact: true }),
+  ).toHaveCount(0);
+});
 async function downloadRecovery(page: Page) {
   const phrase = "Frase-ficticia-copia-2026";
   await page
