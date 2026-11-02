@@ -1,0 +1,110 @@
+{
+  "date": "2026-11-02",
+  "project": "truckcontrol-ai",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "function": "company-auth",
+  "version": 4,
+  "status": "ACTIVE",
+  "readback_matches_local": true,
+  "index_sha256": "581f799c722f320576eb9b30a7daf4f616f976718b7649a74b7b4b51989baa30",
+  "handler_sha256": "63f517c2b17df08144e30a46bc8c19795e2f02ad737c644d4e8011b62b16b730",
+  "mutation_free_probe": {
+    "action": "signup",
+    "email": "",
+    "expected_status": 400,
+    "expected_code": "invalid_email",
+    "creates_users": false,
+    "sends_email": false,
+    "reserves_quota": false
+  },
+  "http_checks": [
+    {
+      "origin": "https://truckcontrolai.com",
+      "method": "OPTIONS",
+      "status": 200,
+      "allow_origin": "https://truckcontrolai.com",
+      "body": {}
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "method": "POST",
+      "status": 400,
+      "allow_origin": "https://truckcontrolai.com",
+      "body": {
+        "error": "invalid_email"
+      }
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "method": "OPTIONS",
+      "status": 200,
+      "allow_origin": "https://www.truckcontrolai.com",
+      "body": {}
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "method": "POST",
+      "status": 400,
+      "allow_origin": "https://www.truckcontrolai.com",
+      "body": {
+        "error": "invalid_email"
+      }
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "OPTIONS",
+      "status": 200,
+      "allow_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "body": {}
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "method": "POST",
+      "status": 400,
+      "allow_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "body": {
+        "error": "invalid_email"
+      }
+    },
+    {
+      "origin": "https://untrusted.example.invalid",
+      "method": "OPTIONS",
+      "status": 403,
+      "allow_origin": null,
+      "body": {
+        "error": "origin_denied"
+      }
+    },
+    {
+      "origin": "https://untrusted.example.invalid",
+      "method": "POST",
+      "status": 403,
+      "allow_origin": null,
+      "body": {
+        "error": "origin_denied"
+      }
+    }
+  ],
+  "unit_sql_passed": 447,
+  "python_passed": 32,
+  "production_browser_emulated_passed": 20,
+  "migrations": 52,
+  "ddl_changes": false,
+  "registration_open": true,
+  "auth_mail_enabled": true,
+  "payments_enabled": false,
+  "internal_acceptance_enabled": false,
+  "local_public_browser": "Not completed: execution proxy CA is absent from the browser trust store. Trust was left unchanged; public browser validation runs in GitHub CI.",
+  "customer_email_delivery": "Pending customer retry; no unsolicited confirmation sent by tests.",
+  "public_browser_ci": {
+    "run_id": 41406437153,
+    "job_id": 125149402561,
+    "conclusion": "success",
+    "profiles": ["Windows emulated", "Android emulated"],
+    "origins_checked": 3,
+    "auth_cors_validation_checks_passed": 6,
+    "frontend_version": 13,
+    "function_version": 4,
+    "sends_email": false
+  }
+}
