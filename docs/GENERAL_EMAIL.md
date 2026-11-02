@@ -7,7 +7,8 @@ La producción de **https://truckcontrolai.com** permite importar documentos y r
 | EML exportado por un buzón | Disponible | Cuenta, empresa y módulo autorizados |
 | PDF, JPG, PNG y WebP | Disponible | Los mismos permisos; no necesita Google |
 | Reenvío desde Gmail, Outlook o dominio propio | Receptor Resend probado | Activar la dirección de la empresa y elegir qué mensajes reenviar |
-| Gmail/Google Workspace directo | Preparado; falta completar credenciales y consentimiento | Cliente Google válido, autorización del buzón y pruebas reales; revisión de Google para ampliar el acceso |
+| Mi correo personal Gmail/Workspace | Implementado; falta ID público válido y verificación Google | Cada usuario activo autoriza su buzón, también Básico, sin aprobación de TruckControl; [alcance](PERSONAL_MAIL.md) |
+| Gmail/Google Workspace para importar facturas | Preparado; falta completar credenciales y consentimiento | Cliente Google válido, autorización del buzón y pruebas reales; revisión de Google para ampliar el acceso |
 | Outlook/Microsoft 365 directo | Pendiente | Aplicación y consentimiento Microsoft; usar reenvío o EML mientras tanto |
 | IMAP/SMTP como conexión del buzón | No implementado | Adaptador backend TLS y autenticación del proveedor; SMTP solo sirve para enviar |
 

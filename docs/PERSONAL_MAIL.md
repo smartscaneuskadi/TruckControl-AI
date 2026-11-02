@@ -1,6 +1,6 @@
 # Mi correo — acceso personal sin aprobación de TruckControl
 
-Implementado en 0.5.12-rc.1. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
+Publicado en 0.5.12-rc.1, versión alojada 23, con Gmail real pendiente de configuración y verificación del proveedor. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
 
 ## Cómo funciona
 
@@ -39,3 +39,5 @@ Solo Gmail/Google Workspace tiene adaptador directo. Outlook/Microsoft 365, Yaho
 Se envía texto; todavía no se adjuntan archivos salientes ni se guardan/actualizan borradores en Google. Se pueden leer los borradores existentes. El texto que se está redactando se conserva solo en esa pantalla: no se debe cerrar, recargar o salir con trabajo sin guardar. La empresa y el correo necesitan conexión. No hay sincronización de correo offline ni lectura automática por IA en segundo plano.
 
 Las pruebas usan buzones `.invalid`, OAuth y Gmail simulados: permisos de consulta con módulo empresarial Gmail apagado, dos temas, HTML inerte, envío confirmado/incierto, cierre de sesión durante consentimiento y recarga sin datos privados. Los perfiles Android/Windows son emulados; la aceptación de un buzón real permanece pendiente de la configuración de Google y del consentimiento de su titular. No se ha leído ni enviado correo real, modificado planes o contratado servicios.
+
+La retirada de permisos 401/403 limpia la sesión y el contenido cargado; está comprobada en ambos perfiles. La política pública de privacidad incorpora el alcance del correo personal y Limited Use. Pasan 816 controles de código/fuente y 72 hashes HTTPS; los checks de PR #27 verifican después los seis perfiles públicos de demo y configuración, sin conectar un Gmail real.

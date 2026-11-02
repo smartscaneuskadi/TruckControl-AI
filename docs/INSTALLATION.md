@@ -58,3 +58,7 @@ En **Correo y facturas → Facturas y revisión**, una cuenta con IA autorizada 
 ## Neumáticos, versión 19
 
 Guarda tus formularios y acepta **Actualizar** cuando aparezca. En **Neumáticos**, una cuenta con Mantenimiento autorizado puede registrar montaje, posición, mediciones manuales y próxima revisión; consultar/exportar fichas e historial. Los valores desconocidos quedan vacíos. La empresa necesita conexión; la demo funciona offline. Pasar a almacén o retirado libera la posición sin borrar historial ni generar gastos. Las copias cifradas de empresa v3 y de demo v2 incluyen este registro y siguen aceptando formatos anteriores. [Guía](TYRES.md).
+
+## Mi correo, versión 23
+
+Guarda tu trabajo y acepta **Actualizar**. **Mi correo** permite a cada usuario activo, también Básico/consulta, autorizar su propio Gmail sin aprobación de TruckControl. Pulsa **Preparar conexión con Google** y después **Entrar con Google** cuando la configuración del proveedor esté disponible. El ID público actual aún no es válido y Google debe permitir el uso público; no se declara el buzón real conectado. Para probar sin credenciales: **Explorar la demo → Mi correo → Abrir buzón ficticio**. Allí los envíos son simulados y no usan IA ni cambian datos de flota. El permiso y los mensajes no se guardan offline. Envíos de texto, adjuntos entrantes, archivo/papelera reversible; otros proveedores, adjuntos salientes y guardar borradores siguen pendientes. [Guía](PERSONAL_MAIL.md).
