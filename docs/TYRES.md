@@ -1,6 +1,6 @@
 # Registro de neumáticos
 
-Preparado en 0.5.11-rc.1, continuando desde v17. Consulta [entrega vigente](CURRENT_DELIVERY.md) para el estado de publicación comprobado.
+Publicado en 0.5.11-rc.1, versión alojada 19, continuando desde v17. Consulta [entrega vigente](CURRENT_DELIVERY.md) para el estado de publicación comprobado.
 
 ## Uso
 
@@ -35,3 +35,5 @@ Esta función no contrata servicios, no activa cobros y no amplía presupuestos.
 El [ensayo nativo con rollback](verification/tyres-native-20261102.json) deja cero identidades, camiones, cubiertas o revisiones ficticias. Las huellas de los datos anteriores, ajustes, planes, presupuesto y funciones de permisos permanecen iguales.
 
 El restablecimiento explícito de la demo limpia sus neumáticos y permite recuperar un archivo dañado. La candidata alojada 18 detectó una regresión en ese flujo durante CI y nunca se publicó; se conserva como evidencia. Los dos recorridos originales de recuperación vuelven a pasar sin modificar las pruebas retenidas.
+
+Publicación comprobada con 785 controles de código y fuente exacta y 72 hashes HTTPS. La aceptación pública posterior comprueba la demo offline de neumáticos en seis perfiles. [CI](verification/tyres-ci-20261102.json), [checks de PR #26](https://github.com/smartscaneuskadi/TruckControl-AI/pull/26/checks). Los perfiles Android/Windows son emulados.

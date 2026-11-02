@@ -1,0 +1,46 @@
+{
+  "verified_at": "2026-11-02T19:02:54.523671+00:00",
+  "pre_publication": [
+    {
+      "verified_at": "2026-11-02T19:00:18.152511+00:00",
+      "run_id": 41504867338,
+      "sha": "f1072f87a1cc8cae07925fb64b72098eab4eca80",
+      "units_sql": 567,
+      "python": 32,
+      "browsers": [
+        64,
+        22,
+        60,
+        14,
+        20
+      ],
+      "public_profiles": 6,
+      "total": 785,
+      "passed": true,
+      "public_version_before_publish": 17
+    },
+    {
+      "verified_at": "2026-11-02T19:01:28.092201+00:00",
+      "run_id": 41504864364,
+      "sha": "2212cb3956ab96f4463fdad45c9fd23f18e50ece",
+      "units_sql": 567,
+      "python": 32,
+      "browsers": [
+        64,
+        22,
+        60,
+        14,
+        20
+      ],
+      "public_profiles": 6,
+      "total": 785,
+      "passed": true,
+      "public_version_before_publish": 17
+    }
+  ],
+  "retained_original_tests": 64,
+  "retained_hashes": 11,
+  "physical_devices": false,
+  "live_provider_calls_this_release": 0,
+  "failed_candidate_18_deployed": false
+}

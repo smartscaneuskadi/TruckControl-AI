@@ -1,0 +1,50 @@
+{
+  "verified_at": "2026-11-02T18:58:17.342326+00:00",
+  "emulated_profiles": [
+    "Windows",
+    "Android"
+  ],
+  "themes": [
+    "light",
+    "cockpit"
+  ],
+  "screenshots": [
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-tyres-20261102/saas-fixed/platform-neum\u00e1ticos-montaj-2ee87-orial-y-retirada-sin-gastos-saas-android/tyres-cockpit.png",
+      "sha256": "9d88195caeebf7a7662c061f75b2bc3ff51c4a7fe20d30265f4551e6988af327",
+      "bytes": 195377
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-tyres-20261102/saas-fixed/platform-neum\u00e1ticos-montaj-2ee87-orial-y-retirada-sin-gastos-saas-android/tyres-light.png",
+      "sha256": "65ab0de0c9dfd9cd9dc4ce15fd3392b931a9e009043c39cd473bb9ef17752384",
+      "bytes": 186723
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-tyres-20261102/saas-fixed/platform-neum\u00e1ticos-montaj-2ee87-orial-y-retirada-sin-gastos-saas-windows/tyres-cockpit.png",
+      "sha256": "000b598498f7c13214878fbfb42a10c546ccaddc29f1899a9afd354f422597ee",
+      "bytes": 142669
+    },
+    {
+      "artifact_path": "/workspace/artifacts/truckcontrol-tyres-20261102/saas-fixed/platform-neum\u00e1ticos-montaj-2ee87-orial-y-retirada-sin-gastos-saas-windows/tyres-light.png",
+      "sha256": "9b809dc531c8e609398f42a4d5990aa8691612eb3c43a5ab6e3a1bd595891f7c",
+      "bytes": 141798
+    }
+  ],
+  "new_saas_cases": 4,
+  "profile_cases_passed": 8,
+  "manual_measurement_unknowns_preserved": true,
+  "mounting_history_retirement_csv_checked": true,
+  "offline_demo_core_backup_reload_reset_checked": true,
+  "viewer_module_revocation_conflict_checked": true,
+  "axe_wcag_aa_violations": 0,
+  "horizontal_overflow": false,
+  "editor_accessibility_profiles_passed": 2,
+  "local_logs": [
+    "saas-fixed.log",
+    "editor-accessibility.log",
+    "reset-saas.log"
+  ],
+  "physical_devices": false,
+  "live_model_calls": 0,
+  "real_customer_mutations": 0
+}
