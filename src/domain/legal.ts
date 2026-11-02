@@ -1,4 +1,4 @@
-export const legalVersion = "2026-11-01";
+export const legalVersion = "2026-11-02";
 export const operator = {
   name: "ELEVADANCOR S.L.",
   taxId: "B02993426",
@@ -69,7 +69,7 @@ export const legalDocuments: Record<
     sections: [
       {
         title: "Prueba y contratación",
-        text: "La prueba Full dura diez días desde la verificación y activación de la cuenta. No requiere tarjeta y no genera cargos ni deuda por sí sola. Al terminar, el acceso queda sujeto al plan activado. Los precios, IVA y alcance de cada plan se muestran antes de contratar. Los cobros automáticos permanecen desactivados hasta que exista una pasarela y se acepte expresamente la contratación y renovación.",
+        text: "Las nuevas altas reciben una prueba del plan Básico durante diez días desde la verificación y activación de la cuenta. Full requiere una activación posterior; solicitarlo o cambiar los datos del perfil no lo desbloquea. Las pruebas y períodos concedidos anteriormente conservan sus condiciones. No requiere tarjeta y no genera cargos ni deuda por sí sola. Al terminar, el acceso queda sujeto al plan activado. Los precios, IVA y alcance de cada plan se muestran antes de contratar. Los cobros automáticos permanecen desactivados hasta que exista una pasarela y se acepte expresamente la contratación y renovación.",
       },
       {
         title: "Cuenta, empresas y permisos",

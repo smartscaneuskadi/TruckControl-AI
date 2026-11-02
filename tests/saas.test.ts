@@ -129,7 +129,7 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect(access.active).toBe(false);
     expect(access.is_admin).toBe(false);
   });
-  it("crea automáticamente empresa y diez días Full tras confirmar ambos canales", async () => {
+  it("crea automáticamente empresa y diez días Básico tras confirmar ambos canales", async () => {
     await db.query(
       "update auth.users set phone='34600000001',phone_confirmed_at=now() where id=$1",
       [clientA],
@@ -152,7 +152,7 @@ describe("plataforma SaaS, prueba y administración", () => {
     ).rows[0].id;
     const access = await currentAccess();
     expect(access.active).toBe(true);
-    expect(access.plan).toBe("full");
+    expect(access.plan).toBe("limited");
     expect(access.features.gmail).toBe(true);
     expect(access.features.documents).toBe(true);
     expect(access.features.invoice_ai).toBe(false);
@@ -210,6 +210,13 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect((await currentAccess()).features.invoice_ai).toBe(false);
     await as(admin, () =>
       adminCall("module", { id: "invoice_ai", enabled: true }),
+    );
+    expect((await currentAccess()).features.invoice_ai).toBe(false);
+    await as(admin, () =>
+      adminCall("customer", {
+        user_id: clientA,
+        module_overrides: { invoice_ai: true },
+      }),
     );
     expect((await currentAccess()).features.invoice_ai).toBe(true);
     expect((await currentAccess(clientB)).features.invoice_ai).toBe(false);

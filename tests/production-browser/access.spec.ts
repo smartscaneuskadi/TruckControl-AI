@@ -17,7 +17,50 @@ const user = {
   app_metadata: { provider: "email", providers: ["email"] },
   user_metadata: {},
 };
-async function fixtures(page: Page, open = true) {
+async function fixtures(
+  page: Page,
+  open = true,
+  basicAfterVerification = false,
+) {
+  let verified = false;
+  const org = "bd200000-0000-4000-8000-000000000001";
+  const profile = {
+    user_id: userId,
+    email: user.email,
+    contact_name: "Persona ficticia",
+    company_name: "Empresa ficticia",
+    tax_id: "DEMO-001",
+    address: "Calle ficticia 1",
+    phone: "+34600000001",
+    requested_plan: "full",
+    trial_plan_id: "limited",
+    paid_plan: null,
+    status: "trial",
+    trial_started_at: now,
+    trial_ends_at: new Date(Date.now() + 10 * 86400000).toISOString(),
+    paid_until: null,
+    ai_allowed: true,
+    ai_opt_in: true,
+    module_overrides: {},
+    created_at: now,
+    updated_at: now,
+  };
+  const access = () => ({
+    is_admin: false,
+    active: verified,
+    profile: verified ? profile : null,
+    features: verified ? { ...exampleCatalog.plans[0].modules } : noFeatures,
+    plan: "limited",
+    max_trucks: 50,
+    organization_id: org,
+    company_role: "owner",
+    can_write: verified,
+    can_manage: verified,
+    sms_ready: false,
+    requires_phone_verification: false,
+    prices_are_examples: false,
+    payments_enabled: false,
+  });
   const calls: { path: string; body: Record<string, unknown> | null }[] = [];
   await page.route(
     "https://kkkemaycedexymrpaqtp.supabase.co/**",
@@ -36,7 +79,7 @@ async function fixtures(page: Page, open = true) {
       };
       if (request.method() === "OPTIONS")
         return route.fulfill({ status: 204, headers });
-      let data: unknown = {};
+      let data: unknown = [];
       if (path.endsWith("/tc_public_catalog"))
         data = {
           ...exampleCatalog,
@@ -44,7 +87,8 @@ async function fixtures(page: Page, open = true) {
           payments_enabled: false,
         };
       else if (path.endsWith("/company-auth")) data = { accepted: true };
-      else if (path === "/auth/v1/verify")
+      else if (path === "/auth/v1/verify") {
+        verified = true;
         data = {
           access_token: jwt,
           refresh_token: "synthetic-refresh",
@@ -52,8 +96,30 @@ async function fixtures(page: Page, open = true) {
           expires_in: 3600,
           user,
         };
-      else if (path === "/auth/v1/user") data = user;
-      else if (path === "/rest/v1/organizations") data = [];
+      } else if (path === "/auth/v1/user") data = user;
+      else if (path === "/rest/v1/organizations")
+        data =
+          basicAfterVerification && verified
+            ? [
+                {
+                  id: org,
+                  owner_id: userId,
+                  name: "Empresa ficticia",
+                  created_at: now,
+                },
+              ]
+            : [];
+      else if (
+        basicAfterVerification &&
+        [
+          "/rest/v1/rpc/tc_finish_registration",
+          "/rest/v1/rpc/tc_my_access",
+          "/rest/v1/rpc/tc_organization_access",
+        ].includes(path)
+      )
+        data = access();
+      else if (path.endsWith("/tc_request_plan"))
+        data = "bd300000-0000-4000-8000-000000000001";
       else if (path.endsWith("/tc_finish_registration"))
         data = {
           is_admin: false,
@@ -88,19 +154,63 @@ async function fillSignup(page: Page) {
   ])
     await page.getByLabel(label, { exact: true }).fill(value);
 }
+test("el correo confirmado abre una cuenta Básico y solicitar Full no la amplía", async ({
+  page,
+}) => {
+  const calls = await fixtures(page, true, true);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Elegir Full", exact: true }).click();
+  await expect(page.locator(".registration-card")).toContainText(
+    "acceso Básico",
+  );
+  await fillSignup(page);
+  await page.getByRole("checkbox", { name: /He leído la privacidad/ }).check();
+  await page
+    .getByRole("button", { name: "Solicitar acceso Básico", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText("Confirma tu correo");
+  expect(calls.some((c) => c.path === "/rest/v1/organizations")).toBe(false);
+  await page.goto(`/#tc-auth=invite&token_hash=${hash}`);
+  await page.getByRole("button", { name: "Confirmar y continuar" }).click();
+  await page
+    .getByLabel("Contraseña", { exact: true })
+    .fill("Synthetic-passphrase-123!");
+  await page.getByRole("button", { name: "Guardar contraseña" }).click();
+  await expect(page.locator(".workspace-label")).toContainText(
+    "Empresa ficticia",
+  );
+  await expect(page.locator(".demo-pill")).toContainText("Básico");
+  const menu = page.getByRole("button", { name: "Abrir menú", exact: true });
+  if (await menu.isVisible()) await menu.click();
+  await page.getByRole("button", { name: "Mi plan y suscripción" }).click();
+  await expect(page.locator(".billing-page")).toContainText(
+    "prueba del plan Básico",
+  );
+  await page.getByRole("button", { name: "Elegir Full", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Solicitud del plan Full guardada",
+  );
+  expect(calls.some((c) => c.path.includes("tc_request_plan"))).toBe(true);
+  expect(
+    calls.some((c) => c.path.includes("checkout") || c.path.includes("stripe")),
+  ).toBe(false);
+  await expect(page.locator(".billing-page")).toContainText(
+    "prueba del plan Básico",
+  );
+});
 test("alta sin contraseña previa, consentimiento versionado y ninguna llamada SMTP", async ({
   page,
 }) => {
   const calls = await fixtures(page);
   await page.goto("/");
   await page
-    .getByRole("button", { name: "Probar Full gratis 10 días", exact: true })
+    .getByRole("button", { name: "Pedir acceso Básico", exact: true })
     .click();
   await fillSignup(page);
   await expect(page.locator('input[name="password"]')).toHaveCount(0);
   await page
     .getByRole("button", {
-      name: "Solicitar prueba Full de 10 días",
+      name: "Solicitar acceso Básico",
       exact: true,
     })
     .click();
@@ -108,7 +218,7 @@ test("alta sin contraseña previa, consentimiento versionado y ninguna llamada S
   await page.getByRole("checkbox", { name: /He leído la privacidad/ }).check();
   await page
     .getByRole("button", {
-      name: "Solicitar prueba Full de 10 días",
+      name: "Solicitar acceso Básico",
       exact: true,
     })
     .click();
@@ -117,7 +227,7 @@ test("alta sin contraseña previa, consentimiento versionado y ninguna llamada S
   expect(body).toMatchObject({
     action: "signup",
     terms_accepted: true,
-    terms_version: "2026-11-01",
+    terms_version: "2026-11-02",
     registration: { company_name: "Empresa ficticia" },
   });
   expect(body).not.toHaveProperty("password");
@@ -133,7 +243,7 @@ test("registro cerrado y precios visibles sin ofrecer un alta falsa", async ({
   await page.goto("/");
   await expect(
     page.getByRole("button", {
-      name: "Probar Full gratis 10 días",
+      name: "Pedir acceso Básico",
       exact: true,
     }),
   ).toBeDisabled();
@@ -241,7 +351,7 @@ test("portal y consentimiento accesibles en los dos temas", async ({
       ),
     ).toEqual([]);
     await page
-      .getByRole("button", { name: "Probar Full gratis 10 días", exact: true })
+      .getByRole("button", { name: "Pedir acceso Básico", exact: true })
       .click();
     await expect(page.getByRole("checkbox")).toBeVisible();
     expect(

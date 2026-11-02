@@ -23,6 +23,7 @@ const org = "20000000-0000-4000-8000-000000000082",
   stamp = new Date().toISOString();
 const jwt = (id: string) =>
   `${Buffer.from('{"alg":"HS256","typ":"JWT"}').toString("base64url")}.${Buffer.from(JSON.stringify({ sub: id, aud: "authenticated", role: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600, iat: Math.floor(Date.now() / 1000) })).toString("base64url")}.synthetic`;
+// Existing Full-trial customers remain a distinct, preserved cohort.
 function profile(id = customerId): Customer {
   return {
     user_id: id,
@@ -34,6 +35,7 @@ function profile(id = customerId): Customer {
     address: "Calle ficticia 10",
     phone: "+34600000001",
     requested_plan: "full",
+    trial_plan_id: "full",
     paid_plan: null,
     status: "trial",
     trial_started_at: new Date(
@@ -470,22 +472,20 @@ test("el propietario importa Google en el panel sin guardar ni devolver el secre
     secret = "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00000",
     clientId = "468881730124-synthetic-browser.apps.googleusercontent.com";
   await openProviders(page);
-  await page
-    .getByLabel("Importar JSON del cliente web Google")
-    .setInputFiles({
-      name: "google.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(
-        JSON.stringify({
-          web: {
-            project_id: "truckcontrolai",
-            client_id: clientId,
-            client_secret: secret,
-            redirect_uris: ["https://truckcontrolai.com/gmail-callback"],
-          },
-        }),
-      ),
-    });
+  await page.getByLabel("Importar JSON del cliente web Google").setInputFiles({
+    name: "google.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        web: {
+          project_id: "truckcontrolai",
+          client_id: clientId,
+          client_secret: secret,
+          redirect_uris: ["https://truckcontrolai.com/gmail-callback"],
+        },
+      }),
+    ),
+  });
   await expect(
     page.getByLabel("ID del cliente web de TruckControl"),
   ).toHaveValue(clientId);
@@ -540,21 +540,19 @@ test("el panel rechaza archivos ajenos y soporta ambos temas sin desbordarse", a
 }, info) => {
   const f = await fixtures(page);
   await openProviders(page);
-  await page
-    .getByLabel("Importar JSON del cliente web Google")
-    .setInputFiles({
-      name: "otro.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(
-        JSON.stringify({
-          web: {
-            project_id: "fixpilot",
-            client_id: "123-wrong.apps.googleusercontent.com",
-            client_secret: "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000",
-          },
-        }),
-      ),
-    });
+  await page.getByLabel("Importar JSON del cliente web Google").setInputFiles({
+    name: "otro.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(
+      JSON.stringify({
+        web: {
+          project_id: "fixpilot",
+          client_id: "123-wrong.apps.googleusercontent.com",
+          client_secret: "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000",
+        },
+      }),
+    ),
+  });
   await expect(page.locator(".provider-setup [role=alert]")).toContainText(
     "no corresponde",
   );
@@ -921,7 +919,7 @@ test.describe("copia cifrada y sincronización", () => {
   });
 });
 
-test("muestra los planes antes del registro y solicita la prueba Full sin cobrar", async ({
+test("muestra los planes antes del registro y solicita acceso Básico sin cobrar", async ({
   page,
 }) => {
   const f = await fixtures(page);
@@ -932,7 +930,7 @@ test("muestra los planes antes del registro y solicita la prueba Full sin cobrar
   await expect(page.locator(".plan-grid")).toContainText("10");
   await expect(page.locator(".plan-grid")).not.toContainText("900");
   await page
-    .getByRole("button", { name: "Probar Full gratis 10 días", exact: true })
+    .getByRole("button", { name: "Pedir acceso Básico", exact: true })
     .click();
   for (const [label, value] of [
     ["Nombre y apellidos", "Persona ficticia"],
@@ -946,7 +944,7 @@ test("muestra los planes antes del registro y solicita la prueba Full sin cobrar
     await page.getByLabel(label, { exact: true }).fill(value);
   await page
     .getByRole("button", {
-      name: "Solicitar prueba Full de 10 días",
+      name: "Solicitar acceso Básico",
       exact: true,
     })
     .click();

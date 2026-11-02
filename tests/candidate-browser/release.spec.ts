@@ -19,7 +19,7 @@ test("la candidata cierra las altas y permite explorar sin pedir credenciales ni
   ).toBeVisible();
   await expect(
     page.getByRole("button", {
-      name: "Probar Full gratis 10 días",
+      name: "Pedir acceso Básico",
       exact: true,
     }),
   ).toBeDisabled();

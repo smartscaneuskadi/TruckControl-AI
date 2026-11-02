@@ -429,7 +429,7 @@ function Workspace() {
               <span />
               {subscription.enabled &&
               subscription.access?.profile?.status === "trial"
-                ? `Prueba: ${trialDaysLeft(subscription.access.profile.trial_ends_at)} días`
+                ? `${subscription.access.plan === "limited" ? "Básico" : "Full"} · Prueba: ${trialDaysLeft(subscription.access.profile.trial_ends_at)} días`
                 : cloud
                   ? "Modo empresa"
                   : isCandidateRelease

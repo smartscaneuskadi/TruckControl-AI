@@ -231,7 +231,7 @@ export function AdminConsole({
               <div className="admin-section-heading">
                 <h2>Clientes y periodos de prueba</h2>
                 <Badge tone="green">
-                  {exampleCatalog.trial_days} días Full tras la verificación
+                  {exampleCatalog.trial_days} días Básico tras la verificación
                 </Badge>
               </div>
               {snapshot.customers.length ? (

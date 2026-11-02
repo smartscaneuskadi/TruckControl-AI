@@ -126,6 +126,23 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   const [revision, setRevision] = useState(0);
   const [loading, setLoading] = useState(Boolean(client));
   useEffect(() => {
+    if (!customAuthMail || isCandidateRelease) return;
+    // Email links can open in an existing PWA window without reloading the document.
+    const capture = () => {
+      const action = readEmailAction(window.location.hash);
+      if (!action) return;
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
+      setEmailAction(action);
+    };
+    capture();
+    window.addEventListener("hashchange", capture);
+    return () => window.removeEventListener("hashchange", capture);
+  }, []);
+  useEffect(() => {
     if (!client) {
       setLoading(false);
       return;
@@ -295,7 +312,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
         />
       ) : mode === "company" && commercialEnabled() ? (
         <CommercialSession
-          key={`${account.user?.id ?? "visitor"}:${organization?.id ?? "no-company"}`}
+          key={`${account.user?.id ?? "visitor"}:${recovery ? "recovery" : (organization?.id ?? "no-company")}`}
           user={account.user}
           organizationId={organization?.id}
           initialView={entryView}

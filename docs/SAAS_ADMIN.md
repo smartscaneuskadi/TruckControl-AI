@@ -18,7 +18,7 @@ RLS/servidor comprueban empresa, rol, licencia y módulos. La administración gl
 
 ## Altas y planes
 
-Registro abierto después de verificar al propietario. El cliente completa empresa, identificación fiscal, dirección, contacto, correo y teléfono; acepta la versión legal vigente y confirma su correo. El servidor exige un recibo inmutable del consentimiento. El cliente elige contraseña tras verificar el correo. La nueva empresa recibe **10 días Full** y capacidad inicial de **50 camiones**.
+Registro abierto después de verificar al propietario. El cliente completa empresa, identificación fiscal, dirección, contacto, correo y teléfono; acepta la versión legal vigente y confirma su correo. El servidor exige un recibo inmutable del consentimiento. El cliente elige contraseña tras verificar el correo. La nueva empresa recibe **10 días Básico** y capacidad inicial de **50 camiones**.
 
 | Plan | Base mensual | IVA 21 % | Total |
 | --- | ---: | ---: | ---: |
@@ -41,8 +41,12 @@ Resend recibe facturas con dirección privada por empresa, firma e idempotencia.
 
 ## Mantenimiento y recuperación
 
-Conservar las 51 migraciones y correspondencias, ramas GitHub y paquetes publicados. No ejecutar db push ni editar migraciones aplicadas a ciegas. Demo estable y candidata 8 son recuperables. Ante una incidencia, cerrar primero el registro/servicio afectado desde administración y conservar documentos/auditoría. No borrar clientes ni restaurar encima de datos actuales.
+Conservar las 52 migraciones y correspondencias, ramas GitHub y paquetes publicados. No ejecutar db push ni editar migraciones aplicadas a ciegas. Demo estable y candidata 8 son recuperables. Ante una incidencia, cerrar primero el registro/servicio afectado desde administración y conservar documentos/auditoría. No borrar clientes ni restaurar encima de datos actuales.
 
 La recuperación de demo cubre solo datos locales, no toda Supabase/Storage. La continuación 0.5.4 añade copia cifrada de registros y originales autorizados y comprobación local; no importa datos encima de producción. El ensayo aislado conserva relaciones contables y RLS. [Guía y límites](COMPANY_RECOVERY.md). Antes de contratar un SLA, verificar copia/restauración del servicio gestionado y definir retención. La recuperación de contraseñas sí tiene aceptación real. Una copia del código no equivale a una copia de documentos de clientes.
 
 El asesor conserva un aviso previo de protección contra contraseñas filtradas; requiere Pro o superior y no se ha contratado. Falta aceptación física Android/Windows y revisión jurídica externa de los textos de ELEVADANCOR S.L. [Controles](CLIENT_LAUNCH.md), [guía anterior conservada](history/20261101-pre-client-production/SAAS_ADMIN.md).
+
+## Política de altas vigente desde el 02/11/2026
+
+Nuevas altas: correo confirmado, consentimiento del servidor y datos completos → empresa y prueba Básico automáticas. `trial_plan_id=limited`; solicitar Full o editar metadatos no lo activa. Los titulares y miembros siguen el plan de la empresa. Se conservan los accesos Full y períodos concedidos antes del cambio. [Flujo y pruebas](BASIC_ONBOARDING.md). Los enlaces también se reconocen en una PWA abierta y la carga de empresa no borra la contraseña que se está introduciendo.
