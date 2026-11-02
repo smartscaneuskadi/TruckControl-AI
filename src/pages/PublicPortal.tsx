@@ -105,8 +105,9 @@ export function PlanCards({
               Elegir {plan.name}
             </Button>
             <small>
-              La prueba inicial incluye Full durante {catalog.trial_days} días.
-              Sin tarjeta ni cobro automático al registrarte.
+              El alta incluye Básico durante {catalog.trial_days} días. Full
+              requiere una activación posterior. Sin tarjeta ni cobro automático
+              al registrarte.
             </small>
           </article>
         ))}
@@ -225,7 +226,7 @@ export function PublicPortal({
               onClick={() => onAccess("signup", "limited")}
               disabled={!catalog.registration_open}
             >
-              Probar Full gratis {catalog.trial_days} días
+              Pedir acceso Básico
             </Button>
             <Button variant="ghost" onClick={onDemo}>
               Explorar la demo
@@ -301,12 +302,12 @@ export function PublicPortal({
       <section id="planes" className="portal-plans">
         <div className="portal-section-heading">
           <p className="eyebrow">ELIGE CÓMO QUIERES AVANZAR</p>
-          <h2>Empieza con todo. Elige tu plan después.</h2>
+          <h2>Empieza con Básico. Amplía cuando lo necesites.</h2>
           <p>
             Solicita tu cuenta, confirma tu correo
             {catalog.sms_ready ? " y tu teléfono" : ""} y disfruta de{" "}
-            {catalog.trial_days} días de acceso Full. Tu prueba comienza cuando
-            terminas la verificación.
+            {catalog.trial_days} días de acceso Básico. Tu prueba comienza
+            cuando terminas la verificación.
           </p>
           {catalog.prices_are_examples && (
             <Badge tone="amber">

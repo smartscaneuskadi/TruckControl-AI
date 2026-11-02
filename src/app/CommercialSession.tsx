@@ -318,7 +318,7 @@ export function Billing({
             ? "Contacta con el administrador para revisar el acceso. Tus datos se conservan."
             : profile.status === "trial"
               ? access.active
-                ? `Quedan ${trialDaysLeft(profile.trial_ends_at)} días de prueba Full.`
+                ? `Quedan ${trialDaysLeft(profile.trial_ends_at)} días de prueba ${access.plan === "limited" ? "del plan Básico" : "Full"}.`
                 : "Tu prueba gratuita ha terminado. Elige un plan para continuar usando la plataforma."
               : `Acceso contratado hasta ${profile.paid_until ? new Date(profile.paid_until).toLocaleDateString("es-ES") : "confirmar el pago"}.`}
         </p>

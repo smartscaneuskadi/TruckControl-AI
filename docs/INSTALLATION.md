@@ -35,4 +35,6 @@ Tras la primera carga se puede explorar la demo sin red. La empresa necesita pre
 
 Las comprobaciones Android/Windows son emuladas; falta aceptación en dispositivos físicos. [Administración](SAAS_ADMIN.md), [guía anterior conservada](history/20261101-pre-client-production/INSTALLATION.md).
 
-La versión publicada 0.5.4-rc.1 incluye **Configuración → Copia cifrada de empresa** para guardar registros y originales autorizados, comprobarlos y recuperar archivos sin cambiar datos del servidor. Está disponible en cuentas de empresa administradoras; acepta **Actualizar** cuando aparezca. [Contenido y límites](COMPANY_RECOVERY.md).
+La versión publicada incluye **Configuración → Copia cifrada de empresa** para guardar registros y originales autorizados, comprobarlos y recuperar archivos sin cambiar datos del servidor. Está disponible en cuentas de empresa administradoras; acepta **Actualizar** cuando aparezca. [Contenido y límites](COMPANY_RECOVERY.md).
+
+El superadministrador puede abrir **Administración → Servicios** para comprobar correo, receptor, IA y Gmail y guardar las credenciales Google mediante su formulario privado. Los clientes no tienen acceso a esas claves. [Guía de Servicios](PROVIDER_ADMIN.md).

@@ -4,7 +4,7 @@ Aplicación: **https://truckcontrolai.com**. Único Supabase: **truckcontrol-ai 
 
 ## Cuenta administradora y roles
 
-**pedidos@smartscaneuskadi.com** tiene correo verificado, contraseña elegida por su titular y rol de superadministrador confirmado en servidor. Entra desde **Entrar en mi empresa**. El panel **Tu centro de administración** ofrece **Clientes**, **Módulos**, **Planes y cobros** y **Actividad**. No se ha generado ni almacenado su contraseña en nombre del propietario.
+**pedidos@smartscaneuskadi.com** tiene correo verificado, contraseña elegida por su titular y rol de superadministrador confirmado en servidor. Entra desde **Entrar en mi empresa**. El panel **Tu centro de administración** ofrece **Clientes**, **Módulos**, **Planes y cobros**, **Actividad** y **Servicios**. No se ha generado ni almacenado su contraseña en nombre del propietario.
 
 | Rol | Alcance |
 | --- | --- |
@@ -31,6 +31,8 @@ Estado comprobado: `registration_open=true`, `enforce_access=true`, `payments_en
 
 ## Servicios e IA
 
+En **Servicios** se comprueba el estado de la plataforma y se guarda Google mediante JSON oficial o formulario. Solo entra la administración global verificada; nunca se devuelve el secreto. Las versiones anteriores quedan cifradas y se bloquea la sustitución si hay buzones o autorizaciones en curso. [Guía](PROVIDER_ADMIN.md).
+
 En **Módulos** se habilitan/deshabilitan servicios. En cada cliente se gestionan estado, plan y autorización IA. La IA exige licencia, módulo, autorización individual y consentimiento. Las claves solo están en backend/Vault/secretos de funciones: nunca en VITE, Git o mensajes.
 
 OpenAI: **10 USD/mes antes de impuestos**, compartidos por toda la plataforma, sin recarga automática. Se reserva presupuesto antes de llamar; una respuesta desconocida conserva su reserva en vez de repetirse a ciegas. No ampliar límites sin aprobación.
@@ -39,7 +41,7 @@ Resend recibe facturas con dirección privada por empresa, firma e idempotencia.
 
 ## Mantenimiento y recuperación
 
-Conservar las 48 migraciones y correspondencias, ramas GitHub y paquetes publicados. No ejecutar db push ni editar migraciones aplicadas a ciegas. Demo estable y candidata 8 son recuperables. Ante una incidencia, cerrar primero el registro/servicio afectado desde administración y conservar documentos/auditoría. No borrar clientes ni restaurar encima de datos actuales.
+Conservar las 51 migraciones y correspondencias, ramas GitHub y paquetes publicados. No ejecutar db push ni editar migraciones aplicadas a ciegas. Demo estable y candidata 8 son recuperables. Ante una incidencia, cerrar primero el registro/servicio afectado desde administración y conservar documentos/auditoría. No borrar clientes ni restaurar encima de datos actuales.
 
 La recuperación de demo cubre solo datos locales, no toda Supabase/Storage. La continuación 0.5.4 añade copia cifrada de registros y originales autorizados y comprobación local; no importa datos encima de producción. El ensayo aislado conserva relaciones contables y RLS. [Guía y límites](COMPANY_RECOVERY.md). Antes de contratar un SLA, verificar copia/restauración del servicio gestionado y definir retención. La recuperación de contraseñas sí tiene aceptación real. Una copia del código no equivale a una copia de documentos de clientes.
 

@@ -142,7 +142,7 @@ beforeAll(async () => {
 beforeEach(async () => {
   // Isolated in-memory fixtures only; never change live settings for a test.
   await db.exec(
-    "delete from private.tc_ai_calls;delete from private.tc_ai_monthly_budget;delete from private.tc_document_ai_usage;delete from private.invoice_ai_usage;update private.tc_provider_settings set ai_enabled=true,ai_monthly_budget_cents=200;update private.tc_modules set enabled=true where id in ('gmail','assistant','document_ai','invoice_ai');update private.tc_customers set ai_allowed=true,ai_opt_in=true;",
+    "delete from private.tc_ai_calls;delete from private.tc_ai_monthly_budget;delete from private.tc_document_ai_usage;delete from private.invoice_ai_usage;update private.tc_provider_settings set ai_enabled=true,ai_monthly_budget_cents=200;update private.tc_modules set enabled=true where id in ('gmail','assistant','document_ai','invoice_ai');update private.tc_customers set status='active',paid_plan='full',paid_until=now()+interval '30 days',ai_allowed=true,ai_opt_in=true;",
   );
 });
 afterAll(async () => {

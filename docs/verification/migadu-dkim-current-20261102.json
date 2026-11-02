@@ -1,0 +1,28 @@
+{
+  "checked_at": "2026-11-02T00:05:02.923031+00:00",
+  "resolver": "Google Public DNS, validating, no CD bypass",
+  "results": [
+    {
+      "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "ad": false,
+      "answer_present": false,
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key1.truckcontrolai.com._domainkey.migadu.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key1.truckcontrolai.com._domainkey.migadu.com for errors"
+    },
+    {
+      "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "ad": false,
+      "answer_present": false,
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key2.truckcontrolai.com._domainkey.migadu.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key2.truckcontrolai.com._domainkey.migadu.com for errors"
+    },
+    {
+      "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+      "status": 2,
+      "ad": false,
+      "answer_present": false,
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key3.truckcontrolai.com._domainkey.migadu.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key3.truckcontrolai.com._domainkey.migadu.com for errors"
+    }
+  ],
+  "changes_performed": false
+}

@@ -103,7 +103,10 @@ try {
         if (
           (await page
             .getByRole("button", {
-              name: `Probar Full gratis ${offer.trial_days} días`,
+              name:
+                offer.trial_plan === "limited"
+                  ? "Pedir acceso Básico"
+                  : `Probar Full gratis ${offer.trial_days} días`,
               exact: true,
             })
             .isDisabled()) === registrationOpen
@@ -112,7 +115,10 @@ try {
         await page.screenshot({ path: `${dir}/${name}-published-portal.png` });
         await page
           .getByRole("heading", {
-            name: "Empieza con todo. Elige tu plan después.",
+            name:
+              offer.trial_plan === "limited"
+                ? "Empieza con Básico. Amplía cuando lo necesites."
+                : "Empieza con todo. Elige tu plan después.",
             exact: true,
           })
           .scrollIntoViewIfNeeded();
