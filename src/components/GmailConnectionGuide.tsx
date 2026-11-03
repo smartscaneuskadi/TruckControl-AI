@@ -26,8 +26,9 @@ export function GmailConnectionGuide() {
           <FileInput size={22} aria-hidden="true" />
           <strong>2. Importa tus facturas</strong>
           <p>
-            Se buscan correos con adjuntos de facturas de los últimos 30 días.
-            Los documentos quedan pendientes de revisión.
+            Se buscan facturas recibidas en los últimos 30 días por defecto.
+            Puedes elegir otro período dentro de los últimos doce meses. Los
+            documentos quedan pendientes de revisión.
           </p>
         </li>
         <li>
