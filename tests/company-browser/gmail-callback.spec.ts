@@ -6,54 +6,61 @@ const endpoint =
 const state = "s".repeat(43);
 const ticket = "t".repeat(43);
 
-test("el retorno elimina el código del historial, no usa credenciales y vuelve solo con un ticket", async ({
-  page,
-}) => {
-  const calls: {
-    data: unknown;
-    headers: Record<string, string>;
-    pageUrl: string;
-  }[] = [];
-  await page.route(endpoint, async (route) => {
-    const request = route.request();
-    const headers = {
-      "Access-Control-Allow-Origin": "http://127.0.0.1:4184",
-      "Access-Control-Allow-Headers": "content-type",
-      "Content-Type": "application/json",
-    };
-    if (request.method() === "OPTIONS")
-      return route.fulfill({ status: 204, headers });
-    calls.push({
-      data: request.postDataJSON(),
-      headers: request.headers(),
-      pageUrl: page.url(),
+for (const returnOrigin of [
+  "https://truckcontrolai.com",
+  "https://www.truckcontrolai.com",
+  "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+  "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+]) {
+  test(`el retorno a ${returnOrigin} limpia el código y vuelve solo con un ticket`, async ({
+    page,
+  }) => {
+    const calls: {
+      data: unknown;
+      headers: Record<string, string>;
+      pageUrl: string;
+    }[] = [];
+    await page.route(endpoint, async (route) => {
+      const request = route.request();
+      const headers = {
+        "Access-Control-Allow-Origin": "http://127.0.0.1:4184",
+        "Access-Control-Allow-Headers": "content-type",
+        "Content-Type": "application/json",
+      };
+      if (request.method() === "OPTIONS")
+        return route.fulfill({ status: 204, headers });
+      calls.push({
+        data: request.postDataJSON(),
+        headers: request.headers(),
+        pageUrl: page.url(),
+      });
+      await route.fulfill({
+        headers,
+        body: JSON.stringify({
+          url: `${returnOrigin}/#/invoices?gmail_ticket=${ticket}`,
+        }),
+      });
     });
-    await route.fulfill({
-      headers,
-      body: JSON.stringify({
-        url: `https://truckcontrolai.com/#/invoices?gmail_ticket=${ticket}`,
+    await page.route(`${returnOrigin}/**`, (route) =>
+      route.fulfill({
+        contentType: "text/html",
+        body: "<!doctype html><html lang='es'><title>Empresa sintética</title><p>Retorno autorizado</p></html>",
       }),
-    });
+    );
+    await page.goto(`/gmail-callback.html?state=${state}&code=synthetic-code`);
+    await expect(page).toHaveURL(
+      `${returnOrigin}/#/invoices?gmail_ticket=${ticket}`,
+    );
+    expect(calls).toHaveLength(1);
+    expect(calls[0].data).toEqual({ state, code: "synthetic-code" });
+    expect(calls[0].headers.authorization).toBeUndefined();
+    expect(calls[0].headers.cookie).toBeUndefined();
+    expect(calls[0].headers.referer).toBeUndefined();
+    expect(calls[0].pageUrl).toBe("http://127.0.0.1:4184/gmail-callback.html");
+    await page.goBack();
+    expect(page.url()).not.toContain("synthetic-code");
   });
-  await page.route("https://truckcontrolai.com/**", (route) =>
-    route.fulfill({
-      contentType: "text/html",
-      body: "<!doctype html><html lang='es'><title>Empresa sintética</title><p>Retorno autorizado</p></html>",
-    }),
-  );
-  await page.goto(`/gmail-callback.html?state=${state}&code=synthetic-code`);
-  await expect(page).toHaveURL(
-    `https://truckcontrolai.com/#/invoices?gmail_ticket=${ticket}`,
-  );
-  expect(calls).toHaveLength(1);
-  expect(calls[0].data).toEqual({ state, code: "synthetic-code" });
-  expect(calls[0].headers.authorization).toBeUndefined();
-  expect(calls[0].headers.cookie).toBeUndefined();
-  expect(calls[0].headers.referer).toBeUndefined();
-  expect(calls[0].pageUrl).toBe("http://127.0.0.1:4184/gmail-callback.html");
-  await page.goBack();
-  expect(page.url()).not.toContain("synthetic-code");
-});
+}
 
 test("un retorno inválido no consulta el servidor y conserva contraste y anchura en ambos temas", async ({
   page,
@@ -96,6 +103,7 @@ test("no sigue destinos externos, credenciales en URL ni tickets manipulados", a
   for (const url of [
     "https://evil.example/#/invoices?gmail_error=declined",
     "https://truckcontrolai.com.evil.example/#/invoices?gmail_error=declined",
+    "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site.evil.example/#/invoices?gmail_error=declined",
     "https://user@truckcontrolai.com/#/invoices?gmail_error=declined",
     "https://truckcontrolai.com/#/invoices?gmail_ticket=manipulated",
   ]) {

@@ -1,0 +1,109 @@
+{
+  "checked_at": "2026-11-03T23:31:53.759322+00:00",
+  "scope": "configuration and preparation; not Google approval or real mailbox acceptance",
+  "production_version": 25,
+  "supabase_project": "kkkemaycedexymrpaqtp",
+  "native": {
+    "project": "kkkemaycedexymrpaqtp",
+    "function": "company-gmail",
+    "version": 13,
+    "status": "ACTIVE",
+    "verify_jwt": false,
+    "manual_session_role_tenant_validation": true,
+    "files": [
+      {
+        "name": "company-gmail/index.ts",
+        "matches": true,
+        "sha256": "b771263f147a7c42ad89b71de3ece5be56e9bc8c2bf7c0a27daf87f9197adcfe"
+      },
+      {
+        "name": "company-gmail/handler.ts",
+        "matches": true,
+        "sha256": "96db962520bfd272e9fb2623de30dac3410f320e9db5653b200c6097d55422bb"
+      },
+      {
+        "name": "_shared/invoice.ts",
+        "matches": true,
+        "sha256": "e81557bd97de9ab38e9d623a754960e88eaf92bd1faa6a0e253c40c8514bf189"
+      },
+      {
+        "name": "_shared/mail-period.ts",
+        "matches": true,
+        "sha256": "0e2d90265915d834a7712cadf252b0dbf2bf0703446a80cd87db3a9cdab49071"
+      },
+      {
+        "name": "company-gmail/config.ts",
+        "matches": true,
+        "sha256": "8533ccbe5d8e39e4a6d54ee195d885fd79831db704d76de39581419d00508dad"
+      },
+      {
+        "name": "_shared/ai-runtime.ts",
+        "matches": true,
+        "sha256": "7c5a27762ab5aa6629b4248730260eb7d2e593af35ba90ad128800abdb83114d"
+      },
+      {
+        "name": "company-gmail/health.ts",
+        "matches": true,
+        "sha256": "16c046e1c989ce57435761bc20d630421f5c0d087aeebc4fd67791ddefd21ea5"
+      }
+    ],
+    "schema_changes": 0,
+    "migrations": 57
+  },
+  "http_checks_passed": 16,
+  "tls_verified": true,
+  "enterprise_connection_snapshot": {
+    "connections": 0,
+    "connected": 0,
+    "oauth_pending": 0,
+    "active_states": 0,
+    "tokens_read": false
+  },
+  "regression": {
+    "gmail_tests_passed": 109,
+    "files": 11,
+    "retained_original_demo_tests": 64,
+    "retained_file_hashes_matched": 11
+  },
+  "public_legal_check": {
+    "script": "scripts/verify-published-candidate.mjs",
+    "new_assertions": "public homepage links and anonymous privacy/terms in each live profile",
+    "result": "see CI checks on this preparation PR",
+    "local_browser": "managed proxy CA not trusted by Chromium; TLS verification was not bypassed"
+  },
+  "dns_observation": {
+    "checked_at": "2026-11-03T23:31:53.759322+00:00",
+    "domain": "truckcontrolai.com",
+    "google_site_verification_txt_present": false,
+    "google_domain_owner_verified": null,
+    "note": "Public DNS does not establish Google account ownership."
+  },
+  "owner_reported_branding": "published",
+  "new_schema_or_runtime_changes": "No schema/backend changes; browser callback allowlist fix in preparation.",
+  "new_google_mailbox_or_model_calls": 0,
+  "no_new_spending": true,
+  "pending": [
+    "Verify actual audience and restricted-scope review",
+    "Owner grants enterprise mailbox consent",
+    "Real invoice acceptance and non-listed consent demonstration video",
+    "Annual external security assessment if required by Google; separate quote and approval"
+  ],
+  "owner_reported_enterprise_connection": "connected",
+  "enterprise_connection_confirmation": "Not verified: server still has zero connections as of 2026-11-03T23:34:12Z. Clarification requested; do not repeat consent blindly.",
+  "callback_fix": {
+    "status": "in_preparation",
+    "issue": "Technical production hostname accepted by backend was missing from browser callback allowlist.",
+    "scope": "Add exact existing hostname; keep foreign origins and lookalikes denied.",
+    "release": "0.5.14-rc.1",
+    "backend_changed": false,
+    "company_browser_tests_passed": 32,
+    "tested_origins": [
+      "https://truckcontrolai.com",
+      "https://www.truckcontrolai.com",
+      "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site"
+    ],
+    "foreign_origins_denied": true,
+    "physical_devices": false
+  }
+}
