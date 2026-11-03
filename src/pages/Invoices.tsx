@@ -18,12 +18,20 @@ import { InvoiceRegister } from "../components/InvoiceRegister";
 import { analyzeStoredInvoice } from "../integrations/supabase/invoice-ai";
 import { GmailConnectionGuide } from "../components/GmailConnectionGuide";
 import { UniversalMailIntake } from "../components/UniversalMailIntake";
+import { InvoiceMailPeriod } from "../components/InvoiceMailPeriod";
+import {
+  mailPeriodPolicy,
+  presetReceivedPeriod,
+  resolveMailPeriod,
+} from "../../supabase/functions/_shared/mail-period";
+import type { ReceivedPeriod } from "../../supabase/functions/_shared/mail-period";
 import type { ParsedMail } from "../../supabase/functions/_shared/mail.ts";
 
 const demoEntryId = "b1000000-0000-4000-8000-000000000001";
 interface IntegrationStatus {
   oauth_ready: boolean;
   ai_enabled: boolean;
+  received_period_policy?: typeof mailPeriodPolicy;
 }
 export function Invoices() {
   const subscription = useSubscription();
@@ -48,11 +56,34 @@ export function Invoices() {
   const [review, setReview] = useState<CompanyInvoice | null>(null);
   const [disconnect, setDisconnect] = useState(false);
   const [analysis, setAnalysis] = useState<CompanyInvoice | null>(null);
+  const [mailPeriod, setMailPeriod] = useState<ReceivedPeriod>(() =>
+    presetReceivedPeriod(),
+  );
+  const [syncPreview, setSyncPreview] = useState<
+    (ReceivedPeriod & { scope: string }) | null
+  >(null);
+  const operationLock = useRef(false);
   const [aiNotice, setAiNotice] = useState<{
     error: boolean;
     message: string;
   } | null>(null);
   const org = snapshot.organization.id;
+  const periodReady =
+    status?.received_period_policy?.version === 1 &&
+    status.received_period_policy.action === mailPeriodPolicy.action &&
+    status.received_period_policy.default_days === 30 &&
+    status.received_period_policy.max_months === 12 &&
+    status.received_period_policy.time_zone === mailPeriodPolicy.time_zone;
+  let periodValid = true;
+  try {
+    resolveMailPeriod(mailPeriod);
+  } catch {
+    periodValid = false;
+  }
+  useEffect(() => {
+    setMailPeriod(presetReceivedPeriod());
+    setSyncPreview(null);
+  }, [org, access.user?.id]);
   const [callback] = useState(() => {
     const params = new URLSearchParams(
       window.location.hash.split("?")[1] ?? "",
@@ -150,8 +181,30 @@ export function Invoices() {
       controller.abort();
     };
   }, [cloud, client, org, revision]);
-  async function gmailAction(action: "start" | "sync" | "disconnect") {
-    if (!cloud || !client || busy) return;
+  async function gmailAction(
+    action: "start" | "sync" | "disconnect",
+    selectedPeriod?: ReceivedPeriod,
+  ) {
+    if (!cloud || !client || busy || operationLock.current) return;
+    if (
+      action === "sync" &&
+      (!periodReady || !canWrite || connection?.status !== "connected")
+    )
+      return;
+    let chosen: ReceivedPeriod | undefined;
+    if (action === "sync") {
+      try {
+        const checked = resolveMailPeriod(selectedPeriod ?? mailPeriod);
+        chosen = { from: checked.from, to: checked.to };
+      } catch {
+        setError(
+          "El período debe estar dentro de los últimos 12 meses y terminar como máximo hoy.",
+        );
+        return;
+      }
+      setSyncPreview(null);
+    }
+    operationLock.current = true;
     setBusy(true);
     setError("");
     try {
@@ -159,8 +212,15 @@ export function Invoices() {
         url?: string;
         imported?: number;
         failures?: number;
+        has_more?: boolean;
         error?: string;
-      }>("company-gmail", { body: { action, organization_id: org } });
+      }>("company-gmail", {
+        body: {
+          action: action === "sync" ? mailPeriodPolicy.action : action,
+          organization_id: org,
+          ...(chosen ? { received_period: chosen } : {}),
+        },
+      });
       if (error || data?.error)
         throw new Error(
           action === "start"
@@ -184,7 +244,7 @@ export function Invoices() {
         setDisconnect(false);
         notify(
           action === "sync"
-            ? `${data?.imported ?? 0} facturas nuevas pendientes de revisión.`
+            ? `${data?.imported ?? 0} facturas nuevas pendientes de revisión.${data?.has_more ? " Quedan mensajes: puedes repetir la importación en este mismo período para continuar." : ""}`
             : "Gmail desconectado de esta empresa.",
         );
         if (data?.failures)
@@ -195,6 +255,7 @@ export function Invoices() {
     } catch (e) {
       setError(errorMessage(e));
     } finally {
+      operationLock.current = false;
       setBusy(false);
     }
   }
@@ -445,9 +506,18 @@ export function Invoices() {
         </p>
         {cloud && (
           <p>
-            Importa hasta 10 adjuntos nuevos por pasada de mensajes de los
-            últimos 30 días que contengan «factura» o «invoice».
+            Importa hasta 10 adjuntos nuevos por pasada de correos recibidos que
+            contengan «factura» o «invoice». Los documentos quedan pendientes de
+            revisión.
           </p>
+        )}
+        {cloud && (
+          <InvoiceMailPeriod
+            key={`${org}:${access.user?.id}`}
+            value={mailPeriod}
+            onChange={setMailPeriod}
+            disabled={busy || !canWrite}
+          />
         )}
         <div className="config-fact">
           <ShieldCheck size={18} /> Documentos y conexión separados por empresa
@@ -502,9 +572,18 @@ export function Invoices() {
                   <Button
                     icon={RefreshCw}
                     disabled={
-                      busy || connection.status !== "connected" || !canWrite
+                      busy ||
+                      connection.status !== "connected" ||
+                      !canWrite ||
+                      !periodReady ||
+                      !periodValid
                     }
-                    onClick={() => void gmailAction("sync")}
+                    onClick={() =>
+                      setSyncPreview({
+                        ...mailPeriod,
+                        scope: `${org}:${access.user?.id}`,
+                      })
+                    }
                   >
                     {busy ? "Importando…" : "Importar facturas"}
                   </Button>
@@ -542,6 +621,12 @@ export function Invoices() {
                 Comprobar conexión
               </Button>
             </div>
+            {!periodReady && !loading && status?.oauth_ready && (
+              <p role="status">
+                El filtro de recepción aún no está disponible. Comprueba la
+                conexión antes de importar.
+              </p>
+            )}
             {!canManage && (
               <p>
                 Solo un administrador de la empresa puede conectar, cambiar o
@@ -638,6 +723,51 @@ export function Invoices() {
               onClick={() => void analyze()}
             >
               {busy ? "Leyendo documento…" : "Confirmar lectura IA"}
+            </Button>
+          </div>
+        </Modal>
+      )}
+      {syncPreview && syncPreview.scope === `${org}:${access.user?.id}` && (
+        <Modal
+          title="Confirmar lectura de facturas del correo"
+          onClose={() => {
+            if (!busy) setSyncPreview(null);
+          }}
+        >
+          <p>
+            Empresa: <strong>{snapshot.organization.name}</strong>
+          </p>
+          <p>
+            Correos recibidos del{" "}
+            <strong>{syncPreview.from.split("-").reverse().join("/")}</strong>{" "}
+            al <strong>{syncPreview.to.split("-").reverse().join("/")}</strong>,
+            ambos días incluidos, en horario de Madrid.
+          </p>
+          <p>
+            Se guardarán hasta 10 adjuntos nuevos de facturas en esta pasada.{" "}
+            {status?.ai_enabled
+              ? "La lectura IA está habilitada para tu cuenta y utilizará los límites ya configurados."
+              : "La lectura IA está desactivada para tu cuenta; podrás completar los documentos manualmente."}
+          </p>
+          <p>Revisarás los datos antes de registrar cualquier gasto.</p>
+          <div className="modal-actions">
+            <Button
+              variant="secondary"
+              disabled={busy}
+              onClick={() => setSyncPreview(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              disabled={
+                busy ||
+                !periodReady ||
+                !canWrite ||
+                connection?.status !== "connected"
+              }
+              onClick={() => void gmailAction("sync", syncPreview)}
+            >
+              Confirmar importación
             </Button>
           </div>
         </Modal>

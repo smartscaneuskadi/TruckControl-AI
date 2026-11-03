@@ -13,6 +13,14 @@ import {
 } from "../_shared/invoice.ts";
 import type { GmailOAuthConfig } from "./config.ts";
 import type { AiRuntime } from "../_shared/ai-runtime.ts";
+import {
+  mailPeriodPolicy,
+  periodCursor,
+  receivedInPeriod,
+  resolveMailPeriod,
+  savePeriodCursor,
+} from "../_shared/mail-period.ts";
+import type { MailReadWindow } from "../_shared/mail-period.ts";
 
 const gmailScope = "https://www.googleapis.com/auth/gmail.readonly";
 const bucket = "truckcontrol-documents";
@@ -35,6 +43,9 @@ export interface GmailGateway {
   remove(path: string): Promise<void>;
 }
 export interface GmailConfig {
+  /** Production enables the received-period protocol; legacy SDK consumers keep their contract. */
+  enforceReceivedPeriod?: boolean;
+  now?: () => number;
   enforceCompanyRoles?: boolean;
   enforceEntitlements?: boolean;
   appOrigin: string;
@@ -94,6 +105,7 @@ export function createGmailHandler(
   fetcher: typeof fetch = fetch,
 ) {
   const origin = new URL(config.appOrigin).origin;
+  const now = () => config.now?.() ?? Date.now();
   const getOAuth = async () => config.oauth ?? (await config.resolveOAuth?.());
   const allowedOrigins = new Set([
     origin,
@@ -224,6 +236,7 @@ export function createGmailHandler(
     organizationId: string,
     userId: string,
     oauth: GmailOAuthConfig,
+    period?: MailReadWindow,
   ) {
     const locked = await gateway.server<boolean>("lock_sync", {
       organization_id: organizationId,
@@ -235,6 +248,7 @@ export function createGmailHandler(
     let failures = 0;
     let succeeded = false;
     let pageToken = "";
+    let hasMore = false;
     try {
       const credentials = await gateway.server<Credentials | null>(
         "credentials",
@@ -258,13 +272,15 @@ export function createGmailHandler(
       const auth = {
         headers: { Authorization: `Bearer ${token.access_token}` },
       };
-      pageToken = credentials.page_token ?? "";
+      pageToken = period
+        ? periodCursor(credentials.page_token, period)
+        : (credentials.page_token ?? "");
       const deadline = Date.now() + 120000;
       let scanned = 0;
       let cursorRetried = false;
       do {
         const query = new URLSearchParams({
-          q: "has:attachment newer_than:30d {factura invoice}",
+          q: period?.query ?? "has:attachment newer_than:30d {factura invoice}",
           maxResults: "10",
           ...(pageToken ? { pageToken } : {}),
         });
@@ -290,6 +306,11 @@ export function createGmailHandler(
             );
           } else throw e;
         }
+        if (result.nextPageToken !== undefined) {
+          if (typeof result.nextPageToken !== "string")
+            throw new GoogleRequestError(502);
+          if (period) savePeriodCursor(result.nextPageToken, period);
+        }
         let pageComplete = true;
         for (const message of result.messages ?? []) {
           if (imported >= 10 || scanned >= 50 || Date.now() > deadline) {
@@ -297,10 +318,32 @@ export function createGmailHandler(
             break;
           }
           scanned++;
-          const msg = (await googleJson(
-            `https://gmail.googleapis.com/gmail/v1/users/me/messages/${encodeURIComponent(message.id)}?format=full`,
-            auth,
-          )) as { payload?: Part };
+          const messageUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${encodeURIComponent(message.id)}`;
+          if (period) {
+            const metadata = await googleJson(
+              `${messageUrl}?format=metadata&fields=internalDate,labelIds`,
+              auth,
+            );
+            if (
+              !receivedInPeriod(metadata.internalDate, period, now()) ||
+              (metadata.labelIds !== undefined &&
+                (!Array.isArray(metadata.labelIds) ||
+                  metadata.labelIds.some(
+                    (label) => label === "SENT" || label === "DRAFT",
+                  )))
+            ) {
+              skipped++;
+              continue;
+            }
+          }
+          const msg = (await googleJson(`${messageUrl}?format=full`, auth)) as {
+            internalDate?: unknown;
+            payload?: Part;
+          };
+          if (period && !receivedInPeriod(msg.internalDate, period, now())) {
+            skipped++;
+            continue;
+          }
           const attachments = parts(msg.payload ?? {})
             .filter(
               (p) =>
@@ -414,8 +457,12 @@ export function createGmailHandler(
           }
         }
         // Retry a partially read page next time; deduplication skips its saved files.
-        if (!pageComplete) break;
+        if (!pageComplete) {
+          hasMore = true;
+          break;
+        }
         pageToken = result.nextPageToken ?? "";
+        hasMore = Boolean(pageToken);
       } while (
         pageToken &&
         imported < 10 &&
@@ -423,7 +470,22 @@ export function createGmailHandler(
         Date.now() < deadline
       );
       succeeded = true;
-      return json({ imported, skipped, failures, scanned });
+      return json({
+        imported,
+        skipped,
+        failures,
+        scanned,
+        has_more: hasMore,
+        ...(period
+          ? {
+              received_period: {
+                from: period.from,
+                to: period.to,
+                time_zone: mailPeriodPolicy.time_zone,
+              },
+            }
+          : {}),
+      });
     } catch (e) {
       reauthorize = e instanceof GmailAuthorizationError;
       return json(
@@ -440,7 +502,11 @@ export function createGmailHandler(
         organization_id: organizationId,
         reauthorize,
         succeeded,
-        page_token: pageToken,
+        page_token: period
+          ? hasMore
+            ? savePeriodCursor(pageToken, period)
+            : ""
+          : pageToken,
       });
     }
   }
@@ -499,6 +565,13 @@ export function createGmailHandler(
       }
       if (!body || typeof body !== "object" || !isUuid(body.organization_id))
         return json({ error: "invalid_request" }, 400);
+      // A distinct action makes a new UI fail closed against an older deployment.
+      // Reuse the existing sync role/entitlement checks; this alias grants no permission.
+      if (body.action === mailPeriodPolicy.action) {
+        if (!config.enforceReceivedPeriod)
+          return json({ error: "unsupported_action" }, 400);
+        body.action = "sync";
+      }
       const organizationId = body.organization_id;
       if (!(await gateway.owns(organizationId, user.id)))
         return json({ error: "organization_unavailable" }, 403);
@@ -523,6 +596,24 @@ export function createGmailHandler(
         !gmailAllowed
       )
         return json({ error: "module_not_available" }, 403);
+      let period: MailReadWindow | undefined;
+      if (body.action === "sync") {
+        if (!config.enforceReceivedPeriod && body.received_period !== undefined)
+          return json({ error: "unsupported_action" }, 400);
+        if (config.enforceReceivedPeriod) {
+          try {
+            period = resolveMailPeriod(body.received_period, now());
+          } catch {
+            return json(
+              {
+                error: "invalid_received_period",
+                received_period_policy: mailPeriodPolicy,
+              },
+              400,
+            );
+          }
+        }
+      }
       const oauth = await getOAuth();
       if (body.action === "status") {
         const ai = config.resolveAI
@@ -530,6 +621,9 @@ export function createGmailHandler(
           : config.ai;
         return json({
           oauth_ready: Boolean(oauth),
+          ...(config.enforceReceivedPeriod
+            ? { received_period_policy: mailPeriodPolicy }
+            : {}),
           ai_enabled:
             gmailAllowed &&
             Boolean(ai) &&
@@ -629,7 +723,7 @@ export function createGmailHandler(
         return json({ disconnected: true });
       }
       if (body.action === "sync")
-        return await sync(organizationId, user.id, oauth);
+        return await sync(organizationId, user.id, oauth, period!);
       return json({ error: "unsupported_action" }, 400);
     } catch {
       return request.method === "GET"

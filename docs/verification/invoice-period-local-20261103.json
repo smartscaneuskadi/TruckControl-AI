@@ -1,0 +1,58 @@
+{
+  "local_check": {
+    "unit_sql_passed": 624,
+    "retained_files_hash_verified": 11,
+    "original_tests_retained": 64,
+    "typecheck": true,
+    "build": true
+  },
+  "company_browser": {
+    "passed": 26,
+    "profiles": ["Windows emulated", "Android emulated"]
+  },
+  "focused_visual": {
+    "passed": 2,
+    "themes": ["Fleet Light", "Fleet Cockpit"],
+    "component_and_confirmation_axe_aa_violations": 0,
+    "horizontal_overflow": false,
+    "screenshots": [
+      {
+        "file": "company-focused/gmail-la-lectura-de-factur-aaa0f-doce-meses-sin-contabilizar-company-windows/received-period-light.png",
+        "sha256": "f6293c9e4296d2daca0697346cdda2337148989a9b989d089670b81838de1e7e"
+      },
+      {
+        "file": "company-focused/gmail-la-lectura-de-factur-aaa0f-doce-meses-sin-contabilizar-company-windows/received-confirm-light.png",
+        "sha256": "c0a347e064cef64458974d46669fd99145d6f13fd961e85480314509baeed94f"
+      },
+      {
+        "file": "company-focused/gmail-la-lectura-de-factur-aaa0f-doce-meses-sin-contabilizar-company-windows/received-period-cockpit.png",
+        "sha256": "501f2394c5b4ebe8ec18a119e3daaac394b00cd1459966918f89e700865a528b"
+      },
+      {
+        "file": "company-focused/gmail-la-lectura-de-factur-aaa0f-doce-meses-sin-contabilizar-company-windows/received-confirm-cockpit.png",
+        "sha256": "4146e441ad21dbeafaa2dc7310f587d0a22338cd2c1ae4e185ca3ec6d5ba6c05"
+      },
+      {
+        "file": "company-focused/gmail-la-lectura-de-factur-aaa0f-doce-meses-sin-contabilizar-company-android/received-period-light.png",
+        "sha256": "362a0adf2a6a71d4287f309251e49110a1af102f00ce88a1090910d53a5b93df"
+      },
+      {
+        "file": "company-focused/gmail-la-lectura-de-factur-aaa0f-doce-meses-sin-contabilizar-company-android/received-confirm-light.png",
+        "sha256": "6bd8371821cb063a6780346abf4fcf1b14213a9fbd187e2092e204d0adfdc846"
+      },
+      {
+        "file": "company-focused/gmail-la-lectura-de-factur-aaa0f-doce-meses-sin-contabilizar-company-android/received-period-cockpit.png",
+        "sha256": "d4c89a4f96afbf95b3f65ce23ec18faba03847523719aa810d0ced10cd5bad79"
+      },
+      {
+        "file": "company-focused/gmail-la-lectura-de-factur-aaa0f-doce-meses-sin-contabilizar-company-android/received-confirm-cockpit.png",
+        "sha256": "134e66954115929fc9492d25498f68693cb3c4db035a975e1b10277bcb422b2e"
+      }
+    ]
+  },
+  "live_provider_calls": 0,
+  "real_messages_read_or_sent_by_agent": 0,
+  "schema_changes": 0,
+  "native_migrations_before": 57,
+  "publication_pending": true
+}
