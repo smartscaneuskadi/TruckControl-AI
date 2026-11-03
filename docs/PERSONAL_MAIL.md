@@ -1,6 +1,6 @@
 # Mi correo — acceso personal sin aprobación de TruckControl
 
-Publicado en 0.5.12-rc.1, versión alojada 23. El ID Google está configurado y la entrada a la autorización oficial comprobada; el titular confirmó el 03/11 que lo ha probado y enviado correo real. Es una aceptación comunicada por el titular; la verificación pública de Google sigue pendiente. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
+Mi correo se introdujo en 0.5.12-rc.1 / v23 y se conserva en la entrega vigente. El ID Google está configurado y la entrada a la autorización oficial comprobada; el titular confirmó el 03/11 que lo ha probado y enviado correo real. Es una aceptación comunicada por el titular; la verificación pública de Google sigue pendiente. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
 
 ## Cómo funciona
 
