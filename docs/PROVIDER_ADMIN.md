@@ -1,5 +1,7 @@
 # Servicios de TruckControl
 
+**Continuación del 03/11/2026:** configuración Google `configured=true`, `company-gmail` v13, 57 migraciones y producción v25. No volver a guardar claves ya configuradas. La inspección actual cuenta cero conexiones empresariales; la aceptación personal del titular es independiente. [Expediente y próximos pasos oficiales](GOOGLE_PUBLIC_VERIFICATION.md). Las menciones posteriores a salud false y versiones v11 son comprobaciones históricas fechadas.
+
 La pestaña **Administración → Servicios** muestra el estado del correo de acceso, receptor de facturas, IA, Gmail, cobros y SMS. Solo puede utilizarla una cuenta de administración global con correo verificado y sin bloqueo. No sustituye el consentimiento de cada empresa ni activa cargos.
 
 ## Configurar Google

@@ -1,5 +1,7 @@
 # Estado y continuación — 03/11/2026
 
+Continuación Gmail público: [expediente](GOOGLE_PUBLIC_VERIFICATION.md). El titular comunica «Marca lista para publicar»; se ha solicitado publicar y comprobar el resultado. Cero conexiones empresariales en la consulta actual; no repetir claves ni reutilizar el consentimiento personal. Preparados justificaciones de ambos alcances, páginas legales, flujo de datos y guion del vídeo. La aprobación y evaluación externa siguen pendientes; ninguna contratación nueva.
+
 La entrega vigente es **v25 / 0.5.13-rc.2**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y las producciones anteriores 24/23/19 permanecen recuperables. El registro de [neumáticos](TYRES.md) está publicado: mediciones manuales, avisos, historial, CSV y copias completas, con la migración 57 comprobada mediante rollback.
 
 ## Implementado y comprobado
