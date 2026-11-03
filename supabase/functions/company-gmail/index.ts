@@ -100,6 +100,7 @@ const aiRuntime = createAiRuntimeResolver(
 );
 const config: GmailConfig = {
   enforceCompanyRoles: true,
+  enforceReceivedPeriod: true,
   enforceEntitlements: true,
   appOrigin,
   additionalOrigins: [

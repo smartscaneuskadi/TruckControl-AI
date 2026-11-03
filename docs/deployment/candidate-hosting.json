@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "620c8d51136662a694f6f58e32d6b6b184a3c0e9",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_3b07aa2ae4b4819192b50e5e7743bd30",
-  "published_version_number": 23,
-  "deployment_id": "appgdep_6ae8fa685030819185de7651e9dddadf",
-  "previous_deployment_id": "appgdep_6ae8de12c194819198a47736820b7449",
+  "published_commit": "4bc2e841f5f67ba121385c4768911992bc5d666f",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_79fc05e4d06c8191a8d39088e268e7c0",
+  "published_version_number": 25,
+  "deployment_id": "appgdep_6ae99c63d17481918575af737f2a0152",
+  "previous_deployment_id": "appgdep_6ae998d10a9c8191bcd5e3479c1b0814",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -21,7 +21,7 @@
     "vat_rate_bps": 2100,
     "plans": [
       {
-        "name": "B\u00e1sico",
+        "name": "Básico",
         "monthly_cents": 30000
       },
       {
@@ -31,12 +31,9 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-02T21:02:42.105896+00:00",
-  "expected_themes": [
-    "light",
-    "cockpit"
-  ],
-  "source_ci_run": 41523414330,
+  "deployed_at": "2026-11-03T08:33:53.221097+00:00",
+  "expected_themes": ["light", "cockpit"],
+  "source_ci_run": 41599428197,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +62,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "eeafc6df3e33a176bce32525a192579ffe4878c6",
+  "source_ci_commit": "5a943d72fb173da062586cede3255a185edcc1cc",
   "production_source_manifest_only_diff": true,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 19,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_7c07af15b6988191856f042f0de0a7e9",
-    "source_commit": "2212cb3956ab96f4463fdad45c9fd23f18e50ece",
-    "deployment_id": "appgdep_6ae8de12c194819198a47736820b7449",
-    "app_version": "0.5.11-rc.1"
+    "version": 24,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_42b6954704dc8191a78aa2c5b54f14e0",
+    "source_commit": "4d1d74206e10d5cfeb9461672f9ef7f100320429",
+    "deployment_id": "appgdep_6ae998d10a9c8191bcd5e3479c1b0814",
+    "app_version": "0.5.13-rc.1"
   },
-  "source_deployment_ci_run": 41523413112,
-  "app_version": "0.5.12-rc.1",
+  "source_deployment_ci_run": 41599692726,
+  "app_version": "0.5.13-rc.2",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -140,6 +137,20 @@
       "source_commit": "2212cb3956ab96f4463fdad45c9fd23f18e50ece",
       "deployment_id": "appgdep_6ae8de12c194819198a47736820b7449",
       "app_version": "0.5.11-rc.1"
+    },
+    {
+      "version": 23,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_3b07aa2ae4b4819192b50e5e7743bd30",
+      "source_commit": "620c8d51136662a694f6f58e32d6b6b184a3c0e9",
+      "deployment_id": "appgdep_6ae8fa685030819185de7651e9dddadf",
+      "app_version": "0.5.12-rc.1"
+    },
+    {
+      "version": 24,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_42b6954704dc8191a78aa2c5b54f14e0",
+      "source_commit": "4d1d74206e10d5cfeb9461672f9ef7f100320429",
+      "deployment_id": "appgdep_6ae998d10a9c8191bcd5e3479c1b0814",
+      "app_version": "0.5.13-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -154,7 +165,7 @@
   "expected_auth_mail_cors": true,
   "auth_mail_function_version": 4,
   "expected_document_tracking": true,
-  "gmail_function_version": 12,
+  "gmail_function_version": 13,
   "expected_mail_service_cors": true,
   "expected_invoice_inbox": true,
   "mail_function_version": 12,
@@ -197,5 +208,20 @@
       "deployed": false,
       "reason": "CI identified a callback that could start profile access while logout was pending; synchronous identity exit and capability abort fix this, with deterministic regression proof."
     }
-  ]
+  ],
+  "invoice_mail_period_policy": {
+    "version": 1,
+    "default_days": 30,
+    "max_months": 12,
+    "time_zone": "Europe/Madrid",
+    "action": "sync_period"
+  },
+  "ci_scope_note": "The listed initial code/source CI runs verify the period logic before publication; final refinement changes only guide wording and release identifier. Postpublication checks are on PR #29.",
+  "final_release_verification": {
+    "code_commit": "9a3e25e72e7172cc1e3ef0c179bc26736e87a037",
+    "source_commit": "4bc2e841f5f67ba121385c4768911992bc5d666f",
+    "source_build": true,
+    "company_browser_passed": 26,
+    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/29/checks"
+  }
 }

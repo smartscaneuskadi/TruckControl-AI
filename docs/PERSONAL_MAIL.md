@@ -1,6 +1,6 @@
 # Mi correo — acceso personal sin aprobación de TruckControl
 
-Publicado en 0.5.12-rc.1, versión alojada 23. El ID Google está configurado y la entrada a la autorización oficial comprobada; el consentimiento de un buzón real y la verificación pública del proveedor siguen pendientes. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
+Mi correo se introdujo en 0.5.12-rc.1 / v23 y se conserva en la entrega vigente. El ID Google está configurado y la entrada a la autorización oficial comprobada; el titular confirmó el 03/11 que lo ha probado y enviado correo real. Es una aceptación comunicada por el titular; la verificación pública de Google sigue pendiente. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
 
 ## Cómo funciona
 
@@ -38,6 +38,6 @@ Solo Gmail/Google Workspace tiene adaptador directo. Outlook/Microsoft 365, Yaho
 
 Se envía texto; todavía no se adjuntan archivos salientes ni se guardan/actualizan borradores en Google. Se pueden leer los borradores existentes. El texto que se está redactando se conserva solo en esa pantalla: no se debe cerrar, recargar o salir con trabajo sin guardar. La empresa y el correo necesitan conexión. No hay sincronización de correo offline ni lectura automática por IA en segundo plano.
 
-Las pruebas usan buzones `.invalid`, OAuth y Gmail simulados: permisos de consulta con módulo empresarial Gmail apagado, dos temas, HTML inerte, envío confirmado/incierto, cierre de sesión durante consentimiento y recarga sin datos privados. Los perfiles Android/Windows son emulados; la aceptación de un buzón real permanece pendiente de la configuración de Google y del consentimiento de su titular. No se ha leído ni enviado correo real, modificado planes o contratado servicios.
+Las pruebas usan buzones `.invalid`, OAuth y Gmail simulados: permisos de consulta con módulo empresarial Gmail apagado, dos temas, HTML inerte, envío confirmado/incierto, cierre de sesión durante consentimiento y recarga sin datos privados. Los perfiles Android/Windows son emulados; la prueba real comunicada por el titular el 03/11 se registra aparte de los ensayos automáticos. [Aceptación del titular](verification/personal-mail-owner-acceptance-20261103.json). En las pruebas automáticas no se ha leído ni enviado correo real, modificado planes o contratado servicios.
 
 La retirada de permisos 401/403 limpia la sesión y el contenido cargado; está comprobada en ambos perfiles. La política pública de privacidad incorpora el alcance del correo personal y Limited Use. Pasan 816 controles de código/fuente y 72 hashes HTTPS; los checks de PR #27 verifican después los seis perfiles públicos de demo y configuración, sin conectar un Gmail real.

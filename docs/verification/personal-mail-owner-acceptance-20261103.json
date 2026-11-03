@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-03",
+  "evidence_type": "owner_report",
+  "owner_statement": "Correo funccionando,lonhe probado y enviado correo",
+  "personal_mail_working_reported": true,
+  "real_send_reported": true,
+  "independent_mailbox_inspection": false,
+  "recipient_delivery_independently_verified": false,
+  "message_bodies_or_recipient_details_collected": false,
+  "google_public_oauth_verification_confirmed": false,
+  "scope": "Personal mail acceptance; does not prove the separate company invoice OAuth connection or automatic AI processing.",
+  "production_at_report": {
+    "url": "https://truckcontrolai.com",
+    "version": 23,
+    "source": "620c8d51136662a694f6f58e32d6b6b184a3c0e9"
+  }
+}
