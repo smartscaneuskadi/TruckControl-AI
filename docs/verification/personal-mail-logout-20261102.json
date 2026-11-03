@@ -1,0 +1,7 @@
+{
+  "old_bundle_reproduces_profile_request_after_logout_intent": true,
+  "negative_run_failed_as_expected": true,
+  "fixed_bundle_all_8_profile_cases_passed": true,
+  "logout_server_response_held": true,
+  "real_provider_calls": 0
+}

@@ -1,0 +1,41 @@
+{
+  "verified_at": "2026-11-02T19:29:35.083788+00:00",
+  "project": "kkkemaycedexymrpaqtp",
+  "name": "company-gmail",
+  "version": 12,
+  "status": "ACTIVE",
+  "verify_jwt": false,
+  "source_commit": "623be4c117034d95c4c49e316769ebdd07488f8b",
+  "files": [
+    {
+      "name": "company-gmail/index.ts",
+      "sha256": "b05ff301c026f705a28e598d66411f64d0fcc8aceea005d5bc443cc2915f8426"
+    },
+    {
+      "name": "company-gmail/handler.ts",
+      "sha256": "d8d565d77efa4066e4d6895f2b390a23679620b0eca52ecdeab7f91320c51c04"
+    },
+    {
+      "name": "_shared/invoice.ts",
+      "sha256": "e81557bd97de9ab38e9d623a754960e88eaf92bd1faa6a0e253c40c8514bf189"
+    },
+    {
+      "name": "company-gmail/config.ts",
+      "sha256": "8533ccbe5d8e39e4a6d54ee195d885fd79831db704d76de39581419d00508dad"
+    },
+    {
+      "name": "_shared/ai-runtime.ts",
+      "sha256": "7c5a27762ab5aa6629b4248730260eb7d2e593af35ba90ad128800abdb83114d"
+    },
+    {
+      "name": "company-gmail/health.ts",
+      "sha256": "16c046e1c989ce57435761bc20d630421f5c0d087aeebc4fd67791ddefd21ea5"
+    }
+  ],
+  "all_files_match_versioned_source": true,
+  "legacy_handler_unchanged": true,
+  "existing_token_key_unchanged": true,
+  "new_migrations": false,
+  "provider_calls": 0,
+  "real_mail_sent": 0
+}
