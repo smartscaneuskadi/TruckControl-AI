@@ -38,6 +38,7 @@
         ![
           "https://truckcontrolai.com",
           "https://www.truckcontrolai.com",
+          "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
           "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
         ].includes(next.origin) ||
         next.username ||

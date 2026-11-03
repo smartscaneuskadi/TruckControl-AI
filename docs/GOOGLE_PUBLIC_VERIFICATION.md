@@ -2,7 +2,7 @@
 
 Preparación a **03/11/2026**. Producción v25 en https://truckcontrolai.com, backend `company-gmail` v13, 57 migraciones. Siete fuentes nativas coinciden y pasan 109 pruebas específicas. La consulta actual encuentra **cero Gmail empresariales vinculados** y cero autorizaciones pendientes. El titular ha probado **Mi correo**; esa aceptación no acredita el importador empresarial. [Entrega vigente](CURRENT_DELIVERY.md).
 
-El titular indica que la revisión de marca devuelve **Marca lista para publicar**. Se ha solicitado publicar la marca y comunicar su resultado. Aún no se ha observado marca publicada, dominio verificado, público en producción, aprobación de alcances ni evaluación externa. No declarar Gmail aprobado para todos los clientes.
+El titular confirma **Marca publicada**. No se ha observado independientemente el estado del dominio, público o aprobación de alcances, ni una evaluación externa. También comunica Gmail empresarial conectado, pero la consulta del servidor a las 23:34:12 UTC sigue mostrando cero conexiones; se ha pedido aclarar la pantalla antes de repetir autorizaciones. No declarar Gmail aprobado para todos los clientes.
 
 ## Datos preparados para Google
 
@@ -77,6 +77,6 @@ Guion para grabar, con el consentimiento Google **en inglés**:
 7. Mi correo por separado: consentimiento `gmail.modify`, lectura, envío ficticio a destinatario controlado y acción reversible.
 8. Retirada de acceso sin revelar secretos. Subir el vídeo como no listado en una cuenta del titular y aportar su enlace a Google.
 
-El vídeo aún no está grabado ni enviado. Fixtures, screenshots y tests no lo sustituyen ni prueban consentimiento real. El verificador público ahora comprueba los enlaces y contenido legal sin entrar en una cuenta, en seis perfiles HTTPS emulados; su resultado se registra en el PR de esta preparación. No cambia la versión publicada, credenciales, permisos, precios o presupuesto.
+El vídeo aún no está grabado ni enviado. Fixtures, screenshots y tests no lo sustituyen ni prueban consentimiento real. El verificador público ahora comprueba los enlaces y contenido legal sin entrar en una cuenta, en seis perfiles HTTPS emulados; su resultado se registra en el PR de esta preparación. La corrección 0.5.14-rc.1 añade al retorno del navegador el hostname técnico de producción que el servidor ya admitía; conserva los rechazos de destinos ajenos. Su publicación depende de las pruebas. No cambia backend, credenciales, permisos comerciales, precios o presupuesto.
 
 Referencias oficiales consultadas el 03/11/2026: [marca](https://developers.google.com/identity/protocols/oauth2/production-readiness/brand-verification), [alcances restringidos/CASA anual](https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification), [alcances Gmail](https://developers.google.com/workspace/gmail/api/auth/scopes), [Workspace/Limited Use](https://developers.google.com/workspace/workspace-api-user-data-developer-policy), [producción](https://developers.google.com/identity/protocols/oauth2/production-readiness/policy-compliance).

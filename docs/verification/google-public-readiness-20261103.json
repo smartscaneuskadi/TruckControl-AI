@@ -78,15 +78,32 @@
     "google_domain_owner_verified": null,
     "note": "Public DNS does not establish Google account ownership."
   },
-  "owner_reported_branding": "ready_to_publish",
-  "new_schema_or_runtime_changes": false,
+  "owner_reported_branding": "published",
+  "new_schema_or_runtime_changes": "No schema/backend changes; browser callback allowlist fix in preparation.",
   "new_google_mailbox_or_model_calls": 0,
   "no_new_spending": true,
   "pending": [
-    "Publish branding via owner Google session",
     "Verify actual audience and restricted-scope review",
     "Owner grants enterprise mailbox consent",
     "Real invoice acceptance and non-listed consent demonstration video",
     "Annual external security assessment if required by Google; separate quote and approval"
-  ]
+  ],
+  "owner_reported_enterprise_connection": "connected",
+  "enterprise_connection_confirmation": "Not verified: server still has zero connections as of 2026-11-03T23:34:12Z. Clarification requested; do not repeat consent blindly.",
+  "callback_fix": {
+    "status": "in_preparation",
+    "issue": "Technical production hostname accepted by backend was missing from browser callback allowlist.",
+    "scope": "Add exact existing hostname; keep foreign origins and lookalikes denied.",
+    "release": "0.5.14-rc.1",
+    "backend_changed": false,
+    "company_browser_tests_passed": 32,
+    "tested_origins": [
+      "https://truckcontrolai.com",
+      "https://www.truckcontrolai.com",
+      "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site"
+    ],
+    "foreign_origins_denied": true,
+    "physical_devices": false
+  }
 }

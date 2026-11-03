@@ -49,13 +49,15 @@
   ],
   "remote_google_observation": {
     "source": "owner_report",
-    "branding": "ready_to_publish",
-    "branding_publication": "pending_owner_confirmation",
+    "branding": "published_owner_reported",
+    "branding_publication": "confirmed_by_owner",
     "audience_current": "not_observed",
     "data_access_approval": "not_observed",
     "domain_ownership": "not_observed",
     "demo_video": "not_recorded_or_uploaded",
-    "security_assessment": "not_quoted_or_contracted"
+    "security_assessment": "not_quoted_or_contracted",
+    "enterprise_connection_reported_by_owner": "connected",
+    "enterprise_connection_observed_in_backend": "not_connected"
   },
   "safety": {
     "new_spending_authorized": false,
