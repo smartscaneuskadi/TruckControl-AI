@@ -1,0 +1,13 @@
+{
+  "connected": 0,
+  "checked_at": "2026-11-03T23:51:49.566035+00:00",
+  "migrations": 57,
+  "total_connections": 0,
+  "active_oauth_states": 0,
+  "pending_oauth_count": 0,
+  "connected_with_encrypted_credential": 0,
+  "owner_reported": "connected",
+  "verified": false,
+  "clarification_pending": true,
+  "no_tokens_or_addresses_read": true
+}

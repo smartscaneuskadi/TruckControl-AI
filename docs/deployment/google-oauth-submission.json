@@ -66,5 +66,11 @@
     "gmail_tokens_in_submission": false,
     "annual_security_assessment_required_for_server_restricted_data_unless_google_exception": true
   },
-  "guide": "docs/GOOGLE_PUBLIC_VERIFICATION.md"
+  "guide": "docs/GOOGLE_PUBLIC_VERIFICATION.md",
+  "technical_callback_fix": {
+    "status": "published",
+    "production_version": 26,
+    "source_commit": "fd336b85bc3f44b3b09a59e5367270085a501075",
+    "guide": "docs/GOOGLE_PUBLIC_VERIFICATION.md"
+  }
 }
