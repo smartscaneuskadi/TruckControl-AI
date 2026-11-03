@@ -1,6 +1,6 @@
 # Facturas de Gmail: período de recepción e IA
 
-Implementación 0.5.13-rc.1 en preparación. La publicación comprobada figura en [entrega vigente](CURRENT_DELIVERY.md); la versión 23 y la demo 6 se conservan durante la verificación.
+Publicado en **0.5.13-rc.2 / versión alojada 25** en https://truckcontrolai.com. El backend company-gmail v13 exige el filtro; sus siete fuentes coinciden con el código. Se conservan las versiones 24/23 y la demo 6. [Entrega y pruebas](verification/invoice-period-release-20261103.json).
 
 ## Uso en la empresa
 

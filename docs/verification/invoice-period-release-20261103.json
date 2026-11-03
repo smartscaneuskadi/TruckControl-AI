@@ -1,0 +1,86 @@
+{
+  "published_version": 25,
+  "app_version": "0.5.13-rc.2",
+  "source_commit": "4bc2e841f5f67ba121385c4768911992bc5d666f",
+  "deployment_id": "appgdep_6ae99c63d17481918575af737f2a0152",
+  "deployed_at": "2026-11-03T08:33:53.221097+00:00",
+  "initial_ci": {
+    "code_commit": "5a943d72fb173da062586cede3255a185edcc1cc",
+    "source_commit": "4d1d74206e10d5cfeb9461672f9ef7f100320429",
+    "runs": [41599428197, 41599584009, 41599692726],
+    "each_passed": 854,
+    "breakdown": {
+      "unit_sql": 624,
+      "python": 32,
+      "original_demo": 64,
+      "company": 26,
+      "saas": 68,
+      "candidate": 14,
+      "production": 20,
+      "public_profiles_of_previous_release": 6
+    }
+  },
+  "final_refinement": {
+    "code_commit": "9a3e25e72e7172cc1e3ef0c179bc26736e87a037",
+    "changed_only": [
+      "package-lock.json",
+      "package.json",
+      "src/components/GmailConnectionGuide.tsx"
+    ],
+    "typecheck_build": true,
+    "company_browser_passed": 26,
+    "logic_unchanged": true
+  },
+  "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/29/checks",
+  "native": {
+    "version": 13,
+    "verify_jwt": false,
+    "ezbr_sha256": "3126826fd356aa04e0c0066acab2a7ef147105de6cd5a88dc9fb824ba8a73c95",
+    "files": [
+      {
+        "name": "company-gmail/index.ts",
+        "matches": true
+      },
+      {
+        "name": "company-gmail/handler.ts",
+        "matches": true
+      },
+      {
+        "name": "_shared/invoice.ts",
+        "matches": true
+      },
+      {
+        "name": "_shared/mail-period.ts",
+        "matches": true
+      },
+      {
+        "name": "company-gmail/config.ts",
+        "matches": true
+      },
+      {
+        "name": "_shared/ai-runtime.ts",
+        "matches": true
+      },
+      {
+        "name": "company-gmail/health.ts",
+        "matches": true
+      }
+    ]
+  },
+  "http_checks": 16,
+  "migration_count": 57,
+  "new_migrations": 0,
+  "tls_resources_matched": 72,
+  "demo_unchanged": true,
+  "previous_productions_retained": [24, 23, 19],
+  "agent_real_model_calls": 0,
+  "agent_real_mail_read_or_send": 0,
+  "security_advisors": [
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN",
+      "existing": true,
+      "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection"
+    }
+  ]
+}

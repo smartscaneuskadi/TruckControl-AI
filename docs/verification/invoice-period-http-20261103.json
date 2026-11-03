@@ -1,0 +1,163 @@
+{
+  "verified_at": "2026-11-03T08:15:04.615678+00:00",
+  "native_version": 13,
+  "checks": [
+    {
+      "check": "health",
+      "origin": "https://truckcontrolai.com",
+      "status": 200,
+      "expected": 200,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true,
+      "configured": true
+    },
+    {
+      "check": "public_config",
+      "origin": "https://truckcontrolai.com",
+      "status": 200,
+      "expected": 200,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true,
+      "exact_public_keys": true,
+      "public_id_matches": true,
+      "configured": true
+    },
+    {
+      "check": "preflight",
+      "origin": "https://truckcontrolai.com",
+      "status": 204,
+      "expected": 204,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "anonymous_sync",
+      "origin": "https://truckcontrolai.com",
+      "status": 401,
+      "expected": 401,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "anonymous_period",
+      "origin": "https://truckcontrolai.com",
+      "status": 401,
+      "expected": 401,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "health",
+      "origin": "https://www.truckcontrolai.com",
+      "status": 200,
+      "expected": 200,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true,
+      "configured": true
+    },
+    {
+      "check": "public_config",
+      "origin": "https://www.truckcontrolai.com",
+      "status": 200,
+      "expected": 200,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true,
+      "exact_public_keys": true,
+      "public_id_matches": true,
+      "configured": true
+    },
+    {
+      "check": "preflight",
+      "origin": "https://www.truckcontrolai.com",
+      "status": 204,
+      "expected": 204,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "anonymous_sync",
+      "origin": "https://www.truckcontrolai.com",
+      "status": 401,
+      "expected": 401,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "anonymous_period",
+      "origin": "https://www.truckcontrolai.com",
+      "status": 401,
+      "expected": 401,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "health",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "status": 200,
+      "expected": 200,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true,
+      "configured": true
+    },
+    {
+      "check": "public_config",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "status": 200,
+      "expected": 200,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true,
+      "exact_public_keys": true,
+      "public_id_matches": true,
+      "configured": true
+    },
+    {
+      "check": "preflight",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "status": 204,
+      "expected": 204,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "anonymous_sync",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "status": 401,
+      "expected": 401,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "anonymous_period",
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "status": 401,
+      "expected": 401,
+      "tls_verified": true,
+      "passed": true,
+      "cors_matches": true
+    },
+    {
+      "check": "foreign",
+      "origin": "https://foreign.invalid",
+      "status": 403,
+      "expected": 403,
+      "tls_verified": true,
+      "passed": true
+    }
+  ],
+  "real_mail_access": false,
+  "model_calls": 0
+}
