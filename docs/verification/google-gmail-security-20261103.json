@@ -1,0 +1,37 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "native_version": 13,
+  "tables": [
+    {
+      "rls": true,
+      "table": "gmail_connections",
+      "anon_select": false,
+      "authenticated_select": true
+    },
+    {
+      "rls": true,
+      "table": "gmail_oauth_pending",
+      "anon_select": false,
+      "authenticated_select": false
+    },
+    {
+      "rls": true,
+      "table": "gmail_oauth_states",
+      "anon_select": false,
+      "authenticated_select": false
+    },
+    {
+      "rls": true,
+      "table": "gmail_tokens",
+      "anon_select": false,
+      "authenticated_select": false
+    }
+  ],
+  "server_rpc_anon": false,
+  "runtime_config_anon": false,
+  "server_rpc_service_role": true,
+  "server_rpc_authenticated": false,
+  "runtime_config_service_role": true,
+  "runtime_config_authenticated": false,
+  "mutations": 0
+}

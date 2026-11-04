@@ -115,6 +115,58 @@ try {
         let mailServicesCorsChecked = false;
         let personalMailConfigChecked = false;
         let personalMailReady = false;
+        let publicLegalPagesChecked = false;
+        if (production) {
+          // Google review requires public legal pages before account creation.
+          for (const [document, title] of [
+            ["privacy", "Privacidad y tratamiento de datos"],
+            ["terms", "Condiciones del servicio y encargo de tratamiento"],
+          ]) {
+            const label = document === "privacy" ? "Privacidad" : "Condiciones";
+            const href = await page
+              .getByRole("link", { name: label, exact: true })
+              .first()
+              .getAttribute("href");
+            const link = href ? new URL(href, target.origin) : null;
+            if (
+              !link ||
+              link.origin !== target.origin ||
+              link.pathname !== "/" ||
+              link.searchParams.get("legal") !== document
+            )
+              throw Error("Public legal link missing or leaves the app domain");
+            const response = await page.goto(
+              `${target.origin}/?legal=${document}`,
+              {
+                waitUntil: "networkidle",
+              },
+            );
+            await page
+              .getByRole("heading", { name: title, exact: true })
+              .waitFor();
+            const text = await page.locator("main").innerText();
+            if (
+              response?.status() !== 200 ||
+              !text.includes("ELEVADANCOR S.L.") ||
+              (document === "privacy" &&
+                !["Google", "Limited Use", "OpenAI", "supresión"].every(
+                  (word) => text.includes(word),
+                )) ||
+              (await page.evaluate(
+                () => document.body.scrollWidth > innerWidth + 1,
+              ))
+            )
+              throw Error(
+                "Public legal page is unavailable or lacks Google disclosures",
+              );
+            await page.screenshot({
+              path: `${dir}/${name}-public-${document}.png`,
+              fullPage: true,
+            });
+          }
+          await page.goto(target.origin, { waitUntil: "networkidle" });
+          publicLegalPagesChecked = true;
+        }
         if (production) {
           if (!publishableKey)
             throw new Error("Published app did not load its public catalog");
@@ -647,6 +699,7 @@ try {
           mailServicesCors: mailServicesCorsChecked,
           personalMailConfig: personalMailConfigChecked,
           personalMailReady,
+          publicLegalPages: publicLegalPagesChecked,
           invoiceInbox: invoiceInboxChecked,
           tyresOffline: tyresOfflineChecked,
           personalMailOffline: personalMailOfflineChecked,

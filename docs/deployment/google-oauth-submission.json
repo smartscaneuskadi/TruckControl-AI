@@ -1,0 +1,76 @@
+{
+  "prepared_at": "2026-11-03T23:32:32.160927+00:00",
+  "project": {
+    "name": "TruckControlAI",
+    "id": "truckcontrolai",
+    "number": "468881730124"
+  },
+  "existing_web_client": {
+    "name": "TruckControl AI Gmail",
+    "public_client_id": "468881730124-ss24lmbcjdronuogra584saigfj8sb0t.apps.googleusercontent.com",
+    "reuse_existing": true
+  },
+  "branding": {
+    "application_name": "TruckControl AI",
+    "operator": "ELEVADANCOR S.L.",
+    "public_contact": "pedidos@smartscaneuskadi.com",
+    "homepage_uri": "https://truckcontrolai.com",
+    "privacy_policy_uri": "https://truckcontrolai.com/?legal=privacy",
+    "terms_uri": "https://truckcontrolai.com/?legal=terms",
+    "authorized_domains": [
+      "truckcontrolai.com"
+    ],
+    "javascript_origins": [
+      "https://truckcontrolai.com",
+      "https://www.truckcontrolai.com"
+    ],
+    "redirect_uri": "https://truckcontrolai.com/gmail-callback"
+  },
+  "requested_scopes": [
+    {
+      "scope": "openid",
+      "flow": "enterprise_invoice_connection"
+    },
+    {
+      "scope": "https://www.googleapis.com/auth/userinfo.email",
+      "requested_alias": "email",
+      "flow": "enterprise_invoice_connection"
+    },
+    {
+      "scope": "https://www.googleapis.com/auth/gmail.readonly",
+      "classification": "restricted",
+      "flow": "enterprise_invoice_connection"
+    },
+    {
+      "scope": "https://www.googleapis.com/auth/gmail.modify",
+      "classification": "restricted",
+      "flow": "personal_browser_mailbox"
+    }
+  ],
+  "remote_google_observation": {
+    "source": "owner_report",
+    "branding": "published_owner_reported",
+    "branding_publication": "confirmed_by_owner",
+    "audience_current": "not_observed",
+    "data_access_approval": "not_observed",
+    "domain_ownership": "not_observed",
+    "demo_video": "not_recorded_or_uploaded",
+    "security_assessment": "not_quoted_or_contracted",
+    "enterprise_connection_reported_by_owner": "connected",
+    "enterprise_connection_observed_in_backend": "not_connected"
+  },
+  "safety": {
+    "new_spending_authorized": false,
+    "new_services_activated": false,
+    "production_api_budget_changed": false,
+    "gmail_tokens_in_submission": false,
+    "annual_security_assessment_required_for_server_restricted_data_unless_google_exception": true
+  },
+  "guide": "docs/GOOGLE_PUBLIC_VERIFICATION.md",
+  "technical_callback_fix": {
+    "status": "published",
+    "production_version": 26,
+    "source_commit": "fd336b85bc3f44b3b09a59e5367270085a501075",
+    "guide": "docs/GOOGLE_PUBLIC_VERIFICATION.md"
+  }
+}
