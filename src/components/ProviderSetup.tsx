@@ -150,10 +150,13 @@ export function ProviderSetup() {
               detail: `Presupuesto de plataforma: ${(status.ai.monthly_budget_cents / 100).toLocaleString("es-ES")} USD/mes antes de impuestos. Su uso requiere permiso y consentimiento.`,
             },
             {
-              name: "Gmail directo",
+              name: "Credenciales de Gmail empresarial",
               ready: status.google.configured,
+              badgeLabel: status.google.configured
+                ? "Configuración guardada"
+                : "Configuración pendiente",
               detail: status.google.configured
-                ? "Credenciales guardadas; la autorización de cada buzón se realiza desde su empresa."
+                ? `Vínculos de empresa registrados: ${status.google.connections}. Cada empresa autoriza su propio buzón.`
                 : "Falta una pareja válida de credenciales Google.",
             },
             {
@@ -174,12 +177,70 @@ export function ProviderSetup() {
             <div className="settings-card" key={row.name}>
               <h3>{row.name}</h3>
               <Badge tone={row.ready ? "green" : "amber"}>
-                {row.ready ? "Habilitado" : "Pendiente o desactivado"}
+                {row.badgeLabel ??
+                  (row.ready ? "Habilitado" : "Pendiente o desactivado")}
               </Badge>
               <p>{row.detail}</p>
             </div>
           ))}
         </div>
+      )}
+      {status && (
+        <section
+          className="settings-card gmail-link-readiness"
+          aria-label="Vinculación de buzones de empresa"
+        >
+          <h3>Vinculación de buzones de empresa</h3>
+          <p role="status" aria-live="polite">
+            {status.google.connections === 0
+              ? "Ningún buzón de empresa vinculado."
+              : `${status.google.connections} ${status.google.connections === 1 ? "vínculo de empresa registrado" : "vínculos de empresa registrados"}. Comprueba el estado individual en Correo y facturas.`}
+          </p>
+          <p>
+            El administrador de cada empresa autoriza su buzón desde Correo y
+            facturas. Este panel muestra la configuración global; la revisión de
+            permisos se gestiona en Google.
+          </p>
+          <details>
+            <summary>Preparar la prueba de facturas</summary>
+            <ol>
+              <li>
+                Entrar con una cuenta administradora de empresa con Gmail
+                habilitado y seleccionar la empresa de prueba.
+              </li>
+              <li>
+                En Correo y facturas, conectar Gmail de esta empresa y comprobar
+                que Google devuelve a la misma empresa.
+              </li>
+              <li>
+                Usar una factura ficticia recibida: últimos 30 días por defecto
+                o fechas dentro de los últimos 12 meses. La lectura IA requiere
+                habilitación y consentimiento de esa cuenta.
+              </li>
+              <li>
+                Revisar el documento y los importes antes de registrar el gasto;
+                repetir la importación para comprobar que no se duplica.
+              </li>
+            </ol>
+          </details>
+          <p>
+            <a
+              href="/examples/factura-demostracion.pdf"
+              download="TruckControl-factura-ficticia.pdf"
+            >
+              Descargar factura ficticia
+            </a>
+          </p>
+          <p>
+            <a
+              href="https://console.cloud.google.com/auth/verification?project=468881730124"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Consultar revisión de permisos en Google
+            </a>
+          </p>
+        </section>
       )}
       <h3>
         <Plug size={18} /> Configurar Google para Gmail

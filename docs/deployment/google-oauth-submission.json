@@ -48,16 +48,22 @@
     }
   ],
   "remote_google_observation": {
-    "source": "owner_report",
+    "source": "owner_branding_report_and_authorized_browser_configuration",
     "branding": "published_owner_reported",
     "branding_publication": "confirmed_by_owner",
-    "audience_current": "not_observed",
-    "data_access_approval": "not_observed",
+    "audience_current": "testing_observed_20261105",
+    "data_access_approval": "not_submitted",
     "domain_ownership": "not_observed",
     "demo_video": "not_recorded_or_uploaded",
     "security_assessment": "not_quoted_or_contracted",
     "enterprise_connection_reported_by_owner": "connected",
-    "enterprise_connection_observed_in_backend": "not_connected"
+    "enterprise_connection_observed_in_backend": "not_connected",
+    "declared_scopes_saved": true,
+    "pending_requirements_reported": [
+      "real_demonstration_video",
+      "owner_attestation",
+      "complete_application_submission"
+    ]
   },
   "safety": {
     "new_spending_authorized": false,
@@ -72,5 +78,22 @@
     "production_version": 26,
     "source_commit": "fd336b85bc3f44b3b09a59e5367270085a501075",
     "guide": "docs/GOOGLE_PUBLIC_VERIFICATION.md"
-  }
+  },
+  "updated_at": "2026-11-05",
+  "google_configuration_run": {
+    "run_id": "62349f2d-8474-4a7e-99ba-8b906836c3a5",
+    "existing_project_confirmed": true,
+    "data_access_status": "updated",
+    "scopes_present": [
+      "openid",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/gmail.modify"
+    ],
+    "client_changed": false,
+    "branding_changed": false,
+    "audience_changed": false,
+    "submitted_for_verification": false
+  },
+  "acceptance_guide": "docs/GMAIL_ACCEPTANCE.md"
 }
