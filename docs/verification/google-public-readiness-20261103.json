@@ -1,7 +1,6 @@
 {
   "checked_at": "2026-11-03T23:31:53.759322+00:00",
   "scope": "configuration and preparation; not Google approval or real mailbox acceptance",
-  "production_version": 25,
   "supabase_project": "kkkemaycedexymrpaqtp",
   "native": {
     "project": "kkkemaycedexymrpaqtp",
@@ -91,7 +90,7 @@
   "owner_reported_enterprise_connection": "connected",
   "enterprise_connection_confirmation": "Not verified: server still has zero connections as of 2026-11-03T23:34:12Z. Clarification requested; do not repeat consent blindly.",
   "callback_fix": {
-    "status": "in_preparation",
+    "status": "published",
     "issue": "Technical production hostname accepted by backend was missing from browser callback allowlist.",
     "scope": "Add exact existing hostname; keep foreign origins and lookalikes denied.",
     "release": "0.5.14-rc.1",
@@ -104,6 +103,32 @@
       "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site"
     ],
     "foreign_origins_denied": true,
-    "physical_devices": false
+    "physical_devices": false,
+    "production_version": 26
+  },
+  "production_version_at_initial_audit": 25,
+  "released_fix": {
+    "production_version": 26,
+    "app_version": "0.5.14-rc.1",
+    "source_commit": "fd336b85bc3f44b3b09a59e5367270085a501075",
+    "deployment_id": "appgdep_6aea7354e9708191943b9404c06f379d",
+    "deployed_at": "2026-11-03T23:50:58.817031+00:00",
+    "all_checks_before_publication": 860,
+    "https_file_hashes_after_publication": 72,
+    "stable_demo_unchanged": true,
+    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/30/checks"
+  },
+  "enterprise_connection_after_release": {
+    "connected": 0,
+    "checked_at": "2026-11-03T23:51:49.566035+00:00",
+    "migrations": 57,
+    "total_connections": 0,
+    "active_oauth_states": 0,
+    "pending_oauth_count": 0,
+    "connected_with_encrypted_credential": 0,
+    "owner_reported": "connected",
+    "verified": false,
+    "clarification_pending": true,
+    "no_tokens_or_addresses_read": true
   }
 }

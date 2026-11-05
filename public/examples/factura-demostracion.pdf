@@ -1,0 +1,69 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+6 0 obj
+<< /Length 1504 >>
+stream
+0.06 0.28 0.22 rg
+0 728 595 114 re f
+1 1 1 rg
+BT /F2 24 Tf 44 794 Td (TruckControl AI) Tj ET
+BT /F2 13 Tf 44 767 Td (FACTURA FICTICIA PARA PRUEBAS) Tj ET
+0.09 0.18 0.27 rg
+BT /F2 20 Tf 44 690 Td (DEMO-RECENT) Tj ET
+BT /F1 12 Tf 44 665 Td (Fecha: 2026-11-04) Tj ET
+BT /F2 12 Tf 44 620 Td (PROVEEDOR FICTICIO) Tj ET
+BT /F1 12 Tf 44 600 Td (Proveedor ficticio) Tj ET
+BT /F1 11 Tf 44 582 Td (Identificador: DEMO-NO-VALIDO) Tj ET
+BT /F2 12 Tf 320 620 Td (CLIENTE FICTICIO) Tj ET
+BT /F1 12 Tf 320 600 Td (Empresa de prueba TruckControl) Tj ET
+BT /F1 11 Tf 320 582 Td (Sin datos empresariales reales) Tj ET
+0.8 0.86 0.9 RG
+44 552 m 551 552 l S
+BT /F2 12 Tf 44 525 Td (Concepto) Tj ET
+BT /F1 12 Tf 44 497 Td (Revision de mantenimiento de demostracion) Tj ET
+BT /F1 12 Tf 326 430 Td (Base imponible:) Tj ET
+BT /F2 12 Tf 450 430 Td (100,01 EUR) Tj ET
+BT /F1 12 Tf 326 405 Td (IVA 21%:) Tj ET
+BT /F2 12 Tf 450 405 Td (21,00 EUR) Tj ET
+0.88 0.97 0.92 rg
+310 340 241 44 re f
+0.06 0.28 0.22 rg
+BT /F1 13 Tf 326 357 Td (TOTAL:) Tj ET
+BT /F2 13 Tf 450 357 Td (121,01 EUR) Tj ET
+0.6 0.12 0.2 rg
+BT /F2 15 Tf 44 220 Td (SIN VALIDEZ FISCAL) Tj ET
+0.09 0.18 0.27 rg
+BT /F1 11 Tf 44 194 Td (Documento de demostracion. No es una factura real.) Tj ET
+BT /F1 11 Tf 44 174 Td (Importar y revisar solo en una empresa de prueba autorizada.) Tj ET
+BT /F1 11 Tf 44 154 Td (No enviar a proveedores ni usar para pagos o declaraciones.) Tj ET
+BT /F1 10 Tf 44 88 Td (La fecha del PDF no cambia el periodo de recepcion del correo.) Tj ET
+endstream
+endobj
+xref
+0 7
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000251 00000 n 
+0000000321 00000 n 
+0000000396 00000 n 
+trailer
+<< /Size 7 /Root 1 0 R >>
+startxref
+1951
+%%EOF

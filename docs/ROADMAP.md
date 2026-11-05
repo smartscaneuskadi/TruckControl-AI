@@ -1,8 +1,8 @@
 # Estado y continuación — 03/11/2026
 
-Continuación Gmail público: [expediente](GOOGLE_PUBLIC_VERIFICATION.md). El titular confirma «Marca publicada». La conexión empresarial comunicada todavía no aparece en servidor; se ha pedido aclarar la pantalla. Cero conexiones empresariales en la consulta actual; no repetir claves ni reutilizar el consentimiento personal. Preparados justificaciones de ambos alcances, páginas legales, flujo de datos y guion del vídeo. La aprobación de alcances y evaluación externa siguen pendientes; ninguna contratación nueva. Se corrige el retorno del navegador al hostname técnico, que el servidor ya admitía.
+Continuación Gmail público: [expediente](GOOGLE_PUBLIC_VERIFICATION.md). El titular confirma «Marca publicada». La conexión empresarial comunicada todavía no aparece en servidor; se ha pedido aclarar la pantalla. Cero conexiones empresariales en la consulta actual; no repetir claves ni reutilizar el consentimiento personal. Preparados justificaciones de ambos alcances, páginas legales, flujo de datos y guion del vídeo. La aprobación de alcances y evaluación externa siguen pendientes; ninguna contratación nueva. Publicado el retorno al hostname técnico, que el servidor ya admitía. Código y fuente pasan 860 controles; 72 hashes HTTPS coinciden y la demo6 sigue intacta.
 
-La entrega vigente es **v25 / 0.5.13-rc.2**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y las producciones anteriores 24/23/19 permanecen recuperables. El registro de [neumáticos](TYRES.md) está publicado: mediciones manuales, avisos, historial, CSV y copias completas, con la migración 57 comprobada mediante rollback.
+La entrega vigente es **v26 / 0.5.14-rc.1**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y las producciones anteriores 25/24/23/19 permanecen recuperables. El registro de [neumáticos](TYRES.md) está publicado: mediciones manuales, avisos, historial, CSV y copias completas, con la migración 57 comprobada mediante rollback.
 
 ## Implementado y comprobado
 
