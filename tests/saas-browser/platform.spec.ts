@@ -782,6 +782,125 @@ async function openProviders(page: Page) {
     }),
   ).toBeEnabled();
 }
+test("las credenciales preparadas no se presentan como un buzón de empresa conectado", async ({
+  page,
+}, info) => {
+  const f = await fixtures(page);
+  Object.assign(f.controls.providerStatus.google, {
+    client_id: "468881730124-synthetic-browser.apps.googleusercontent.com",
+    id_valid: true,
+    secret_valid: true,
+    configured: true,
+    connections: 0,
+  });
+  await openProviders(page);
+  const card = page.locator(".settings-card").filter({
+    has: page.getByRole("heading", {
+      name: "Credenciales de Gmail empresarial",
+      exact: true,
+    }),
+  });
+  await expect(card).toContainText("Configuración guardada");
+  await expect(card).toContainText("Vínculos de empresa registrados: 0");
+  const readiness = page.getByRole("region", {
+    name: "Vinculación de buzones de empresa",
+  });
+  await expect(readiness.getByRole("status")).toHaveText(
+    "Ningún buzón de empresa vinculado.",
+  );
+  await readiness
+    .getByText("Preparar la prueba de facturas", { exact: true })
+    .click();
+  await expect(readiness).toContainText("últimos 30 días");
+  await expect(readiness).toContainText("últimos 12 meses");
+  await expect(
+    readiness.getByRole("link", {
+      name: "Consultar revisión de permisos en Google",
+    }),
+  ).toHaveAttribute(
+    "href",
+    "https://console.cloud.google.com/auth/verification?project=468881730124",
+  );
+  for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+    await page.getByRole("button", { name: "Apariencia", exact: true }).click();
+    const dialog = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+    });
+    await dialog.getByRole("radio", { name: theme, exact: true }).check();
+    await dialog.getByRole("button", { name: "Aplicar apariencia" }).click();
+    await dialog.getByRole("button", { name: "Cerrar ventana" }).click();
+    const contrast = await readiness
+      .locator("details li")
+      .first()
+      .evaluate((element) => {
+        const rgb = (text: string) => (text.match(/[\d.]+/g) ?? []).map(Number);
+        const foreground = rgb(getComputedStyle(element).color);
+        let background: number[] | undefined;
+        for (
+          let parent: Element | null = element;
+          parent;
+          parent = parent.parentElement
+        ) {
+          const color = rgb(getComputedStyle(parent).backgroundColor);
+          if (color.length >= 3 && (color[3] ?? 1) >= 0.99) {
+            background = color;
+            break;
+          }
+        }
+        if (!background) throw Error("Opaque card background not found");
+        const luminance = (color: number[]) =>
+          color
+            .slice(0, 3)
+            .map((v) => {
+              const x = v / 255;
+              return x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+            })
+            .reduce((sum, x, i) => sum + x * [0.2126, 0.7152, 0.0722][i], 0);
+        const light = luminance(foreground),
+          dark = luminance(background);
+        return (Math.max(light, dark) + 0.05) / (Math.min(light, dark) + 0.05);
+      });
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
+    expect(
+      (await new AxeBuilder({ page }).include(".provider-setup").analyze())
+        .violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await readiness.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: info.outputPath(
+        `gmail-readiness-${theme === "Fleet Light" ? "light" : "cockpit"}.png`,
+      ),
+    });
+  }
+  const pendingDownload = page.waitForEvent("download");
+  await readiness
+    .getByRole("link", { name: "Descargar factura ficticia", exact: true })
+    .click();
+  const download = await pendingDownload;
+  const samplePath = info.outputPath("factura-ficticia.pdf");
+  await download.saveAs(samplePath);
+  const sample = await readFile(samplePath);
+  expect(sample.subarray(0, 5).toString()).toBe("%PDF-");
+  expect(sample.toString("ascii")).toContain("SIN VALIDEZ FISCAL");
+  f.controls.providerStatus.google.connections = 1;
+  await page
+    .getByRole("button", { name: "Comprobar servicios", exact: true })
+    .click();
+  await expect(readiness.getByRole("status")).toContainText(
+    "1 vínculo de empresa registrado",
+  );
+  await expect(readiness.getByRole("status")).toContainText(
+    "Comprueba el estado individual",
+  );
+  await expect(
+    page.getByLabel("Importar JSON del cliente web Google"),
+  ).toBeDisabled();
+  expect(f.calls.some((c) => c.body?.p_action === "set_google")).toBe(false);
+});
+
 test("el propietario importa Google en el panel sin guardar ni devolver el secreto al navegador", async ({
   page,
 }) => {

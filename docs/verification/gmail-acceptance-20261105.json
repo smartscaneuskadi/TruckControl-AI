@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-05",
+  "release": "0.5.15-rc.1",
+  "scope": "Gmail scope declaration and simulated cross-layer acceptance; not public Google approval",
+  "google": {
+    "project": "468881730124",
+    "run_id": "62349f2d-8474-4a7e-99ba-8b906836c3a5",
+    "project_confirmed": true,
+    "declared_scopes": [
+      "openid",
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/gmail.modify"
+    ],
+    "audience": "testing",
+    "submitted_for_verification": false,
+    "client_changed": false,
+    "branding_changed": false,
+    "pending_requirements_reported": [
+      "Production review requires: real demonstration video, signed legal attestation, and submission of complete application (not submitted)."
+    ]
+  },
+  "supabase": {
+    "project": "kkkemaycedexymrpaqtp",
+    "snapshot_at": "2026-11-05T22:22:15.289507Z",
+    "migrations": 57,
+    "gmail_connections": 0,
+    "connected": 0,
+    "reauthorize": 0,
+    "oauth_pending": 0,
+    "active_oauth_states": 0,
+    "active_companies": 2,
+    "active_companies_with_gmail": 2,
+    "function": {
+      "name": "company-gmail",
+      "version": 13,
+      "status": "ACTIVE",
+      "ezbr_sha256": "3126826fd356aa04e0c0066acab2a7ef147105de6cd5a88dc9fb824ba8a73c95"
+    },
+    "schema_changes": 0,
+    "function_deployments": 0,
+    "mail_content_read": false,
+    "token_values_read": false
+  },
+  "local": {
+    "unit_and_sql": 625,
+    "retained_original_demo_tests": 64,
+    "retained_file_hashes": 11,
+    "saas_browser_cases": 70,
+    "final_focused_cases": 2,
+    "profiles": [
+      "Android emulated",
+      "Windows emulated"
+    ],
+    "themes": [
+      "light",
+      "cockpit"
+    ],
+    "minimum_contrast": 4.5,
+    "axe_violations": 0,
+    "cross_layer_test": "tests/gmail-invoice-acceptance.test.ts",
+    "live_network_forbidden": true,
+    "live_model_calls": 0,
+    "simulated_model_calls": 2,
+    "native_test_data_created": 0
+  },
+  "costs": {
+    "tinyfish_budget_usd_total": 2,
+    "cumulative_steps": 113,
+    "cumulative_duration_seconds": 1268,
+    "rate_usd_per_step": 0.016,
+    "rate_usd_per_minute": 0.002,
+    "estimated_cumulative_usd": 1.8502666667,
+    "conservative_estimate_with_profile_setup_usd": 1.8802666667,
+    "auto_reload_activated": false,
+    "openai_budget_usd_per_month": 10,
+    "new_paid_services": false
+  },
+  "limits": [
+    "No real enterprise mailbox acceptance this turn",
+    "No real consent video recorded or submitted",
+    "No Google public scope approval",
+    "No external security assessment contracted",
+    "Android and Windows are emulated"
+  ]
+}
