@@ -154,6 +154,13 @@
       "name": "tyre_management",
       "sha256": "dafac9b9dfcd73aaeff1b0720c605f8c10e19bce07bbfe24117ab5aff4279390",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261106100523_company_fiscal_options.sql",
+      "version": "20261106103606",
+      "name": "company_fiscal_options",
+      "sha256": "1773c844cca20bfc3be654fd398da4bbe11f8eb93bb5ba0dcc10ece8ebafebd9",
+      "already_applied": true
     }
   ]
 }

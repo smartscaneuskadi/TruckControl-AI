@@ -22,8 +22,11 @@ Mi correo personal está implementado para Gmail con acceso directo desde el nav
 
 ## Pendientes concretos
 
+- **Opciones fiscales por empresa:** configuración preparada con autorización global, selección del administrador de empresa y RLS. TicketBAI, ambas modalidades AEAT y programa externo; Facturae independiente. Emisión real pendiente de proveedores y verificaciones por empresa. [Guía](COMPANY_FISCAL_OPTIONS.md).
+
 - **Gmail empresarial de facturas:** servidor v13 y período de recepción obligatorio: 30 días por defecto, máximo últimos 12 meses. La configuración Google ya devuelve configured=true; falta la aceptación real de esta conexión empresarial y la revisión pública de Google. Mi correo personal fue probado por el titular. No volver a pedir ID ni secretos para el acceso personal. [Período e IA](INVOICE_MAIL_PERIOD.md).
 - **Migadu:** los tres CNAME siguen publicados. El 06/11 Google devuelve SERVFAIL/DNSSEC al buscar TXT; Cloudflare devuelve NOERROR y, en la comprobación detallada de key1, el TXT «migadu», que no es una clave DKIM utilizable. No se considera verificado el envío. No se cambia DNSSEC, DNS o plan; el soporte previo sigue separado del correo de acceso Resend. [Evidencia](verification/migadu-dns-20261106.json).
+- **Facturación de suscripción:** emisor completo publicado en v29. Emisión y entrega automática reales al solicitar el pago pendientes de identificar/conectar el sistema fiscal del titular, comprobar el régimen y aceptar el flujo de extremo a extremo. Nuevas compras bloqueadas sin esa verificación; no basta una clave Stripe ni se sustituye por un aviso manual. [Estado](SUBSCRIPTION_INVOICING.md).
 - **SMS y pagos:** proveedores, renovaciones y cobros reales pendientes de autorización y aceptación; permanecen apagados.
 - **Aceptación operativa:** dispositivos físicos Android/Windows, restauración integral del servicio gestionado, SLA de copias y revisión jurídica externa. Las emulaciones y las copias cifradas comprobadas no sustituyen esas verificaciones.
 

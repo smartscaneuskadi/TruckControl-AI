@@ -1,0 +1,92 @@
+{
+  "checked_at": "2026-11-06 10:41:38.613588+00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migration": {
+    "file": "supabase/migrations/20261106100523_company_fiscal_options.sql",
+    "version": "20261106103606",
+    "name": "company_fiscal_options",
+    "sha256": "1773c844cca20bfc3be654fd398da4bbe11f8eb93bb5ba0dcc10ece8ebafebd9",
+    "applied_once": true
+  },
+  "native_rollback_result": {
+    "checked_at": "2026-11-06 10:41:38.613588+00",
+    "migrations": 58,
+    "fixture_users_remaining": 0,
+    "fixture_companies_remaining": 0,
+    "fiscal_policies": 0,
+    "fiscal_profiles": 0,
+    "payments_enabled": false,
+    "prices_are_examples": true
+  },
+  "native_test_sql_sha256": "d95b869e6e1c603bff35cc4d36cb9e79cd5353a0c2ff5b4b1e675ccc4edaec91",
+  "native_assertions": [
+    "verified global admin grants only",
+    "company manager profile choice",
+    "editable metadata not authority",
+    "two-company RPC/RLS isolation",
+    "company operator denied and delegated admin allowed",
+    "direct DML denied",
+    "emission field injection denied",
+    "idempotent audit/version",
+    "policy revocation preserves profile and blocks writes",
+    "re-enable leaves emission unavailable",
+    "optimistic conflict denied",
+    "banned platform admin denied",
+    "RLS enabled and anonymous execution revoked",
+    "existing commercial settings and plans intact"
+  ],
+  "security_advisors_before": [
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN"
+    }
+  ],
+  "security_advisors_after": [
+    {
+      "name": "auth_leaked_password_protection",
+      "level": "WARN"
+    }
+  ],
+  "new_paid_services": false,
+  "real_invoice_issued": false,
+  "tax_submission": false,
+  "real_email_sent": false,
+  "unit_sql_checks": 659,
+  "saas_browser_checks": 96,
+  "retained_original_tests": 64,
+  "retained_hash_files": 11,
+  "physical_devices": false,
+  "fiscal_modes": ["ticketbai", "verifactu", "no_verifactu", "external"],
+  "ticketbai_territories": ["araba", "bizkaia", "gipuzkoa"],
+  "document_formats": ["pdf", "facturae"],
+  "emission_available": false,
+  "limitation": "Preparation and per-company permissions only. Certified/compatible provider connection, fiscal acceptance, issuance and submission remain pending per company.",
+  "native_http": {
+    "checked_at": "2026-11-06T10:44:53.444Z",
+    "project_id": "kkkemaycedexymrpaqtp",
+    "records": [
+      {
+        "name": "anonymous read",
+        "status": 401,
+        "error_code": "42501",
+        "passed": true
+      },
+      {
+        "name": "anonymous policy mutation",
+        "status": 401,
+        "error_code": "42501",
+        "passed": true
+      },
+      {
+        "name": "forged session",
+        "status": 401,
+        "error_code": "PGRST301",
+        "passed": true
+      }
+    ],
+    "real_charge": false,
+    "real_invoice": false,
+    "real_mail": false
+  },
+  "local_previous_sql_files_intact": 34
+}

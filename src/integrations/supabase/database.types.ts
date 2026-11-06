@@ -115,6 +115,16 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_company_fiscal_control: {
+        Args: {
+          p_org: string | null;
+          p_action: string;
+          p_data?: Json;
+          p_expected?: number | null;
+          p_after?: string | null;
+        };
+        Returns: Json;
+      };
       tc_tyre_page: {
         Args: {
           p_org: string;

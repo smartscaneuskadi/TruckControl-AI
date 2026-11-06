@@ -5,6 +5,7 @@ import {
   Blocks,
   CreditCard,
   LogOut,
+  Landmark,
   RefreshCw,
   Settings2,
   ShieldCheck,
@@ -30,6 +31,7 @@ import { money } from "../lib/format";
 import { parseMoney } from "../domain/finance";
 import { useAppearance } from "../app/AppearanceContext";
 import { ProviderSetup } from "../components/ProviderSetup";
+import { FiscalAdminSettings } from "../components/FiscalAdminSettings";
 
 export function AdminConsole({
   email,
@@ -140,6 +142,7 @@ export function AdminConsole({
     { id: "plans", label: "Planes y cobros", icon: CreditCard },
     { id: "activity", label: "Actividad", icon: Activity },
     { id: "providers", label: "Servicios", icon: ShieldCheck },
+    { id: "fiscal", label: "Facturación de empresas", icon: Landmark },
   ];
   return (
     <main className="admin-page">
@@ -272,6 +275,9 @@ export function AdminConsole({
             ))}
           </nav>
           {tab === "providers" && <ProviderSetup />}
+          {tab === "fiscal" && (
+            <FiscalAdminSettings onSaved={() => setRevision((n) => n + 1)} />
+          )}
           {tab === "customers" && (
             <section className="card admin-section">
               <div className="admin-section-heading">
