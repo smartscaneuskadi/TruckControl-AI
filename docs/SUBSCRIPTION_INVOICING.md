@@ -19,6 +19,8 @@ Antes del cambio, Supabase confirmó 57 migraciones, `payments_enabled=false` y 
 
 ## Condición para habilitar nuevas compras
 
+La verificación HTTP también detectó que ambos servicios respondían con el origen de la demo anterior y rechazaban `https://truckcontrolai.com`. Se corrige el destino predeterminado y se permite exclusivamente principal, www y hostname técnico de producción. Las cabeceras CORS se calculan por petición, sin mutación compartida. Demo, imitaciones del dominio, HTTP y terceros quedan rechazados; la autenticación y los permisos siguen siendo obligatorios. No se modifica la demo alojada.
+
 Los dos handlers de pago exigen ahora una comprobación explícita de facturación: `BILLING_INVOICING_VERIFIED=true`. El valor predeterminado es cerrado. **Esta variable es un control de lanzamiento, no un motor de facturas ni una prueba de integración por sí misma. No activarla para saltar la tarea pendiente.**
 
 Solo debe habilitarse tras conectar y verificar la emisión fiscal y entrega automática, además de la autorización independiente de cobros ya existente. La clave de Stripe, una marca enviada por el navegador o una respuesta antigua sin ese campo no bastan. El estado recurrente publica `invoice_delivery_ready`; el cliente antiguo que no lo recibe conserva el bloqueo de nuevas compras en la interfaz actual. Cancelar renovaciones y procesar eventos de pago firmados anteriores siguen disponibles; emitir o enviar una factura nunca debe activar acceso por sí solo.

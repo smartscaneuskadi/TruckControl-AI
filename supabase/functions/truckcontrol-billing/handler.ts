@@ -5,6 +5,7 @@ export interface BillingGateway {
 }
 export interface BillingConfig {
   appOrigin: string;
+  allowedOrigins?: readonly string[];
   stripeKey?: string;
   webhookSecret?: string;
   /** Never accept a purchase while fiscal issuance and delivery remain unverified. */
@@ -86,24 +87,26 @@ export function createBillingHandler(
   fetcher: typeof fetch = fetch,
 ) {
   const origin = new URL(config.appOrigin).origin;
-  const headers = {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Headers":
-      "authorization,apikey,content-type,x-client-info",
-    "Access-Control-Allow-Methods": "POST,OPTIONS",
-    Vary: "Origin",
-    "Cache-Control": "no-store",
-  };
-  const json = (body: unknown, status = 200) =>
-    new Response(JSON.stringify(body), {
-      status,
-      headers: { ...headers, "Content-Type": "application/json" },
-    });
+  const allowedOrigins = new Set(config.allowedOrigins ?? [origin]);
   return async (request: Request) => {
-    if (
-      request.headers.get("origin") &&
-      request.headers.get("origin") !== origin
-    )
+    const requestOrigin = request.headers.get("origin");
+    const headers = {
+      "Access-Control-Allow-Origin":
+        requestOrigin && allowedOrigins.has(requestOrigin)
+          ? requestOrigin
+          : origin,
+      "Access-Control-Allow-Headers":
+        "authorization,apikey,content-type,x-client-info",
+      "Access-Control-Allow-Methods": "POST,OPTIONS",
+      Vary: "Origin",
+      "Cache-Control": "no-store",
+    };
+    const json = (body: unknown, status = 200) =>
+      new Response(JSON.stringify(body), {
+        status,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    if (requestOrigin && !allowedOrigins.has(requestOrigin))
       return json({ error: "origin_not_allowed" }, 403);
     if (request.method === "OPTIONS")
       return new Response(null, { status: 204, headers });
