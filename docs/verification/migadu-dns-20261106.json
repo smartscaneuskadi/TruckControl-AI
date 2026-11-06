@@ -1,0 +1,127 @@
+{
+  "checked_at": "2026-11-06T05:47:52.045701+00:00",
+  "tls_verified": true,
+  "read_only": true,
+  "records": [
+    {
+      "resolver": "Google",
+      "name": "key1._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "status": 0,
+      "authenticated_data": false,
+      "cname_targets": [
+        "key1.truckcontrolai.com._domainkey.migadu.com."
+      ],
+      "dkim_txt_present": false,
+      "response_sha256": "0856372c4760d944b92acc161a7d41fcbff9fb0f3d35892eb3106c1fd90d0a32",
+      "comment": "Response from 162.159.8.140."
+    },
+    {
+      "resolver": "Google",
+      "name": "key1._domainkey.truckcontrolai.com",
+      "type": "TXT",
+      "status": 2,
+      "authenticated_data": false,
+      "cname_targets": [],
+      "dkim_txt_present": false,
+      "response_sha256": "9bed97bd7d1459e06ea4656278314d839d0cedfc1679460d37beac7e6fb47776",
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key1._domainkey.truckcontrolai.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key1._domainkey.truckcontrolai.com for errors"
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key1._domainkey.truckcontrolai.com",
+      "type": "TXT",
+      "status": 0,
+      "authenticated_data": false,
+      "cname_targets": [
+        "key1.truckcontrolai.com._domainkey.migadu.com."
+      ],
+      "dkim_txt_present": false,
+      "response_sha256": "bc32e8fcf8b92ab98ea63fa81b436557012b19df50eef034f96af5e6b0c8f986",
+      "comment": null
+    },
+    {
+      "resolver": "Google",
+      "name": "key2._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "status": 0,
+      "authenticated_data": false,
+      "cname_targets": [
+        "key2.truckcontrolai.com._domainkey.migadu.com."
+      ],
+      "dkim_txt_present": false,
+      "response_sha256": "f18d48f0ee5d9889f216c98570a2b2cfca20d4f62ed9754e411a8b4e8653c1ce",
+      "comment": "Response from 162.159.11.180."
+    },
+    {
+      "resolver": "Google",
+      "name": "key2._domainkey.truckcontrolai.com",
+      "type": "TXT",
+      "status": 2,
+      "authenticated_data": false,
+      "cname_targets": [],
+      "dkim_txt_present": false,
+      "response_sha256": "09ff256fdfe6883318a5d362acdacdf91a7b936e7936c775b4a606b04f5f4b29",
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key2._domainkey.truckcontrolai.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key2._domainkey.truckcontrolai.com for errors"
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key2._domainkey.truckcontrolai.com",
+      "type": "TXT",
+      "status": 0,
+      "authenticated_data": false,
+      "cname_targets": [
+        "key2.truckcontrolai.com._domainkey.migadu.com."
+      ],
+      "dkim_txt_present": false,
+      "response_sha256": "a489c3f938886c4ca60cf2ebd32dff0ae584867c5619f61fb4846507bcbd1ec9",
+      "comment": null
+    },
+    {
+      "resolver": "Google",
+      "name": "key3._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "status": 0,
+      "authenticated_data": false,
+      "cname_targets": [
+        "key3.truckcontrolai.com._domainkey.migadu.com."
+      ],
+      "dkim_txt_present": false,
+      "response_sha256": "9fb864fc866fef45e8a6e37df6beef725fa94de3f6e5eb1402cbfd7e6bf20fe4",
+      "comment": "Response from 162.159.8.140."
+    },
+    {
+      "resolver": "Google",
+      "name": "key3._domainkey.truckcontrolai.com",
+      "type": "TXT",
+      "status": 2,
+      "authenticated_data": false,
+      "cname_targets": [],
+      "dkim_txt_present": false,
+      "response_sha256": "d08e328524be9a183f1fc455f34b59e8e0668cd16467c4f4b5f6af986b43f354",
+      "comment": "DNSSEC validation failure. Check http://dnsviz.net/d/key3._domainkey.truckcontrolai.com/dnssec/ and http://dnssec-debugger.verisignlabs.com/key3._domainkey.truckcontrolai.com for errors"
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key3._domainkey.truckcontrolai.com",
+      "type": "TXT",
+      "status": 0,
+      "authenticated_data": false,
+      "cname_targets": [
+        "key3.truckcontrolai.com._domainkey.migadu.com."
+      ],
+      "dkim_txt_present": false,
+      "response_sha256": "5aa1b8a56456d12563670bb39edb3e71735caa84c0675e4b8733f0031c04d074",
+      "comment": null
+    }
+  ],
+  "dns_changes": 0,
+  "paid_automation_calls": 0,
+  "follow_up_key1_cloudflare": {
+    "query_type": "TXT",
+    "status": 0,
+    "answer_value": "migadu",
+    "usable_dkim_public_key": false
+  },
+  "total_queries_including_follow_up": 10
+}

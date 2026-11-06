@@ -1,6 +1,6 @@
 # Retorno fiable de Gmail y contexto de empresa
 
-Continuación del **06/11/2026**, código **0.5.16-rc.1**. Parte de main `5cce612`, producción 27. Se conserva esa publicación hasta completar CI y preparar su sucesora. [Aceptación de facturas](GMAIL_ACCEPTANCE.md), [expediente Google](GOOGLE_PUBLIC_VERIFICATION.md).
+Continuación del **06/11/2026**, código **0.5.16-rc.1**. Publicada como **versión 28** en https://truckcontrolai.com, fuente `709a0607b5d94e9707bbef6af3c816c42dedd176`. Código y fuente exacta pasan **883 controles**; sus seis perfiles públicos comprobaron v27 antes de publicar. La aceptación posterior de v28 queda en los checks del [PR #32](https://github.com/smartscaneuskadi/TruckControl-AI/pull/32/checks). Coinciden **75 hashes HTTPS** y la demo6 permanece intacta; v27 y anteriores siguen recuperables. [Recibo](verification/gmail-reliability-publication-20261106.json). [Aceptación de facturas](GMAIL_ACCEPTANCE.md), [expediente Google](GOOGLE_PUBLIC_VERIFICATION.md).
 
 ## Problemas reproducidos
 
