@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "709a0607b5d94e9707bbef6af3c816c42dedd176",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0eebf39d7af88191a1477e8a3cadba18",
-  "published_version_number": 28,
-  "deployment_id": "appgdep_6aed6bb5276c8191a27b7f5e6c380f29",
-  "previous_deployment_id": "appgdep_6aed0c74fb308191a382dead1ba32083",
+  "published_commit": "8ab1df0336e99619c395ddc3769b272ccd9fd06a",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_7e2261ce4a8881919b88f86db98fc0f1",
+  "published_version_number": 29,
+  "deployment_id": "appgdep_6aed847e2c6c81919886fe7833ea2f38",
+  "previous_deployment_id": "appgdep_6aed6bb5276c8191a27b7f5e6c380f29",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,9 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-06T05:55:14.816822+00:00",
-  "expected_themes": [
-    "light",
-    "cockpit"
-  ],
-  "source_ci_run": 42170304399,
+  "deployed_at": "2026-11-06T07:40:58.860281+00:00",
+  "expected_themes": ["light", "cockpit"],
+  "source_ci_run": 42181544823,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +62,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "f5b9c9837c6ac2995705f53b7f2388c4c519d7f3",
+  "source_ci_commit": "c930ac573a71a25462d7c928a8138828bc84df52",
   "production_source_manifest_only_diff": true,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 27,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_2b2226ce8c288191b29d5b9cd2127216",
-    "source_commit": "a9621598f31cc05affc3c724dc8b7f90cbeb9137",
-    "deployment_id": "appgdep_6aed0c74fb308191a382dead1ba32083",
-    "app_version": "0.5.15-rc.1"
+    "version": 28,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0eebf39d7af88191a1477e8a3cadba18",
+    "source_commit": "709a0607b5d94e9707bbef6af3c816c42dedd176",
+    "deployment_id": "appgdep_6aed6bb5276c8191a27b7f5e6c380f29",
+    "app_version": "0.5.16-rc.1"
   },
-  "source_deployment_ci_run": 42170308021,
-  "app_version": "0.5.16-rc.1",
+  "source_deployment_ci_run": 42181544823,
+  "app_version": "0.5.17-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -175,6 +172,13 @@
       "source_commit": "a9621598f31cc05affc3c724dc8b7f90cbeb9137",
       "deployment_id": "appgdep_6aed0c74fb308191a382dead1ba32083",
       "app_version": "0.5.15-rc.1"
+    },
+    {
+      "version": 28,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0eebf39d7af88191a1477e8a3cadba18",
+      "source_commit": "709a0607b5d94e9707bbef6af3c816c42dedd176",
+      "deployment_id": "appgdep_6aed6bb5276c8191a27b7f5e6c380f29",
+      "app_version": "0.5.16-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -261,5 +265,11 @@
     "AGENTS.md",
     ".github/workflows/ci.yml",
     ".openai/hosting.json"
-  ]
+  ],
+  "expected_billing_issuer": {
+    "name": "ELEVADANCOR S.L.",
+    "tax_id": "B02993426",
+    "address": "Polígono Arzabalza, n.º 50, 20400 Tolosa",
+    "email": "pedidos@smartscaneuskadi.com"
+  }
 }
