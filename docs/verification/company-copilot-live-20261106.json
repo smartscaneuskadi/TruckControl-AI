@@ -1,0 +1,149 @@
+{
+  "checked_at": "2026-11-06T16:32:07.310735+00:00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "synthetic_data_only": true,
+  "tls_verified": true,
+  "new_paid_service": false,
+  "model_calls_attempted": 1,
+  "checks": [
+    {
+      "name": "native_health",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "anonymous_edge_denied",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "name": "forged_edge_session_denied",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "name": "foreign_origin_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "synthetic_password_login_0",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "own_chat_ready_0",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "synthetic_password_login_1",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "own_chat_ready_1",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_context_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "client_cannot_forge_model_result",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "client_cannot_read_provider_credentials",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "no_business_records_before_model",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "real_model_returns_reviewable_proposal",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error_code": null
+    },
+    {
+      "name": "proposal_is_pending_and_company_bound",
+      "passed": true
+    },
+    {
+      "name": "model_did_not_execute_business_write",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "stored_result_recovered_without_new_model_call",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_task_execution_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "explicit_confirmation_applies_task",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "repeated_confirmation_is_idempotent",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "exactly_one_synthetic_customer_persisted",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_records_remain_inaccessible",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "synthetic_session_closed_0",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "name": "closed_session_cannot_reuse_access_token_0",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "name": "synthetic_session_closed_1",
+      "passed": true,
+      "status": 204
+    },
+    {
+      "name": "closed_session_cannot_reuse_access_token_1",
+      "passed": true,
+      "status": 401
+    }
+  ],
+  "proposal_id": "c8b478c7-b035-400c-ac7d-732573f3f6ce",
+  "record_id": "9236bc04-8f4a-48e5-a5cd-fb788fe68327",
+  "request_id": "0a99128a-8cad-4ea7-abbc-bafcae90930e",
+  "proposal_fields": {
+    "name": "Cliente ficticio del copiloto HTTP",
+    "email": "",
+    "notes": "Aceptacion sintetica; no es un cliente real.",
+    "phone": "",
+    "taxId": "DEMO-COPILOT-HTTP",
+    "address": "Direccion ficticia de prueba"
+  },
+  "functional_checks_passed": true,
+  "finished_at": "2026-11-06T16:32:28.157970+00:00"
+}
