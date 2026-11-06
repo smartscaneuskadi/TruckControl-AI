@@ -6,6 +6,7 @@ import { money } from "../lib/format";
 
 const statusSchema = z.object({
   configured: z.boolean(),
+  invoice_delivery_ready: z.boolean().default(false),
   management_available: z.boolean(),
   terms_version: z.string().nullable(),
   terms_url: z.url().nullable(),

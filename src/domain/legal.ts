@@ -2,7 +2,7 @@ export const legalVersion = "2026-11-02";
 export const operator = {
   name: "ELEVADANCOR S.L.",
   taxId: "B02993426",
-  address: "Polígono Arzabalza, n.º 50, Tolosa",
+  address: "Polígono Arzabalza, n.º 50, 20400 Tolosa",
   email: "pedidos@smartscaneuskadi.com",
 } as const;
 export type LegalDocument = "notice" | "privacy" | "terms";

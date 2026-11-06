@@ -1,6 +1,6 @@
 # Retorno fiable de Gmail y contexto de empresa
 
-Continuación del **06/11/2026**, código **0.5.16-rc.1**. Parte de main `5cce612`, producción 27. Se conserva esa publicación hasta completar CI y preparar su sucesora. [Aceptación de facturas](GMAIL_ACCEPTANCE.md), [expediente Google](GOOGLE_PUBLIC_VERIFICATION.md).
+Continuación del **06/11/2026**, código **0.5.16-rc.1**. Publicada como **versión 28** en https://truckcontrolai.com, fuente `709a0607b5d94e9707bbef6af3c816c42dedd176`. Código y fuente exacta pasan **883 controles**; sus seis perfiles públicos comprobaron v27 antes de publicar. La aceptación posterior de v28 queda en los checks del [PR #32](https://github.com/smartscaneuskadi/TruckControl-AI/pull/32/checks). Coinciden **75 hashes HTTPS** y la demo6 permanece intacta; v27 y anteriores siguen recuperables. [Recibo](verification/gmail-reliability-publication-20261106.json). [Aceptación de facturas](GMAIL_ACCEPTANCE.md), [expediente Google](GOOGLE_PUBLIC_VERIFICATION.md).
 
 ## Problemas reproducidos
 
@@ -41,3 +41,11 @@ Los resultados completos, fuente congelada, CI y publicación se registran en el
 Los cuatro alcances fueron guardados en Google el 05/11. El último estado observado allí es Pruebas, sin solicitud de revisión enviada. Siguen pendientes buzón empresarial de prueba autorizado, vídeo real, declaración del titular y completar la revisión; la evaluación anual aplicable requiere presupuesto o excepción confirmada por Google.
 
 TinyFish mantiene el límite acumulado autorizado de **2 USD**, con estimación conservadora previa de 1,8802666667 USD. Se ha solicitado ampliar el máximo en hasta 1 USD; mientras no haya respuesta expresa, no se inicia otra automatización pagada. La consulta gratuita de tarifas no autoriza consumo adicional. IA conserva 10 USD/mes antes de impuestos, sin nuevas llamadas al proveedor en estas pruebas.
+
+## Fiabilidad del CI
+
+La ejecución posterior por push 42171431103 supera los 883 controles y sus seis perfiles públicos coinciden con la fuente publicada de v28. El duplicado del PR alcanza el límite global de quince minutos: la descarga de paquetes desde azure.archive.ubuntu.com consume 630 segundos antes de empezar los navegadores. Se solicita un reintento normal y se corrige el origen de esa demora en el workflow: únicamente ese espejo Ubuntu pasa al archivo oficial archive.ubuntu.com por HTTPS. Se mantienen fuentes, componentes y verificación de firmas, así como todas las pruebas y el límite global de quince minutos. La instalación del navegador tiene un máximo de cinco minutos para fallar de forma visible si vuelve a bloquearse.
+
+El ajuste afecta solo al runner efímero de GitHub Actions. No cambia el entorno alojado, la red del workspace, dependencias de la app, datos o credenciales. El código de la aplicación sigue coincidiendo con la fuente congelada 709a060. La revisión final de documentación y CI no se vuelve a presentar como una fuente desplegada nueva.
+
+El primer ajuste del espejo no cubría /etc/apt/apt-mirrors*.txt, utilizado por la imagen de GitHub. El PR pasó pero la ejecución duplicada seguía usando Azure y alcanzó el nuevo límite de cinco minutos. Se añade esa lista al tratamiento y se comprueba que no queden referencias a Azure; los enlaces HTTP del archivo oficial también pasan a HTTPS. No se atribuye el éxito del primer PR a un cambio de espejo que había resultado ser un no-op. La validación final debe confirmar origen efectivo e instalación, además de los 883 controles.

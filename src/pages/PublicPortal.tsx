@@ -18,6 +18,7 @@ import { isCandidateRelease } from "../domain/release";
 import { DemoManufacturers } from "../components/VehicleBrand";
 import { useAppearance } from "../app/AppearanceContext";
 import { LegalLinks } from "../components/LegalPage";
+import { SubscriptionBillingDetails } from "../components/SubscriptionBillingDetails";
 
 export function PlanCards({
   catalog,
@@ -333,6 +334,7 @@ export function PublicPortal({
           solicitar la prueba.
         </p>
       </section>
+      <SubscriptionBillingDetails />
       <section className="portal-start card">
         <div>
           <h2>Tu siguiente etapa empieza aquí.</h2>

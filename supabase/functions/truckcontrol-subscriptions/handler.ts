@@ -12,6 +12,8 @@ export interface RecurringConfig {
   webhookSecret?: string;
   termsVersion?: string;
   termsUrl?: string;
+  /** Release gate, set only after fiscal issuance and automatic delivery pass acceptance. */
+  invoicingVerified?: boolean;
 }
 type Obj = Record<string, unknown>;
 interface Order {
@@ -91,7 +93,11 @@ export function createRecurringHandler(
     }
   })();
   const configured = Boolean(
-    config.enabled && config.stripeKey && config.termsVersion && termsUrl,
+    config.enabled &&
+    config.stripeKey &&
+    config.termsVersion &&
+    termsUrl &&
+    config.invoicingVerified === true,
   );
   const headers = {
     "Access-Control-Allow-Origin": origin,
@@ -334,6 +340,7 @@ export function createRecurringHandler(
         return json({
           ...status,
           configured,
+          invoice_delivery_ready: config.invoicingVerified === true,
           management_available: Boolean(config.stripeKey),
           terms_version: config.termsVersion ?? null,
           terms_url: termsUrl,

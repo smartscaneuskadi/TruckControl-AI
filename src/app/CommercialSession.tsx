@@ -8,6 +8,7 @@ import { SubscriptionProvider } from "./SubscriptionContext";
 import { Registration, PhoneVerification } from "../pages/Registration";
 import { AdminConsole } from "../pages/AdminConsole";
 import { PlanCards } from "../pages/PublicPortal";
+import { SubscriptionBillingDetails } from "../components/SubscriptionBillingDetails";
 import { CompanySelection, Invitations } from "../pages/Team";
 import {
   RecurringSubscription,
@@ -237,6 +238,7 @@ export function Billing({
         catalog.payments_enabled &&
         !catalog.prices_are_examples &&
         (!recurring.status?.configured ||
+          !recurring.status.invoice_delivery_ready ||
           !recurring.status.terms_version ||
           !termsAccepted)
       )
@@ -334,12 +336,24 @@ export function Billing({
       )}
       <RecurringSubscription
         status={recurring.status}
-        canResume={catalog.payments_enabled && !catalog.prices_are_examples}
+        canResume={
+          catalog.payments_enabled &&
+          !catalog.prices_are_examples &&
+          recurring.status?.invoice_delivery_ready === true
+        }
         onRefresh={recurring.refresh}
+      />
+      <SubscriptionBillingDetails
+        customer={profile}
+        automaticInvoicesReady={
+          recurring.status?.invoice_delivery_ready === true
+        }
       />
       {catalog.payments_enabled && !catalog.prices_are_examples && (
         <div className="card settings-card">
-          {recurring.status?.configured && recurring.status.terms_url ? (
+          {recurring.status?.configured &&
+          recurring.status.invoice_delivery_ready &&
+          recurring.status.terms_url ? (
             <label className="checkbox-field">
               <input
                 type="checkbox"
@@ -383,6 +397,7 @@ export function Billing({
             !catalog.prices_are_examples &&
             (recurring.loading ||
               !recurring.status?.configured ||
+              !recurring.status.invoice_delivery_ready ||
               !termsAccepted ||
               Boolean(
                 recurring.status.subscription &&

@@ -105,6 +105,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     conflict: false,
     recurring: {
       configured: false,
+      invoice_delivery_ready: false,
       management_available: false,
       terms_version: null,
       terms_url: null,
@@ -570,6 +571,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       } else if (
         body?.action === "checkout" &&
         controls.recurring.configured &&
+        controls.recurring.invoice_delivery_ready &&
         body.terms_accepted === true &&
         body.terms_version === controls.recurring.terms_version &&
         catalog.payments_enabled &&
@@ -1756,6 +1758,65 @@ test.describe("copia cifrada y sincronización", () => {
   });
 });
 
+test("publica los datos fiscales completos del proveedor antes del alta y en el aviso legal", async ({
+  page,
+}, testInfo) => {
+  const f = await fixtures(page);
+  await page.goto("/");
+  const details = page.getByRole("region", {
+    name: "Datos de facturación del servicio",
+  });
+  await expect(details).toContainText("ELEVADANCOR S.L.");
+  await expect(details).toContainText("B02993426");
+  await expect(details).toContainText(
+    "Polígono Arzabalza, n.º 50, 20400 Tolosa",
+  );
+  await expect(
+    details.getByRole("link", { name: "pedidos@smartscaneuskadi.com" }),
+  ).toHaveAttribute("href", "mailto:pedidos@smartscaneuskadi.com");
+  await expect(details).not.toContainText("Empresa ficticia SaaS");
+  for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+    await page
+      .getByRole("button", { name: "Cambiar apariencia", exact: true })
+      .click();
+    const appearance = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+    });
+    await appearance.getByRole("radio", { name: theme, exact: true }).check();
+    await appearance
+      .getByRole("button", { name: "Aplicar apariencia" })
+      .click();
+    await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+    await details.scrollIntoViewIfNeeded();
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await details.screenshot({
+      path: testInfo.outputPath(
+        `billing-issuer-${theme.replace(" ", "-")}.png`,
+      ),
+    });
+  }
+  for (const document of ["notice", "privacy"]) {
+    await page.goto(`/?legal=${document}`);
+    await expect(page.locator("main")).toContainText("20400 Tolosa");
+    await expect(page.locator("main")).toContainText("B02993426");
+  }
+  expect(
+    f.calls.some(
+      (c) =>
+        c.body?.action === "checkout" || c.path.endsWith("/tc_request_plan"),
+    ),
+  ).toBe(false);
+});
+
 test("muestra los planes antes del registro y solicita acceso Básico sin cobrar", async ({
   page,
 }) => {
@@ -1984,6 +2045,7 @@ test.describe("contratación y renovación mensual", () => {
     f.catalog.prices_are_examples = false;
     f.controls.recurring = {
       configured: true,
+      invoice_delivery_ready: true,
       management_available: true,
       terms_version: "synthetic-approved-v1",
       terms_url: "http://127.0.0.1:4194/legal/subscription",
@@ -2080,6 +2142,85 @@ test.describe("contratación y renovación mensual", () => {
     expect(f.calls.filter((c) => c.body?.action === "checkout")).toHaveLength(
       0,
     );
+  });
+  test("muestra emisor y comprador y bloquea compras sin entrega automática verificada", async ({
+    page,
+  }) => {
+    const f = await ready(page);
+    f.controls.recurring.invoice_delivery_ready = false;
+    await page
+      .getByRole("button", {
+        name: "Comprobar estado de mi cuenta",
+        exact: true,
+      })
+      .click();
+    const details = page.getByRole("region", {
+      name: "Datos de facturación del servicio",
+    });
+    await expect(details).toContainText("ELEVADANCOR S.L.");
+    await expect(details).toContainText("20400 Tolosa");
+    await expect(details).toContainText("Empresa prueba finalizada");
+    await expect(details).toContainText("DEMO-TEST");
+    await expect(details).toContainText("expired@example.com");
+    await expect(details).toContainText("emisión y entrega automática");
+    await expect(
+      page.getByRole("button", { name: "Elegir Básico", exact: true }),
+    ).toBeDisabled();
+    await expect(
+      page.getByRole("button", { name: "Elegir Full", exact: true }),
+    ).toBeDisabled();
+    expect(
+      f.calls.some(
+        (c) =>
+          c.body?.action === "checkout" || c.path.endsWith("/tc_request_plan"),
+      ),
+    ).toBe(false);
+  });
+  test("no considera listo un backend anterior que omite el estado de facturación", async ({
+    page,
+  }) => {
+    const f = await ready(page);
+    Reflect.deleteProperty(f.controls.recurring, "invoice_delivery_ready");
+    await page
+      .getByRole("button", {
+        name: "Comprobar estado de mi cuenta",
+        exact: true,
+      })
+      .click();
+    await expect(
+      page.getByRole("region", { name: "Datos de facturación del servicio" }),
+    ).toContainText("emisión y entrega automática");
+    await expect(
+      page.getByRole("button", { name: "Elegir Básico", exact: true }),
+    ).toBeDisabled();
+    expect(f.calls.some((c) => c.body?.action === "checkout")).toBe(false);
+  });
+  test("una factura pendiente de configurar no impide cancelar renovaciones existentes", async ({
+    page,
+  }) => {
+    const f = await ready(page, true);
+    f.controls.recurring.invoice_delivery_ready = false;
+    await page
+      .getByRole("button", {
+        name: "Comprobar estado de mi cuenta",
+        exact: true,
+      })
+      .click();
+    await page
+      .getByRole("button", { name: "Cancelar renovación", exact: true })
+      .click();
+    await page
+      .getByRole("dialog", { name: "Cancelar la renovación mensual" })
+      .getByRole("button", { name: "Confirmar cambio", exact: true })
+      .click();
+    expect(f.calls.filter((c) => c.body?.action === "cancel")).toHaveLength(1);
+    f.controls.recurring.subscription!.cancel_at_period_end = true;
+    await page
+      .getByRole("button", { name: "Actualizar suscripción", exact: true })
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Reactivar renovación", exact: true }),
+    ).toBeDisabled();
   });
   test("cancelar solicita confirmación y espera el estado del servidor sin activar acceso", async ({
     page,

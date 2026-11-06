@@ -1,8 +1,8 @@
 # Estado y continuación — 06/11/2026
 
-Continuación del 06/11: [retorno fiable de Gmail](GMAIL_CONNECTION_RELIABILITY.md). Candidata 0.5.16-rc.1 corrige pérdida de avisos, retorno a ventana abierta y contexto de cuenta global/demo. El expediente de Google y los cuatro alcances declarados se conservan; no se ha completado su revisión pública. No se modifican permisos, credenciales, contabilidad ni presupuesto.
+Continuación del 06/11: [retorno fiable de Gmail](GMAIL_CONNECTION_RELIABILITY.md). Publicada v28 / 0.5.16-rc.1, corrige pérdida de avisos, retorno a ventana abierta y contexto de cuenta global/demo. El expediente de Google y los cuatro alcances declarados se conservan; no se ha completado su revisión pública. No se modifican permisos, credenciales, contabilidad ni presupuesto.
 
-La entrega publicada es **v27 / 0.5.15-rc.1** en https://truckcontrolai.com hasta verificar y publicar la sucesora. [Estado y evidencia](CURRENT_DELIVERY.md). Demo6 y producciones anteriores siguen recuperables. Cero vínculos/estados de Gmail empresariales en servidor el 06/11 a las 05:27:39 UTC. La aceptación empresarial real y el vídeo/declaración de Google permanecen pendientes.
+La entrega publicada es **v28 / 0.5.16-rc.1** en https://truckcontrolai.com, con 883 controles de código/fuente y 75 hashes HTTPS verificados. [Estado y evidencia](CURRENT_DELIVERY.md). Demo6 y producciones anteriores siguen recuperables. Cero vínculos/estados de Gmail empresariales en servidor el 06/11 a las 05:27:39 UTC. La aceptación empresarial real y el vídeo/declaración de Google permanecen pendientes.
 
 ## Implementado y comprobado
 
@@ -23,7 +23,7 @@ Mi correo personal está implementado para Gmail con acceso directo desde el nav
 ## Pendientes concretos
 
 - **Gmail empresarial de facturas:** servidor v13 y período de recepción obligatorio: 30 días por defecto, máximo últimos 12 meses. La configuración Google ya devuelve configured=true; falta la aceptación real de esta conexión empresarial y la revisión pública de Google. Mi correo personal fue probado por el titular. No volver a pedir ID ni secretos para el acceso personal. [Período e IA](INVOICE_MAIL_PERIOD.md).
-- **Migadu:** dominio activo según titular, pero los tres destinos DKIM bajo migadu.com siguen devolviendo SERVFAIL/DNSSEC en la última comprobación del 02/11/2026, a las 15:10 UTC. Soporte ya informado; buzones y entrega pendientes de verificación. No cambiar DNSSEC ni contratar de nuevo.
+- **Migadu:** los tres CNAME siguen publicados. El 06/11 Google devuelve SERVFAIL/DNSSEC al buscar TXT; Cloudflare devuelve NOERROR y, en la comprobación detallada de key1, el TXT «migadu», que no es una clave DKIM utilizable. No se considera verificado el envío. No se cambia DNSSEC, DNS o plan; el soporte previo sigue separado del correo de acceso Resend. [Evidencia](verification/migadu-dns-20261106.json).
 - **SMS y pagos:** proveedores, renovaciones y cobros reales pendientes de autorización y aceptación; permanecen apagados.
 - **Aceptación operativa:** dispositivos físicos Android/Windows, restauración integral del servicio gestionado, SLA de copias y revisión jurídica externa. Las emulaciones y las copias cifradas comprobadas no sustituyen esas verificaciones.
 
