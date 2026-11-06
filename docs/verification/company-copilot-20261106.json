@@ -1,6 +1,6 @@
 {
   "project_id": "kkkemaycedexymrpaqtp",
-  "checked_at": "2026-11-06 16:13:34.773813+00",
+  "checked_at": "2026-11-06T19:50:18.998048+00:00",
   "migration": {
     "local_file": "supabase/migrations/20261106150440_universal_company_copilot.sql",
     "remote_version": "20261106161253",
@@ -37,7 +37,7 @@
   "tax_submission": false,
   "real_email_sent": false,
   "live_model_acceptance": {
-    "state": "confirmed_in_database",
+    "state": "passed_http_and_database",
     "synthetic_data_only": true,
     "model": "gpt-6-luna",
     "calls": 1,
@@ -57,7 +57,11 @@
     "temporary_ai_permissions_disabled": true,
     "temporary_sessions_remaining": 0,
     "records_and_audit_retained": true,
-    "local_http_report": "Execution environment became unavailable after the script completed; recover live-acceptance.json before claiming each HTTP assertion. Do not repeat the paid model call."
+    "local_http_report": "Recovered and verified: all25 HTTP checks passed. Paid model call was not repeated.",
+    "http_checks": 25,
+    "http_report": "company-copilot-live-20261106.json",
+    "native_ban_until": "2126-11-06T00:00:00Z",
+    "platform_suspension_requires_manual_reactivation": true
   },
   "production_before": 30,
   "backend": {
@@ -99,14 +103,204 @@
     "source_tree": "397659478f02e94b27a4cf60ccec7d2f7f91a2c1",
     "only_difference_from_implementation": ".openai/hosting.json",
     "ci_run": 42254621291,
-    "ci_state": "in_progress_at_checkpoint",
+    "ci_state": "success",
     "site_project": "appgprj_6ae655e56db481918fe18adfe9df8b66",
-    "saved_or_deployed": false,
-    "artifact_built": false,
-    "reason": "No usable execution environment is available. Cloud status reports running, but exec_command cannot access it; no filesystem operation or production push can run.",
-    "current_public_version": 30,
-    "current_public_app_version": "0.5.18-rc.1",
+    "saved_or_deployed": true,
+    "artifact_built": true,
+    "current_public_version": 31,
+    "current_public_app_version": "0.5.19-rc.1",
     "demo_preserved": 6
   },
-  "physical_voice_acceptance": "Pending; browser speech APIs were mocked in automated tests."
+  "physical_voice_acceptance": "Pending; browser speech APIs were mocked in automated tests.",
+  "publication": {
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version_number": 31,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0229812b6fe081918352bd7bd8d299e4",
+    "deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
+    "status": "succeeded",
+    "url": "https://truckcontrolai.com",
+    "canonical_url": "https://truckcontrolai.com",
+    "source_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
+    "updated_at": "2026-11-06T19:45:20.766401+00:00",
+    "native_archive": {
+      "archive_format": "tar",
+      "sediment_file_id": "file_00000000779881f4a15830beb5006eaf",
+      "content_hash": "sha256:28651b260cce71b85504786180647da09ed804885811d38c6daa747608c95553",
+      "size_bytes": 2273280,
+      "file_count": 26
+    },
+    "created_at": "2026-11-06T19:43:21.533735+00:00",
+    "code_commit": "2395426df6c1d234124b45dbdd091ecbb7ff6945",
+    "main_before_publication": "077adb317806fd2dbacc2fb7dfbddf29d0ab9c2b",
+    "source_branch": "deploy/company-copilot-20261106",
+    "source_tree": "397659478f02e94b27a4cf60ccec7d2f7f91a2c1",
+    "archive": "/workspace/artifacts/truckcontrol-universal-copilot-20261106/production-2055e99.tar.gz",
+    "archive_sha256": "ace7d59469de32c9801c6abd5eb8362b3b712cc3094840e73a0d704a3b31ec4c",
+    "archive_bytes": 1208662,
+    "dist_files": 25,
+    "archive_entries": 32,
+    "release": {
+      "app": "TruckControl AI",
+      "version": "0.5.19-rc.1",
+      "channel": "production",
+      "sourceCommit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
+      "sourceDirty": false,
+      "companyConnectionBundled": true,
+      "registrationForcedClosed": false,
+      "builtAt": "2026-11-06T19:41:46.051Z"
+    },
+    "previous_production": 30,
+    "stable_demo": 6,
+    "ci_before_publication": [
+      {
+        "id": 42251837123,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "2395426df6c1d234124b45dbdd091ecbb7ff6945",
+        "event": "push",
+        "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42251837123"
+      },
+      {
+        "id": 42252895244,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "2395426df6c1d234124b45dbdd091ecbb7ff6945",
+        "event": "pull_request",
+        "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42252895244"
+      },
+      {
+        "id": 42254621291,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
+        "event": "push",
+        "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42254621291"
+      },
+      {
+        "id": 42255060900,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "12f2137a7b2e3f45108880d09d2f1dfcc835bd5a",
+        "event": "push",
+        "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42255060900"
+      },
+      {
+        "id": 42255072889,
+        "status": "completed",
+        "conclusion": "success",
+        "headSha": "12f2137a7b2e3f45108880d09d2f1dfcc835bd5a",
+        "event": "pull_request",
+        "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42255072889"
+      }
+    ],
+    "checks_per_run": 1031,
+    "breakdown": {
+      "unit_sql": 727,
+      "python": 32,
+      "demo_browser": 64,
+      "company_browser": 50,
+      "saas_browser": 118,
+      "candidate_browser": 14,
+      "production_browser": 20,
+      "public_profiles": 6
+    },
+    "https_file_hashes_after_publication": 75,
+    "stable_demo_unchanged": true,
+    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/actions?query=branch%3Arelease%2Fcompany-copilot-v31",
+    "postpublication_expectation": "Six profiles require companyCopilot=true, sourceCommit, issuer, publicLegalPages and companyFiscalPreparation.",
+    "archive_verification": "Input gzip digest retained; Sites returns its own tar container digest. All25 deployed file digests match in all3 production origins; no claim that differently packaged container digests are equal."
+  },
+  "native_resume_check": {
+    "checked_at": "2026-11-06T19:48:43.029Z",
+    "project_id": "kkkemaycedexymrpaqtp",
+    "migrations": 59,
+    "last_migration": {
+      "version": "20261106161253",
+      "name": "universal_company_copilot"
+    },
+    "functions": [
+      {
+        "name": "company-assistant",
+        "version": 10,
+        "status": "ACTIVE",
+        "ezbr_sha256": "82270926b40a12bed2f2ea903063b381cbfc41d1c1b9bafc08294c8b3415628b"
+      },
+      {
+        "name": "company-gmail",
+        "version": 13,
+        "status": "ACTIVE",
+        "ezbr_sha256": "3126826fd356aa04e0c0066acab2a7ef147105de6cd5a88dc9fb824ba8a73c95"
+      },
+      {
+        "name": "truckcontrol-billing",
+        "version": 10,
+        "status": "ACTIVE",
+        "ezbr_sha256": "f4ac85b3863679f9efc05665697cb6731e84e2a8f28163f7360bad3116eef6d2"
+      },
+      {
+        "name": "truckcontrol-subscriptions",
+        "version": 10,
+        "status": "ACTIVE",
+        "ezbr_sha256": "38423d209bd99d75c4f17eda7d5089074d72848ab21d5d3d63b9276b0c5d5821"
+      },
+      {
+        "name": "company-mail",
+        "version": 12,
+        "status": "ACTIVE",
+        "ezbr_sha256": "ad3523949407b33406221727a88ac53e712de3fe2c009aef5810109799ab9282"
+      },
+      {
+        "name": "company-mail-resend",
+        "version": 3,
+        "status": "ACTIVE",
+        "ezbr_sha256": "64ea42653e00adb76336da798d18689e73f66f304e6e1b3769ce48d693906ced"
+      },
+      {
+        "name": "company-auth",
+        "version": 4,
+        "status": "ACTIVE",
+        "ezbr_sha256": "61cf61e461de4d23445cdd0a6b7a600a2bf69ec2198b4814351511f078ae57a6"
+      },
+      {
+        "name": "company-copilot",
+        "version": 1,
+        "status": "ACTIVE",
+        "ezbr_sha256": "51797cb1229e01d9b5e5c804de696e2aee231dce49a891a26ab15063212a7c78"
+      }
+    ],
+    "native_state": {
+      "ai_enabled": true,
+      "synthetic_sessions": 0,
+      "monthly_budget_cents": 1000,
+      "synthetic_accounts_closed": 2,
+      "synthetic_settled_model_calls": 1
+    },
+    "security_lints": [
+      {
+        "name": "auth_leaked_password_protection",
+        "title": "Leaked Password Protection Disabled",
+        "level": "WARN",
+        "facing": "EXTERNAL",
+        "categories": [
+          "SECURITY"
+        ],
+        "description": "Leaked password protection is currently disabled.",
+        "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+        "count": 1,
+        "findings": [
+          {
+            "detail": "Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.",
+            "metadata": {
+              "type": "auth",
+              "entity": "Auth"
+            }
+          }
+        ]
+      }
+    ],
+    "existing_functions_unchanged": true,
+    "no_schema_change_this_publication": true,
+    "model_call_repeated": false,
+    "physical_devices_available": false
+  }
 }
