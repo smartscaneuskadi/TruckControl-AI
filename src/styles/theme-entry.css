@@ -6,6 +6,7 @@
 @import "./operations.css" layer(legacy);
 @import "./fleet-identity.css" layer(legacy);
 @import "./subscription-billing.css" layer(legacy);
+@import "./company-fiscal.css" layer(legacy);
 @import "./themes.css" layer(appearance);
 @layer theme-important {
   .app-main .data-table .route-cell {

@@ -412,6 +412,7 @@ try {
         let invoiceInboxChecked = false;
         let tyresOfflineChecked = false;
         let personalMailOfflineChecked = false;
+        let companyFiscalChecked = false;
         if (config.expected_universal_mail === true) {
           await page.goto(`${target.origin}/#/invoices`, {
             waitUntil: "networkidle",
@@ -649,6 +650,55 @@ try {
                 })
                 .waitFor();
             }
+            if (config.expected_company_fiscal_preparation === true) {
+              await page.evaluate(() => {
+                location.hash = "/settings";
+              });
+              const fiscal = page.getByRole("region", {
+                name: "Opciones de facturación de la empresa",
+              });
+              await fiscal.waitFor();
+              const text = await fiscal.innerText();
+              if (
+                ![
+                  "Demostración",
+                  "TicketBAI",
+                  "VERI*FACTU",
+                  "SIF NO VERI*FACTU",
+                  "Programa externo",
+                  "Facturae",
+                  "Todavía no se emiten facturas fiscales",
+                ].every((value) => text.includes(value)) ||
+                (await fiscal
+                  .getByRole("button", {
+                    name: "Guardar configuración fiscal",
+                    exact: true,
+                  })
+                  .count())
+              )
+                throw Error(
+                  "Published company fiscal preparation is incomplete or exposes an active invoice operation in demo",
+                );
+              if (
+                await page.evaluate(
+                  () => document.body.scrollWidth > innerWidth + 1,
+                )
+              )
+                throw Error("Published fiscal preview exceeds viewport");
+              await fiscal.screenshot({
+                path: `${dir}/${name}-company-fiscal-preview.png`,
+              });
+              companyFiscalChecked = true;
+              await page.evaluate(() => {
+                location.hash = "/invoices";
+              });
+              await page
+                .getByRole("region", {
+                  name: "Bandeja de facturas",
+                  exact: true,
+                })
+                .waitFor();
+            }
             const after = await page.evaluate(
               () =>
                 JSON.parse(localStorage.getItem("truckcontrol.demo.v1")).entries
@@ -734,6 +784,7 @@ try {
           invoiceInbox: invoiceInboxChecked,
           tyresOffline: tyresOfflineChecked,
           personalMailOffline: personalMailOfflineChecked,
+          companyFiscalPreparation: companyFiscalChecked,
           passed: true,
         });
         console.log(

@@ -13,6 +13,12 @@ import type {
 import type { ProviderStatus } from "../../src/integrations/supabase/provider-setup";
 import AxeBuilder from "@axe-core/playwright";
 import type { RecurringStatus } from "../../src/components/RecurringSubscription";
+import { disabledFiscalPolicy } from "../../src/domain/company-fiscal";
+import type {
+  CompanyFiscalState,
+  FiscalPolicyInput,
+  FiscalProfileInput,
+} from "../../src/domain/company-fiscal";
 import type { TyreRecord, TyreHistory } from "../../src/domain/tyres";
 import { emptyTyreData } from "../../src/domain/tyres";
 import { exampleCatalog, featureLabels } from "../../src/domain/subscriptions";
@@ -55,6 +61,25 @@ function profile(id = customerId): Customer {
     module_overrides: {},
     created_at: stamp,
     updated_at: stamp,
+  };
+}
+function fiscalState(
+  id = org,
+  name = "Empresa ficticia SaaS",
+): CompanyFiscalState {
+  return {
+    schema_version: 1,
+    phase: "preparation",
+    emission_available: false,
+    organization_id: id,
+    organization_name: name,
+    policy: {
+      ...structuredClone(disabledFiscalPolicy),
+      version: null,
+      updated_at: null,
+    },
+    profile: null,
+    configured_option_allowed: false,
   };
 }
 async function fixtures(page: Page, { smsReady = false } = {}) {
@@ -114,6 +139,11 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     } as RecurringStatus,
     recurringFailure: false,
     checkoutUrl: "https://checkout.stripe.com/c/pay/synthetic",
+    fiscalDenied: false,
+    fiscalConflict: false,
+    fiscalInvalidEmission: false,
+    fiscal: new Map<string, CompanyFiscalState>([[org, fiscalState()]]),
+    additionalOrganizations: [] as { id: string; name: string }[],
   };
   const pending = {
     id: "10000000-0000-4000-8000-000000000084",
@@ -271,9 +301,105 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       url.pathname === "/rest/v1/rpc/tc_finish_registration" ||
       url.pathname === "/rest/v1/rpc/tc_my_access" ||
       url.pathname === "/rest/v1/rpc/tc_organization_access"
-    )
-      data = access(identity ?? customerId);
-    else if (url.pathname === "/rest/v1/rpc/tc_provider_control") {
+    ) {
+      const current = access(identity ?? customerId);
+      const selected = String(body?.p_org ?? org);
+      data =
+        url.pathname.endsWith("tc_organization_access") &&
+        controls.additionalOrganizations.some((o) => o.id === selected)
+          ? {
+              ...current,
+              organization_id: selected,
+              profile: current.profile
+                ? {
+                    ...current.profile,
+                    company_name: controls.additionalOrganizations.find(
+                      (o) => o.id === selected,
+                    )!.name,
+                  }
+                : null,
+            }
+          : current;
+    } else if (url.pathname === "/rest/v1/rpc/tc_company_fiscal_control") {
+      const action = body?.p_action,
+        company = String(body?.p_org ?? ""),
+        current = controls.fiscal.get(company);
+      if (controls.fiscalDenied) {
+        status = 403;
+        data = { code: "42501" };
+      } else if (action === "admin_list" && identity === admin) {
+        const rows = [...controls.fiscal.values()]
+          .sort((a, b) => a.organization_id.localeCompare(b.organization_id))
+          .filter(
+            (r) => !body?.p_after || r.organization_id > String(body.p_after),
+          );
+        data = {
+          items: rows.slice(0, 50),
+          next_cursor: rows.length > 50 ? rows[49].organization_id : null,
+        };
+      } else if (action === "admin_set" && identity === admin && current) {
+        if (controls.fiscalConflict) {
+          status = 409;
+          data = { code: "40001" };
+        } else {
+          const input = body!.p_data as FiscalPolicyInput;
+          current.policy = {
+            ...structuredClone(input),
+            version: (current.policy.version ?? 0) + 1,
+            updated_at: stamp,
+          };
+          current.configured_option_allowed = Boolean(
+            current.profile &&
+            input.enabled &&
+            input.options[current.profile.regime] &&
+            (current.profile.document_format === "pdf" ||
+              input.options.facturae),
+          );
+          data = structuredClone(current);
+        }
+      } else if (
+        (action === "status" || action === "save") &&
+        identity === customerId &&
+        [org, ...controls.additionalOrganizations.map((o) => o.id)].includes(
+          company,
+        ) &&
+        ["owner", "admin"].includes(controls.companyRole) &&
+        current
+      ) {
+        if (action === "save") {
+          const input = body!.p_data as FiscalProfileInput;
+          if (controls.fiscalConflict) {
+            status = 409;
+            data = { code: "40001" };
+          } else if (
+            !current.policy.enabled ||
+            !current.policy.options[input.regime] ||
+            (input.document_format === "facturae" &&
+              !current.policy.options.facturae)
+          ) {
+            status = 403;
+            data = { code: "42501" };
+          } else {
+            current.profile = {
+              ...input,
+              version: (current.profile?.version ?? 0) + 1,
+              updated_at: stamp,
+            };
+            current.configured_option_allowed = true;
+            data = structuredClone(current);
+          }
+        } else
+          data = {
+            ...structuredClone(current),
+            ...(controls.fiscalInvalidEmission
+              ? { emission_available: true }
+              : {}),
+          };
+      } else {
+        status = 403;
+        data = { code: "42501" };
+      }
+    } else if (url.pathname === "/rest/v1/rpc/tc_provider_control") {
       if (identity !== admin || controls.providerDenied) {
         status = 403;
         data = { code: "42501", message: "Global operator required" };
@@ -462,6 +588,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
                   customers.find((c) => c.user_id === identity)?.company_name ??
                   "Empresa ficticia SaaS",
               },
+              ...controls.additionalOrganizations,
             ];
     else if (url.pathname === "/rest/v1/trucks")
       data = [
@@ -2898,4 +3025,498 @@ test("neumáticos demo: copia con historial y recarga sin peticiones de empresa"
       exact: true,
     }),
   ).toHaveCount(0);
+});
+
+test.describe("configuración fiscal por empresa", () => {
+  function enable(state: CompanyFiscalState) {
+    state.policy = {
+      enabled: true,
+      options: {
+        ticketbai: true,
+        verifactu: true,
+        no_verifactu: true,
+        external: true,
+        facturae: true,
+      },
+      version: 1,
+      updated_at: stamp,
+    };
+  }
+  async function settings(page: Page) {
+    await login(page, "customer@example.com");
+    await expect(page).toHaveURL(/#\/dashboard/);
+    await page.evaluate(() => {
+      location.hash = "/settings";
+    });
+    return page.getByRole("region", {
+      name: "Opciones de facturación de la empresa",
+    });
+  }
+  test("la administración habilita opciones para una empresa y conserva el perfil al revocar", async ({
+    page,
+  }) => {
+    const f = await fixtures(page),
+      state = f.controls.fiscal.get(org)!;
+    state.policy.version = 1;
+    state.policy.updated_at = stamp;
+    state.profile = {
+      regime: "ticketbai",
+      territory: "gipuzkoa",
+      document_format: "pdf",
+      version: 1,
+      updated_at: stamp,
+    };
+    const second = "20000000-0000-4000-8000-000000000099";
+    f.controls.fiscal.set(
+      second,
+      fiscalState(second, "Otra empresa fiscal ficticia"),
+    );
+    await login(page, "pedidos@smartscaneuskadi.com");
+    await page
+      .getByRole("button", { name: "Facturación de empresas", exact: true })
+      .click();
+    await page
+      .getByRole("button", {
+        name: "Permisos fiscales de Empresa ficticia SaaS",
+        exact: true,
+      })
+      .click();
+    const dialog = page.getByRole("dialog", {
+      name: "Permisos fiscales de la empresa",
+    });
+    await dialog
+      .getByRole("checkbox", {
+        name: "Habilitar configuración fiscal para esta empresa",
+        exact: true,
+      })
+      .check();
+    await expect(
+      dialog.getByRole("button", {
+        name: "Guardar permisos fiscales",
+        exact: true,
+      }),
+    ).toBeDisabled();
+    await dialog.getByRole("checkbox", { name: /^Permitir TicketBAI/ }).check();
+    await dialog
+      .getByRole("checkbox", { name: /^Permitir Formato Facturae/ })
+      .check();
+    await dialog
+      .getByRole("button", { name: "Guardar permisos fiscales", exact: true })
+      .click();
+    await expect(dialog).not.toBeVisible();
+    expect(state.policy).toMatchObject({
+      enabled: true,
+      options: {
+        ticketbai: true,
+        verifactu: false,
+        no_verifactu: false,
+        external: false,
+        facturae: true,
+      },
+      version: 2,
+    });
+    expect(f.controls.fiscal.get(second)!.policy.enabled).toBe(false);
+    expect(state.emission_available).toBe(false);
+    await page
+      .getByRole("button", {
+        name: "Permisos fiscales de Empresa ficticia SaaS",
+        exact: true,
+      })
+      .click();
+    await dialog
+      .getByRole("checkbox", {
+        name: "Habilitar configuración fiscal para esta empresa",
+        exact: true,
+      })
+      .uncheck();
+    await dialog
+      .getByRole("button", { name: "Guardar permisos fiscales", exact: true })
+      .click();
+    await expect(dialog).not.toBeVisible();
+    expect(state.profile).toMatchObject({
+      regime: "ticketbai",
+      territory: "gipuzkoa",
+      version: 1,
+    });
+    expect(state.policy.enabled).toBe(false);
+    const calls = f.calls.filter(
+      (c) =>
+        c.path.endsWith("tc_company_fiscal_control") &&
+        c.body?.p_action === "admin_set",
+    );
+    expect(calls).toHaveLength(2);
+    expect(calls[0].body).toMatchObject({ p_org: org, p_expected: 1 });
+    expect(Object.keys(calls[0].body!.p_data as object).sort()).toEqual([
+      "enabled",
+      "options",
+    ]);
+  });
+  test("la empresa guarda TicketBAI, las modalidades AEAT y programa externo sin emitir ni contabilizar", async ({
+    page,
+  }) => {
+    const f = await fixtures(page);
+    enable(f.controls.fiscal.get(org)!);
+    const card = await settings(page);
+    await expect(
+      card.getByRole("button", {
+        name: "Guardar configuración fiscal",
+        exact: true,
+      }),
+    ).toBeDisabled();
+    await card
+      .getByLabel("Sistema de facturación", { exact: true })
+      .selectOption("ticketbai");
+    await card
+      .getByLabel("Hacienda foral TicketBAI", { exact: true })
+      .selectOption("gipuzkoa");
+    await card
+      .getByLabel("Formato previsto", { exact: true })
+      .selectOption("facturae");
+    await card
+      .getByRole("button", {
+        name: "Guardar configuración fiscal",
+        exact: true,
+      })
+      .click();
+    await expect(card.getByRole("status")).toContainText(
+      "Configuración guardada",
+    );
+    await page.reload();
+    await expect(
+      card.getByLabel("Hacienda foral TicketBAI", { exact: true }),
+    ).toHaveValue("gipuzkoa");
+    await expect(
+      card.getByLabel("Formato previsto", { exact: true }),
+    ).toHaveValue("facturae");
+    for (const regime of ["verifactu", "no_verifactu", "external"]) {
+      await card
+        .getByLabel("Sistema de facturación", { exact: true })
+        .selectOption(regime);
+      await expect(
+        card.getByLabel("Hacienda foral TicketBAI", { exact: true }),
+      ).toHaveCount(0);
+      await card
+        .getByRole("button", {
+          name: "Guardar configuración fiscal",
+          exact: true,
+        })
+        .click();
+      await expect(card.getByRole("status")).toContainText(
+        "Configuración guardada",
+      );
+    }
+    expect(f.controls.fiscal.get(org)!.profile).toMatchObject({
+      regime: "external",
+      territory: null,
+      version: 4,
+    });
+    expect(f.records.size).toBe(0);
+    expect(
+      f.calls.some(
+        (c) =>
+          c.body?.action === "checkout" ||
+          c.path.includes("tc_approve_invoice"),
+      ),
+    ).toBe(false);
+    const stored = await page.evaluate(() =>
+      [...Object.values(localStorage), ...Object.values(sessionStorage)].join(
+        "\n",
+      ),
+    );
+    expect(stored).not.toContain('"territory":"gipuzkoa"');
+  });
+  test("opciones sin habilitar, retirada de permisos y respuesta de emisión falsa mantienen el bloqueo", async ({
+    page,
+  }) => {
+    const f = await fixtures(page),
+      card = await settings(page);
+    await expect(
+      card.getByLabel("Sistema de facturación", { exact: true }),
+    ).toBeDisabled();
+    enable(f.controls.fiscal.get(org)!);
+    f.controls.fiscal.get(org)!.policy.options.ticketbai = false;
+    await card
+      .getByRole("button", {
+        name: "Actualizar configuración fiscal",
+        exact: true,
+      })
+      .click();
+    await expect(
+      card.getByLabel("Sistema de facturación", { exact: true }),
+    ).toBeEnabled();
+    await expect(card.locator('option[value="ticketbai"]')).toBeDisabled();
+    f.controls.fiscalInvalidEmission = true;
+    await card
+      .getByRole("button", {
+        name: "Actualizar configuración fiscal",
+        exact: true,
+      })
+      .click();
+    await expect(card.getByRole("alert")).toContainText(
+      "No se puede comprobar",
+    );
+    await expect(card).toContainText("Estado sin comprobar");
+    await expect(
+      card.getByLabel("Sistema de facturación", { exact: true }),
+    ).toHaveCount(0);
+    f.controls.fiscalInvalidEmission = false;
+    f.controls.fiscalDenied = true;
+    await card
+      .getByRole("button", {
+        name: "Actualizar configuración fiscal",
+        exact: true,
+      })
+      .click();
+    await expect(card.getByRole("alert")).toContainText(
+      "No se puede comprobar",
+    );
+    expect(f.calls.some((c) => c.body?.p_action === "save")).toBe(false);
+  });
+  test("operador y consulta no muestran formularios ni consultan la configuración reservada", async ({
+    page,
+  }) => {
+    const f = await fixtures(page);
+    f.controls.companyRole = "operator";
+    const card = await settings(page);
+    await expect(card).toContainText("propietario o administrador");
+    await expect(
+      card.getByLabel("Sistema de facturación", { exact: true }),
+    ).toHaveCount(0);
+    f.controls.companyRole = "viewer";
+    await page.reload();
+    await expect(card).toContainText("propietario o administrador");
+    expect(
+      f.calls.some((c) => c.path.endsWith("tc_company_fiscal_control")),
+    ).toBe(false);
+  });
+  test("un retorno tardío no mezcla la configuración al cambiar de empresa", async ({
+    page,
+  }) => {
+    const f = await fixtures(page),
+      second = "20000000-0000-4000-8000-000000000099";
+    enable(f.controls.fiscal.get(org)!);
+    f.controls.additionalOrganizations.push({
+      id: second,
+      name: "Segunda empresa fiscal ficticia",
+    });
+    const other = fiscalState(second, "Segunda empresa fiscal ficticia");
+    enable(other);
+    other.profile = {
+      regime: "external",
+      territory: null,
+      document_format: "pdf",
+      version: 1,
+      updated_at: stamp,
+    };
+    other.configured_option_allowed = true;
+    f.controls.fiscal.set(second, other);
+    let release: (() => void) | undefined,
+      started = false,
+      hold = false,
+      completed = false;
+    const delayed = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    await page.route(
+      "**/rest/v1/rpc/tc_company_fiscal_control",
+      async (route) => {
+        const body = route.request().postDataJSON();
+        if (
+          body.p_action === "status" &&
+          body.p_org === org &&
+          hold &&
+          !started
+        ) {
+          started = true;
+          await delayed;
+          try {
+            await route.fulfill({
+              contentType: "application/json",
+              headers: {
+                "Access-Control-Allow-Origin": "http://127.0.0.1:4194",
+              },
+              body: JSON.stringify(f.controls.fiscal.get(org)),
+            });
+          } catch {
+            /* The old scoped request was aborted. */
+          } finally {
+            completed = true;
+          }
+        } else await route.fallback();
+      },
+    );
+    const card = await settings(page);
+    await expect(
+      card.getByLabel("Sistema de facturación", { exact: true }),
+    ).toBeEnabled();
+    hold = true;
+    await card
+      .getByRole("button", {
+        name: "Actualizar configuración fiscal",
+        exact: true,
+      })
+      .click();
+    await expect.poll(() => started).toBe(true);
+    await page
+      .getByLabel("Empresa activa", { exact: true })
+      .selectOption(second);
+    await expect(card).toContainText("Segunda empresa fiscal ficticia");
+    await expect(
+      card.getByLabel("Sistema de facturación", { exact: true }),
+    ).toHaveValue("external");
+    release!();
+    await expect.poll(() => completed).toBe(true);
+    await expect(
+      card.getByLabel("Sistema de facturación", { exact: true }),
+    ).toHaveValue("external");
+    expect(f.calls.some((c) => c.body?.p_action === "save")).toBe(false);
+  });
+  test("conexión fiscal accesible en los dos temas y sin credenciales en Android y Windows", async ({
+    page,
+  }, testInfo) => {
+    const f = await fixtures(page);
+    enable(f.controls.fiscal.get(org)!);
+    const card = await settings(page);
+    await card
+      .getByLabel("Sistema de facturación", { exact: true })
+      .selectOption("ticketbai");
+    for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+      await page
+        .getByRole("button", { name: "Cambiar apariencia", exact: true })
+        .first()
+        .click();
+      const appearance = page.getByRole("dialog", {
+        name: "Apariencia de TruckControl",
+      });
+      await appearance.getByRole("radio", { name: theme, exact: true }).check();
+      await appearance
+        .getByLabel("Animaciones", { exact: true })
+        .selectOption("off");
+      await appearance
+        .getByRole("button", { name: "Aplicar apariencia", exact: true })
+        .click();
+      await appearance
+        .getByRole("button", { name: "Cerrar ventana", exact: true })
+        .click();
+      await card.scrollIntoViewIfNeeded();
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .include(".company-fiscal-card")
+            .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+            .analyze()
+        ).violations,
+      ).toEqual([]);
+      expect(
+        await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+      ).toBe(true);
+      await card.screenshot({
+        path: testInfo.outputPath(`fiscal-${theme.replace(" ", "-")}.png`),
+      });
+    }
+    await expect(card.getByLabel(/clave|contraseña|certificado/i)).toHaveCount(
+      0,
+    );
+    await expect(card).toContainText("Todavía no se emiten facturas fiscales");
+  });
+  test("el panel fiscal conserva contraste y controles al editar permisos en los dos temas", async ({
+    page,
+  }, testInfo) => {
+    await fixtures(page);
+    await login(page, "pedidos@smartscaneuskadi.com");
+    await page
+      .getByRole("button", { name: "Facturación de empresas", exact: true })
+      .click();
+    for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+      await page
+        .getByRole("button", { name: "Apariencia", exact: true })
+        .click();
+      const appearance = page.getByRole("dialog", {
+        name: "Apariencia de TruckControl",
+      });
+      await appearance.getByRole("radio", { name: theme, exact: true }).check();
+      await appearance
+        .getByLabel("Animaciones", { exact: true })
+        .selectOption("off");
+      await appearance
+        .getByRole("button", { name: "Aplicar apariencia", exact: true })
+        .click();
+      await appearance
+        .getByRole("button", { name: "Cerrar ventana", exact: true })
+        .click();
+      await page
+        .getByRole("button", {
+          name: "Permisos fiscales de Empresa ficticia SaaS",
+          exact: true,
+        })
+        .click();
+      const dialog = page.getByRole("dialog", {
+        name: "Permisos fiscales de la empresa",
+      });
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+            .analyze()
+        ).violations,
+      ).toEqual([]);
+      expect(
+        await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+      ).toBe(true);
+      await page.screenshot({
+        path: testInfo.outputPath(
+          `fiscal-admin-${theme.replace(" ", "-")}.png`,
+        ),
+      });
+      await dialog
+        .getByRole("button", { name: "Cancelar", exact: true })
+        .click();
+    }
+  });
+  test("pagina empresas y rechaza confirmaciones de permisos obsoletas sin sobrescribir", async ({
+    page,
+  }) => {
+    const f = await fixtures(page);
+    for (let n = 1; n <= 55; n++) {
+      const id = `fc200000-0000-4000-8000-${String(n).padStart(12, "0")}`;
+      f.controls.fiscal.set(
+        id,
+        fiscalState(id, `Empresa fiscal ficticia ${n}`),
+      );
+    }
+    await login(page, "pedidos@smartscaneuskadi.com");
+    await page
+      .getByRole("button", { name: "Facturación de empresas", exact: true })
+      .click();
+    await expect(page.locator(".fiscal-company-row")).toHaveCount(50);
+    await page
+      .getByRole("button", { name: "Más empresas", exact: true })
+      .click();
+    await expect(page.locator(".fiscal-company-row")).toHaveCount(6);
+    await page
+      .getByRole("button", { name: "Página anterior de empresas", exact: true })
+      .click();
+    await expect(page.locator(".fiscal-company-row")).toHaveCount(50);
+    await page
+      .getByRole("button", {
+        name: "Permisos fiscales de Empresa ficticia SaaS",
+        exact: true,
+      })
+      .click();
+    f.controls.fiscalConflict = true;
+    await page
+      .getByRole("dialog")
+      .getByRole("button", { name: "Guardar permisos fiscales", exact: true })
+      .click();
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+    await expect(
+      page
+        .getByRole("region", {
+          name: "Administración de facturación de empresas",
+        })
+        .getByRole("alert"),
+    ).toContainText("otro dispositivo");
+    await expect(page.locator(".fiscal-company-row")).toHaveCount(0);
+    expect(f.controls.fiscal.get(org)!.policy.version).toBeNull();
+  });
 });

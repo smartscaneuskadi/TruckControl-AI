@@ -19,6 +19,7 @@ import { useOperations } from "../app/OperationsProvider";
 import { useTyres } from "../app/TyresProvider";
 import { AppearanceSettings } from "../components/AppearanceSettings";
 import { CompanyBackupTools } from "../components/CompanyBackupTools";
+import { CompanyFiscalSettings } from "../components/CompanyFiscalSettings";
 
 export function Settings() {
   const { snapshot, reset, refresh, busy, notify } = useFleet();
@@ -42,6 +43,7 @@ export function Settings() {
       />
       <AppearanceSettings />
       <div className="settings-grid">
+        <CompanyFiscalSettings />
         <OfflineSettings />
         {cloud && <CompanyBackupTools />}
         <section className="card settings-card">
