@@ -1,8 +1,8 @@
-# Estado y continuación — 03/11/2026
+# Estado y continuación — 06/11/2026
 
-Continuación Gmail público: [expediente](GOOGLE_PUBLIC_VERIFICATION.md). El titular confirma «Marca publicada». La conexión empresarial comunicada todavía no aparece en servidor; se ha pedido aclarar la pantalla. Cero conexiones empresariales en la consulta actual; no repetir claves ni reutilizar el consentimiento personal. Preparados justificaciones de ambos alcances, páginas legales, flujo de datos y guion del vídeo. La aprobación de alcances y evaluación externa siguen pendientes; ninguna contratación nueva. Publicado el retorno al hostname técnico, que el servidor ya admitía. Código y fuente pasan 860 controles; 72 hashes HTTPS coinciden y la demo6 sigue intacta.
+Continuación del 06/11: [retorno fiable de Gmail](GMAIL_CONNECTION_RELIABILITY.md). Candidata 0.5.16-rc.1 corrige pérdida de avisos, retorno a ventana abierta y contexto de cuenta global/demo. El expediente de Google y los cuatro alcances declarados se conservan; no se ha completado su revisión pública. No se modifican permisos, credenciales, contabilidad ni presupuesto.
 
-La entrega vigente es **v26 / 0.5.14-rc.1**, publicada en https://truckcontrolai.com. [Estado y evidencia](CURRENT_DELIVERY.md). La demo v6 sigue separada y las producciones anteriores 25/24/23/19 permanecen recuperables. El registro de [neumáticos](TYRES.md) está publicado: mediciones manuales, avisos, historial, CSV y copias completas, con la migración 57 comprobada mediante rollback.
+La entrega publicada es **v27 / 0.5.15-rc.1** en https://truckcontrolai.com hasta verificar y publicar la sucesora. [Estado y evidencia](CURRENT_DELIVERY.md). Demo6 y producciones anteriores siguen recuperables. Cero vínculos/estados de Gmail empresariales en servidor el 06/11 a las 05:27:39 UTC. La aceptación empresarial real y el vídeo/declaración de Google permanecen pendientes.
 
 ## Implementado y comprobado
 

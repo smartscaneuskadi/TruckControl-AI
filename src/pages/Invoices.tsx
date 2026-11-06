@@ -33,6 +33,30 @@ interface IntegrationStatus {
   ai_enabled: boolean;
   received_period_policy?: typeof mailPeriodPolicy;
 }
+function readGmailCallback() {
+  const [route, query = ""] = window.location.hash.split("?");
+  const params = new URLSearchParams(route === "#/invoices" ? query : "");
+  return {
+    ticket: params.get("gmail_ticket"),
+    error: params.get("gmail_error"),
+  };
+}
+function gmailCallbackMessage(code: string) {
+  switch (code) {
+    case "declined":
+      return "Has cancelado la autorización de Gmail. Si quieres conectar el buzón, inicia una nueva autorización desde esta empresa.";
+    case "expired":
+      return "La autorización de Gmail ha caducado. Inicia una nueva autorización con la misma cuenta y empresa.";
+    case "permission_required":
+      return "Google no ha concedido el permiso de solo lectura necesario para importar facturas. Puedes volver a autorizarlo desde esta empresa.";
+    case "identity_mismatch":
+      return "No se ha podido verificar el buzón elegido en Google. Inicia una nueva autorización desde esta empresa.";
+    case "unavailable":
+      return "No se ha podido preparar la conexión con Google. Comprueba el estado o contacta con la administración.";
+    default:
+      return "No se ha completado la autorización de Gmail. Comprueba el estado y, si hace falta, inicia una nueva autorización desde esta empresa.";
+  }
+}
 export function Invoices() {
   const subscription = useSubscription();
   const access = useCompany();
@@ -51,7 +75,10 @@ export function Invoices() {
   >([]);
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [operationBusy, setBusy] = useState(false);
+  const [authorizing, setAuthorizing] = useState(false);
+  const busy = operationBusy || authorizing;
+  const [callbackError, setCallbackError] = useState("");
   const [loading, setLoading] = useState(cloud);
   const [review, setReview] = useState<CompanyInvoice | null>(null);
   const [disconnect, setDisconnect] = useState(false);
@@ -84,57 +111,108 @@ export function Invoices() {
     setMailPeriod(presetReceivedPeriod());
     setSyncPreview(null);
   }, [org, access.user?.id]);
-  const [callback] = useState(() => {
-    const params = new URLSearchParams(
-      window.location.hash.split("?")[1] ?? "",
-    );
-    return {
-      ticket: params.get("gmail_ticket"),
-      error: params.get("gmail_error"),
+  const [callback, setCallback] = useState(readGmailCallback);
+  useEffect(() => {
+    const capture = () => {
+      const next = readGmailCallback();
+      if (!next.ticket && !next.error) return;
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${window.location.search}#/invoices`,
+      );
+      setCallback((previous) =>
+        next.ticket &&
+        !next.error &&
+        previous.ticket === next.ticket &&
+        !previous.error
+          ? previous
+          : next,
+      );
     };
-  });
-  const completion = useRef<PromiseLike<{ error: unknown }> | null>(null);
+    window.addEventListener("hashchange", capture);
+    capture();
+    return () => window.removeEventListener("hashchange", capture);
+  }, []);
+  const completion = useRef<{
+    ticket: string;
+    settled: boolean;
+    promise: PromiseLike<{
+      data: { connected?: unknown } | null;
+      error: unknown;
+    }>;
+  } | null>(null);
   useEffect(() => {
     if (!callback.ticket && !callback.error) return;
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}${window.location.search}#/invoices`,
-    );
     if (callback.error) {
-      setError(
-        "No se ha conectado Gmail. La autorización se ha cancelado o ha caducado. Inténtalo de nuevo.",
-      );
+      setCallbackError(gmailCallbackMessage(callback.error));
+      setAuthorizing(false);
       return;
     }
-    if (!cloud || !client || !callback.ticket) return;
+    if (!callback.ticket) return;
+    if (!cloud || !client) {
+      setCallbackError(
+        "La autorización de Gmail no puede finalizar en la demostración. Entra con la misma cuenta de empresa que la inició y vuelve a conectar el buzón.",
+      );
+      setAuthorizing(false);
+      return;
+    }
+    if (!/^[A-Za-z0-9_-]{43}$/.test(callback.ticket)) {
+      setCallbackError(gmailCallbackMessage("invalid_ticket"));
+      setAuthorizing(false);
+      return;
+    }
+    if (
+      completion.current?.ticket === callback.ticket &&
+      completion.current.settled
+    ) {
+      setAuthorizing(false);
+      return;
+    }
     let active = true;
-    setBusy(true);
-    completion.current ??= client.functions.invoke("company-gmail", {
-      body: {
-        action: "complete",
-        organization_id: org,
+    setAuthorizing(true);
+    setCallbackError("");
+    if (completion.current?.ticket !== callback.ticket) {
+      completion.current = {
         ticket: callback.ticket,
-      },
-    });
-    void Promise.resolve(completion.current)
-      .then(({ error }) => {
-        if (!active) return;
-        if (error)
-          setError(
-            "No se ha conectado Gmail. Debes finalizar la autorización con la misma cuenta y empresa que la iniciaron.",
+        settled: false,
+        promise: client.functions.invoke<{ connected?: unknown }>(
+          "company-gmail",
+          {
+            body: {
+              action: "complete",
+              organization_id: org,
+              ticket: callback.ticket,
+            },
+          },
+        ),
+      };
+    }
+    const attempt = completion.current;
+    void Promise.resolve(attempt.promise)
+      .then(({ data, error }) => {
+        if (!active || attempt.settled) return;
+        attempt.settled = true;
+        if (error || data?.connected !== true)
+          setCallbackError(
+            "No se ha confirmado la vinculación de Gmail. Debes finalizar la autorización con la misma cuenta y empresa que la iniciaron. Comprueba el estado antes de volver a conectar.",
           );
         else {
+          setCallbackError("");
           notify("Gmail conectado a esta empresa.");
           setRevision((n) => n + 1);
         }
       })
       .catch(() => {
-        if (active)
-          setError("No se ha podido finalizar la autorización de Gmail.");
+        if (active && !attempt.settled) {
+          attempt.settled = true;
+          setCallbackError(
+            "No se ha confirmado la vinculación de Gmail. Comprueba el estado antes de volver a conectar.",
+          );
+        }
       })
       .finally(() => {
-        if (active) setBusy(false);
+        if (active) setAuthorizing(false);
       });
     return () => {
       active = false;
@@ -207,6 +285,7 @@ export function Invoices() {
     operationLock.current = true;
     setBusy(true);
     setError("");
+    if (action === "start" || action === "disconnect") setCallbackError("");
     try {
       const { data, error } = await client.functions.invoke<{
         url?: string;
@@ -485,12 +564,26 @@ export function Invoices() {
           <span className="settings-icon">
             <Mail size={28} />
           </span>
-          <Badge tone={connection ? "green" : cloud ? "amber" : "blue"}>
-            {connection
-              ? connection.email
-              : cloud
-                ? "Gmail sin conectar"
-                : "Demostración · datos ficticios"}
+          <Badge
+            tone={
+              !cloud
+                ? "blue"
+                : !loading && connection?.status === "connected"
+                  ? "green"
+                  : "amber"
+            }
+          >
+            {!cloud
+              ? "Demostración · datos ficticios"
+              : loading
+                ? "Comprobando Gmail…"
+                : connection?.status === "reauthorize"
+                  ? "Renovar permiso de Gmail"
+                  : connection?.status === "connected"
+                    ? "Gmail vinculado"
+                    : status
+                      ? "Gmail sin conectar"
+                      : "Gmail sin comprobar"}
           </Badge>
         </div>
         <h2>De tu Gmail a tus gastos</h2>
@@ -499,6 +592,19 @@ export function Invoices() {
             ? snapshot.organization.name
             : "Prueba la revisión de una factura"}
         </p>
+        {cloud && connection && <p>{connection.email}</p>}
+        {callbackError && (
+          <div
+            role="alert"
+            aria-label="Resultado de la autorización Gmail"
+            className="form-error"
+          >
+            <p>{callbackError}</p>
+            <Button variant="ghost" onClick={() => setCallbackError("")}>
+              Cerrar aviso
+            </Button>
+          </div>
+        )}
         <p>
           {cloud
             ? "Autoriza el buzón de esta empresa en Google. El permiso es de solo lectura: TruckControl busca correos de facturas y guarda sus adjuntos; no envía ni modifica mensajes."
