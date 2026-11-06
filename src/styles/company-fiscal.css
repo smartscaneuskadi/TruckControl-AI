@@ -1,0 +1,121 @@
+.company-fiscal-card,
+.fiscal-admin,
+.fiscal-company-row {
+  min-width: 0;
+  color: var(--theme-fg);
+}
+.fiscal-fieldset {
+  min-width: 0;
+  margin: 18px 0;
+  padding: 18px;
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+}
+.fiscal-fieldset legend {
+  color: var(--theme-fg);
+  padding: 0 6px;
+  font-size: 0.9rem;
+}
+.fiscal-fieldset .field {
+  margin-bottom: 18px;
+}
+.fiscal-fieldset select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.fiscal-fieldset p,
+.fiscal-preparation-note,
+.fiscal-option-list p,
+.fiscal-page-count {
+  color: var(--theme-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.fiscal-option-list {
+  padding-left: 20px;
+}
+.fiscal-option-list li {
+  margin: 16px 0;
+}
+.fiscal-option-list strong {
+  color: var(--theme-fg);
+}
+.fiscal-preparation-note {
+  border-left: 3px solid var(--theme-blue);
+  padding: 10px 14px;
+  background: var(--theme-subtle);
+  border-radius: 0 8px 8px 0;
+}
+.fiscal-company-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 18px;
+}
+.fiscal-company-row {
+  padding: 20px;
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  background: var(--theme-subtle);
+  overflow-wrap: anywhere;
+}
+.fiscal-company-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.fiscal-company-title h3 {
+  margin: 0;
+  color: var(--theme-fg);
+}
+.fiscal-company-title svg {
+  flex-shrink: 0;
+  color: var(--theme-green);
+}
+.fiscal-company-row p {
+  color: var(--theme-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.fiscal-company-row .button,
+.fiscal-fieldset .button {
+  max-width: 100%;
+  white-space: normal;
+}
+.fiscal-company-row .button {
+  justify-content: flex-start;
+  text-align: left;
+}
+.fiscal-fieldset .modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.fiscal-pagination {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 20px;
+}
+.fiscal-option-control {
+  align-items: flex-start;
+  margin: 18px 0;
+}
+.fiscal-option-control small {
+  display: block;
+  color: var(--theme-muted);
+  margin-top: 5px;
+  line-height: 1.6;
+}
+.fiscal-master-switch {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--theme-border);
+  margin-bottom: 18px;
+}
+.fiscal-revocation-note {
+  color: var(--theme-gold);
+  border-left: 3px solid var(--theme-gold);
+  padding-left: 12px;
+}
