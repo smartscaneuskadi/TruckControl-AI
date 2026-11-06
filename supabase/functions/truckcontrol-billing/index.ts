@@ -30,6 +30,7 @@ Deno.serve(
         "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
       stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
       webhookSecret: Deno.env.get("STRIPE_WEBHOOK_SECRET"),
+      invoicingVerified: Deno.env.get("BILLING_INVOICING_VERIFIED") === "true",
     },
   ),
 );

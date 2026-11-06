@@ -7,6 +7,8 @@ export interface BillingConfig {
   appOrigin: string;
   stripeKey?: string;
   webhookSecret?: string;
+  /** Never accept a purchase while fiscal issuance and delivery remain unverified. */
+  invoicingVerified?: boolean;
 }
 interface Order {
   id: string;
@@ -166,6 +168,8 @@ export function createBillingHandler(
         return json({ error: "invalid_request" }, 400);
       if (!config.stripeKey)
         return json({ error: "payments_not_configured" }, 503);
+      if (config.invoicingVerified !== true)
+        return json({ error: "automatic_invoicing_unavailable" }, 503);
       const order = await gateway.server<Order>("checkout_order", {
         user_id: user.id,
         request_id: body.request_id,

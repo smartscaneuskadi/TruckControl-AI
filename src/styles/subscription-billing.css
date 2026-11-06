@@ -1,0 +1,65 @@
+.subscription-billing-details {
+  padding: clamp(20px, 3vw, 30px);
+  margin: 24px 0;
+  border-color: var(--border);
+}
+.subscription-billing-heading,
+.subscription-billing-parties h3,
+.subscription-billing-parties a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.subscription-billing-heading > svg {
+  flex-shrink: 0;
+  color: var(--green);
+}
+.subscription-billing-heading h2,
+.subscription-billing-heading p {
+  margin: 0;
+}
+.subscription-billing-heading h2 {
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+}
+.subscription-billing-parties {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+.subscription-billing-parties h3 {
+  font-size: 1rem;
+  margin: 0 0 16px;
+}
+.subscription-billing-parties dl {
+  display: grid;
+  grid-template-columns: minmax(90px, auto) minmax(0, 1fr);
+  gap: 10px 16px;
+  margin: 0;
+}
+.subscription-billing-parties dt {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.subscription-billing-parties dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+.subscription-billing-parties a {
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.subscription-billing-parties a > svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.subscription-billing-pending {
+  margin: 20px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}

@@ -1,0 +1,31 @@
+{
+  "checked_at": "2026-11-06T07:09:24.14745Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migrations": 57,
+  "payments_enabled": false,
+  "prices_are_examples": true,
+  "issuer": {
+    "name": "ELEVADANCOR S.L.",
+    "tax_id": "B02993426",
+    "address": "Polígono Arzabalza, n.º 50, 20400 Tolosa",
+    "email": "pedidos@smartscaneuskadi.com"
+  },
+  "issuer_source": "owner-confirmed",
+  "fiscal_invoice_issuance_connected": false,
+  "automatic_invoice_delivery_verified": false,
+  "new_paid_service": false,
+  "real_invoice_issued": false,
+  "real_mail_sent": false,
+  "native_sources_before_match_repository": true,
+  "native_before": {
+    "truckcontrol-billing": {
+      "version": 8,
+      "sha256": "05d1cab408e82faa824996de595d7693f59a269d585333d62916794345e1a861"
+    },
+    "truckcontrol-subscriptions": {
+      "version": 8,
+      "sha256": "eb56ceaea590540c7adc3508c011ac4bb741d5a1b98b69976be582f586f0a9f4"
+    }
+  },
+  "limitation": "Fiscal provider, applicable regime and automatic issuance/delivery acceptance pending; release flag is not an invoice engine."
+}

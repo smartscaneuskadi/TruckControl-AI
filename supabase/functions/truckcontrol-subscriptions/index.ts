@@ -35,6 +35,7 @@ Deno.serve(
       webhookSecret: Deno.env.get("STRIPE_RECURRING_WEBHOOK_SECRET"),
       termsVersion: Deno.env.get("BILLING_TERMS_VERSION"),
       termsUrl: Deno.env.get("BILLING_TERMS_URL"),
+      invoicingVerified: Deno.env.get("BILLING_INVOICING_VERIFIED") === "true",
     },
   ),
 );
