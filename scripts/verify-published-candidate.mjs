@@ -116,7 +116,32 @@ try {
         let personalMailConfigChecked = false;
         let personalMailReady = false;
         let publicLegalPagesChecked = false;
+        let billingIssuerChecked = false;
         if (production) {
+          if (config.expected_billing_issuer) {
+            const issuer = config.expected_billing_issuer;
+            const details = page.getByRole("region", {
+              name: "Datos de facturación del servicio",
+            });
+            await details.waitFor();
+            const text = await details.innerText();
+            if (
+              ![issuer.name, issuer.tax_id, issuer.address, issuer.email].every(
+                (value) => typeof value === "string" && text.includes(value),
+              )
+            )
+              throw Error(
+                "Public subscription issuer is incomplete or differs from the approved seller",
+              );
+            const contact = await details
+              .getByRole("link", { name: issuer.email, exact: true })
+              .getAttribute("href");
+            if (contact !== `mailto:${issuer.email}`)
+              throw Error(
+                "Public billing contact differs from the approved seller",
+              );
+            billingIssuerChecked = true;
+          }
           // Google review requires public legal pages before account creation.
           for (const [document, title] of [
             ["privacy", "Privacidad y tratamiento de datos"],
@@ -148,6 +173,11 @@ try {
             if (
               response?.status() !== 200 ||
               !text.includes("ELEVADANCOR S.L.") ||
+              (config.expected_billing_issuer &&
+                ![
+                  config.expected_billing_issuer.tax_id,
+                  config.expected_billing_issuer.address,
+                ].every((value) => text.includes(value))) ||
               (document === "privacy" &&
                 !["Google", "Limited Use", "OpenAI", "supresión"].every(
                   (word) => text.includes(word),
@@ -700,6 +730,7 @@ try {
           personalMailConfig: personalMailConfigChecked,
           personalMailReady,
           publicLegalPages: publicLegalPagesChecked,
+          billingIssuer: billingIssuerChecked,
           invoiceInbox: invoiceInboxChecked,
           tyresOffline: tyresOfflineChecked,
           personalMailOffline: personalMailOfflineChecked,

@@ -591,6 +591,10 @@ dialog.modal,
 .portal-footer {
   border-color: var(--theme-border);
 }
+.portal-footer,
+.portal-footer .access-links a {
+  color: var(--theme-muted);
+}
 .hero-odometer > span {
   background: var(--theme-digit);
   color: var(--theme-green);

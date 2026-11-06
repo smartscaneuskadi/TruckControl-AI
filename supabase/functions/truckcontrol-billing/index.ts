@@ -1,5 +1,9 @@
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createBillingHandler } from "./handler.ts";
+import {
+  productionBillingOrigin,
+  productionBillingOrigins,
+} from "../_shared/billing-origins.ts";
 const client = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -25,11 +29,13 @@ Deno.serve(
       },
     },
     {
-      appOrigin:
-        Deno.env.get("TRUCKCONTROL_APP_ORIGIN") ??
-        "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site",
+      appOrigin: productionBillingOrigin(
+        Deno.env.get("TRUCKCONTROL_APP_ORIGIN"),
+      ),
+      allowedOrigins: productionBillingOrigins,
       stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
       webhookSecret: Deno.env.get("STRIPE_WEBHOOK_SECRET"),
+      invoicingVerified: Deno.env.get("BILLING_INVOICING_VERIFIED") === "true",
     },
   ),
 );

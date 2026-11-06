@@ -83,7 +83,11 @@ describe("cobros mensuales opcionales", () => {
     const f = fixture(),
       handle = createBillingHandler(
         f.gateway,
-        { appOrigin: origin, stripeKey: "synthetic-provider-key" },
+        {
+          appOrigin: origin,
+          stripeKey: "synthetic-provider-key",
+          invoicingVerified: true,
+        },
         f.fetcher,
       );
     expect((await handle(checkout())).status).toBe(200);

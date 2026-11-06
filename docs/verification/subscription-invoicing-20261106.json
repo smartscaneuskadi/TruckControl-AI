@@ -1,0 +1,837 @@
+{
+  "checked_at": "2026-11-06T07:09:24.14745Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migrations": 57,
+  "payments_enabled": false,
+  "prices_are_examples": true,
+  "issuer": {
+    "name": "ELEVADANCOR S.L.",
+    "tax_id": "B02993426",
+    "address": "Polígono Arzabalza, n.º 50, 20400 Tolosa",
+    "email": "pedidos@smartscaneuskadi.com"
+  },
+  "issuer_source": "owner-confirmed",
+  "fiscal_invoice_issuance_connected": false,
+  "automatic_invoice_delivery_verified": false,
+  "new_paid_service": false,
+  "real_invoice_issued": false,
+  "real_mail_sent": false,
+  "native_sources_before_match_repository": true,
+  "native_before": {
+    "truckcontrol-billing": {
+      "version": 8,
+      "sha256": "05d1cab408e82faa824996de595d7693f59a269d585333d62916794345e1a861"
+    },
+    "truckcontrol-subscriptions": {
+      "version": 8,
+      "sha256": "eb56ceaea590540c7adc3508c011ac4bb741d5a1b98b69976be582f586f0a9f4"
+    }
+  },
+  "limitation": "Fiscal provider, applicable regime and automatic issuance/delivery acceptance pending; release flag is not an invoice engine.",
+  "native_after": {
+    "checked_at": "2026-11-06T07:34:17.844Z",
+    "project_id": "kkkemaycedexymrpaqtp",
+    "functions": [
+      {
+        "name": "truckcontrol-billing",
+        "version": 10,
+        "status": "ACTIVE",
+        "sha256": "f4ac85b3863679f9efc05665697cb6731e84e2a8f28163f7360bad3116eef6d2"
+      },
+      {
+        "name": "truckcontrol-subscriptions",
+        "version": 10,
+        "status": "ACTIVE",
+        "sha256": "38423d209bd99d75c4f17eda7d5089074d72848ab21d5d3d63b9276b0c5d5821"
+      }
+    ],
+    "files": [
+      {
+        "function": "truckcontrol-billing",
+        "path": "truckcontrol-billing/index.ts",
+        "sha256": "34f7b2f54db72efebaa843b085af948ee172d325c371aa2ed1f2a7adaaaf3e8c",
+        "matches": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "path": "truckcontrol-billing/handler.ts",
+        "sha256": "fb325f592bd5937ce2395ed9741fa207086da375b5cc8ff313446c7e1ce673f2",
+        "matches": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "path": "_shared/invoice.ts",
+        "sha256": "e81557bd97de9ab38e9d623a754960e88eaf92bd1faa6a0e253c40c8514bf189",
+        "matches": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "path": "_shared/billing-origins.ts",
+        "sha256": "09bb66be7eea0e240a960610e35750c9395f05f31ea999e5a8894ebe7c2f757f",
+        "matches": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "path": "truckcontrol-subscriptions/index.ts",
+        "sha256": "a35c6cde7b0f051cac90d73fd528f4dbb2fd699ee2b50deadfe73f598d57e270",
+        "matches": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "path": "truckcontrol-subscriptions/handler.ts",
+        "sha256": "34e5b9f9f99b678bf08daf6fb9ffb0b7cacfc21f6b672490aa23aa175d6f0aa3",
+        "matches": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "path": "_shared/invoice.ts",
+        "sha256": "e81557bd97de9ab38e9d623a754960e88eaf92bd1faa6a0e253c40c8514bf189",
+        "matches": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "path": "truckcontrol-billing/handler.ts",
+        "sha256": "fb325f592bd5937ce2395ed9741fa207086da375b5cc8ff313446c7e1ce673f2",
+        "matches": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "path": "_shared/billing-origins.ts",
+        "sha256": "09bb66be7eea0e240a960610e35750c9395f05f31ea999e5a8894ebe7c2f757f",
+        "matches": true
+      }
+    ],
+    "records": [
+      {
+        "function": "truckcontrol-billing",
+        "test": "preflight",
+        "status": 204,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "www preflight",
+        "status": 204,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "technical preflight",
+        "status": 204,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "preserved demo rejected",
+        "status": 403,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "www anonymous",
+        "status": 401,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "technical anonymous",
+        "status": 401,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "foreign origin",
+        "status": 403,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "anonymous checkout",
+        "status": 401,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "forged session",
+        "status": 401,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-billing",
+        "test": "unsigned provider event",
+        "status": 400,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "preflight",
+        "status": 204,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "www preflight",
+        "status": 204,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "technical preflight",
+        "status": 204,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "preserved demo rejected",
+        "status": 403,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "www anonymous",
+        "status": 401,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "technical anonymous",
+        "status": 401,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "foreign origin",
+        "status": 403,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "anonymous checkout",
+        "status": 401,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "forged session",
+        "status": 401,
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "test": "unsigned provider event",
+        "status": 400,
+        "passed": true
+      }
+    ],
+    "real_charge": false,
+    "real_invoice": false,
+    "real_mail": false
+  },
+  "release": {
+    "source_commit": "8ab1df0336e99619c395ddc3769b272ccd9fd06a",
+    "release": {
+      "app": "TruckControl AI",
+      "version": "0.5.17-rc.1",
+      "channel": "production",
+      "sourceCommit": "8ab1df0336e99619c395ddc3769b272ccd9fd06a",
+      "sourceDirty": false,
+      "companyConnectionBundled": true,
+      "registrationForcedClosed": false,
+      "builtAt": "2026-11-06T07:34:16.656Z"
+    },
+    "dist_files": 25,
+    "archive_path": "/workspace/artifacts/truckcontrol-billing-issuer-20261106/production-8ab1df0.tar.gz",
+    "archive_sha256": "f192471a919d6ee98aae2061d8852e201d8a4b95c9913f404757a8ee83b3f427",
+    "archive_bytes": 1195871,
+    "github_source_branch": "deploy/subscription-billing-20261106",
+    "expected_site_project": "appgprj_6ae655e56db481918fe18adfe9df8b66"
+  },
+  "publication": {
+    "version": 29,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_7e2261ce4a8881919b88f86db98fc0f1",
+    "deployment_id": "appgdep_6aed847e2c6c81919886fe7833ea2f38",
+    "deployed_at": "2026-11-06T07:40:58.860281+00:00",
+    "primary_url": "https://truckcontrolai.com",
+    "previous_production_preserved": 28,
+    "demo_preserved": 6
+  },
+  "https": {
+    "checked_at": "2026-11-06T07:41:48.130480+00:00",
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "source_commit": "8ab1df0336e99619c395ddc3769b272ccd9fd06a",
+    "release": {
+      "app": "TruckControl AI",
+      "version": "0.5.17-rc.1",
+      "channel": "production",
+      "sourceCommit": "8ab1df0336e99619c395ddc3769b272ccd9fd06a",
+      "sourceDirty": false,
+      "companyConnectionBundled": true,
+      "registrationForcedClosed": false,
+      "builtAt": "2026-11-06T07:34:16.656Z"
+    },
+    "tls_verified": true,
+    "https_file_hashes_passed": 75,
+    "per_origin_files": 25,
+    "records": [
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+        "effective_path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+        "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "assets/index-BDzodDWZ.css",
+        "effective_path": "/assets/index-BDzodDWZ.css",
+        "sha256": "6f7ffd7c0256295c11a45250bfb49419acf7a1830bfd39ec727c9443f977e5d7",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "assets/index-dByZsdJr.js",
+        "effective_path": "/assets/index-dByZsdJr.js",
+        "sha256": "e743447a8c8cb00830294c196fdf98bfb1d680cea5394b6f735133b6b008ed46",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "assets/mail-CBuAiU8s.js",
+        "effective_path": "/assets/mail-CBuAiU8s.js",
+        "sha256": "14545e75760fc393220f061a2c942f40476f121b2185a079ed6f4d97cac0a0b6",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+        "effective_path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+        "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "assets/workbox-window.prod.es5-Bd17z0YL.js",
+        "effective_path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+        "sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "brands/man.webp",
+        "effective_path": "/brands/man.webp",
+        "sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "brands/mercedes-benz.svg",
+        "effective_path": "/brands/mercedes-benz.svg",
+        "sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "brands/scania.svg",
+        "effective_path": "/brands/scania.svg",
+        "sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "examples/factura-demostracion.pdf",
+        "effective_path": "/examples/factura-demostracion.pdf",
+        "sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "favicon.svg",
+        "effective_path": "/favicon.svg",
+        "sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "gmail-callback.css",
+        "effective_path": "/gmail-callback.css",
+        "sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "gmail-callback.html",
+        "effective_path": "/gmail-callback",
+        "sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "gmail-callback.js",
+        "effective_path": "/gmail-callback.js",
+        "sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "icons/icon-192.png",
+        "effective_path": "/icons/icon-192.png",
+        "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "icons/icon-512.png",
+        "effective_path": "/icons/icon-512.png",
+        "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "icons/maskable-512.png",
+        "effective_path": "/icons/maskable-512.png",
+        "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "images/fleet-alpine-hero.webp",
+        "effective_path": "/images/fleet-alpine-hero.webp",
+        "sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "images/fleet-cockpit-truck.jpg",
+        "effective_path": "/images/fleet-cockpit-truck.jpg",
+        "sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "images/fleet-light-trucks.jpg",
+        "effective_path": "/images/fleet-light-trucks.jpg",
+        "sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "index.html",
+        "effective_path": "/",
+        "sha256": "02a2d7c9e1e38132eefaf8bbf15104324d1bf0fd46dcaa2c5a3757a3794f9d1c",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "manifest.webmanifest",
+        "effective_path": "/manifest.webmanifest",
+        "sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "release.json",
+        "effective_path": "/release.json",
+        "sha256": "004f8eb703088a4d19778ad93e98292922ecef2a558ec3e38374ffca68df6ad5",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "sw.js",
+        "effective_path": "/sw.js",
+        "sha256": "e42c24d53ab63845a0af3480333c7fa0af32891492e0a2ceaf0a13d7f4c938d3",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "path": "workbox-2fbc6a65.js",
+        "effective_path": "/workbox-2fbc6a65.js",
+        "sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+        "effective_path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+        "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "assets/index-BDzodDWZ.css",
+        "effective_path": "/assets/index-BDzodDWZ.css",
+        "sha256": "6f7ffd7c0256295c11a45250bfb49419acf7a1830bfd39ec727c9443f977e5d7",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "assets/index-dByZsdJr.js",
+        "effective_path": "/assets/index-dByZsdJr.js",
+        "sha256": "e743447a8c8cb00830294c196fdf98bfb1d680cea5394b6f735133b6b008ed46",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "assets/mail-CBuAiU8s.js",
+        "effective_path": "/assets/mail-CBuAiU8s.js",
+        "sha256": "14545e75760fc393220f061a2c942f40476f121b2185a079ed6f4d97cac0a0b6",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+        "effective_path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+        "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "assets/workbox-window.prod.es5-Bd17z0YL.js",
+        "effective_path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+        "sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "brands/man.webp",
+        "effective_path": "/brands/man.webp",
+        "sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "brands/mercedes-benz.svg",
+        "effective_path": "/brands/mercedes-benz.svg",
+        "sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "brands/scania.svg",
+        "effective_path": "/brands/scania.svg",
+        "sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "examples/factura-demostracion.pdf",
+        "effective_path": "/examples/factura-demostracion.pdf",
+        "sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "favicon.svg",
+        "effective_path": "/favicon.svg",
+        "sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "gmail-callback.css",
+        "effective_path": "/gmail-callback.css",
+        "sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "gmail-callback.html",
+        "effective_path": "/gmail-callback",
+        "sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "gmail-callback.js",
+        "effective_path": "/gmail-callback.js",
+        "sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "icons/icon-192.png",
+        "effective_path": "/icons/icon-192.png",
+        "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "icons/icon-512.png",
+        "effective_path": "/icons/icon-512.png",
+        "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "icons/maskable-512.png",
+        "effective_path": "/icons/maskable-512.png",
+        "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "images/fleet-alpine-hero.webp",
+        "effective_path": "/images/fleet-alpine-hero.webp",
+        "sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "images/fleet-cockpit-truck.jpg",
+        "effective_path": "/images/fleet-cockpit-truck.jpg",
+        "sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "images/fleet-light-trucks.jpg",
+        "effective_path": "/images/fleet-light-trucks.jpg",
+        "sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "index.html",
+        "effective_path": "/",
+        "sha256": "02a2d7c9e1e38132eefaf8bbf15104324d1bf0fd46dcaa2c5a3757a3794f9d1c",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "manifest.webmanifest",
+        "effective_path": "/manifest.webmanifest",
+        "sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "release.json",
+        "effective_path": "/release.json",
+        "sha256": "004f8eb703088a4d19778ad93e98292922ecef2a558ec3e38374ffca68df6ad5",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "sw.js",
+        "effective_path": "/sw.js",
+        "sha256": "e42c24d53ab63845a0af3480333c7fa0af32891492e0a2ceaf0a13d7f4c938d3",
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "path": "workbox-2fbc6a65.js",
+        "effective_path": "/workbox-2fbc6a65.js",
+        "sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+        "effective_path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+        "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "assets/index-BDzodDWZ.css",
+        "effective_path": "/assets/index-BDzodDWZ.css",
+        "sha256": "6f7ffd7c0256295c11a45250bfb49419acf7a1830bfd39ec727c9443f977e5d7",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "assets/index-dByZsdJr.js",
+        "effective_path": "/assets/index-dByZsdJr.js",
+        "sha256": "e743447a8c8cb00830294c196fdf98bfb1d680cea5394b6f735133b6b008ed46",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "assets/mail-CBuAiU8s.js",
+        "effective_path": "/assets/mail-CBuAiU8s.js",
+        "sha256": "14545e75760fc393220f061a2c942f40476f121b2185a079ed6f4d97cac0a0b6",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+        "effective_path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+        "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "assets/workbox-window.prod.es5-Bd17z0YL.js",
+        "effective_path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+        "sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "brands/man.webp",
+        "effective_path": "/brands/man.webp",
+        "sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "brands/mercedes-benz.svg",
+        "effective_path": "/brands/mercedes-benz.svg",
+        "sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "brands/scania.svg",
+        "effective_path": "/brands/scania.svg",
+        "sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "examples/factura-demostracion.pdf",
+        "effective_path": "/examples/factura-demostracion.pdf",
+        "sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "favicon.svg",
+        "effective_path": "/favicon.svg",
+        "sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "gmail-callback.css",
+        "effective_path": "/gmail-callback.css",
+        "sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "gmail-callback.html",
+        "effective_path": "/gmail-callback",
+        "sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "gmail-callback.js",
+        "effective_path": "/gmail-callback.js",
+        "sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "icons/icon-192.png",
+        "effective_path": "/icons/icon-192.png",
+        "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "icons/icon-512.png",
+        "effective_path": "/icons/icon-512.png",
+        "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "icons/maskable-512.png",
+        "effective_path": "/icons/maskable-512.png",
+        "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "images/fleet-alpine-hero.webp",
+        "effective_path": "/images/fleet-alpine-hero.webp",
+        "sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "images/fleet-cockpit-truck.jpg",
+        "effective_path": "/images/fleet-cockpit-truck.jpg",
+        "sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "images/fleet-light-trucks.jpg",
+        "effective_path": "/images/fleet-light-trucks.jpg",
+        "sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "index.html",
+        "effective_path": "/",
+        "sha256": "02a2d7c9e1e38132eefaf8bbf15104324d1bf0fd46dcaa2c5a3757a3794f9d1c",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "manifest.webmanifest",
+        "effective_path": "/manifest.webmanifest",
+        "sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "release.json",
+        "effective_path": "/release.json",
+        "sha256": "004f8eb703088a4d19778ad93e98292922ecef2a558ec3e38374ffca68df6ad5",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "sw.js",
+        "effective_path": "/sw.js",
+        "sha256": "e42c24d53ab63845a0af3480333c7fa0af32891492e0a2ceaf0a13d7f4c938d3",
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "path": "workbox-2fbc6a65.js",
+        "effective_path": "/workbox-2fbc6a65.js",
+        "sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+        "passed": true
+      }
+    ],
+    "stable_demo_unchanged": true,
+    "stable_demo_index_sha256": "51cb89019392cc32c280f28ed675f5cce5450a08458297c019c2c483b8d4b492"
+  },
+  "ci_before_publication": {
+    "run": 42181544823,
+    "source_commit": "8ab1df0336e99619c395ddc3769b272ccd9fd06a",
+    "conclusion": "success",
+    "unit_sql": 633,
+    "python": 32,
+    "demo": 64,
+    "companies": 50,
+    "saas": 80,
+    "candidate": 14,
+    "production": 20,
+    "public": 6,
+    "total": 899,
+    "public_checks_targeted_previous_version": 28
+  },
+  "post_publication_acceptance": {
+    "checks_url": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/33/checks",
+    "artifact_name": "playwright-report",
+    "artifact_path": "public-test-results/verification.json",
+    "expected_source_commit": "8ab1df0336e99619c395ddc3769b272ccd9fd06a",
+    "expected_issuer": {
+      "name": "ELEVADANCOR S.L.",
+      "tax_id": "B02993426",
+      "address": "Polígono Arzabalza, n.º 50, 20400 Tolosa",
+      "email": "pedidos@smartscaneuskadi.com"
+    }
+  },
+  "pre_publication_parallel_runs": {
+    "runs": [42181548374, 42181542292],
+    "failed_stage": "verify:published",
+    "observed": "Public legal page timeout during deployment window; full code tests had passed. New deployment inventory requires fresh post-publication checks."
+  }
+}

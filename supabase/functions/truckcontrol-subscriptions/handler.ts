@@ -7,11 +7,14 @@ export interface RecurringGateway {
 }
 export interface RecurringConfig {
   appOrigin: string;
+  allowedOrigins?: readonly string[];
   enabled?: boolean;
   stripeKey?: string;
   webhookSecret?: string;
   termsVersion?: string;
   termsUrl?: string;
+  /** Release gate, set only after fiscal issuance and automatic delivery pass acceptance. */
+  invoicingVerified?: boolean;
 }
 type Obj = Record<string, unknown>;
 interface Order {
@@ -80,6 +83,7 @@ export function createRecurringHandler(
   fetcher: typeof fetch = fetch,
 ) {
   const origin = new URL(config.appOrigin).origin;
+  const allowedOrigins = new Set(config.allowedOrigins ?? [origin]);
   const termsUrl = (() => {
     try {
       const url = new URL(config.termsUrl ?? "");
@@ -91,22 +95,12 @@ export function createRecurringHandler(
     }
   })();
   const configured = Boolean(
-    config.enabled && config.stripeKey && config.termsVersion && termsUrl,
+    config.enabled &&
+    config.stripeKey &&
+    config.termsVersion &&
+    termsUrl &&
+    config.invoicingVerified === true,
   );
-  const headers = {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Headers":
-      "authorization,apikey,content-type,x-client-info",
-    "Access-Control-Allow-Methods": "POST,OPTIONS",
-    "Cache-Control": "no-store",
-    "Referrer-Policy": "no-referrer",
-    Vary: "Origin",
-  };
-  const json = (body: unknown, status = 200) =>
-    new Response(JSON.stringify(body), {
-      status,
-      headers: { ...headers, "Content-Type": "application/json" },
-    });
   async function stripe(
     path: string,
     form?: URLSearchParams,
@@ -283,10 +277,25 @@ export function createRecurringHandler(
     });
   }
   return async (request: Request): Promise<Response> => {
-    if (
-      request.headers.get("origin") &&
-      request.headers.get("origin") !== origin
-    )
+    const requestOrigin = request.headers.get("origin");
+    const headers = {
+      "Access-Control-Allow-Origin":
+        requestOrigin && allowedOrigins.has(requestOrigin)
+          ? requestOrigin
+          : origin,
+      "Access-Control-Allow-Headers":
+        "authorization,apikey,content-type,x-client-info",
+      "Access-Control-Allow-Methods": "POST,OPTIONS",
+      "Cache-Control": "no-store",
+      "Referrer-Policy": "no-referrer",
+      Vary: "Origin",
+    };
+    const json = (body: unknown, status = 200) =>
+      new Response(JSON.stringify(body), {
+        status,
+        headers: { ...headers, "Content-Type": "application/json" },
+      });
+    if (requestOrigin && !allowedOrigins.has(requestOrigin))
       return json({ error: "origin_not_allowed" }, 403);
     if (request.method === "OPTIONS")
       return new Response(null, { status: 204, headers });
@@ -334,6 +343,7 @@ export function createRecurringHandler(
         return json({
           ...status,
           configured,
+          invoice_delivery_ready: config.invoicingVerified === true,
           management_available: Boolean(config.stripeKey),
           terms_version: config.termsVersion ?? null,
           terms_url: termsUrl,

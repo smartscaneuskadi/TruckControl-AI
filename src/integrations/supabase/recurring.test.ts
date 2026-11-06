@@ -10,6 +10,7 @@ const secret = "synthetic-recurring-webhook-secret";
 const config = {
   appOrigin: origin,
   enabled: true,
+  invoicingVerified: true,
   stripeKey: "synthetic-test-key",
   webhookSecret: secret,
   termsVersion: "test-approved-v1",
