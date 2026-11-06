@@ -36,6 +36,77 @@
   "real_invoice_issued": false,
   "tax_submission": false,
   "real_email_sent": false,
-  "live_model_acceptance": "Pending; only synthetic company data, at most one call under the existing 10 USD monthly budget.",
-  "production_before": 30
+  "live_model_acceptance": {
+    "state": "confirmed_in_database",
+    "synthetic_data_only": true,
+    "model": "gpt-6-luna",
+    "calls": 1,
+    "call_state": "settled",
+    "input_tokens": 1691,
+    "output_tokens": 119,
+    "estimated_micro_usd": 1494,
+    "turn_state": "complete",
+    "proposal_state": "applied",
+    "entity": "customers",
+    "record_count": 1,
+    "record_version": 1,
+    "audit_rows": 1,
+    "audit_human_confirmed": true,
+    "temporary_accounts_banned": 2,
+    "temporary_accounts_suspended": 2,
+    "temporary_ai_permissions_disabled": true,
+    "temporary_sessions_remaining": 0,
+    "records_and_audit_retained": true,
+    "local_http_report": "Execution environment became unavailable after the script completed; recover live-acceptance.json before claiming each HTTP assertion. Do not repeat the paid model call."
+  },
+  "production_before": 30,
+  "backend": {
+    "function": "company-copilot",
+    "version": 1,
+    "status": "ACTIVE",
+    "ezbr_sha256": "51797cb1229e01d9b5e5c804de696e2aee231dce49a891a26ab15063212a7c78",
+    "remote_files_verified": 6,
+    "existing_seven_functions_unchanged": true,
+    "health": {
+      "schema_version": 1,
+      "configured": true,
+      "enabled": true,
+      "human_confirmation": true,
+      "voice": "browser-dictation"
+    }
+  },
+  "github_ci": {
+    "implementation_commit": "2395426df6c1d234124b45dbdd091ecbb7ff6945",
+    "push_run": 42251837123,
+    "pull_request_run": 42252895244,
+    "both": "success",
+    "checks_per_run": 1031,
+    "counts": {
+      "unit_sql": 727,
+      "python": 32,
+      "retained_demo": 64,
+      "companies": 50,
+      "saas": 118,
+      "candidate": 14,
+      "production_build": 20,
+      "published_existing_v30_profiles": 6
+    },
+    "note": "The six public checks validate the still-live v30, not publication of the new copilot."
+  },
+  "production_preparation": {
+    "branch": "deploy/company-copilot-20261106",
+    "source_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
+    "source_tree": "397659478f02e94b27a4cf60ccec7d2f7f91a2c1",
+    "only_difference_from_implementation": ".openai/hosting.json",
+    "ci_run": 42254621291,
+    "ci_state": "in_progress_at_checkpoint",
+    "site_project": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "saved_or_deployed": false,
+    "artifact_built": false,
+    "reason": "No usable execution environment is available. Cloud status reports running, but exec_command cannot access it; no filesystem operation or production push can run.",
+    "current_public_version": 30,
+    "current_public_app_version": "0.5.18-rc.1",
+    "demo_preserved": 6
+  },
+  "physical_voice_acceptance": "Pending; browser speech APIs were mocked in automated tests."
 }
