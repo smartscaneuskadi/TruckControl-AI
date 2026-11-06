@@ -411,6 +411,10 @@ verify_jwt = false
 [functions.company-assistant]
 verify_jwt = false
 
+# Explicit getUser authentication, scoped context and human-confirmed task RPCs.
+[functions.company-copilot]
+verify_jwt = false
+
 # Optional recurring subscriptions. Explicit getUser() and signed webhooks.
 [functions.truckcontrol-subscriptions]
 verify_jwt = false

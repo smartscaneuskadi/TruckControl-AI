@@ -161,6 +161,13 @@
       "name": "company_fiscal_options",
       "sha256": "1773c844cca20bfc3be654fd398da4bbe11f8eb93bb5ba0dcc10ece8ebafebd9",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261106150440_universal_company_copilot.sql",
+      "version": "20261106161253",
+      "name": "universal_company_copilot",
+      "sha256": "6c66e584ebb510abde83b6d89b277d58fd75b98856c9aef0657963b9d98c258a",
+      "already_applied": true
     }
   ]
 }

@@ -13,6 +13,7 @@ import { LocalInsightProvider } from "../domain/insights";
 import { today } from "../lib/format";
 import { Badge, PageHeading, PeriodPicker } from "../components/ui";
 import { DocumentAssistant } from "../components/DocumentAssistant";
+import { CompanyCopilot } from "../components/CompanyCopilot";
 
 export function Assistant() {
   const { snapshot } = useFleet();
@@ -28,6 +29,7 @@ export function Assistant() {
       >
         <PeriodPicker snapshot={snapshot} value={period} onChange={setPeriod} />
       </PageHeading>
+      <CompanyCopilot />
       <div className="assistant-banner">
         <span className="assistant-orb">
           <Sparkles size={32} />

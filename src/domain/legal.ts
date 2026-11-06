@@ -51,6 +51,14 @@ export const legalDocuments: Record<
         text: "Se utiliza Supabase para identidad, base de datos y almacenamiento privado (proyecto eu-west-2, Reino Unido); OpenAI Sites e infraestructura Cloudflare para alojamiento web; Resend para entrega y recepción de correo (dominio receptor en eu-west-1); y OpenAI para las funciones IA que autorices. Los proveedores pueden tratar datos fuera del Espacio Económico Europeo conforme a sus contratos y garantías aplicables. No se promete residencia exclusivamente dentro de la UE. El envío a IA se limita a los documentos y consultas autorizados; desactivar IA no impide completar una factura manualmente.",
       },
       {
+        title: "Asistente de empresa por texto",
+        text: "El chat requiere habilitación y consentimiento de IA. Al enviar una consulta se utiliza su texto, una parte de la conversación y registros de la empresa limitada a los módulos autorizados. Este contexto se envía al backend y a OpenAI para preparar la respuesta y las propuestas. La conversación visible es temporal; las respuestas y propuestas se conservan en el backend privado para recuperar resultados y auditar las tareas, fuera de la copia offline. Cada cambio requiere confirmación y permisos actuales; el asistente no lee automáticamente Mi correo ni ejecuta pagos o emisión fiscal. Puedes retirar tu consentimiento desde el asistente.",
+      },
+      {
+        title: "Dictado y lectura de voz opcionales",
+        text: "El navegador gestiona el dictado y la lectura cuando habilitas la opción y pulsas sus controles. Su proveedor puede procesar el audio o el texto conforme a su configuración. TruckControl no envía audio a OpenAI en este flujo: el dictado se convierte en texto editable antes de enviarlo. El micrófono se detiene al cambiar de empresa, perder la conexión, ocultar la pantalla o salir del asistente. Puedes desactivar la voz y seguir escribiendo.",
+      },
+      {
         title: "Correo personal conectado con Google",
         text: "Mi correo es opcional. Tú eliges la cuenta Gmail o Google Workspace y autorizas directamente a Google a leer, enviar y gestionar sus mensajes, sin borrado definitivo. Los mensajes, adjuntos consultados y el permiso temporal de este apartado se mantienen en la memoria del navegador y se intercambian directamente con Google; no se envían al backend de TruckControl, al administrador ni a la IA. No se guardan en las copias offline. La sesión se elimina al salir, recargar, cambiar de usuario o empresa o caducar. Los borradores de esta pantalla no se guardan automáticamente. Puedes retirar el permiso en la configuración de seguridad de tu cuenta Google.",
       },
