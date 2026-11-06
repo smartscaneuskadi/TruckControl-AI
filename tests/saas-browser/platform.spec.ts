@@ -21,6 +21,7 @@ import type {
 } from "../../src/domain/company-fiscal";
 import type { TyreRecord, TyreHistory } from "../../src/domain/tyres";
 import { emptyTyreData } from "../../src/domain/tyres";
+import type { CopilotAction, CopilotTurn } from "../../src/domain/copilot";
 import { exampleCatalog, featureLabels } from "../../src/domain/subscriptions";
 import type {
   AdminSnapshot,
@@ -144,6 +145,17 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     fiscalInvalidEmission: false,
     fiscal: new Map<string, CompanyFiscalState>([[org, fiscalState()]]),
     additionalOrganizations: [] as { id: string; name: string }[],
+    copilotConfigured: true,
+    copilotDenied: false,
+    copilotConflict: false,
+    copilotChatUncertain: false,
+    copilotExecuteUncertain: false,
+    copilotWrongCompany: false,
+    copilotReply: "He preparado una propuesta para revisar.",
+    copilotDrafts: [] as CopilotAction[],
+    copilotActions: new Map<string, CopilotAction>(),
+    copilotTurns: new Map<string, CopilotTurn>(),
+    copilotAppliedWrites: 0,
   };
   const pending = {
     id: "10000000-0000-4000-8000-000000000084",
@@ -687,6 +699,147 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       } else {
         status = 400;
         data = { error: "invalid_request" };
+      }
+    } else if (url.pathname === "/functions/v1/company-copilot") {
+      const company = String(body?.organization_id ?? ""),
+        a = access(identity ?? customerId);
+      const own =
+        company === org ||
+        controls.additionalOrganizations.some((o) => o.id === company);
+      const allowed = Boolean(
+        a.active &&
+        a.features.assistant &&
+        a.features.document_ai &&
+        a.profile?.ai_allowed &&
+        a.profile.ai_opt_in,
+      );
+      if (!own || controls.copilotDenied) {
+        status = 403;
+        data = { error: "permission_changed" };
+      } else if (body?.action === "status")
+        data = {
+          schema_version: 1,
+          organization_id: company,
+          allowed,
+          can_write: a.can_write,
+          configured: controls.copilotConfigured,
+        };
+      else if (!allowed) {
+        status = 403;
+        data = { error: "ai_permission_required" };
+      } else if (body?.action === "chat") {
+        const id = String(body.request_id),
+          existing = controls.copilotTurns.get(id);
+        if (existing) data = existing;
+        else {
+          const actions = controls.copilotDrafts.map((d) => ({
+            ...structuredClone(d),
+            id: crypto.randomUUID(),
+            organization_id: controls.copilotWrongCompany
+              ? "20000000-0000-4000-8000-000000000099"
+              : company,
+          }));
+          for (const task of actions)
+            controls.copilotActions.set(task.id, task);
+          const turn: CopilotTurn = {
+            request_id: id,
+            organization_id: controls.copilotWrongCompany
+              ? "20000000-0000-4000-8000-000000000099"
+              : company,
+            state: "complete",
+            reply: controls.copilotReply,
+            actions,
+          };
+          controls.copilotTurns.set(id, turn);
+          data = turn;
+          if (controls.copilotChatUncertain) {
+            await route.abort("failed");
+            return;
+          }
+        }
+      } else {
+        status = 400;
+        data = { error: "invalid_request" };
+      }
+    } else if (url.pathname === "/rest/v1/rpc/tc_company_copilot") {
+      const company = String(body?.p_org ?? ""),
+        action = body?.p_action,
+        input = body?.p_data as Record<string, unknown>,
+        a = access(identity ?? customerId);
+      const own =
+        company === org ||
+        controls.additionalOrganizations.some((o) => o.id === company);
+      if (
+        !own ||
+        controls.copilotDenied ||
+        !a.active ||
+        !a.profile?.ai_allowed ||
+        !a.profile.ai_opt_in
+      ) {
+        status = 403;
+        data = { code: "42501", message: "Synthetic permission denied" };
+      } else if (action === "list")
+        data = {
+          schema_version: 1,
+          organization_id: company,
+          actions: [...controls.copilotActions.values()].filter(
+            (t) =>
+              t.organization_id === company &&
+              t.state === "pending" &&
+              Date.parse(t.expires_at) > Date.now(),
+          ),
+        };
+      else if (action === "result")
+        data = controls.copilotTurns.get(String(input.request_id)) ?? null;
+      else {
+        const task = controls.copilotActions.get(String(input?.id));
+        if (
+          !task ||
+          task.organization_id !== company ||
+          (action !== "task" && !a.can_write)
+        ) {
+          status = 403;
+          data = { code: "42501", message: "Synthetic action denied" };
+        } else if (action === "task") data = task;
+        else if (controls.copilotConflict) {
+          status = 409;
+          data = { code: "40001", message: "Synthetic stale record" };
+        } else if (action === "execute") {
+          if (task.state !== "applied") {
+            controls.copilotAppliedWrites++;
+            task.state = "applied";
+            task.applied_at = new Date().toISOString();
+            if (
+              [
+                "customers",
+                "trailers",
+                "trips",
+                "maintenance",
+                "fuel",
+                "deadlines",
+                "alerts",
+              ].includes(task.entity)
+            )
+              records.set(task.record_id, {
+                id: task.record_id,
+                kind: task.entity,
+                data: task.fields,
+                version: (task.expected_version ?? 0) + 1,
+                financeEntryId: null,
+              });
+          }
+          data = task;
+          if (controls.copilotExecuteUncertain) {
+            await route.abort("failed");
+            return;
+          }
+        } else if (action === "cancel") {
+          task.state = "cancelled";
+          data = task;
+        } else {
+          status = 400;
+          data = { code: "23514" };
+        }
       }
     } else if (url.pathname === "/functions/v1/company-gmail")
       data = { oauth_ready: false, ai_enabled: false };
@@ -3520,3 +3673,587 @@ test.describe("configuración fiscal por empresa", () => {
     expect(f.controls.fiscal.get(org)!.policy.version).toBeNull();
   });
 });
+
+function copilotCustomer(): CopilotAction {
+  return {
+    id: crypto.randomUUID(),
+    organization_id: org,
+    entity: "customers",
+    mode: "create",
+    record_id: crypto.randomUUID(),
+    fields: {
+      name: "Cliente creado por asistente",
+      taxId: "DEMO-COPILOT",
+      email: "",
+      phone: "",
+      address: "Dirección ficticia",
+      notes: "",
+    },
+    previous: null,
+    expected_version: null,
+    state: "pending",
+    created_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 1800000).toISOString(),
+    applied_at: null,
+  };
+}
+async function copilotWorkspace(page: Page, consented = true) {
+  const f = await fixtures(page);
+  f.snapshot.customers[0].ai_allowed = true;
+  f.snapshot.customers[0].ai_opt_in = consented;
+  return f;
+}
+async function openCopilot(page: Page) {
+  await login(page, "customer@example.com");
+  await page.evaluate(() => {
+    location.hash = "/assistant";
+  });
+  const panel = page.getByRole("region", {
+    name: "Asistente de empresa",
+    exact: true,
+  });
+  await panel.waitFor();
+  await expect(
+    panel.getByText("Comprobando permisos…", { exact: true }),
+  ).not.toBeVisible();
+  return panel;
+}
+async function installCopilotVoice(page: Page) {
+  await page.addInitScript(() => {
+    const state = {
+      instance: null as Recognition | null,
+      late: null as ((event: unknown) => void) | null,
+      aborts: 0,
+      spoken: [] as string[],
+    };
+    class Recognition {
+      lang = "";
+      continuous = false;
+      interimResults = false;
+      onresult: ((event: unknown) => void) | null = null;
+      onerror: ((event: unknown) => void) | null = null;
+      onend: (() => void) | null = null;
+      start() {
+        state.instance = this;
+        state.late = this.onresult;
+      }
+      stop() {
+        this.onend?.();
+      }
+      abort() {
+        state.aborts++;
+      }
+    }
+    Object.assign(window, {
+      SpeechRecognition: Recognition,
+      __tcCopilotVoice: state,
+    });
+    Object.defineProperty(window, "speechSynthesis", {
+      configurable: true,
+      value: {
+        cancel() {},
+        speak(value: { text: string }) {
+          state.spoken.push(value.text);
+        },
+      },
+    });
+  });
+}
+type CopilotVoiceFixture = {
+  __tcCopilotVoice: {
+    instance: { onresult: ((event: unknown) => void) | null };
+    late: ((event: unknown) => void) | null;
+    aborts: number;
+    spoken: string[];
+  };
+};
+describeCopilot();
+function describeCopilot() {
+  test.describe("asistente universal por voz y texto", () => {
+    test("prepara un cliente sin escribir y guarda una sola vez al confirmar", async ({
+      page,
+    }) => {
+      const f = await copilotWorkspace(page);
+      f.controls.copilotDrafts = [copilotCustomer()];
+      const panel = await openCopilot(page);
+      await expect(
+        panel.getByText("Asistente conectado", { exact: true }),
+      ).toBeVisible();
+      await panel
+        .getByLabel("Tu mensaje al asistente", { exact: true })
+        .fill("Prepara el cliente ficticio con los datos que he indicado.");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      const task = panel.getByRole("article", {
+        name: "Propuesta Clientes",
+        exact: true,
+      });
+      await expect(task).toContainText("Cliente creado por asistente");
+      expect(f.records.size).toBe(0);
+      expect(f.controls.copilotAppliedWrites).toBe(0);
+      expect(
+        f.calls.filter((c) => c.body?.p_action === "execute"),
+      ).toHaveLength(0);
+      await task
+        .getByRole("button", {
+          name: "Confirmar y guardar Clientes",
+          exact: true,
+        })
+        .click();
+      await expect(task.getByText("Guardada", { exact: true })).toBeVisible();
+      expect(f.controls.copilotAppliedWrites).toBe(1);
+      expect(f.records.size).toBe(1);
+      await expect(
+        task.getByRole("button", {
+          name: "Confirmar y guardar Clientes",
+          exact: true,
+        }),
+      ).toHaveCount(0);
+      await page.evaluate(() => {
+        location.hash = "/customers";
+      });
+      await expect(
+        page.getByText("Cliente creado por asistente", { exact: true }),
+      ).toBeVisible();
+    });
+    test("cancelar una propuesta conserva los datos y no consume otra consulta", async ({
+      page,
+    }) => {
+      const f = await copilotWorkspace(page);
+      f.controls.copilotDrafts = [copilotCustomer()];
+      const panel = await openCopilot(page);
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Prepara el cliente ficticio.");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await panel
+        .getByRole("button", {
+          name: "Cancelar propuesta de Clientes",
+          exact: true,
+        })
+        .click();
+      await expect(panel.getByText("Cancelada", { exact: true })).toBeVisible();
+      expect(f.records.size).toBe(0);
+      expect(f.controls.copilotAppliedWrites).toBe(0);
+      expect(
+        f.calls.filter(
+          (c) =>
+            c.path.endsWith("company-copilot") && c.body?.action === "chat",
+        ),
+      ).toHaveLength(1);
+    });
+    test("exige consentimiento y permite retirarlo limpiando conversación y propuestas", async ({
+      page,
+    }) => {
+      const f = await copilotWorkspace(page, false);
+      const panel = await openCopilot(page);
+      await expect(
+        panel.getByRole("button", { name: "Enviar al asistente", exact: true }),
+      ).toBeDisabled();
+      await panel
+        .getByRole("button", { name: "Permitir mi uso de IA", exact: true })
+        .click();
+      await expect(
+        panel.getByText("Asistente conectado", { exact: true }),
+      ).toBeVisible();
+      f.controls.copilotReply =
+        "Respuesta privada de prueba COPILOT-ONLY-SECRET";
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Consulta confidencial TC-COPILOT-ONLY-TEXT.");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await expect(panel.getByRole("log")).toContainText("COPILOT-ONLY-SECRET");
+      expect(
+        await page.evaluate(() =>
+          Object.values(localStorage)
+            .concat(Object.values(sessionStorage))
+            .some(
+              (v) =>
+                String(v).includes("TC-COPILOT-ONLY-TEXT") ||
+                String(v).includes("COPILOT-ONLY-SECRET"),
+            ),
+        ),
+      ).toBe(false);
+      await panel
+        .getByText("Permisos y privacidad del asistente", { exact: true })
+        .click();
+      await panel
+        .getByRole("button", {
+          name: "Retirar mi consentimiento de IA",
+          exact: true,
+        })
+        .click();
+      await expect(panel.getByRole("log")).not.toContainText(
+        "COPILOT-ONLY-SECRET",
+      );
+      await expect(
+        panel.getByRole("button", { name: "Enviar al asistente", exact: true }),
+      ).toBeDisabled();
+    });
+    test("una respuesta perdida se recupera sin otra llamada al modelo", async ({
+      page,
+    }) => {
+      const f = await copilotWorkspace(page);
+      f.controls.copilotChatUncertain = true;
+      f.controls.copilotDrafts = [copilotCustomer()];
+      const panel = await openCopilot(page);
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Prepara un cliente ficticio.");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await panel
+        .getByRole("button", {
+          name: "Comprobar estado de la consulta",
+          exact: true,
+        })
+        .click();
+      await expect(
+        panel.getByRole("article", { name: "Propuesta Clientes", exact: true }),
+      ).toBeVisible();
+      expect(f.controls.copilotAppliedWrites).toBe(0);
+      expect(
+        f.calls.filter(
+          (c) =>
+            c.path.endsWith("company-copilot") && c.body?.action === "chat",
+        ),
+      ).toHaveLength(1);
+    });
+    test("una respuesta incierta al guardar consulta el servidor y no duplica la tarea", async ({
+      page,
+    }) => {
+      const f = await copilotWorkspace(page);
+      f.controls.copilotExecuteUncertain = true;
+      f.controls.copilotDrafts = [copilotCustomer()];
+      const panel = await openCopilot(page);
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Prepara un cliente ficticio.");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await panel
+        .getByRole("button", {
+          name: "Confirmar y guardar Clientes",
+          exact: true,
+        })
+        .click();
+      await expect(panel.getByText("Guardada", { exact: true })).toBeVisible();
+      await expect(panel).toContainText(
+        "El servidor confirma que esta tarea ya está guardada",
+      );
+      expect(f.controls.copilotAppliedWrites).toBe(1);
+      expect(
+        f.calls.filter((c) => c.body?.p_action === "execute"),
+      ).toHaveLength(1);
+      expect(f.calls.filter((c) => c.body?.p_action === "task")).toHaveLength(
+        1,
+      );
+    });
+    test("la cuenta de consulta conversa y mantiene desactivada la escritura", async ({
+      page,
+    }) => {
+      const f = await copilotWorkspace(page);
+      f.controls.companyRole = "viewer";
+      const pending = copilotCustomer();
+      f.controls.copilotActions.set(pending.id, pending);
+      f.controls.copilotReply = "Resumen ficticio sin cambios.";
+      const panel = await openCopilot(page);
+      await expect(
+        panel.getByRole("button", {
+          name: "Confirmar y guardar Clientes",
+          exact: true,
+        }),
+      ).toBeDisabled();
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Muéstrame un resumen de mi empresa.");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await expect(panel.getByRole("log")).toContainText(
+        "Resumen ficticio sin cambios.",
+      );
+      expect(f.controls.copilotAppliedWrites).toBe(0);
+    });
+    test("el dictado se revisa antes de enviar y permite escuchar la respuesta", async ({
+      page,
+    }) => {
+      await installCopilotVoice(page);
+      const f = await copilotWorkspace(page);
+      f.controls.copilotReply =
+        "Dime los datos del cliente que quieres preparar.";
+      const panel = await openCopilot(page);
+      const microphone = panel.getByRole("button", {
+        name: "Dictar mensaje",
+        exact: true,
+      });
+      await expect(microphone).toBeDisabled();
+      await panel
+        .getByLabel(/Permitir dictado y lectura del navegador/)
+        .check();
+      await microphone.click();
+      await page.evaluate(() => {
+        (
+          window as unknown as CopilotVoiceFixture
+        ).__tcCopilotVoice.instance.onresult?.({
+          results: [
+            {
+              isFinal: true,
+              0: { transcript: "Prepara un cliente ficticio por voz" },
+            },
+          ],
+        });
+      });
+      await expect(panel.getByLabel("Tu mensaje al asistente")).toHaveValue(
+        "Prepara un cliente ficticio por voz",
+      );
+      expect(f.calls.filter((c) => c.body?.action === "chat")).toHaveLength(0);
+      await panel
+        .getByRole("button", { name: "Terminar dictado", exact: true })
+        .click();
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Prepara un cliente ficticio por voz corregida");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await expect(panel.getByRole("log")).toContainText(
+        "Dime los datos del cliente",
+      );
+      await panel
+        .getByRole("button", { name: "Escuchar respuesta 2", exact: true })
+        .click();
+      expect(
+        await page.evaluate(
+          () =>
+            (window as unknown as CopilotVoiceFixture).__tcCopilotVoice.spoken,
+        ),
+      ).toEqual([f.controls.copilotReply]);
+      expect(
+        f.calls.filter((c) => c.body?.action === "chat").at(-1)?.body?.messages,
+      ).toEqual([
+        {
+          role: "user",
+          content: "Prepara un cliente ficticio por voz corregida",
+        },
+      ]);
+    });
+    test("retirar el consentimiento detiene el micrófono y descarta callbacks tardíos", async ({
+      page,
+    }) => {
+      await installCopilotVoice(page);
+      const f = await copilotWorkspace(page);
+      const panel = await openCopilot(page);
+      await panel
+        .getByLabel(/Permitir dictado y lectura del navegador/)
+        .check();
+      await panel
+        .getByRole("button", { name: "Dictar mensaje", exact: true })
+        .click();
+      await panel
+        .getByText("Permisos y privacidad del asistente", { exact: true })
+        .click();
+      await panel
+        .getByRole("button", {
+          name: "Retirar mi consentimiento de IA",
+          exact: true,
+        })
+        .click();
+      await expect(
+        panel.getByText("Asistente conectado", { exact: true }),
+      ).not.toBeVisible();
+      await page.evaluate(() => {
+        (window as unknown as CopilotVoiceFixture).__tcCopilotVoice.late?.({
+          results: [
+            {
+              isFinal: true,
+              0: { transcript: "Texto de una sesión anterior" },
+            },
+          ],
+        });
+      });
+      await expect(panel.getByLabel("Tu mensaje al asistente")).toHaveValue("");
+      expect(
+        await page.evaluate(
+          () =>
+            (window as unknown as CopilotVoiceFixture).__tcCopilotVoice.aborts,
+        ),
+      ).toBeGreaterThan(0);
+      expect(f.calls.filter((c) => c.body?.action === "chat")).toHaveLength(0);
+    });
+    test("desconectar o recibir una respuesta de otra empresa mantiene el bloqueo", async ({
+      page,
+      context,
+    }) => {
+      const f = await copilotWorkspace(page);
+      f.controls.copilotWrongCompany = true;
+      f.controls.copilotReply = "TC-FOREIGN-SECRET";
+      const panel = await openCopilot(page);
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Consulta los datos de mi empresa.");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await expect(panel.getByRole("log")).not.toContainText(
+        "TC-FOREIGN-SECRET",
+      );
+      await expect(
+        panel.getByRole("article", { name: "Propuesta Clientes", exact: true }),
+      ).toHaveCount(0);
+      await context.setOffline(true);
+      await expect(panel).toContainText("El asistente necesita conexión");
+      await expect(
+        panel.getByRole("button", { name: "Enviar al asistente", exact: true }),
+      ).toBeDisabled();
+      await expect(panel.getByRole("log")).not.toContainText(
+        "Consulta los datos",
+      );
+    });
+    test("accesible en ambos temas sin perder el borrador y con voz no disponible", async ({
+      page,
+    }, testInfo) => {
+      await page.addInitScript(() => {
+        Object.assign(window, {
+          SpeechRecognition: undefined,
+          webkitSpeechRecognition: undefined,
+        });
+      });
+      const f = await copilotWorkspace(page);
+      const pending = copilotCustomer();
+      f.controls.copilotActions.set(pending.id, pending);
+      const panel = await openCopilot(page);
+      await expect(panel).toContainText(
+        "Este navegador no ofrece dictado compatible",
+      );
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Borrador que debe conservarse al cambiar de tema.");
+      for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+        await page
+          .getByRole("button", { name: "Cambiar apariencia", exact: true })
+          .first()
+          .click();
+        const appearance = page.getByRole("dialog", {
+          name: "Apariencia de TruckControl",
+        });
+        await appearance
+          .getByRole("radio", { name: theme, exact: true })
+          .check();
+        await appearance
+          .getByLabel("Animaciones", { exact: true })
+          .selectOption("off");
+        await appearance
+          .getByRole("button", { name: "Aplicar apariencia", exact: true })
+          .click();
+        await appearance
+          .getByRole("button", { name: "Cerrar ventana", exact: true })
+          .click();
+        await expect(panel.getByLabel("Tu mensaje al asistente")).toHaveValue(
+          "Borrador que debe conservarse al cambiar de tema.",
+        );
+        await panel.scrollIntoViewIfNeeded();
+        expect(
+          (
+            await new AxeBuilder({ page })
+              .include(".company-copilot")
+              .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+              .analyze()
+          ).violations,
+        ).toEqual([]);
+        expect(
+          await page.evaluate(
+            () => document.body.scrollWidth <= innerWidth + 1,
+          ),
+        ).toBe(true);
+        await panel
+          .getByRole("heading", {
+            name: "Tu asistente por voz y texto",
+            exact: true,
+          })
+          .scrollIntoViewIfNeeded();
+        await page.screenshot({
+          path: testInfo.outputPath(`copilot-${theme.replace(" ", "-")}.png`),
+        });
+        await panel
+          .getByLabel("Tu mensaje al asistente", { exact: true })
+          .scrollIntoViewIfNeeded();
+        await page.screenshot({
+          path: testInfo.outputPath(
+            `copilot-composer-${theme.replace(" ", "-")}.png`,
+          ),
+        });
+      }
+    });
+    test("cambiar de empresa descarta una respuesta de chat que llega tarde", async ({
+      page,
+    }) => {
+      const f = await copilotWorkspace(page),
+        second = "20000000-0000-4000-8000-000000000097";
+      f.controls.additionalOrganizations.push({
+        id: second,
+        name: "Segunda empresa del copiloto",
+      });
+      let release!: () => void,
+        started = false,
+        finished = false;
+      const held = new Promise<void>((r) => {
+        release = r;
+      });
+      await page.route("**/functions/v1/company-copilot", async (route) => {
+        const body = route.request().postDataJSON();
+        if (body?.action === "chat" && body.organization_id === org) {
+          started = true;
+          await held;
+          try {
+            await route.fulfill({
+              contentType: "application/json",
+              headers: {
+                "Access-Control-Allow-Origin": "http://127.0.0.1:4194",
+              },
+              body: JSON.stringify({
+                request_id: body.request_id,
+                organization_id: org,
+                state: "complete",
+                reply: "RESPUESTA-PRIVADA-EMPRESA-ANTERIOR",
+                actions: [],
+              }),
+            });
+          } catch {
+            /* Aborted scoped request. */
+          } finally {
+            finished = true;
+          }
+        } else await route.fallback();
+      });
+      const panel = await openCopilot(page);
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill("Consulta privada para la primera empresa.");
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await expect.poll(() => started).toBe(true);
+      await page
+        .getByLabel("Empresa activa", { exact: true })
+        .selectOption(second);
+      await expect(panel).toContainText("Segunda empresa del copiloto");
+      release();
+      await expect.poll(() => finished).toBe(true);
+      await expect(
+        panel.getByText("Asistente conectado", { exact: true }),
+      ).toBeVisible();
+      await expect(panel.getByRole("log")).not.toContainText(
+        "RESPUESTA-PRIVADA-EMPRESA-ANTERIOR",
+      );
+      await expect(panel.getByLabel("Tu mensaje al asistente")).toHaveValue("");
+    });
+  });
+}

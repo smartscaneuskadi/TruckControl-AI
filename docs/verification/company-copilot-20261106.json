@@ -1,0 +1,41 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "checked_at": "2026-11-06 16:13:34.773813+00",
+  "migration": {
+    "local_file": "supabase/migrations/20261106150440_universal_company_copilot.sql",
+    "remote_version": "20261106161253",
+    "sha256": "6c66e584ebb510abde83b6d89b277d58fd75b98856c9aef0657963b9d98c258a",
+    "applied_once": true
+  },
+  "native_rollback": {
+    "checked_at": "2026-11-06 16:13:34.773813+00",
+    "migrations": 59,
+    "fixture_users_remaining": 0,
+    "fixture_companies_remaining": 0,
+    "copilot_turns": 0,
+    "copilot_actions": 0,
+    "payments_enabled": false,
+    "prices_are_examples": true
+  },
+  "native_test_sql_sha256": "20d4aca5e7aeb5e4a2d6f54ba75638e5b665bd568f7328a24914260a9ce5945f",
+  "existing_local_sql_files_intact": 35,
+  "retained_original_tests": 64,
+  "retained_hash_files": 11,
+  "unit_sql_checks": 727,
+  "saas_browser_checks": 118,
+  "browser_profiles": "Android and Windows emulations; speech APIs mocked for permission/callback tests",
+  "physical_devices": false,
+  "deno_typecheck": "Deno 2.9.6 passed",
+  "security_before": [
+    "auth_leaked_password_protection"
+  ],
+  "security_after": [
+    "auth_leaked_password_protection"
+  ],
+  "new_paid_service": false,
+  "real_invoice_issued": false,
+  "tax_submission": false,
+  "real_email_sent": false,
+  "live_model_acceptance": "Pending; only synthetic company data, at most one call under the existing 10 USD monthly budget.",
+  "production_before": 30
+}
