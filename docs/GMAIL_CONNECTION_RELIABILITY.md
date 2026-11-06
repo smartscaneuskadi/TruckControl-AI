@@ -41,3 +41,9 @@ Los resultados completos, fuente congelada, CI y publicación se registran en el
 Los cuatro alcances fueron guardados en Google el 05/11. El último estado observado allí es Pruebas, sin solicitud de revisión enviada. Siguen pendientes buzón empresarial de prueba autorizado, vídeo real, declaración del titular y completar la revisión; la evaluación anual aplicable requiere presupuesto o excepción confirmada por Google.
 
 TinyFish mantiene el límite acumulado autorizado de **2 USD**, con estimación conservadora previa de 1,8802666667 USD. Se ha solicitado ampliar el máximo en hasta 1 USD; mientras no haya respuesta expresa, no se inicia otra automatización pagada. La consulta gratuita de tarifas no autoriza consumo adicional. IA conserva 10 USD/mes antes de impuestos, sin nuevas llamadas al proveedor en estas pruebas.
+
+## Fiabilidad del CI
+
+La ejecución posterior por push 42171431103 supera los 883 controles y sus seis perfiles públicos coinciden con la fuente publicada de v28. El duplicado del PR alcanza el límite global de quince minutos: la descarga de paquetes desde azure.archive.ubuntu.com consume 630 segundos antes de empezar los navegadores. Se solicita un reintento normal y se corrige el origen de esa demora en el workflow: únicamente ese espejo Ubuntu pasa al archivo oficial archive.ubuntu.com por HTTPS. Se mantienen fuentes, componentes y verificación de firmas, así como todas las pruebas y el límite global de quince minutos. La instalación del navegador tiene un máximo de cinco minutos para fallar de forma visible si vuelve a bloquearse.
+
+El ajuste afecta solo al runner efímero de GitHub Actions. No cambia el entorno alojado, la red del workspace, dependencias de la app, datos o credenciales. El código de la aplicación sigue coincidiendo con la fuente congelada 709a060. La revisión final de documentación y CI no se vuelve a presentar como una fuente desplegada nueva.

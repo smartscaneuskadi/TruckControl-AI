@@ -253,5 +253,13 @@
     "https_file_hashes_after_publication": 75,
     "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/32/checks"
   },
-  "source_branch": "deploy/gmail-reliability-20261106"
+  "source_branch": "deploy/gmail-reliability-20261106",
+  "production_source_manifest_only_diff_scope": "Release code f5b9c98 compared with frozen 709a060; later documentation and CI are tracked separately.",
+  "postpublication_runtime_tree_equal": true,
+  "postpublication_allowed_differences": [
+    "docs/**",
+    "AGENTS.md",
+    ".github/workflows/ci.yml",
+    ".openai/hosting.json"
+  ]
 }
