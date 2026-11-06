@@ -413,6 +413,7 @@ try {
         let tyresOfflineChecked = false;
         let personalMailOfflineChecked = false;
         let companyFiscalChecked = false;
+        let companyCopilotChecked = false;
         if (config.expected_universal_mail === true) {
           await page.goto(`${target.origin}/#/invoices`, {
             waitUntil: "networkidle",
@@ -699,6 +700,62 @@ try {
                 })
                 .waitFor();
             }
+            if (config.expected_company_copilot === true) {
+              await page.evaluate(() => {
+                location.hash = "/assistant";
+              });
+              const copilot = page.getByRole("region", {
+                name: "Asistente de empresa",
+                exact: true,
+              });
+              await copilot.waitFor();
+              const description = await copilot.innerText();
+              if (
+                ![
+                  "Tu asistente por voz y texto",
+                  "Vista previa",
+                  "camiones",
+                  "conductores",
+                  "clientes",
+                  "gastos",
+                  "Revisa cada propuesta",
+                ].every((text) => description.includes(text)) ||
+                (await copilot
+                  .getByRole("button", {
+                    name: "Enviar al asistente",
+                    exact: true,
+                  })
+                  .count())
+              )
+                throw Error(
+                  "Published copilot demo is incomplete or exposes an active AI operation",
+                );
+              if (
+                await page.evaluate(
+                  () => document.body.scrollWidth > innerWidth + 1,
+                )
+              )
+                throw Error("Published copilot preview exceeds viewport");
+              await copilot
+                .getByRole("heading", {
+                  name: "Tu asistente por voz y texto",
+                  exact: true,
+                })
+                .scrollIntoViewIfNeeded();
+              await page.screenshot({
+                path: `${dir}/${name}-copilot-demo.png`,
+              });
+              companyCopilotChecked = true;
+              await page.evaluate(() => {
+                location.hash = "/invoices";
+              });
+              await page
+                .getByRole("region", {
+                  name: "Bandeja de facturas",
+                  exact: true,
+                })
+                .waitFor();
+            }
             const after = await page.evaluate(
               () =>
                 JSON.parse(localStorage.getItem("truckcontrol.demo.v1")).entries
@@ -785,6 +842,7 @@ try {
           tyresOffline: tyresOfflineChecked,
           personalMailOffline: personalMailOfflineChecked,
           companyFiscalPreparation: companyFiscalChecked,
+          companyCopilot: companyCopilotChecked,
           passed: true,
         });
         console.log(
