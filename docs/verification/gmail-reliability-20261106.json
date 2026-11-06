@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-06",
+  "release": "0.5.16-rc.1",
+  "base_main": "5cce6121becef82b77936fb87f90579426043fca",
+  "scope": "Browser OAuth return reliability; not real mailbox acceptance or Google public verification",
+  "regressions_before_fix": 3,
+  "local": {
+    "unit_and_sql_passed": 625,
+    "gmail_browser_passed": 26,
+    "global_admin_browser_passed": 2,
+    "profiles": [
+      "Android emulated",
+      "Windows emulated"
+    ],
+    "themes": [
+      "Fleet Light",
+      "Fleet Cockpit"
+    ],
+    "axe_violations": 0,
+    "horizontal_overflow": false,
+    "retained_original_tests": 64,
+    "retained_file_hashes": 11,
+    "google_and_ai_simulated": true,
+    "live_mail_reads": 0,
+    "live_model_calls": 0
+  },
+  "native": {
+    "project": "kkkemaycedexymrpaqtp",
+    "checked_at": "2026-11-06 05:27:39.161628+00",
+    "gmail_connections": 0,
+    "connected": 0,
+    "pending_authorizations": 0,
+    "active_oauth_states": 0,
+    "migrations": 57,
+    "mutations": 0,
+    "function_deployments": 0
+  },
+  "security": {
+    "new_web_storage": false,
+    "raw_callback_values_shown": false,
+    "malformed_ticket_sent": false,
+    "success_requires_explicit_server_confirmation": true,
+    "duplicate_return_reconsumed": false,
+    "global_admin_completes_company_oauth": false,
+    "demo_completes_company_oauth": false,
+    "tenant_permissions_changed": false,
+    "accounting_changed": false,
+    "credentials_changed": false
+  },
+  "google": {
+    "last_observed": "2026-11-05",
+    "last_observed_audience": "testing",
+    "scopes_already_declared": 4,
+    "public_review_submitted": false,
+    "new_metered_automation_runs": 0,
+    "tinyfish_authorized_total_usd": 2,
+    "proposed_additional_usd_pending_owner": 1
+  },
+  "limits": [
+    "Providers are simulated in these tests",
+    "No real enterprise consent or invoice acceptance",
+    "No actual consent video or public Google approval",
+    "Physical Android/Windows devices not available"
+  ]
+}

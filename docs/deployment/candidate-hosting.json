@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "fd336b85bc3f44b3b09a59e5367270085a501075",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_79e759872b808191896bd2b8a202b8f4",
-  "published_version_number": 26,
-  "deployment_id": "appgdep_6aea7354e9708191943b9404c06f379d",
-  "previous_deployment_id": "appgdep_6ae99c63d17481918575af737f2a0152",
+  "published_commit": "a9621598f31cc05affc3c724dc8b7f90cbeb9137",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_2b2226ce8c288191b29d5b9cd2127216",
+  "published_version_number": 27,
+  "deployment_id": "appgdep_6aed0c74fb308191a382dead1ba32083",
+  "previous_deployment_id": "appgdep_6aea7354e9708191943b9404c06f379d",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-03T23:50:58.817031+00:00",
+  "deployed_at": "2026-11-05T23:08:50.549454+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 41741049424,
+  "source_ci_run": 42126083754,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "e63713724349c644f417303b2d7bc7123de7fcf6",
+  "source_ci_commit": "873039e86b5942f2bb691ed765eb8d4077330761",
   "production_source_manifest_only_diff": true,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 25,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_79fc05e4d06c8191a8d39088e268e7c0",
-    "source_commit": "4bc2e841f5f67ba121385c4768911992bc5d666f",
-    "deployment_id": "appgdep_6ae99c63d17481918575af737f2a0152",
-    "app_version": "0.5.13-rc.2"
+    "version": 26,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_79e759872b808191896bd2b8a202b8f4",
+    "source_commit": "fd336b85bc3f44b3b09a59e5367270085a501075",
+    "deployment_id": "appgdep_6aea7354e9708191943b9404c06f379d",
+    "app_version": "0.5.14-rc.1"
   },
-  "source_deployment_ci_run": 41741142765,
-  "app_version": "0.5.14-rc.1",
+  "source_deployment_ci_run": 42126057584,
+  "app_version": "0.5.15-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -161,6 +161,13 @@
       "source_commit": "4bc2e841f5f67ba121385c4768911992bc5d666f",
       "deployment_id": "appgdep_6ae99c63d17481918575af737f2a0152",
       "app_version": "0.5.13-rc.2"
+    },
+    {
+      "version": 26,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_79e759872b808191896bd2b8a202b8f4",
+      "source_commit": "fd336b85bc3f44b3b09a59e5367270085a501075",
+      "deployment_id": "appgdep_6aea7354e9708191943b9404c06f379d",
+      "app_version": "0.5.14-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -226,17 +233,18 @@
     "time_zone": "Europe/Madrid",
     "action": "sync_period"
   },
-  "ci_scope_note": "Code e637137 and exact source fd336b8 pass 860 checks. Their six live profiles verified v25 before publication; v26 acceptance is recorded in PR #30 checks. Browser callback fix adds only the exact production hostname already allowed by backend. No native/schema/entitlement/budget changes.",
+  "ci_scope_note": "Code 873039e and exact production source a962159 each pass 863 checks. Their six live profiles verified v26 before publication; v27 acceptance is recorded in PR #31 checks. Source differs only in production hosting manifest. No native/schema/entitlement/accounting/budget changes.",
   "final_release_verification": {
-    "code_commit": "e63713724349c644f417303b2d7bc7123de7fcf6",
-    "source_commit": "fd336b85bc3f44b3b09a59e5367270085a501075",
+    "code_commit": "873039e86b5942f2bb691ed765eb8d4077330761",
+    "source_commit": "a9621598f31cc05affc3c724dc8b7f90cbeb9137",
     "source_build": true,
-    "checks_before_publication": 860,
+    "checks_before_publication": 863,
     "company_browser_passed": 32,
+    "saas_browser_passed": 70,
     "native_function_version": 13,
     "migrations": 57,
-    "https_file_hashes_after_publication": 72,
-    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/30/checks"
+    "https_file_hashes_after_publication": 75,
+    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/31/checks"
   },
-  "source_branch": "deploy/google-public-gmail-20261103"
+  "source_branch": "deploy/gmail-acceptance-20261105"
 }

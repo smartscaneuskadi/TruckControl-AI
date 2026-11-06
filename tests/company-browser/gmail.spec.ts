@@ -30,13 +30,23 @@ function user(id: string) {
     identities: [],
   };
 }
-async function fixture(page: Page, periodReady = true) {
+async function fixture(
+  page: Page,
+  periodReady = true,
+  options: {
+    completeBody?: Record<string, unknown>;
+    completeStatus?: number;
+    connectionState?: "connected" | "reauthorize";
+    connectionReadFails?: boolean;
+    tickets?: string[];
+  } = {},
+) {
   const calls: {
     path: string;
     data: Record<string, unknown> | null;
     actor: string | null;
   }[] = [];
-  let connected = false;
+  let connected = Boolean(options.connectionState);
   const metadata = new Map<string, Record<string, unknown>>();
   const fixtureUser = (id: string) => ({
     ...user(id),
@@ -61,6 +71,7 @@ async function fixture(page: Page, periodReady = true) {
     const data = req.postDataJSON();
     calls.push({ path: url.pathname, data, actor });
     let body: unknown = [];
+    let responseStatus = 200;
     if (url.pathname === "/auth/v1/token") {
       const id = data.email === "a@example.com" ? ownerA : ownerB;
       body = {
@@ -102,12 +113,16 @@ async function fixture(page: Page, periodReady = true) {
           ? [
               {
                 email: "company-a2@example.com",
-                status: "connected",
+                status: options.connectionState ?? "connected",
                 connected_at: "2026-11-01T00:00:00Z",
                 last_sync_at: null,
               },
             ]
           : [];
+      if (options.connectionReadFails) {
+        responseStatus = 503;
+        body = { message: "Synthetic connection read unavailable" };
+      }
     } else if (url.pathname === "/functions/v1/company-gmail") {
       expect(actor === ownerA ? [orgA, orgA2] : [orgB]).toContain(
         data.organization_id,
@@ -115,9 +130,11 @@ async function fixture(page: Page, periodReady = true) {
       if (data.action === "complete") {
         expect(actor).toBe(ownerA);
         expect(data.organization_id).toBe(orgA2);
-        expect(data.ticket).toBe(ticket);
-        connected = true;
-        body = { connected: true };
+        expect(options.tickets ?? [ticket]).toContain(data.ticket);
+        const result = options.completeBody ?? { connected: true };
+        responseStatus = options.completeStatus ?? 200;
+        connected = responseStatus === 200 && result.connected === true;
+        body = result;
       } else if (data.action === "sync_period") {
         expect(periodReady).toBe(true);
         body = {
@@ -133,7 +150,11 @@ async function fixture(page: Page, periodReady = true) {
           ...(periodReady ? { received_period_policy: mailPeriodPolicy } : {}),
         };
     }
-    await route.fulfill({ status: 200, headers, body: JSON.stringify(body) });
+    await route.fulfill({
+      status: responseStatus,
+      headers,
+      body: JSON.stringify(body),
+    });
   });
   return calls;
 }
@@ -177,6 +198,299 @@ test("el regreso de Google finaliza en la empresa que inició la conexión y lim
   await expect(
     page.getByRole("region", { name: "Tu correo, conectado a tu empresa" }),
   ).toBeVisible();
+});
+
+test("la demostración explica que el retorno requiere la cuenta de empresa", async ({
+  page,
+}) => {
+  const calls = await fixture(page);
+  await page.goto(`/#/invoices?gmail_ticket=${ticket}`);
+  const result = page.getByRole("alert", {
+    name: "Resultado de la autorización Gmail",
+  });
+  await expect(result).toContainText("no puede finalizar en la demostración");
+  await expect(page).toHaveURL(/#\/invoices$/);
+  await expect(
+    page
+      .getByRole("button", { name: "Acceso de empresas", exact: true })
+      .last(),
+  ).toBeVisible();
+  expect(calls.some((c) => c.path === "/functions/v1/company-gmail")).toBe(
+    false,
+  );
+});
+
+test("el error de Google permanece visible después de cargar y comprobar la empresa", async ({
+  page,
+}, info) => {
+  const calls = await fixture(page);
+  await signIn(page);
+  await page.getByLabel("Empresa activa").selectOption(orgA2);
+  await page.goto("/#/invoices?gmail_error=declined");
+  const connect = page.getByRole("button", {
+    name: "Conectar Gmail de esta empresa",
+    exact: true,
+  });
+  await expect(connect).toBeEnabled();
+  const result = page.getByRole("alert", {
+    name: "Resultado de la autorización Gmail",
+  });
+  await expect(result).toContainText("Has cancelado la autorización");
+  await expect(page).toHaveURL(/#\/invoices$/);
+  await page
+    .getByRole("button", { name: "Comprobar conexión", exact: true })
+    .click();
+  await expect(connect).toBeEnabled();
+  await expect(result).toBeVisible();
+  expect(calls.some((c) => c.data?.action === "complete")).toBe(false);
+  for (const theme of ["light", "cockpit"]) {
+    await page
+      .getByRole("button", { name: "Cambiar apariencia", exact: true })
+      .click();
+    const appearance = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+    });
+    await appearance
+      .getByRole("radio", {
+        name: theme === "light" ? "Fleet Light" : "Fleet Cockpit",
+        exact: true,
+      })
+      .check();
+    await appearance
+      .getByRole("button", { name: "Aplicar apariencia" })
+      .click();
+    await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .include('[aria-label="Resultado de la autorización Gmail"]')
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await result.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: info.outputPath(`gmail-authorization-${theme}.png`),
+    });
+  }
+  await result
+    .getByRole("button", { name: "Cerrar aviso", exact: true })
+    .click();
+  await expect(result).toHaveCount(0);
+});
+
+test("un nuevo consentimiento puede recuperarse sin recargar tras una respuesta fallida", async ({
+  page,
+}) => {
+  const nextTicket = "u".repeat(43);
+  const options = {
+    completeBody: { connected: false },
+    tickets: [ticket, nextTicket],
+  };
+  const calls = await fixture(page, true, options);
+  await signIn(page);
+  await page.getByLabel("Empresa activa").selectOption(orgA2);
+  await page.goto(`/#/invoices?gmail_ticket=${ticket}`);
+  const result = page.getByRole("alert", {
+    name: "Resultado de la autorización Gmail",
+  });
+  await expect(result).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Conectar Gmail de esta empresa",
+      exact: true,
+    }),
+  ).toBeEnabled();
+  const originalDocument = await page.evaluate(() => performance.timeOrigin);
+  options.completeBody = { connected: true };
+  await page.evaluate((value) => {
+    location.hash = `/invoices?gmail_ticket=${value}`;
+  }, nextTicket);
+  await expect(
+    page.getByText("company-a2@example.com", { exact: true }),
+  ).toBeVisible();
+  await expect(result).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Importar facturas", exact: true }),
+  ).toBeEnabled();
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(
+    originalDocument,
+  );
+  expect(
+    calls
+      .filter((c) => c.data?.action === "complete")
+      .map((c) => c.data?.ticket),
+  ).toEqual([ticket, nextTicket]);
+});
+
+test("un retorno malformado o desconocido no expone su contenido ni envía tickets", async ({
+  page,
+}) => {
+  const calls = await fixture(page);
+  await signIn(page);
+  await page.getByLabel("Empresa activa").selectOption(orgA2);
+  await page.goto("/#/invoices");
+  await expect(
+    page.getByRole("button", {
+      name: "Conectar Gmail de esta empresa",
+      exact: true,
+    }),
+  ).toBeEnabled();
+  const result = page.getByRole("alert", {
+    name: "Resultado de la autorización Gmail",
+  });
+  const untrusted = "synthetic-private-value-<img src=x>";
+  for (const field of ["gmail_ticket", "gmail_error"]) {
+    await page.evaluate(
+      ({ field, value }) => {
+        location.hash = `/invoices?${field}=${encodeURIComponent(value)}`;
+      },
+      { field, value: untrusted },
+    );
+    await expect(result).toContainText(
+      "No se ha completado la autorización de Gmail",
+    );
+    await expect(page).toHaveURL(/#\/invoices$/);
+    await expect(page.locator("body")).not.toContainText(untrusted);
+    expect(calls.some((c) => c.data?.action === "complete")).toBe(false);
+    await result
+      .getByRole("button", { name: "Cerrar aviso", exact: true })
+      .click();
+    await expect(result).toHaveCount(0);
+  }
+});
+
+test("el retorno de Google en una ventana ya abierta finaliza una sola vez", async ({
+  page,
+}) => {
+  const calls = await fixture(page);
+  await signIn(page);
+  await page.getByLabel("Empresa activa").selectOption(orgA2);
+  await page.goto("/#/invoices");
+  await expect(
+    page.getByRole("button", {
+      name: "Conectar Gmail de esta empresa",
+      exact: true,
+    }),
+  ).toBeEnabled();
+  const originalDocument = await page.evaluate(() => performance.timeOrigin);
+  await page.evaluate((value) => {
+    location.hash = `/invoices?gmail_ticket=${value}`;
+  }, ticket);
+  await expect(
+    page.getByText("company-a2@example.com", { exact: true }),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/#\/invoices$/);
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(
+    originalDocument,
+  );
+  expect(calls.filter((c) => c.data?.action === "complete")).toHaveLength(1);
+  await page.evaluate((value) => {
+    location.hash = `/invoices?gmail_ticket=${value}`;
+  }, ticket);
+  await expect(page).toHaveURL(/#\/invoices$/);
+  await expect(
+    page.getByRole("button", { name: "Importar facturas", exact: true }),
+  ).toBeEnabled();
+  expect(calls.filter((c) => c.data?.action === "complete")).toHaveLength(1);
+});
+
+for (const failure of [
+  {
+    name: "respuesta sin confirmación",
+    status: 200,
+    body: { connected: false },
+  },
+  {
+    name: "cuenta o empresa distinta",
+    status: 403,
+    body: { error: "expired_or_wrong_account" },
+  },
+]) {
+  test(`no anuncia Gmail conectado ante ${failure.name}`, async ({ page }) => {
+    const calls = await fixture(page, true, {
+      completeBody: failure.body,
+      completeStatus: failure.status,
+    });
+    await signIn(page);
+    await page.getByLabel("Empresa activa").selectOption(orgA2);
+    await page.goto(`/#/invoices?gmail_ticket=${ticket}`);
+    const result = page.getByRole("alert", {
+      name: "Resultado de la autorización Gmail",
+    });
+    await expect(result).toContainText("No se ha confirmado la vinculación");
+    await expect(
+      page.getByRole("button", {
+        name: "Conectar Gmail de esta empresa",
+        exact: true,
+      }),
+    ).toBeEnabled();
+    await expect(
+      page.getByText("Gmail conectado a esta empresa.", { exact: true }),
+    ).toHaveCount(0);
+    await expect(page).toHaveURL(/#\/invoices$/);
+    await page
+      .getByRole("button", { name: "Comprobar conexión", exact: true })
+      .click();
+    await expect(result).toBeVisible();
+    expect(calls.filter((c) => c.data?.action === "complete")).toHaveLength(1);
+  });
+}
+
+test("un permiso retirado se muestra por renovar y no como Gmail vinculado", async ({
+  page,
+}) => {
+  const calls = await fixture(page, true, { connectionState: "reauthorize" });
+  await signIn(page);
+  await page.getByLabel("Empresa activa").selectOption(orgA2);
+  await page.goto("/#/invoices");
+  await expect(
+    page.getByText("Renovar permiso de Gmail", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Gmail vinculado", { exact: true })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByRole("button", { name: "Importar facturas", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Cambiar o renovar cuenta", exact: true }),
+  ).toBeEnabled();
+  expect(calls.some((c) => c.data?.action === "sync_period")).toBe(false);
+});
+
+test("un fallo al consultar el vínculo no se presenta como Gmail sin conectar", async ({
+  page,
+}) => {
+  const calls = await fixture(page, true, { connectionReadFails: true });
+  await signIn(page);
+  await page.getByLabel("Empresa activa").selectOption(orgA2);
+  await page.goto("/#/invoices");
+  await expect(
+    page.getByText("No se ha podido cargar la bandeja de esta empresa.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Gmail sin comprobar", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Gmail sin conectar", { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", {
+      name: "Conectar Gmail de esta empresa",
+      exact: true,
+    }),
+  ).toBeDisabled();
+  expect(
+    calls.some(
+      (c) => c.data?.action === "start" || c.data?.action === "sync_period",
+    ),
+  ).toBe(false);
 });
 test("la lectura de facturas confirma treinta días o un período de hasta doce meses sin contabilizar", async ({
   page,

@@ -50,6 +50,28 @@ export function AdminConsole({
   const [revision, setRevision] = useState(0);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [plan, setPlan] = useState<Plan | null>(null);
+  const [companyMailReturn, setCompanyMailReturn] = useState(false);
+  useEffect(() => {
+    const capture = () => {
+      const [route, query = ""] = window.location.hash.split("?");
+      const params = new URLSearchParams(query);
+      if (
+        route !== "#/invoices" &&
+        !params.has("gmail_ticket") &&
+        !params.has("gmail_error")
+      )
+        return;
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
+      setCompanyMailReturn(true);
+    };
+    window.addEventListener("hashchange", capture);
+    capture();
+    return () => window.removeEventListener("hashchange", capture);
+  }, []);
   useEffect(() => {
     if (!client) return;
     let active = true;
@@ -172,6 +194,30 @@ export function AdminConsole({
           </Button>
         </div>
       </div>
+      {companyMailReturn && (
+        <section
+          className="card admin-section"
+          role="alert"
+          aria-label="Acceso al correo de empresa"
+        >
+          <h2>Correo y facturas de empresa</h2>
+          <p>
+            Estás en la administración global. Cada empresa conecta su buzón
+            desde su propia cuenta administradora, en Correo y facturas.
+          </p>
+          <p>
+            Para finalizar una autorización de Gmail, utiliza la misma cuenta y
+            empresa que la iniciaron. No se ha vinculado un buzón desde este
+            panel.
+          </p>
+          <Button
+            variant="secondary"
+            onClick={() => setCompanyMailReturn(false)}
+          >
+            Cerrar aviso
+          </Button>
+        </section>
+      )}
       {error && (
         <p role="alert" className="form-error">
           {error}

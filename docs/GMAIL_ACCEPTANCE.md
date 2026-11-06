@@ -1,6 +1,6 @@
 # Gmail empresarial: preparación y prueba de facturas
 
-Continuación del 05/11/2026, versión de código **0.5.15-rc.1**. Se conserva la producción v26 hasta superar CI y publicar su sucesora. [Expediente Google](GOOGLE_PUBLIC_VERIFICATION.md).
+Continuación del 05/11/2026, versión de código **0.5.15-rc.1**. Publicada como versión alojada **27** en https://truckcontrolai.com, conservando v26 y demo6 para recuperación. Código y fuente exacta superan 863 controles; 75 hashes HTTPS coinciden. Los seis perfiles públicos previos comprobaron v26; la aceptación posterior de v27 queda en los checks del [PR #31](https://github.com/smartscaneuskadi/TruckControl-AI/pull/31/checks). [Recibo](verification/gmail-acceptance-publication-20261105.json). [Expediente Google](GOOGLE_PUBLIC_VERIFICATION.md).
 
 ## Configuración real observada
 

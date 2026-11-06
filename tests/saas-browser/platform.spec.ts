@@ -782,6 +782,85 @@ async function openProviders(page: Page) {
     }),
   ).toBeEnabled();
 }
+test("la administración global explica el enlace de Gmail de empresa y limpia el retorno", async ({
+  page,
+}, info) => {
+  const f = await fixtures(page);
+  await openProviders(page);
+  const notice = page.getByRole("alert", {
+    name: "Acceso al correo de empresa",
+  });
+  await page.evaluate(() => {
+    location.hash = "/invoices";
+  });
+  await expect(notice).toContainText("Estás en la administración global");
+  await expect(notice).toContainText("misma cuenta y empresa");
+  await expect(page).toHaveURL(/\/$/);
+  await notice
+    .getByRole("button", { name: "Cerrar aviso", exact: true })
+    .click();
+  const fakeTicket = "synthetic-capability-only-".padEnd(43, "x");
+  await page.evaluate((value) => {
+    location.hash = `/invoices?gmail_ticket=${value}`;
+  }, fakeTicket);
+  await expect(notice).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator("body")).not.toContainText(fakeTicket);
+  await notice
+    .getByRole("button", { name: "Cerrar aviso", exact: true })
+    .click();
+  await page.goto(`/?return-test=1#/invoices?gmail_ticket=${fakeTicket}`);
+  await expect(notice).toBeVisible();
+  await expect(page).toHaveURL(/\?return-test=1$/);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  for (const theme of ["light", "cockpit"]) {
+    await page.getByRole("button", { name: "Apariencia", exact: true }).click();
+    const appearance = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+    });
+    await appearance
+      .getByRole("radio", {
+        name: theme === "light" ? "Fleet Light" : "Fleet Cockpit",
+        exact: true,
+      })
+      .check();
+    await appearance
+      .getByRole("button", { name: "Aplicar apariencia" })
+      .click();
+    await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .include('[aria-label="Acceso al correo de empresa"]')
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    expect(
+      await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+    ).toBe(true);
+    await notice.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: info.outputPath(`global-admin-gmail-${theme}.png`),
+    });
+  }
+  expect(f.calls.some((c) => c.path === "/functions/v1/company-gmail")).toBe(
+    false,
+  );
+  expect(
+    f.calls.some(
+      (c) =>
+        c.path.endsWith("/tc_provider_control") &&
+        c.body?.p_action !== "status",
+    ),
+  ).toBe(false);
+});
+
 test("las credenciales preparadas no se presentan como un buzón de empresa conectado", async ({
   page,
 }, info) => {
