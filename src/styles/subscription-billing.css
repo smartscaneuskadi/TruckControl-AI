@@ -2,6 +2,7 @@
   padding: clamp(20px, 3vw, 30px);
   margin: 24px 0;
   border-color: var(--border);
+  color: var(--text);
 }
 .subscription-billing-heading,
 .subscription-billing-parties h3,

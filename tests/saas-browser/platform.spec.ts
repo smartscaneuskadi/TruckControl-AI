@@ -1787,6 +1787,7 @@ test("publica los datos fiscales completos del proveedor antes del alta y en el 
       .getByRole("button", { name: "Aplicar apariencia" })
       .click();
     await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+    await details.scrollIntoViewIfNeeded();
     expect(
       (
         await new AxeBuilder({ page })
