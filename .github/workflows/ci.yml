@@ -38,6 +38,7 @@ jobs:
           import re
 
           sources = [Path('/etc/apt/sources.list')]
+          sources.extend(Path('/etc/apt').glob('apt-mirrors*.txt'))
           for extension in ('*.list', '*.sources'):
               sources.extend(Path('/etc/apt/sources.list.d').glob(extension))
           changed = 0
@@ -46,13 +47,16 @@ jobs:
                   continue
               original = path.read_text()
               updated = re.sub(
-                  r'https?://azure\.archive\.ubuntu\.com/ubuntu(?=[/\s]|$)',
+                  r'https?://(?:azure\.)?archive\.ubuntu\.com/ubuntu(?=[/\s]|$)',
                   'https://archive.ubuntu.com/ubuntu',
                   original,
               )
               if updated != original:
                   path.write_text(updated)
                   changed += 1
+          for path in sources:
+              if path.is_file() and 'azure.archive.ubuntu.com' in path.read_text():
+                  raise RuntimeError('An Ubuntu source still uses the stalled Azure mirror')
           print(f'Official Ubuntu archive configured in {changed} source files')
           PY
       - name: Install Chromium and its system dependencies
