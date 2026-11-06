@@ -51,6 +51,10 @@ Las capturas y Axe comprueban ambos temas en Android/Windows emulados. Una prime
 
 La migración se generó con CLI 3.0.0, usando su directorio documentado `SUPABASE_HOME` dentro del espacio de trabajo para resolver un directorio de usuario de solo lectura. No se modifica HOME, el proyecto enlazado, el config existente ni credenciales; no se utiliza `db push` o una operación CLI sobre un proyecto alojado. Las operaciones nativas seleccionan exclusivamente el proyecto de TruckControl. [Evidencia](verification/company-fiscal-options-20261106.json).
 
+## Publicación y recuperación
+
+Disponible en https://truckcontrolai.com, versión alojada 30 / 0.5.18-rc.1, fuente `6a1e8f4dab2db4fc2b24e79b1141c6473d95169b`. Código y fuente exacta pasan 941 controles por ejecución, con 75 hashes HTTPS coincidentes y demo6 conservada. Las pruebas previas comprobaron la publicación29; la aceptación pública de esta entrega se registra en los [checks de PR34](https://github.com/smartscaneuskadi/TruckControl-AI/pull/34/checks), que exigen la vista previa fiscal en seis perfiles Android/Windows y temas. Version29 y su fuente permanecen disponibles para recuperación, sin borrar la migración, perfiles o auditoría.
+
 ## Para habilitar emisión real en una fase posterior
 
 Conectar un proveedor compatible y autorizado para el régimen elegido, comprobar identidad/representación, certificados o declaraciones aplicables y sus requisitos territoriales. Verificar en su entorno de prueba firma, numeración, registro, entrega, rectificaciones, errores/reintentos y aislamiento entre empresas antes de abrir producción. No activar un proveedor de coste variable sin presupuesto aprobado. La empresa debe autorizar su propia conexión; las credenciales nunca se piden en el chat ni en estos campos de preferencias.

@@ -56,9 +56,21 @@
   "retained_original_tests": 64,
   "retained_hash_files": 11,
   "physical_devices": false,
-  "fiscal_modes": ["ticketbai", "verifactu", "no_verifactu", "external"],
-  "ticketbai_territories": ["araba", "bizkaia", "gipuzkoa"],
-  "document_formats": ["pdf", "facturae"],
+  "fiscal_modes": [
+    "ticketbai",
+    "verifactu",
+    "no_verifactu",
+    "external"
+  ],
+  "ticketbai_territories": [
+    "araba",
+    "bizkaia",
+    "gipuzkoa"
+  ],
+  "document_formats": [
+    "pdf",
+    "facturae"
+  ],
   "emission_available": false,
   "limitation": "Preparation and per-company permissions only. Certified/compatible provider connection, fiscal acceptance, issuance and submission remain pending per company.",
   "native_http": {
@@ -88,5 +100,74 @@
     "real_invoice": false,
     "real_mail": false
   },
-  "local_previous_sql_files_intact": 34
+  "local_previous_sql_files_intact": 34,
+  "publication": {
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_fa5189dbb4fc8191beda8257514bb14c",
+    "version_number": 30,
+    "deployment_id": "appgdep_6aedb712f3fc819194d34ca774e6b912",
+    "status": "succeeded",
+    "url": "https://truckcontrolai.com",
+    "source_commit": "6a1e8f4dab2db4fc2b24e79b1141c6473d95169b",
+    "updated_at": "2026-11-06T11:16:52.024996+00:00",
+    "archive_storage": {
+      "archive_format": "tar",
+      "sediment_file_id": "file_00000000b6ec8210a0dfebdfb9a7bcc1",
+      "content_hash": "sha256:aa67d4cf67ab5fcb72b3440194a8b69d3721b209c9015ef8403138f6bb76ab64",
+      "size_bytes": 2252800,
+      "file_count": 26
+    },
+    "code_commit": "07e355f90d91ecc51823286cfd988431e4e43a51",
+    "manifest_only_difference": true,
+    "app_version": "0.5.18-rc.1",
+    "archive": "/workspace/artifacts/truckcontrol-company-fiscal-20261106/production-6a1e8f4.tar.gz",
+    "archive_sha256": "b4d222351d20fabd4006ae448e5f731ef95c53f3ee08f7b2fd9e3b7b6d6948b4",
+    "archive_bytes": 1200289,
+    "dist_files": 25,
+    "archive_entries": 26,
+    "ci_before_publication": [
+      {
+        "conclusion": "success",
+        "createdAt": "2026-11-06T11:02:50Z",
+        "databaseId": 42207256558,
+        "headSha": "07e355f90d91ecc51823286cfd988431e4e43a51",
+        "status": "completed",
+        "updatedAt": "2026-11-06T11:10:26Z",
+        "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42207256558"
+      },
+      {
+        "conclusion": "success",
+        "createdAt": "2026-11-06T11:06:35Z",
+        "databaseId": 42207748455,
+        "headSha": "07e355f90d91ecc51823286cfd988431e4e43a51",
+        "status": "completed",
+        "updatedAt": "2026-11-06T11:13:04Z",
+        "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42207748455"
+      },
+      {
+        "conclusion": "success",
+        "createdAt": "2026-11-06T11:07:02Z",
+        "databaseId": 42207805404,
+        "headSha": "6a1e8f4dab2db4fc2b24e79b1141c6473d95169b",
+        "status": "completed",
+        "updatedAt": "2026-11-06T11:14:37Z",
+        "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42207805404"
+      }
+    ],
+    "checks_per_run": 941,
+    "breakdown": {
+      "unit_sql": 659,
+      "python": 32,
+      "demo_browser": 64,
+      "company_browser": 50,
+      "saas_browser": 96,
+      "candidate_browser": 14,
+      "production_browser": 20,
+      "public_profiles": 6
+    },
+    "https_file_hashes_after_publication": 75,
+    "stable_demo_unchanged": true,
+    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/34/checks",
+    "postpublication_expectation": "Six profiles must verify sourceCommit, issuer, public legal pages and companyFiscalPreparation on the new publication."
+  }
 }
