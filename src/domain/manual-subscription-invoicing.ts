@@ -161,9 +161,13 @@ export function recordManualInvoiceIssued(
     throw new Error("invalid_manual_invoice_timestamp");
   }
   if (task.status === "awaiting_send" || task.status === "sent_reported") {
-    if (JSON.stringify(task.invoice) !== JSON.stringify(invoice)) {
-      throw new Error("conflicting_manual_invoice_issue");
-    }
+    if (
+      !task.invoice ||
+      task.invoice.invoiceNumber !== invoice.invoiceNumber ||
+      task.invoice.ticketBaiReference !== invoice.ticketBaiReference ||
+      task.invoice.privatePdfKey !== invoice.privatePdfKey ||
+      task.invoice.issuedAt !== invoice.issuedAt
+    ) throw new Error("conflicting_manual_invoice_issue");
     return task;
   }
   if (task.status !== "awaiting_issue") throw new Error("invalid_manual_invoice_transition");
@@ -200,9 +204,12 @@ export function recordManualInvoiceSent(
     throw new Error("invalid_manual_invoice_timestamp");
   }
   if (task.status === "sent_reported") {
-    if (JSON.stringify(task.dispatch) !== JSON.stringify(dispatch)) {
-      throw new Error("conflicting_manual_invoice_dispatch");
-    }
+    if (
+      !task.dispatch ||
+      task.dispatch.dispatchRecordId !== dispatch.dispatchRecordId ||
+      task.dispatch.invoiceNumber !== dispatch.invoiceNumber ||
+      task.dispatch.sentAt !== dispatch.sentAt
+    ) throw new Error("conflicting_manual_invoice_dispatch");
     return task;
   }
   if (task.status !== "awaiting_send") throw new Error("invalid_manual_invoice_transition");
