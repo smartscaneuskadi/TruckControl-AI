@@ -139,6 +139,13 @@ export function recordFiscalDelivery(
   const delivery = reference(evidence.deliveryReference);
   const provider = reference(evidence.providerReference);
   const invoice = reference(evidence.invoiceReference);
+  // A receipt cannot turn a non-issued request into an invoice. Check the
+  // state first, then reject mismatched provider/invoice facts.
+  if (
+    (attempt.status !== "issued" && attempt.status !== "delivered") ||
+    !attempt.invoiceReference ||
+    !attempt.providerReference
+  ) throw new Error("invalid_fiscal_transition");
   if (
     attempt.providerReference !== provider ||
     attempt.invoiceReference !== invoice
@@ -149,11 +156,6 @@ export function recordFiscalDelivery(
     }
     return attempt;
   }
-  if (
-    attempt.status !== "issued" ||
-    !attempt.invoiceReference ||
-    !attempt.providerReference
-  ) throw new Error("invalid_fiscal_transition");
   return { ...attempt, status: "delivered", deliveryReference: delivery };
 }
 
