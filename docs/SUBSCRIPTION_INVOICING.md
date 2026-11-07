@@ -1,5 +1,7 @@
 # Facturación de las suscripciones de TruckControl AI
 
+> **Decisión posterior del titular (07/11/2026):** ELEVADANCOR ya utiliza **GDTaller con TicketBAI** y ha aprobado **emitir y enviar manualmente** las facturas de suscripciones al principio. Ver [procedimiento de facturación manual](MANUAL_SUBSCRIPTION_TICKETBAI.md). Las instrucciones históricas inferiores sobre una API y entrega automática no son requisito de la estrategia inicial; el circuito manual, su control y el momento de emisión siguen **sin implementar ni validar**. Pago real bloqueado: el guard nativo de Stripe continúa cerrado hasta pruebas y autorización fiscal y comercial.
+
 ## Emisor aprobado por el titular
 
 - ELEVADANCOR S.L.
