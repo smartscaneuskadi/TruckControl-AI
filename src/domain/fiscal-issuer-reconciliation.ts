@@ -26,6 +26,31 @@ export interface FiscalAttempt {
   readonly deliveryReference?: string;
 }
 
+/** Scoped facts obtained from a separately authenticated, trusted issuer adapter.
+ * These fields only correlate an event to a request; they do NOT authenticate it.
+ */
+export interface FiscalIssueEvidence {
+  readonly requestId: string;
+  readonly documentDigest: string;
+  readonly providerReference: string;
+  readonly invoiceReference: string;
+}
+
+export interface FiscalDeliveryEvidence extends FiscalIssueEvidence {
+  readonly deliveryReference: string;
+}
+
+function requireSameFiscalRequest(
+  attempt: FiscalAttempt,
+  evidence: FiscalIssueEvidence,
+): void {
+  if (
+    !evidence ||
+    attempt.requestId !== evidence.requestId ||
+    attempt.documentDigest !== evidence.documentDigest
+  ) throw new Error("fiscal_request_mismatch");
+}
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const DIGEST = /^[0-9a-f]{64}$/;
 /** Accept provider-specific invoice formats, but not whitespace-only or controls. */
@@ -78,14 +103,15 @@ export function markFiscalIssueUncertain(attempt: FiscalAttempt): FiscalAttempt 
  * Duplicate identical provider callbacks are idempotent; conflicting invoice
  * references require manual investigation. This function does not verify the
  * authenticity of a provider response; the future adapter must do so.
+ * A callback for another approved request/digest must never confirm this one.
  */
 export function recordFiscalIssue(
   attempt: FiscalAttempt,
-  providerReference: string,
-  invoiceReference: string,
+  evidence: FiscalIssueEvidence,
 ): FiscalAttempt {
-  const provider = reference(providerReference);
-  const invoice = reference(invoiceReference);
+  requireSameFiscalRequest(attempt, evidence);
+  const provider = reference(evidence.providerReference);
+  const invoice = reference(evidence.invoiceReference);
   if (attempt.status === "issued" || attempt.status === "delivered") {
     if (
       attempt.providerReference !== provider ||
@@ -104,23 +130,32 @@ export function recordFiscalIssue(
   };
 }
 
-/** Delivery requires a separate confirmed receipt, not a payment success URL. */
+/** Delivery requires a separate confirmed receipt scoped to the same invoice. */
 export function recordFiscalDelivery(
   attempt: FiscalAttempt,
-  deliveryReference: string,
+  evidence: FiscalDeliveryEvidence,
 ): FiscalAttempt {
-  const delivery = reference(deliveryReference);
+  requireSameFiscalRequest(attempt, evidence);
+  const delivery = reference(evidence.deliveryReference);
+  const provider = reference(evidence.providerReference);
+  const invoice = reference(evidence.invoiceReference);
+  // A receipt cannot turn a non-issued request into an invoice. Check the
+  // state first, then reject mismatched provider/invoice facts.
+  if (
+    (attempt.status !== "issued" && attempt.status !== "delivered") ||
+    !attempt.invoiceReference ||
+    !attempt.providerReference
+  ) throw new Error("invalid_fiscal_transition");
+  if (
+    attempt.providerReference !== provider ||
+    attempt.invoiceReference !== invoice
+  ) throw new Error("conflicting_fiscal_delivery");
   if (attempt.status === "delivered") {
     if (attempt.deliveryReference !== delivery) {
       throw new Error("conflicting_fiscal_delivery");
     }
     return attempt;
   }
-  if (
-    attempt.status !== "issued" ||
-    !attempt.invoiceReference ||
-    !attempt.providerReference
-  ) throw new Error("invalid_fiscal_transition");
   return { ...attempt, status: "delivered", deliveryReference: delivery };
 }
 
