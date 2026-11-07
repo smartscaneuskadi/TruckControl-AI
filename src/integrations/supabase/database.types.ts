@@ -119,6 +119,10 @@ export interface Database {
         Args: { p_org: string; p_action: string; p_data?: Json };
         Returns: Json;
       };
+      tc_company_specialists: {
+        Args: { p_org: string; p_action: string; p_data?: Json };
+        Returns: Json;
+      };
       tc_company_fiscal_control: {
         Args: {
           p_org: string | null;

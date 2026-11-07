@@ -42,6 +42,25 @@ import {
 } from "../lib/copilot-voice";
 import type { VoiceRecognition } from "../lib/copilot-voice";
 import { Badge, Button, Field } from "./ui";
+import { SpecialistTools } from "./SpecialistTools";
+import {
+  specialistChat,
+  specialistResult,
+  specialistStatus,
+} from "../integrations/supabase/ai-specialists";
+import {
+  specialistProfiles,
+  specialistProfile,
+} from "../domain/ai-specialists";
+import type {
+  SpecialistId,
+  SpecialistStatus,
+  SpecialistTurn,
+} from "../domain/ai-specialists";
+
+type CopilotMessage = ChatMessage & {
+  evidence?: Pick<SpecialistTurn, "sources" | "uncertainties">;
+};
 
 const examples = [
   "¿Cómo van los ingresos y gastos de este mes?",
@@ -69,6 +88,16 @@ export function CompanyCopilot() {
           combustible, remolques y avisos. Revisa cada propuesta antes de
           guardarla.
         </p>
+        <div
+          className="specialist-preview"
+          aria-label="Ocho perfiles del copiloto"
+        >
+          {specialistProfiles.map((p) => (
+            <Badge tone="blue" key={p.id}>
+              {p.label}
+            </Badge>
+          ))}
+        </div>
         <ul className="copilot-examples">
           {examples.map((e) => (
             <li key={e}>«{e}»</li>
@@ -107,7 +136,14 @@ function ConnectedCopilot({
     [loading, setLoading] = useState(true),
     [revision, setRevision] = useState(0),
     [online, setOnline] = useState(navigator.onLine);
-  const [messages, setMessages] = useState<ChatMessage[]>([]),
+  const [profile, setProfile] = useState<SpecialistId>("general"),
+    [profiles, setProfiles] = useState<SpecialistStatus | null>(null),
+    [documentIds, setDocumentIds] = useState<string[]>([]);
+  const pendingProtocol = useRef<{
+    specialists: boolean;
+    profile: SpecialistId;
+  }>({ specialists: false, profile: "general" });
+  const [messages, setMessages] = useState<CopilotMessage[]>([]),
     [draft, setDraft] = useState(""),
     [actions, setActions] = useState<CopilotAction[]>([]),
     [busy, setBusy] = useState(false),
@@ -124,6 +160,12 @@ function ConnectedCopilot({
     requestController = useRef<AbortController | null>(null);
   const cloud = online && !offline.offline;
   const ready = cloud && status?.allowed === true && status.configured;
+  const usingSpecialists = Boolean(
+    profiles?.profiles.some(
+      (p) => p.id === profile && p.allowed && p.connection_verified,
+    ),
+  );
+  const chatReady = ready && (profile === "general" || usingSpecialists);
   const writable =
     ready && status.can_write && subscription.access?.can_write !== false;
   const canDictate = Boolean(recognitionConstructor());
@@ -167,6 +209,9 @@ function ConnectedCopilot({
     requestController.current?.abort();
     releaseVoice();
     setStatus(null);
+    setProfiles(null);
+    setProfile("general");
+    setDocumentIds([]);
     setActions([]);
     setMessages([]);
     setDraft("");
@@ -181,16 +226,20 @@ function ConnectedCopilot({
     void copilotStatus(client, organizationId, controller.signal)
       .then(async (next) => {
         if (!mounted.current || epoch !== generation.current) return;
-        setStatus(next);
         if (next.allowed) {
-          const pending = await copilotPending(
-            client,
-            organizationId,
-            controller.signal,
+          const results = await Promise.allSettled([
+            copilotPending(client, organizationId, controller.signal),
+            specialistStatus(client, organizationId, controller.signal),
+          ]);
+          if (!mounted.current || epoch !== generation.current) return;
+          if (results[0].status === "rejected") throw results[0].reason;
+          setActions(results[0].value);
+          // Older v31 backends/fixtures retain their verified general workflow.
+          setProfiles(
+            results[1].status === "fulfilled" ? results[1].value : null,
           );
-          if (mounted.current && epoch === generation.current)
-            setActions(pending);
         }
+        if (mounted.current && epoch === generation.current) setStatus(next);
       })
       .catch(() => {
         if (mounted.current && epoch === generation.current) {
@@ -218,11 +267,34 @@ function ConnectedCopilot({
   function live(epoch: number) {
     return mounted.current && epoch === generation.current && navigator.onLine;
   }
-  function acceptTurn(turn: CopilotTurn) {
+  function changeProfile(next: SpecialistId) {
+    if (lock.current || unknownRequest) return;
+    generation.current++;
+    requestController.current?.abort();
+    releaseVoice();
+    setMessages([]);
+    setDraft("");
+    setDocumentIds([]);
+    setNotice("");
+    setError("");
+    setProfile(next);
+  }
+  function acceptTurn(turn: CopilotTurn | SpecialistTurn) {
     if (turn.state === "complete" && turn.reply) {
       setMessages((current) => [
         ...current,
-        { role: "assistant", content: turn.reply! },
+        {
+          role: "assistant",
+          content: turn.reply!,
+          ...("sources" in turn
+            ? {
+                evidence: {
+                  sources: turn.sources,
+                  uncertainties: turn.uncertainties,
+                },
+              }
+            : {}),
+        },
       ]);
       setActions((current) => [
         ...turn.actions,
@@ -249,7 +321,7 @@ function ConnectedCopilot({
   async function send(event: FormEvent) {
     event.preventDefault();
     if (
-      !ready ||
+      !chatReady ||
       !client ||
       lock.current ||
       !draft.trim() ||
@@ -267,18 +339,29 @@ function ConnectedCopilot({
         ...messages,
         { role: "user", content: draft.trim() },
       ];
+    pendingProtocol.current = { specialists: usingSpecialists, profile };
     setMessages(next);
     setDraft("");
     const controller = new AbortController();
     requestController.current = controller;
     try {
-      const result = await copilotChat(
-        client,
-        organizationId,
-        requestId,
-        next,
-        controller.signal,
-      );
+      const result = usingSpecialists
+        ? await specialistChat(
+            client,
+            organizationId,
+            profile,
+            requestId,
+            next,
+            documentIds,
+            controller.signal,
+          )
+        : await copilotChat(
+            client,
+            organizationId,
+            requestId,
+            next,
+            controller.signal,
+          );
       if (live(epoch)) acceptTurn(result);
     } catch (e) {
       if (live(epoch)) {
@@ -301,11 +384,14 @@ function ConnectedCopilot({
     setError("");
     const epoch = generation.current;
     try {
-      const result = await copilotResult(
-        client,
-        organizationId,
-        unknownRequest,
-      );
+      const result = pendingProtocol.current.specialists
+        ? await specialistResult(
+            client,
+            organizationId,
+            pendingProtocol.current.profile,
+            unknownRequest,
+          )
+        : await copilotResult(client, organizationId, unknownRequest);
       if (live(epoch)) acceptTurn(result);
     } catch (e) {
       if (live(epoch))
@@ -627,6 +713,21 @@ function ConnectedCopilot({
           )}
         </div>
       </details>
+      {profiles && (
+        <SpecialistTools
+          key={profile}
+          organizationId={organizationId}
+          profile={profile}
+          capabilities={profiles}
+          disabled={
+            !ready || busy || loading || listening || Boolean(unknownRequest)
+          }
+          documentIds={documentIds}
+          onProfile={changeProfile}
+          onDocuments={setDocumentIds}
+          onExample={setDraft}
+        />
+      )}
       <div
         role="log"
         aria-live="polite"
@@ -640,15 +741,22 @@ function ConnectedCopilot({
               Escribe o dicta tu petición. Te preguntaré los datos que falten.
             </p>
             <div className="copilot-quick-actions">
-              {examples.slice(0, 2).map((e, index) => (
+              {(profile === "general"
+                ? examples.slice(0, 2)
+                : [specialistProfile(profile).example]
+              ).map((e, index) => (
                 <button
                   type="button"
                   className="copilot-suggestion"
                   key={e}
-                  disabled={!ready || busy || Boolean(unknownRequest)}
+                  disabled={!chatReady || busy || Boolean(unknownRequest)}
                   onClick={() => setDraft(e)}
                 >
-                  {index === 0 ? "Resumen del mes" : "Preparar un cliente"}
+                  {profile === "general"
+                    ? index === 0
+                      ? "Resumen del mes"
+                      : "Preparar un cliente"
+                    : "Usar ejemplo del perfil"}
                 </button>
               ))}
             </div>
@@ -660,6 +768,38 @@ function ConnectedCopilot({
               {m.role === "user" ? "Tú" : "Asistente · respuesta para revisar"}
             </strong>
             <p>{m.content}</p>
+            {m.evidence && (
+              <div className="specialist-evidence">
+                {m.evidence.sources.length > 0 && (
+                  <details>
+                    <summary>
+                      Fuentes utilizadas ({m.evidence.sources.length})
+                    </summary>
+                    <ul>
+                      {m.evidence.sources.map((s) => (
+                        <li key={s.reference}>
+                          <strong>
+                            {s.reference}: {s.title}
+                          </strong>
+                          {s.version !== null ? ` · versión ${s.version}` : ""}
+                          <small>Referencia de registro: {s.id}</small>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+                {m.evidence.uncertainties.length > 0 && (
+                  <div>
+                    <strong>Datos faltantes y límites</strong>
+                    <ul>
+                      {m.evidence.uncertainties.map((s, i) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
             {m.role === "assistant" && (
               <Button
                 variant="secondary"
@@ -726,7 +866,7 @@ function ConnectedCopilot({
             type="submit"
             icon={Send}
             disabled={
-              !ready ||
+              !chatReady ||
               busy ||
               !draft.trim() ||
               listening ||

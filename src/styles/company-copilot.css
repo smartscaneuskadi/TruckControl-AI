@@ -226,3 +226,51 @@
     flex: 1 1 200px;
   }
 }
+.specialist-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 1rem;
+}
+.specialist-tools {
+  border: 1px solid var(--theme-border);
+  border-radius: 1rem;
+  padding: 1rem;
+  margin-block: 1rem;
+  min-width: 0;
+}
+.specialist-tools select {
+  width: 100%;
+  max-width: 100%;
+}
+.specialist-tools fieldset {
+  min-width: 0;
+  border: 1px solid var(--theme-border);
+  border-radius: 0.75rem;
+  margin-block: 1rem;
+  padding: 1rem;
+}
+.specialist-tools .checkbox-line {
+  overflow-wrap: anywhere;
+}
+.specialist-jobs {
+  margin-top: 1rem;
+}
+.specialist-jobs summary,
+.specialist-evidence summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.specialist-evidence {
+  margin-block: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--theme-border);
+}
+.specialist-evidence li {
+  margin-block: 0.5rem;
+  overflow-wrap: anywhere;
+}
+.specialist-evidence small {
+  display: block;
+  color: var(--theme-muted);
+}

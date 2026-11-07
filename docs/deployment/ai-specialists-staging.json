@@ -1,0 +1,14 @@
+{
+  "project_id": "appgprj_6aeecfe8255081919488ea41d42a380b",
+  "url": "https://truckcontrol-ai-specialists-staging.earlymug513.chatgpt.site",
+  "audience": "owner-private",
+  "version": 2,
+  "source_commit": "81e6674455f3b7407782c25015993396fdfa34e5",
+  "deployment_id": "appgdep_6aeef04b743081919e376692f544ff6d",
+  "version_id": "appgprj_6aeecfe8255081919488ea41d42a380b~appgver_562bf4fdb9788191a423d5cfdc6285cc",
+  "customer_connection_bundled": false,
+  "registration_forced_closed": true,
+  "anonymous_https_status": 403,
+  "synthetic_backend_allowlist_remaining": 0,
+  "previous_version_retained": 1
+}
