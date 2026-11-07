@@ -8,7 +8,6 @@ import {
   type ConfirmedSubscriptionPayment,
   type ManualDispatchInput,
   type ManualIssueRecord,
-  type ManualInvoiceTask,
 } from "../src/domain/manual-subscription-invoicing";
 import {
   nativeSubscriptionFiscalIssuerAvailable,
@@ -122,10 +121,15 @@ describe("TicketBAI manual: contrato puro, sin emisión ni pagos", () => {
       "private//123.pdf",
       "123.pdf",
       "private/123.png",
+      "subscription-invoices/b2000000-0000-4000-8000-000000000002/123.pdf",
     ]) expect(() => recordManualInvoiceIssued(task(), issue({ privatePdfKey })))
       .toThrow("invalid_private_fiscal_pdf_key");
     expect(() => recordManualInvoiceIssued(task(), issue({ ticketBaiReference: " " })))
       .toThrow("invalid_manual_invoice_reference");
+    expect(() => recordManualInvoiceIssued(task(), issue({ issuedAt: "2026-02-30T12:00:00Z" })))
+      .toThrow("invalid_manual_invoice_timestamp");
+    expect(() => recordManualInvoiceIssued(task(), issue({ issuedAt: "2026-11-07T09:00:00Z" })))
+      .toThrow("invalid_manual_invoice_timestamp");
     expect(() => recordManualInvoiceIssued(task(), issue({ invoiceNumber: "N\n001" })))
       .toThrow("invalid_manual_invoice_reference");
   });
@@ -145,6 +149,8 @@ describe("TicketBAI manual: contrato puro, sin emisión ni pagos", () => {
     expect(() => recordManualInvoiceSent(task(), sent())).toThrow("manual_invoice_scope_mismatch");
     expect(() => recordManualInvoiceSent(ready, sent({ invoiceNumber: "A-2026/124" })))
       .toThrow("manual_invoice_scope_mismatch");
+    expect(() => recordManualInvoiceSent(ready, sent({ sentAt: "2026-11-07T11:00:00Z" })))
+      .toThrow("invalid_manual_invoice_timestamp");
     expect(() => recordManualInvoiceSent(ready, sent({ dispatchRecordId: "id" })))
       .toThrow("invalid_manual_dispatch_record");
   });
@@ -154,6 +160,8 @@ describe("TicketBAI manual: contrato puro, sin emisión ni pagos", () => {
     expect(blocked.status).toBe("needs_review");
     expect(blocked.reviewReason).toBe("customer_data_invalid");
     expect(requireManualInvoiceReview(blocked, "customer_data_invalid")).toBe(blocked);
+    expect(() => requireManualInvoiceReview(blocked, "amount_mismatch"))
+      .toThrow("conflicting_manual_invoice_review");
     expect(() => recordManualInvoiceIssued(blocked, issue()))
       .toThrow("invalid_manual_invoice_transition");
     const issueBlocked = requireManualInvoiceReview(issued(), "dispatch_failure");
