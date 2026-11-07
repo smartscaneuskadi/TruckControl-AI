@@ -22,7 +22,13 @@ una **recuperación lógica parcial**, no un backup de toda la infraestructura.
   enlaces físicos/hardlinks a un mismo inode o archivo ajeno al directorio,
   o reutilización de un mismo archivo como prueba de varios controles;
   también rechaza checks
-  falsos, campos de credenciales y ensayos que declaran usar datos reales.
+  falsos, campos de credenciales y ensayos que declaran usar datos reales;
+- claves JSON duplicadas (incluidas las anidadas), aunque los valores sean
+  idénticos, y propiedades no declaradas en el esquema v1 del manifiesto,
+  de cada artefacto o de cada comprobación. El lector de JSON habitual
+  podría aceptar silenciosamente la última clave duplicada, creando
+  ambigüedad para la revisión humana. La ampliación del esquema exige
+  una versión nueva y pruebas, no campos arbitrarios en expedientes.
 
 La herramienta verifica las evidencias solo por rutas e inodes locales; tampoco
 certifica la ausencia de montajes especiales ni la autoría del informe. Debe

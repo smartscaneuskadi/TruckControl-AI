@@ -50,6 +50,31 @@ def _no_secrets(value: object) -> None:
             _no_secrets(child)
 
 
+
+# Fail closed on ambiguous or undocumented recovery manifests. JSON normally
+# accepts duplicate keys with "last wins", which can mislead an independent
+# reviewer inspecting the raw evidence.
+MANIFEST_FIELDS = {
+    "schema_version", "source_project_ref", "destination_project_ref",
+    "destination_kind", "synthetic_data_only", "backup_captured_at",
+    "restore_started_at", "restore_completed_at", "artifacts", "checks",
+}
+ARTIFACT_FIELDS = {"kind", "path", "sha256"}
+CHECK_FIELDS = {"passed", "evidence_path", "sha256"}
+
+
+def _unique_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        _require(key not in result, "duplicate JSON field in recovery manifest")
+        result[key] = value
+    return result
+
+
+def _strict_fields(value: dict[str, object], expected: set[str]) -> None:
+    _require(set(value) == expected, "unexpected or missing recovery manifest field")
+
+
 def _local_digest(
     root: Path,
     relative: object,
@@ -105,11 +130,17 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     manifest_file = manifest_file.resolve(strict=True)
     root = manifest_file.parent
     try:
-        manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+        manifest = json.loads(
+            manifest_file.read_text(encoding="utf-8"),
+            object_pairs_hook=_unique_json_object,
+        )
+    except PreflightError:
+        raise
     except (OSError, ValueError) as exc:
         raise PreflightError("cannot read JSON manifest") from exc
     _require(isinstance(manifest, dict), "manifest must be an object")
     _no_secrets(manifest)
+    _strict_fields(manifest, MANIFEST_FIELDS)
     _require(manifest.get("schema_version") == 1, "unsupported manifest schema")
     _require(
         manifest.get("source_project_ref") == source_ref and bool(source_ref),
@@ -131,6 +162,7 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     used_files: set[tuple[int, int]] = set()
     for item in artifacts:
         _require(isinstance(item, dict), "invalid artifact")
+        _strict_fields(item, ARTIFACT_FIELDS)
         kind = item.get("kind")
         _require(kind in ARTIFACTS and kind not in kinds, "invalid or duplicated artifact kind")
         relative = item.get("path")
@@ -146,7 +178,9 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     _require(isinstance(checks, dict) and set(checks) == CHECKS, "incomplete or unknown recovery checks")
     for name in sorted(CHECKS):
         check = checks[name]
-        _require(isinstance(check, dict) and check.get("passed") is True, "recovery check not passed: " + name)
+        _require(isinstance(check, dict), "invalid recovery check: " + name)
+        _strict_fields(check, CHECK_FIELDS)
+        _require(check.get("passed") is True, "recovery check not passed: " + name)
         relative = check.get("evidence_path")
         _require(isinstance(relative, str) and bool(relative), "missing evidence filename")
         key = Path(relative).as_posix()
