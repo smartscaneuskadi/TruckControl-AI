@@ -14,8 +14,12 @@ Fuente: [recibo v32](docs/verification/ai-specialists-20261107.json), [aceptaci�
 
 Auditoría nativa:60 migraciones,registro abierto,pagos apagados,IA habilitada/límite10USD,8 perfiles previamente verificados. Asesor:sin nuevos WARN/ERROR; continúa el aviso previo de contraseñas filtradas y dos INFO de tablas administrativas con RLS denegando acceso por defecto.
 
-Todavía no hay pruebas nuevas ejecutadas que acrediten maestro de proveedores,beneficio por viaje,facturación fiscal,Stripe real,Android firmado,publicación Play o recuperación integral. Sus resultados se añadirán al completarlos. La compilación no se considera publicación y los mocks no se consideran conexiones reales.
+Proveedores y margen de movimientos por viaje pasan sus pruebas locales nuevas; la aceptación Supabase y la publicación de estas funciones aún se registrarán. Facturación fiscal,Stripe real,Android firmado,publicación Play y recuperación integral siguen sin aceptación. La compilación no se considera publicación y los mocks no se consideran conexiones reales.
 
 ### Monitorización preparada
 
-Seis pruebas nuevas pasan: destinos/identidad,ausencia de credenciales,cuerpos no retenidos,errores sin secretos,IA deshabilitada sin falsa certificación y rechazo de configuración ajena. Cinco sondeos HTTP reales pasan en los tres orígenes,contrato del copiloto y gateway anónimo401,sin leer datos de clientes ni llamar al modelo. TypeScript correcto. Flujo GitHub horario preparado; no se considera activo hasta comprobar su ejecución e integración en main.
+Seis pruebas nuevas pasan: destinos/identidad,ausencia de credenciales,cuerpos no retenidos,errores sin secretos,IA deshabilitada sin falsa certificación y rechazo de configuración ajena. Cinco sondeos HTTP reales pasan en los tres orígenes,contrato del copiloto y gateway anónimo401,sin leer datos de clientes ni llamar al modelo. Workflow42384257704 y CI42384944532 correctos. No se considera horario permanente hasta integrarlo en main.
+
+### Proveedores y viajes ·0.5.21-rc.1 preparada
+
+823 unitarias/SQL en85 archivos,TypeScript/build correctos.20 pruebas SQL nuevas,6 de dominio/copias,1 contrato con rollback y8 recorridos nuevos Android/Windows emulados con ambos temas y Axe. El caso de copia previa se actualiza al endpoint/v4 y añade rechazo explícito si falta ese backend. Las64 pruebas originales mantienen sus11 hashes. Los PR39/40 de recuperación se conservan; sus11 pruebas Python se ejecutarán en el CI final. Sin llamadas nuevas a modelos ni correos reales. Ensayo nativo y CI del siguiente commit pendientes.

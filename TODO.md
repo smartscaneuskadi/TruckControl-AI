@@ -7,7 +7,7 @@ La lista se cierra con evidencias; una interfaz o un flag no acredita una conexi
 - [x] Recuperar main3bbec3c, crear rama y bundle completo verificado.
 - [x] Consultar estado nativo sin leer secretos ni datos de clientes.
 - [ ] Conciliar costes históricos y proteger el máximo agregado200EUR.
-- [ ] Corregir documentación de portada y publicar matriz verificable de capacidades.
+- [x] Corregir documentación de portada y publicar matriz verificable de capacidades.
 - [ ] Conectar Stripe por flujo oficial, comprobar sandbox/webhooks y cancelaciones.
 - [ ] Confirmar emisor/régimen/proveedor fiscal y conectar emisión/entrega automática efectiva antes de ventas.
 - [ ] Resolver permisos y requisitos externos Google/Gmail/Play sin eludirlos.
@@ -32,3 +32,5 @@ La lista se cierra con evidencias; una interfaz o un flag no acredita una conexi
 - [ ] Producción comercial completa, versión Android publicada, gasto/saldo conciliados e informe final.
 
 La frase de publicación comercial completada solo se utiliza tras verificar estos requisitos. Una dependencia externa no impide avanzar en las demás filas.
+
+Preparado y probado localmente:proveedores y vínculos/revisiones de viaje,copias v4,823 unitarias/SQL y8 recorridos nuevos. Se cerrarán las dos tareas de operaciones tras aceptación nativa y publicación. Monitor:workflow real verde,horario pendiente de merge. Android:documentación oficial actual y dependencias consultadas; SDK/Play y acuerdos del titular no aceptados aún.
