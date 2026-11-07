@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0229812b6fe081918352bd7bd8d299e4",
-  "published_version_number": 31,
-  "deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
-  "previous_deployment_id": "appgdep_6aedb712f3fc819194d34ca774e6b912",
+  "published_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_3b00f4822e408191b957e7b7189bddcc",
+  "published_version_number": 32,
+  "deployment_id": "appgdep_6aeef12e3624819185ab700077042c21",
+  "previous_deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-06T19:45:20.766401+00:00",
+  "deployed_at": "2026-11-07T09:37:00.578974+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 42254621291,
+  "source_ci_run": 42359405904,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
+  "source_ci_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
   "production_source_manifest_only_diff": true,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 30,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_fa5189dbb4fc8191beda8257514bb14c",
-    "source_commit": "6a1e8f4dab2db4fc2b24e79b1141c6473d95169b",
-    "deployment_id": "appgdep_6aedb712f3fc819194d34ca774e6b912",
-    "app_version": "0.5.18-rc.1"
+    "version": 31,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0229812b6fe081918352bd7bd8d299e4",
+    "source_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
+    "deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
+    "app_version": "0.5.19-rc.1"
   },
-  "source_deployment_ci_run": 42254621291,
-  "app_version": "0.5.19-rc.1",
+  "source_deployment_ci_run": 42359405904,
+  "app_version": "0.5.20-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -196,6 +196,13 @@
       "source_commit": "6a1e8f4dab2db4fc2b24e79b1141c6473d95169b",
       "deployment_id": "appgdep_6aedb712f3fc819194d34ca774e6b912",
       "app_version": "0.5.18-rc.1"
+    },
+    {
+      "version": 31,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0229812b6fe081918352bd7bd8d299e4",
+      "source_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
+      "deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
+      "app_version": "0.5.19-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -261,23 +268,30 @@
     "time_zone": "Europe/Madrid",
     "action": "sync_period"
   },
-  "ci_scope_note": "Implementation2395426 and exact production source2055e99 pass1,031 checks per run. Those public profiles verified previous v30. Postpublication checks now require companyCopilot=true as well as source, legal pages, issuer and fiscal preview in six Android/Windows profiles. Native live acceptance passes25 checks with one synthetic model call; no repeated consumption.",
+  "ci_scope_note": "Implementation56eeef2, staging81e6674 and exact production source30b39be pass1107 checks per execution. Those six public profiles checked previous v31. Postpublication checks now require aiSpecialists=true in all six Android/Windows origin profiles. Real synthetic acceptance verifies8 model calls and native online browser verifies8 profiles in2 devices/2 themes without new model calls.",
   "final_release_verification": {
-    "code_commit": "2395426df6c1d234124b45dbdd091ecbb7ff6945",
-    "source_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
-    "source_build": true,
-    "checks_before_publication": 1031,
-    "unit_sql_passed": 727,
+    "code_commit": "56eeef208e0cd2cfd13926cdf8ab44bc09855fcc",
+    "source_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
+    "checks_before_publication": 1107,
+    "unit_sql_passed": 789,
+    "python_passed": 32,
+    "demo_browser_passed": 64,
     "company_browser_passed": 50,
-    "saas_browser_passed": 118,
-    "migrations": 59,
-    "native_http_passed": 25,
+    "saas_browser_passed": 132,
+    "candidate_browser_passed": 14,
+    "production_build_passed": 20,
+    "public_profiles": 6,
+    "native_live_profiles": 8,
+    "native_browser_online_devices": 2,
+    "native_browser_themes": 2,
     "https_file_hashes_after_publication": 75,
-    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/actions?query=branch%3Arelease%2Fcompany-copilot-v31",
-    "emission_available": false,
-    "chat_writes_require_human_confirmation": true
+    "migrations": 60,
+    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/38/checks",
+    "chat_writes_require_human_confirmation": true,
+    "scheduled_paid_model_calls": 0,
+    "emission_available": false
   },
-  "source_branch": "deploy/company-copilot-20261106",
+  "source_branch": "deploy/ai-specialists-production-20261107",
   "production_source_manifest_only_diff_scope": "Implementation2395426 compared with frozen2055e99 differs only in the production hosting manifest; later publication receipts change documentation only.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
@@ -294,5 +308,6 @@
   },
   "expected_company_fiscal_preparation": true,
   "expected_company_copilot": true,
-  "copilot_function_version": 1
+  "copilot_function_version": 2,
+  "expected_ai_specialists": true
 }

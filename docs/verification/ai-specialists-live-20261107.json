@@ -728,5 +728,10 @@
   "new_commercial_writes_by_models": 0,
   "new_mail_sent": 0,
   "real_customer_data_used": false,
-  "fixture_cleanup_pending_production_browser": true
+  "fixture_cleanup_pending_production_browser": false,
+  "fixture_accounts_closed": 3,
+  "fixture_sessions_remaining": 0,
+  "temporary_credentials_removed": true,
+  "http_cached_turn_idempotency_verified": true,
+  "native_browser_online_verified": true
 }
