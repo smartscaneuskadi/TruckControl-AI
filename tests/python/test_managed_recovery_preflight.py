@@ -115,6 +115,35 @@ class RecoveryPreflightTests(unittest.TestCase):
             with self.assertRaises(gate.PreflightError):
                 self.inspect()
 
+    def test_rejects_symlinks_even_to_files_inside_evidence_directory(self) -> None:
+        item = self.manifest["artifacts"][0]
+        original = self.root / item["path"]
+        link = self.root / "local-link.bin"
+        link.symlink_to(original)
+        item["path"] = "local-link.bin"
+        with self.assertRaisesRegex(gate.PreflightError, "symlinked evidence"):
+            self.inspect()
+
+        parent_link = self.root / "linked-artifacts"
+        parent_link.symlink_to(self.root / "artifacts", target_is_directory=True)
+        item["path"] = "linked-artifacts/" + original.name
+        with self.assertRaisesRegex(gate.PreflightError, "symlinked evidence"):
+            self.inspect()
+
+    def test_requires_distinct_files_for_each_inventory_and_check(self) -> None:
+        first = self.manifest["artifacts"][0]
+        second = self.manifest["artifacts"][1]
+        saved = second.copy()
+        second["path"], second["sha256"] = first["path"], first["sha256"]
+        with self.assertRaisesRegex(gate.PreflightError, "reused"):
+            self.inspect()
+
+        second.update(saved)
+        check = self.manifest["checks"]["auth_login"]
+        check["evidence_path"], check["sha256"] = first["path"], first["sha256"]
+        with self.assertRaisesRegex(gate.PreflightError, "reused"):
+            self.inspect()
+
     def test_no_secrets_or_personal_data_backups_in_manifest(self) -> None:
         self.manifest["api_token"] = "not-a-real-token"
         with self.assertRaises(gate.PreflightError):
