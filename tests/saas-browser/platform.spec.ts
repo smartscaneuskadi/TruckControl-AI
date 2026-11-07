@@ -2615,7 +2615,7 @@ test.describe("contratación y renovación mensual", () => {
       0,
     );
   });
-  test("muestra emisor y comprador y bloquea compras sin entrega automática verificada", async ({
+  test("muestra emisor y comprador y bloquea compras sin proceso fiscal manual verificado", async ({
     page,
   }) => {
     const f = await ready(page);
@@ -2633,8 +2633,10 @@ test.describe("contratación y renovación mensual", () => {
     await expect(details).toContainText("20400 Tolosa");
     await expect(details).toContainText("Empresa prueba finalizada");
     await expect(details).toContainText("DEMO-TEST");
+    await expect(details).toContainText("GDTaller");
+    await expect(details).toContainText("TicketBAI");
     await expect(details).toContainText("expired@example.com");
-    await expect(details).toContainText("emisión y entrega automática");
+    await expect(details).toContainText("proceso fiscal y el envío de facturas estén verificados");
     await expect(
       page.getByRole("button", { name: "Elegir Básico", exact: true }),
     ).toBeDisabled();
@@ -2661,7 +2663,7 @@ test.describe("contratación y renovación mensual", () => {
       .click();
     await expect(
       page.getByRole("region", { name: "Datos de facturación del servicio" }),
-    ).toContainText("emisión y entrega automática");
+    ).toContainText("proceso fiscal y el envío de facturas estén verificados");
     await expect(
       page.getByRole("button", { name: "Elegir Básico", exact: true }),
     ).toBeDisabled();
