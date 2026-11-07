@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -129,6 +130,34 @@ class RecoveryPreflightTests(unittest.TestCase):
         item["path"] = "linked-artifacts/" + original.name
         with self.assertRaisesRegex(gate.PreflightError, "symlinked evidence"):
             self.inspect()
+
+    def test_rejects_hardlinks_to_internal_and_external_evidence(self) -> None:
+        item = self.manifest["artifacts"][0]
+        original = self.root / item["path"]
+        internal_alias = self.root / "same-inode.bin"
+        os.link(original, internal_alias)
+        item["path"] = internal_alias.name
+        with self.assertRaisesRegex(gate.PreflightError, "hardlinked evidence"):
+            self.inspect()
+
+        # Even when a different path has the expected checksum, a hard link
+        # to an external inode must not enter the evidence inventory.
+        internal_alias.unlink()
+        with tempfile.TemporaryDirectory(prefix="tc-recovery-external-") as other:
+            foreign = Path(other) / "foreign.bin"
+            foreign.write_bytes(b"foreign-private-content")
+            alias = self.root / "foreign-link.bin"
+            os.link(foreign, alias)
+            item["path"] = alias.name
+            item["sha256"] = hashlib.sha256(foreign.read_bytes()).hexdigest()
+            with self.assertRaisesRegex(gate.PreflightError, "hardlinked evidence"):
+                self.inspect()
+
+    def test_rejects_manifest_symlink(self) -> None:
+        alias = self.root / "manifest-alias.json"
+        alias.symlink_to(self.root / "manifest.json")
+        with self.assertRaisesRegex(gate.PreflightError, "symlinked manifest"):
+            gate.inspect(alias, SOURCE)
 
     def test_requires_distinct_files_for_each_inventory_and_check(self) -> None:
         first = self.manifest["artifacts"][0]
