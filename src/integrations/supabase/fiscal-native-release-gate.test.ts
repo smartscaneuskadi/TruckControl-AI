@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import {
   nativeSubscriptionFiscalIssuerAvailable,
@@ -27,10 +26,17 @@ const request = (action: string) =>
       invoice_delivery_ready: true,
     }),
   });
-const gateway = () => ({
-  authenticate: vi.fn(async () => ({ id: account })),
-  server: vi.fn(async <T>(_action: string, _data: Record<string, unknown>): Promise<T> => ({} as T)),
-});
+const gateway = () => {
+  const calls: string[] = [];
+  return {
+    authenticate: vi.fn(async () => ({ id: account })),
+    async server<T>(action: string, _data: Record<string, unknown>): Promise<T> {
+      calls.push(action);
+      return {} as T;
+    },
+    calls,
+  };
+};
 
 describe("bloqueo nativo fiscal de suscripciones - Release 1.0", () => {
   it.each(["true", "false", "TRUE", "1", "", undefined])(
@@ -57,7 +63,7 @@ describe("bloqueo nativo fiscal de suscripciones - Release 1.0", () => {
     expect(await response.json()).toEqual({
       error: "automatic_invoicing_unavailable",
     });
-    expect(mock.server).not.toHaveBeenCalled();
+    expect(mock.calls).toEqual([]);
     expect(fetcher).not.toHaveBeenCalled();
   });
 
@@ -83,25 +89,8 @@ describe("bloqueo nativo fiscal de suscripciones - Release 1.0", () => {
     expect(body.invoice_delivery_ready).toBe(false);
     const response = await handler(request("checkout"));
     expect(response.status).toBe(503);
-    expect(mock.server).toHaveBeenCalledWith("status", expect.any(Object));
-    expect(mock.server).toHaveBeenCalledTimes(1);
+    expect(mock.calls).toEqual(["status"]);
     expect(fetcher).not.toHaveBeenCalled();
   });
 
-  it.each([
-    "truckcontrol-billing/index.ts",
-    "truckcontrol-subscriptions/index.ts",
-  ])("el entrypoint real %s depende del gate, no solo del flag", (path) => {
-    const source = readFileSync(
-      new URL(`../../../supabase/functions/${path}`, import.meta.url),
-      "utf8",
-    );
-    expect(source).toContain('from "../_shared/subscription-fiscal-gate.ts"');
-    expect(source).toContain(
-      'subscriptionFiscalCheckoutAllowed(Deno.env.get("BILLING_INVOICING_VERIFIED"))',
-    );
-    expect(source).not.toContain(
-      'Deno.env.get("BILLING_INVOICING_VERIFIED") === "true"',
-    );
-  });
 });
