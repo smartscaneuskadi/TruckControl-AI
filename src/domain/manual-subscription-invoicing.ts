@@ -57,10 +57,20 @@ export type ManualReviewReason =
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const STRIPE_EVENT = /^evt_[A-Za-z0-9]{1,200}$/;
 const STRIPE_PAYMENT = /^(?:in|pi|cs)_[A-Za-z0-9_]{1,200}$/;
-const UTC_TIME = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/;
+const UTC_TIME = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(?:\.\d{1,3})?Z$/;
 
 function timestamp(value: string): string {
-  if (typeof value !== "string" || !UTC_TIME.test(value) || !Number.isFinite(Date.parse(value))) {
+  const parts = typeof value === "string" ? UTC_TIME.exec(value) : null;
+  const date = parts ? new Date(value) : null;
+  if (
+    !parts || !date || !Number.isFinite(date.getTime()) ||
+    date.getUTCFullYear() !== Number(parts[1]) ||
+    date.getUTCMonth() + 1 !== Number(parts[2]) ||
+    date.getUTCDate() !== Number(parts[3]) ||
+    date.getUTCHours() !== Number(parts[4]) ||
+    date.getUTCMinutes() !== Number(parts[5]) ||
+    date.getUTCSeconds() !== Number(parts[6])
+  ) {
     throw new Error("invalid_manual_invoice_timestamp");
   }
   return value;
@@ -77,14 +87,14 @@ function reference(value: string): string {
   return value;
 }
 
-function privatePdfKey(value: string): string {
+function privatePdfKey(value: string, buyerCompanyId: string): string {
   if (
     typeof value !== "string" ||
     value.length > 250 ||
     !/^[A-Za-z0-9][A-Za-z0-9/_\-.]*\.pdf$/i.test(value) ||
     value.includes("//") ||
     value.split("/").some((part) => part === "." || part === "..") ||
-    !value.includes("/")
+    !value.startsWith("subscription-invoices/" + buyerCompanyId + "/")
   ) throw new Error("invalid_private_fiscal_pdf_key");
   return value;
 }
@@ -144,9 +154,12 @@ export function recordManualInvoiceIssued(
   const invoice: ManualInvoiceDetails = {
     invoiceNumber: reference(issue.invoiceNumber),
     ticketBaiReference: reference(issue.ticketBaiReference),
-    privatePdfKey: privatePdfKey(issue.privatePdfKey),
+    privatePdfKey: privatePdfKey(issue.privatePdfKey, task.buyerCompanyId),
     issuedAt: timestamp(issue.issuedAt),
   };
+  if (Date.parse(invoice.issuedAt) < Date.parse(task.paidAt)) {
+    throw new Error("invalid_manual_invoice_timestamp");
+  }
   if (task.status === "awaiting_send" || task.status === "sent_reported") {
     if (JSON.stringify(task.invoice) !== JSON.stringify(invoice)) {
       throw new Error("conflicting_manual_invoice_issue");
@@ -183,6 +196,9 @@ export function recordManualInvoiceSent(
     invoiceNumber: reference(input.invoiceNumber),
     sentAt: timestamp(input.sentAt),
   };
+  if (Date.parse(dispatch.sentAt) < Date.parse(task.invoice.issuedAt)) {
+    throw new Error("invalid_manual_invoice_timestamp");
+  }
   if (task.status === "sent_reported") {
     if (JSON.stringify(task.dispatch) !== JSON.stringify(dispatch)) {
       throw new Error("conflicting_manual_invoice_dispatch");
@@ -201,7 +217,10 @@ export function requireManualInvoiceReview(
   if (
     !["fiscal_issue_uncertain", "customer_data_invalid", "amount_mismatch", "dispatch_failure"].includes(reason)
   ) throw new Error("invalid_manual_invoice_review_reason");
-  if (task.status === "needs_review") return task;
+  if (task.status === "needs_review") {
+    if (task.reviewReason !== reason) throw new Error("conflicting_manual_invoice_review");
+    return task;
+  }
   if (task.status === "sent_reported") throw new Error("invalid_manual_invoice_transition");
   return { ...task, status: "needs_review", reviewReason: reason };
 }
