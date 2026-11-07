@@ -6,8 +6,8 @@
   "existing_company_monthly_quota": 100,
   "new_paid_services": [],
   "new_recurring_commitments": [],
-  "new_provider_calls": 0,
-  "new_expenses_eur": 0,
+  "new_provider_calls": 8,
+  "new_expenses_eur": null,
   "baseline_excluded_from_this_task": {
     "month": "2026-11",
     "settled_calls": 4,
@@ -29,5 +29,12 @@
     "attempt_limit": 3,
     "new_third_party_service": false
   },
-  "cost_evidence_policy": "Record confirmed token usage and ledger settlement separately from estimated USD cost. No provider invoice or EUR conversion is claimed without provider billing evidence. Any additional purchase requires a connected authorized provider and checked cost within the aggregate ceiling."
+  "cost_evidence_policy": "Record confirmed token usage and ledger settlement separately from estimated USD cost. No provider invoice or EUR conversion is claimed without provider billing evidence. Any additional purchase requires a connected authorized provider and checked cost within the aggregate ceiling.",
+  "real_model_calls_this_task": 8,
+  "settled_calls": 8,
+  "estimated_micro_usd_this_task": 19465,
+  "estimated_usd_this_task": 0.019465,
+  "actual_vendor_invoice_available": false,
+  "eur_conversion_not_claimed": true,
+  "new_services_cost_eur": 0
 }

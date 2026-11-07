@@ -802,7 +802,13 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
                 state: "complete",
                 attempts: 1,
                 scheduled_for: "2026-11-07",
-                summary: { kind: "database_rules", paid_model_calls: 0 },
+                summary: {
+                  kind: "database_rules",
+                  paid_model_calls: 0,
+                  statistics: {
+                    values: { maintenance: { overdue: 2, open: 3 } },
+                  },
+                },
                 created_at: new Date().toISOString(),
                 completed_at: new Date().toISOString(),
                 error_code: null,
@@ -4055,6 +4061,8 @@ test.describe("ocho perfiles especialistas con evidencia", () => {
       .getByRole("button", { name: "Revisar avisos ahora", exact: true })
       .click();
     await expect(panel).toContainText("completada con reglas, sin consumo IA");
+    await expect(panel).toContainText("Mantenimientos vencidos: 2");
+    await expect(panel).toContainText("Mantenimientos abiertos: 3");
     await panel
       .getByRole("button", { name: "Revisar avisos ahora", exact: true })
       .click();

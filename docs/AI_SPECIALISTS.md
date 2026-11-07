@@ -1,6 +1,6 @@
 # Ocho perfiles del copiloto — tarea37
 
-Estado inicial del07/11/2026: desarrollo en `feat/ai-specialists-20261107`, base `8ba50d4`. Producción31, fuente2055e99 y demo6 conservadas. Este documento no acredita todavía nuevas conexiones reales.
+Estado inicial del07/11/2026: desarrollo en `feat/ai-specialists-20261107`, base `8ba50d4`. Producción31, fuente2055e99 y demo6 conservadas. La aceptación real del07/11 ya verifica8/8 perfiles con datos ficticios; la promoción de interfaz está en preparación.
 
 | Perfil        | Datos y herramientas previstos                                         | Confirmaciones y límites                                                                        |
 | ------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
@@ -19,7 +19,7 @@ Se mantiene la interfaz y contrato v31. El protocolo de especialistas se añade 
 
 Los avisos periódicos serán opt-in y estarán sujetos a licencia, módulos y consentimiento vigentes, límites y reintentos. Sus revisiones programadas serán reglas de servidor sin llamadas de pago al modelo; el análisis IA se solicitará expresamente desde la aplicación. No se procesarán empresas reales durante la aceptación.
 
-La matriz pasará a «verificado» perfil por perfil únicamente tras aceptación nativa/HTTP con una llamada real y evidencia. No se describen como ocho servicios autónomos independientes. Costes iniciales de esta tarea:0; todavía no se han realizado llamadas nuevas al modelo.
+Los ocho perfiles cuentan con aceptación real y atestación privada individual. Son ocho perfiles del mismo orquestador, no ocho servicios autónomos independientes. Las ocho llamadas están settled:19.465 microUSD estimados (0,019465USD), sin factura del proveedor disponible ni conversión EUR declarada. No hay servicios nuevos o ampliación del presupuesto. [Evidencia real](verification/ai-specialists-live-20261107.json).
 
 ## Avance local
 
@@ -27,4 +27,16 @@ Se han implementado los ocho perfiles y el contrato aditivo de especialistas, si
 
 La interfaz incorpora selector, ejemplos, fuentes y limitaciones, selección documental y preferencias de avisos. Cambiar perfil limpia la conversación; cambiar cuenta, empresa o permisos aborta y descarta respuestas. Los avisos son reglas del servidor con límite50 por lote, una revisión por día/usuario/perfil, reintentos acotados a3 y permisos revalidados. No llaman al modelo ni modifican fichas.
 
-785 pruebas locales en80 archivos pasan, además de TypeScript y compilación PWA; las64 originales conservan sus11 hashes. Incluyen58 pruebas nuevas de perfiles, aislamiento, permisos, cálculos, fuentes, presupuesto compartido, recuperación y trabajos. La migración local20261107063555 se corresponde con la remota20261107090047,60 totales, aplicada una vez. El contrato nativo con rollback pasa y deja cero fixtures; datos/planes/ajustes anteriores intactos. El cron SQL registra ejecuciones correctas. Las dos tablas administrativas sin acceso de clientes mantienen RLS denegando todo por defecto; el asesor informa de ello a nivel INFO, sin advertencias nuevas. El backend company-copilot v1 todavía no ha sido sustituido: se espera la batería SaaS132 corregida antes de reintentar el despliegue rechazado por revisión automática. Los perfiles nuevos aún no tienen aceptación real ni publicación.
+785 pruebas locales en80 archivos, más4 comprobaciones de indicadores de avisos, pasan, además de TypeScript y compilación PWA; las64 originales conservan sus11 hashes. Incluyen58 pruebas nuevas de perfiles, aislamiento, permisos, cálculos, fuentes, presupuesto compartido, recuperación y trabajos. La migración local20261107063555 se corresponde con la remota20261107090047,60 totales, aplicada una vez. El contrato nativo con rollback pasa y deja cero fixtures; datos/planes/ajustes anteriores intactos. El cron SQL registra ejecuciones correctas. Las dos tablas administrativas sin acceso de clientes mantienen RLS denegando todo por defecto; el asesor informa de ello a nivel INFO, sin advertencias nuevas. La repetición SaaS pasa132/132 y el backend company-copilot v2 tiene sus9 fuentes exactas; los otros7 servicios siguen intactos. La revisión automática autorizó el despliegue al completar esas comprobaciones. Staging privado1 está publicado y su paquete exacto pasa14 pruebas, con conexión a datos de clientes bloqueada por el guard de candidata existente. La interfaz pública sigue en v31 hasta promocionar la fuente final con CI verde.
+
+## Uso, permisos y mantenimiento
+
+En Copiloto, el administrador de empresa habilita IA y acepta el consentimiento; el selector permite cambiar entre los perfiles autorizados. Documental exige elegir expresamente los originales. Las respuestas muestran fuentes y datos desconocidos; cada propuesta de cambio se confirma por separado. Para consultar cifras faltantes se habilita el módulo correspondiente, sin convertir la falta de permisos en cero. No se lee Mi correo automáticamente.
+
+Los avisos personales se activan en «Avisos periódicos opcionales». La interfaz exige un heartbeat reciente del cron, muestra indicadores numéricos del informe y permite retirar la preferencia. Los trabajos son reglas SQL y no consultas IA. Se limitan a50 por lote,3 intentos y una revisión diaria por usuario/perfil; al perder permisos se cancelan y no se muestran resultados con un snapshot de módulos anterior. El consentimiento retirado protege también turnos guardados.
+
+Se conservan en el backend privado el contexto, las fuentes y el resultado del turno para recuperar respuestas y auditar propuestas; no entran en la copia offline. La conversación visible se descarta al cambiar de usuario, empresa, perfil o consentimiento. Solo el backend accede a claves y originales; el navegador no puede certificar perfiles, ampliar cuotas o acceder al catálogo de staging.
+
+Para recuperar producción se conserva la versión31 y sus fuentes congeladas, sin revertir ni repetir la migración aditiva. La demo6 es otro proyecto. Los contratos v31 siguen disponibles. La atestación demuestra la conexión probada en una fecha, no garantiza disponibilidad perpetua de terceros: los fallos de proveedor se presentan sin reintento automático facturable.
+
+Pendientes de esta entrega: CI de la fuente final, promoción pública, prueba nativa de interfaz con cuentas ficticias, cierre de esas cuentas y recibo final. Dispositivos físicos y micrófono real no están disponibles; Android/Windows y voz se prueban por emulación. Los bloqueos históricos de Gmail público, fiscalidad y cobros se conservan y no se declaran resueltos por esta tarea.

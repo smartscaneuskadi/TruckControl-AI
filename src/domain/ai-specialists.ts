@@ -142,3 +142,58 @@ export const specialistJobsSchema = z.strictObject({
     .max(10),
 });
 export type SpecialistJobs = z.infer<typeof specialistJobsSchema>;
+
+/** Render only known numeric indicators; missing or partial data is never zero. */
+export function specialistDigestFacts(summary: unknown): string[] {
+  const object = (v: unknown): Record<string, unknown> =>
+    v && typeof v === "object" && !Array.isArray(v)
+      ? (v as Record<string, unknown>)
+      : {};
+  const s = object(summary);
+  if (s.kind !== "database_rules" || s.paid_model_calls !== 0) return [];
+  const values = object(object(s.statistics).values),
+    facts: string[] = [];
+  for (const [group, key, label] of [
+    ["maintenance", "overdue", "Mantenimientos vencidos"],
+    ["maintenance", "open", "Mantenimientos abiertos"],
+    ["drivers", "expiredLicenses", "Permisos de conductor vencidos"],
+    ["deadlines", "overdue", "Vencimientos pendientes fuera de plazo"],
+    ["deadlines", "dueIn30Days", "Vencimientos en los próximos 30 días"],
+    ["trips", "completed", "Viajes completados en el período"],
+    ["trips", "inTransit", "Viajes en curso en el período"],
+  ]) {
+    const n = object(values[group])[key];
+    if (typeof n === "number" && Number.isSafeInteger(n) && n >= 0)
+      facts.push(`${label}: ${new Intl.NumberFormat("es-ES").format(n)}`);
+  }
+  const finance = values.finance_by_truck;
+  if (
+    Array.isArray(finance) &&
+    finance.length &&
+    values.finance_truck_groups_partial === false
+  ) {
+    const profits = finance.map((row) => object(row).profitCents);
+    if (
+      profits.every(
+        (n): n is number => typeof n === "number" && Number.isSafeInteger(n),
+      )
+    ) {
+      const sum = profits.reduce((a, b) => a + b, 0);
+      if (Number.isSafeInteger(sum))
+        facts.push(
+          `Beneficio registrado del período: ${new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(sum / 100)}`,
+        );
+    }
+  }
+  const fuel = values.fuel_by_truck;
+  if (Array.isArray(fuel) && values.fuel_truck_groups_partial === false)
+    facts.push(
+      `Camiones con consumo medido en el período: ${
+        fuel.filter((row) => {
+          const n = object(row).litresPer100Km;
+          return typeof n === "number" && Number.isFinite(n) && n >= 0;
+        }).length
+      }`,
+    );
+  return facts;
+}
