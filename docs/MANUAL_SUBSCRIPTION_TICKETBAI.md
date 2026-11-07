@@ -33,3 +33,13 @@ El titular confirma que ELEVADANCOR ya dispone de **GDTaller con TicketBAI** par
 - [ ] Revisión y autorización explícita de lanzamiento de pagos, separada de esta decisión de producto.
 
 **Preservación:** producción v32, respaldo v31, demo v6, 60 migraciones remotas, datos y RLS. No tocar FIXPilot; no repetir llamadas IA. Coste directo de esta documentación: 0 EUR; no se verifican aquí facturas de terceros.
+
+## Primer avance técnico (PR #47, sin despliegue)
+
+- `src/domain/manual-subscription-invoicing.ts`: reductor puro para un pago confirmado por servidor → tarea pendiente → factura fiscal registrada por operador → envío **declarado por operador**. No confundir `sent_reported` con entrega confirmada por el servidor de correo.
+- Validaciones de referencia de evento y pago, unicidad lógica por referencia de pago, vinculación a empresa/solicitud, céntimos EUR, tiempo UTC, factura/ID TicketBAI y ruta de PDF privada bajo la empresa compradora. Repeticiones idénticas son idempotentes; contradicciones requieren revisión.
+- Una incidencia produce `needs_review` sin reenvíos automáticos ni borrados; recordatorios puros de 24–48 horas son solo criterio de UI, **no plazo fiscal legal** ni notificaciones reales.
+- `tests/manual-subscription-invoicing.test.ts`: casos sintéticos de pagos duplicados, eventos contradictorios, rutas ajenas/públicas, estados inválidos, timestamps, facturas distintas y registros de envío repetidos. La prueba existente del guard nativo sigue exigiendo cierre de checkout.
+- El texto público de facturación aclara la opción manual futura en GDTaller. **Ningún envío ni factura real ha ocurrido por este PR.**
+
+**Faltan para un módulo operativo:** tablas privadas y restricciones únicas durables, transacciones CAS, validación de webhooks y pago con Stripe real autorizado, permisos/RLS, panel de administración, carga protegida de PDF, aviso a `pedidos@smartscaneuskadi.com` por canal confirmado, reintentos y auditoría. Estas funciones NO están implementadas por el reductor puro; no activar `BILLING_INVOICING_VERIFIED` ni modificar `nativeSubscriptionFiscalIssuerAvailable()`.
