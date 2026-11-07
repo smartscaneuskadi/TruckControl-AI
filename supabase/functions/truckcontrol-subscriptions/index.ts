@@ -1,3 +1,4 @@
+import { subscriptionFiscalCheckoutAllowed } from "../_shared/subscription-fiscal-gate.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createRecurringHandler } from "./handler.ts";
 import {
@@ -40,7 +41,7 @@ Deno.serve(
       webhookSecret: Deno.env.get("STRIPE_RECURRING_WEBHOOK_SECRET"),
       termsVersion: Deno.env.get("BILLING_TERMS_VERSION"),
       termsUrl: Deno.env.get("BILLING_TERMS_URL"),
-      invoicingVerified: Deno.env.get("BILLING_INVOICING_VERIFIED") === "true",
+      invoicingVerified: subscriptionFiscalCheckoutAllowed(Deno.env.get("BILLING_INVOICING_VERIFIED")),
     },
   ),
 );
