@@ -17,9 +17,11 @@ El titular confirma que ELEVADANCOR ya dispone de **GDTaller con TicketBAI** par
 5. Administración envía el PDF al cliente desde un canal aprobado y marca el envío únicamente tras confirmación. Guardar referencia, fecha, destinatario y estado, con acceso administrativo y almacenamiento privado.
 6. Conciliación `pago → solicitud → factura → entrega`. Reintentos de webhooks, aviso o entrega no generan facturas nuevas. Rectificaciones, anulaciones y reembolsos se escalan a administración y requieren trazabilidad; no reescribir facturas fiscales.
 
-## Máquina de estados sugerida
+## Estados del contrato actual y fases futuras
 
-`payment_confirmed → pending_manual_issue → fiscal_issued → delivery_pending → delivered`. Estados de excepción: `needs_review`, `delivery_failed`, `refund_review`. Transiciones con actor, timestamp, referencia y control de concurrencia; no permitir `delivered` sin `fiscal_issued`. Nunca habilitar acceso por el simple hecho de adjuntar un PDF.
+El **único reductor del PR #47** es `src/domain/manual-subscription-invoicing.ts`. Sus estados actuales son `awaiting_issue → awaiting_send → sent_reported`, con `needs_review` como estado cerrado ante incidencias. `sent_reported` significa exclusivamente que un operador declaró haber enviado el PDF fiscal; **NO equivale a entrega confirmada por proveedor de correo** ni prueba que el cliente lo recibió. El prototipo alternativo que modelaba `delivered` sin esa distinción se retiró para evitar dos contratos contradictorios.
+
+La futura persistencia y el panel deberán exigir actor autorizado, auditoría, bloqueo transaccional, RLS y prueba de documentos privados. La confirmación de entrega real, la gestión de fallos de correo y la eventual reapertura de `needs_review` requieren un contrato adicional verificado; **no se implementan con este reductor**. Nunca habilitar acceso al servicio por adjuntar un PDF o por registrar un envío manual.
 
 ## Aceptación obligatoria antes de cobrar
 
