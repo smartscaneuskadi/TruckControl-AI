@@ -80,6 +80,10 @@ def _local_digest(
         with file.open("rb") as stream:
             for block in iter(lambda: stream.read(1024 * 1024), b""):
                 digest.update(block)
+    except PreflightError:
+        # Preserve explicit security failures (e.g. hardlinks) rather than
+        # replacing them with a generic missing-file error.
+        raise
     except (OSError, ValueError) as exc:
         raise PreflightError("evidence missing or outside its private directory") from exc
     _require(digest.hexdigest() == expected, "evidence SHA-256 mismatch")
