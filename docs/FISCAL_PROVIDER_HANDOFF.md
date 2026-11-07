@@ -19,6 +19,24 @@ la numeración fiscal anterior; una segunda factura distinta se rechaza.
 La entrega tiene una referencia de recepción separada. Nunca se infiere
 entrega de un pago Stripe, redirección del navegador o estado de checkout.
 
+### Endurecimiento del contrato de conciliación (07/11/2026)
+
+Las confirmaciones de emisión ahora requieren `requestId` y el SHA-256 del
+**documento aprobado** además de las referencias reales de operación y factura.
+El contrato rechaza hechos de otra solicitud o digest (`fiscal_request_mismatch`).
+La entrega exige también el **mismo proveedor y número de factura** ya
+confirmados, además de un recibo independiente; los cruces se rechazan con
+`conflicting_fiscal_delivery`. Los acuses repetidos idénticos siguen siendo
+idempotentes. La suite incorpora dos escenarios sintéticos de rechazo cruzado.
+
+**Límite de seguridad:** un objeto que contiene estas claves no demuestra por
+sí solo la procedencia del webhook. El futuro adaptador oficial debe verificar
+firmas/credenciales, autenticidad, correspondencia de empresa/vendedor y
+consulta nativa al emisor, así como registrar la unicidad y concurrencia en
+transacciones durables. No aceptar como prueba fiscal valores provenientes del
+navegador, del checkout, de fixtures o de un webhook no autenticado. Sigue sin
+haber proveedor conectado ni pago habilitado.
+
 El contrato no llama al proveedor ni almacena datos personales, certificados,
 PDF, credenciales o números fiscales inventados. Los tests de
 `tests/fiscal-issuer-reconciliation.test.ts` usan exclusivamente fixtures
