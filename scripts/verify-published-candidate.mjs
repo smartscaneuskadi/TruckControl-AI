@@ -414,6 +414,7 @@ try {
         let personalMailOfflineChecked = false;
         let companyFiscalChecked = false;
         let companyCopilotChecked = false;
+        let aiSpecialistsChecked = false;
         if (config.expected_universal_mail === true) {
           await page.goto(`${target.origin}/#/invoices`, {
             waitUntil: "networkidle",
@@ -746,6 +747,21 @@ try {
                 path: `${dir}/${name}-copilot-demo.png`,
               });
               companyCopilotChecked = true;
+              if (config.expected_ai_specialists === true) {
+                for (const label of [
+                  "General",
+                  "Documental",
+                  "Financiero",
+                  "Combustible",
+                  "Mantenimiento",
+                  "Conductores",
+                  "Viajes",
+                  "Dirección",
+                ]) {
+                  await copilot.getByText(label, { exact: true }).waitFor();
+                }
+                aiSpecialistsChecked = true;
+              }
               await page.evaluate(() => {
                 location.hash = "/invoices";
               });
@@ -843,6 +859,7 @@ try {
           personalMailOffline: personalMailOfflineChecked,
           companyFiscalPreparation: companyFiscalChecked,
           companyCopilot: companyCopilotChecked,
+          aiSpecialists: aiSpecialistsChecked,
           passed: true,
         });
         console.log(

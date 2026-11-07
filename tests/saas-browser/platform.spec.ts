@@ -22,6 +22,11 @@ import type {
 import type { TyreRecord, TyreHistory } from "../../src/domain/tyres";
 import { emptyTyreData } from "../../src/domain/tyres";
 import type { CopilotAction, CopilotTurn } from "../../src/domain/copilot";
+import { specialistProfiles } from "../../src/domain/ai-specialists";
+import type {
+  SpecialistTurn,
+  SpecialistJobs,
+} from "../../src/domain/ai-specialists";
 import { exampleCatalog, featureLabels } from "../../src/domain/subscriptions";
 import type {
   AdminSnapshot,
@@ -156,6 +161,10 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     copilotActions: new Map<string, CopilotAction>(),
     copilotTurns: new Map<string, CopilotTurn>(),
     copilotAppliedWrites: 0,
+    specialistsAvailable: false,
+    specialistWrongProfile: false,
+    specialistTurns: new Map<string, SpecialistTurn>(),
+    specialistPreferences: new Map<string, SpecialistJobs>(),
   };
   const pending = {
     id: "10000000-0000-4000-8000-000000000084",
@@ -699,6 +708,183 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       } else {
         status = 400;
         data = { error: "invalid_request" };
+      }
+    } else if (url.pathname === "/rest/v1/rpc/tc_company_specialists") {
+      const company = String(body?.p_org ?? ""),
+        action = body?.p_action,
+        input = body?.p_data as Record<string, unknown>,
+        a = access(identity ?? customerId);
+      const own =
+        company === org ||
+        controls.additionalOrganizations.some((o) => o.id === company);
+      const allowed = Boolean(
+        a.active &&
+        a.features.assistant &&
+        a.features.document_ai &&
+        a.profile?.ai_allowed &&
+        a.profile.ai_opt_in,
+      );
+      if (!controls.specialistsAvailable) data = null;
+      else if (!own || !allowed || controls.copilotDenied) {
+        status = 403;
+        data = {
+          code: "42501",
+          message: "Synthetic specialist permission denied",
+        };
+      } else if (action === "status")
+        data = {
+          schema_version: 2,
+          organization_id: company,
+          profiles: specialistProfiles.map((p) => ({
+            id: p.id,
+            allowed:
+              p.requiresAny.length === 0 ||
+              p.requiresAny.some((k) => a.features[k]),
+            connection_verified: true,
+            verified_at: "2026-11-07T06:00:00Z",
+          })),
+        };
+      else if (action === "documents")
+        data = {
+          organization_id: company,
+          partial: false,
+          documents: controls.backupDocuments.map((d) => ({
+            id: d.id,
+            name: d.name,
+            content_type: d.content_type,
+            size_bytes: d.size_bytes,
+          })),
+        };
+      else if (action === "result")
+        data = controls.specialistTurns.get(String(input.request_id)) ?? null;
+      else if (
+        ["jobs_status", "jobs_save", "jobs_run"].includes(String(action))
+      ) {
+        const profile = String(input.profile),
+          key = company + ":" + profile;
+        const previous =
+          controls.specialistPreferences.get(key) ??
+          ({
+            organization_id: company,
+            profile,
+            paid_model_calls: 0,
+            scheduler_ready: true,
+            preference: {
+              enabled: false,
+              cadence: "daily",
+              version: 0,
+              next_run_at: null,
+            },
+            jobs: [],
+          } as SpecialistJobs);
+        if (action === "jobs_save") {
+          if (input.expected_version !== previous.preference.version) {
+            status = 409;
+            data = { code: "40001", message: "Synthetic preference conflict" };
+          } else {
+            previous.preference = {
+              enabled: Boolean(input.enabled),
+              cadence: input.cadence === "weekly" ? "weekly" : "daily",
+              version: previous.preference.version + 1,
+              next_run_at: new Date().toISOString(),
+            };
+            controls.specialistPreferences.set(key, previous);
+            data = previous;
+          }
+        } else if (action === "jobs_run") {
+          if (!previous.preference.enabled) {
+            status = 403;
+            data = { code: "42501", message: "Not opted in" };
+          } else {
+            if (!previous.jobs.length)
+              previous.jobs.push({
+                id: crypto.randomUUID(),
+                state: "complete",
+                attempts: 1,
+                scheduled_for: "2026-11-07",
+                summary: { kind: "database_rules", paid_model_calls: 0 },
+                created_at: new Date().toISOString(),
+                completed_at: new Date().toISOString(),
+                error_code: null,
+              });
+            controls.specialistPreferences.set(key, previous);
+            data = previous;
+          }
+        } else data = previous;
+      } else {
+        status = 400;
+        data = {
+          code: "23514",
+          message: "Unknown synthetic specialist action",
+        };
+      }
+    } else if (url.pathname === "/functions/v1/company-copilot/specialists") {
+      const company = String(body?.organization_id ?? ""),
+        profile = String(body?.profile ?? ""),
+        a = access(identity ?? customerId);
+      const allowed = Boolean(
+        a.active &&
+        a.features.assistant &&
+        a.features.document_ai &&
+        a.profile?.ai_allowed &&
+        a.profile.ai_opt_in,
+      );
+      const own =
+        company === org ||
+        controls.additionalOrganizations.some((o) => o.id === company);
+      if (
+        !controls.specialistsAvailable ||
+        !own ||
+        !allowed ||
+        controls.copilotDenied
+      ) {
+        status = 403;
+        data = { error: "ai_permission_required" };
+      } else {
+        const id = String(body?.request_id),
+          existing = controls.specialistTurns.get(id);
+        if (existing) data = existing;
+        else {
+          const actions = controls.copilotDrafts.map((d) => ({
+            ...structuredClone(d),
+            id: crypto.randomUUID(),
+            organization_id: company,
+          }));
+          for (const task of actions)
+            controls.copilotActions.set(task.id, task);
+          const isDocument =
+            profile === "documents" &&
+            Array.isArray(body?.document_ids) &&
+            body.document_ids.length > 0;
+          const turn = {
+            request_id: id,
+            organization_id: company,
+            profile: controls.specialistWrongProfile ? "drivers" : profile,
+            state: "complete",
+            reply: controls.copilotReply,
+            actions,
+            sources: [
+              {
+                reference: isDocument ? "D1" : "R1",
+                kind: isDocument ? "document" : "truck",
+                id: isDocument
+                  ? String((body!.document_ids as unknown[])[0])
+                  : "30000000-0000-4000-8000-000000000091",
+                version: isDocument ? null : 1,
+                title: isDocument
+                  ? "Documento seleccionado ficticio"
+                  : "Camión de la empresa de prueba",
+              },
+            ],
+            uncertainties: ["No hay telemetría GPS en estos registros."],
+          } as SpecialistTurn;
+          controls.specialistTurns.set(id, turn);
+          data = turn;
+          if (controls.copilotChatUncertain) {
+            await route.abort("failed");
+            return;
+          }
+        }
       }
     } else if (url.pathname === "/functions/v1/company-copilot") {
       const company = String(body?.organization_id ?? ""),
@@ -3767,6 +3953,265 @@ type CopilotVoiceFixture = {
     spoken: string[];
   };
 };
+test.describe("ocho perfiles especialistas con evidencia", () => {
+  async function workspace(page: Page) {
+    const f = await copilotWorkspace(page);
+    f.controls.specialistsAvailable = true;
+    return f;
+  }
+  test("elige ocho perfiles y muestra sus fuentes sin mezclar conversaciones", async ({
+    page,
+  }) => {
+    const f = await workspace(page),
+      panel = await openCopilot(page),
+      picker = panel.getByLabel("Perfil del asistente", { exact: true });
+    await expect(picker).toBeVisible();
+    for (const p of specialistProfiles) {
+      await picker.selectOption(p.id);
+      f.controls.copilotReply = `Respuesta ficticia del perfil ${p.id}.`;
+      await panel
+        .getByLabel("Tu mensaje al asistente")
+        .fill(`Consulta ficticia para ${p.label}.`);
+      await panel
+        .getByRole("button", { name: "Enviar al asistente", exact: true })
+        .click();
+      await expect(panel.getByRole("log")).toContainText(
+        f.controls.copilotReply,
+      );
+      await panel.getByText("Fuentes utilizadas (1)", { exact: true }).click();
+      await expect(panel.getByRole("log")).toContainText(
+        "Camión de la empresa de prueba",
+      );
+      await expect(panel.getByRole("log")).toContainText(
+        "No hay telemetría GPS",
+      );
+      if (p.id !== "general")
+        await expect(panel.getByRole("log")).not.toContainText(
+          "Respuesta ficticia del perfil general.",
+        );
+    }
+    expect(
+      f.calls.filter(
+        (c) =>
+          c.path.endsWith("/company-copilot/specialists") &&
+          c.body?.action === "chat",
+      ),
+    ).toHaveLength(8);
+    expect(f.controls.copilotAppliedWrites).toBe(0);
+  });
+  test("envía únicamente los documentos elegidos en el perfil documental", async ({
+    page,
+  }) => {
+    const f = await workspace(page),
+      id = "30000000-0000-4000-8000-000000000092";
+    f.controls.backupDocuments.push({
+      id,
+      organization_id: org,
+      name: "Archivo ficticio para IA.pdf",
+      object_path: `${org}/${id}/document.pdf`,
+      content_type: "application/pdf",
+      size_bytes: 100,
+      truck_id: null,
+      driver_id: null,
+      created_at: stamp,
+    });
+    const panel = await openCopilot(page);
+    await panel.getByLabel("Perfil del asistente").selectOption("documents");
+    await panel.getByLabel("Archivo ficticio para IA.pdf").check();
+    await panel
+      .getByLabel("Tu mensaje al asistente")
+      .fill("Lee únicamente mi archivo seleccionado.");
+    await panel
+      .getByRole("button", { name: "Enviar al asistente", exact: true })
+      .click();
+    await expect(panel.getByRole("log")).toContainText(f.controls.copilotReply);
+    const request = f.calls.find(
+      (c) =>
+        c.path.endsWith("/company-copilot/specialists") &&
+        c.body?.action === "chat",
+    );
+    expect(request?.body).toMatchObject({
+      profile: "documents",
+      document_ids: [id],
+    });
+    await panel.getByText("Fuentes utilizadas (1)", { exact: true }).click();
+    await expect(panel.getByRole("log")).toContainText(
+      "Documento seleccionado ficticio",
+    );
+  });
+  test("los avisos empiezan apagados y su ejecución no realiza consultas al modelo", async ({
+    page,
+  }) => {
+    const f = await workspace(page),
+      panel = await openCopilot(page);
+    await panel
+      .getByText("Avisos periódicos opcionales", { exact: true })
+      .click();
+    const opt = panel.getByLabel("Activar avisos de general", { exact: true });
+    await expect(opt).not.toBeChecked();
+    await opt.click();
+    await expect(opt).toBeChecked();
+    await panel
+      .getByRole("button", { name: "Revisar avisos ahora", exact: true })
+      .click();
+    await expect(panel).toContainText("completada con reglas, sin consumo IA");
+    await panel
+      .getByRole("button", { name: "Revisar avisos ahora", exact: true })
+      .click();
+    await expect(
+      panel.getByText("completada con reglas, sin consumo IA", {
+        exact: false,
+      }),
+    ).toHaveCount(1);
+    expect(
+      f.calls.filter((c) => c.path.endsWith("/company-copilot/specialists")),
+    ).toHaveLength(0);
+    await opt.click();
+    await expect(opt).not.toBeChecked();
+  });
+  test("recupera una respuesta incierta sin otra llamada de pago", async ({
+    page,
+  }) => {
+    const f = await workspace(page);
+    f.controls.copilotChatUncertain = true;
+    const panel = await openCopilot(page);
+    await panel.getByLabel("Perfil del asistente").selectOption("finance");
+    await panel
+      .getByLabel("Tu mensaje al asistente")
+      .fill("Resumen financiero ficticio.");
+    await panel
+      .getByRole("button", { name: "Enviar al asistente", exact: true })
+      .click();
+    await panel
+      .getByRole("button", {
+        name: "Comprobar estado de la consulta",
+        exact: true,
+      })
+      .click();
+    await expect(panel.getByRole("log")).toContainText(f.controls.copilotReply);
+    expect(
+      f.calls.filter(
+        (c) =>
+          c.path.endsWith("/company-copilot/specialists") &&
+          c.body?.action === "chat",
+      ),
+    ).toHaveLength(1);
+  });
+  test("no muestra respuestas que pertenecen a otro perfil", async ({
+    page,
+  }) => {
+    const f = await workspace(page);
+    f.controls.specialistWrongProfile = true;
+    f.controls.copilotReply = "SECRETO-PERFIL-AJENO";
+    const panel = await openCopilot(page);
+    await panel
+      .getByLabel("Tu mensaje al asistente")
+      .fill("Consulta ficticia general.");
+    await panel
+      .getByRole("button", { name: "Enviar al asistente", exact: true })
+      .click();
+    await expect(panel).toContainText(
+      "La respuesta no corresponde a este perfil",
+    );
+    await expect(panel.getByRole("log")).not.toContainText(
+      "SECRETO-PERFIL-AJENO",
+    );
+    await expect(
+      panel.getByText("Fuentes utilizadas (1)", { exact: true }),
+    ).toHaveCount(0);
+  });
+  test("retirar consentimiento limpia respuestas, fuentes y controles de perfiles", async ({
+    page,
+  }) => {
+    const f = await workspace(page),
+      panel = await openCopilot(page);
+    f.controls.copilotReply = "RESPUESTA-PRIVADA-ESPECIALISTA";
+    await panel
+      .getByLabel("Tu mensaje al asistente")
+      .fill("Consulta privada ficticia.");
+    await panel
+      .getByRole("button", { name: "Enviar al asistente", exact: true })
+      .click();
+    await expect(panel.getByRole("log")).toContainText(f.controls.copilotReply);
+    await panel
+      .getByText("Permisos y privacidad del asistente", { exact: true })
+      .click();
+    await panel
+      .getByRole("button", {
+        name: "Retirar mi consentimiento de IA",
+        exact: true,
+      })
+      .click();
+    await expect(panel.getByRole("log")).not.toContainText(
+      f.controls.copilotReply,
+    );
+    await expect(panel.getByLabel("Perfil del asistente")).toHaveCount(0);
+    await expect(
+      panel.getByRole("button", { name: "Enviar al asistente", exact: true }),
+    ).toBeDisabled();
+  });
+  test("selector, fuentes y avisos son accesibles en ambos temas y sin desbordamiento", async ({
+    page,
+  }, testInfo) => {
+    const f = await workspace(page),
+      panel = await openCopilot(page);
+    await panel.getByLabel("Perfil del asistente").selectOption("finance");
+    await panel
+      .getByLabel("Tu mensaje al asistente")
+      .fill("Resumen ficticio accesible.");
+    await panel
+      .getByRole("button", { name: "Enviar al asistente", exact: true })
+      .click();
+    await expect(panel.getByRole("log")).toContainText(f.controls.copilotReply);
+    await panel.getByText("Fuentes utilizadas (1)", { exact: true }).click();
+    await panel
+      .getByText("Avisos periódicos opcionales", { exact: true })
+      .click();
+    await panel
+      .getByLabel("Tu mensaje al asistente")
+      .fill("Borrador por conservar al cambiar el tema.");
+    for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+      await page
+        .getByRole("button", { name: "Cambiar apariencia", exact: true })
+        .first()
+        .click();
+      const appearance = page.getByRole("dialog", {
+        name: "Apariencia de TruckControl",
+      });
+      await appearance.getByRole("radio", { name: theme, exact: true }).check();
+      await appearance
+        .getByLabel("Animaciones", { exact: true })
+        .selectOption("off");
+      await appearance
+        .getByRole("button", { name: "Aplicar apariencia", exact: true })
+        .click();
+      await appearance
+        .getByRole("button", { name: "Cerrar ventana", exact: true })
+        .click();
+      await expect(panel.getByLabel("Perfil del asistente")).toHaveValue(
+        "finance",
+      );
+      await expect(panel.getByLabel("Tu mensaje al asistente")).toHaveValue(
+        "Borrador por conservar al cambiar el tema.",
+      );
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .include(".company-copilot")
+            .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+            .analyze()
+        ).violations,
+      ).toEqual([]);
+      expect(
+        await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1),
+      ).toBe(true);
+      await panel.getByLabel("Perfil del asistente").scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: testInfo.outputPath(`specialists-${theme.replace(" ", "-")}.png`),
+      });
+    }
+  });
+});
 describeCopilot();
 function describeCopilot() {
   test.describe("asistente universal por voz y texto", () => {

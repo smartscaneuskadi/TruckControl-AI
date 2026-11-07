@@ -5,6 +5,7 @@ import {
   type SpecialistIdentity,
 } from "../../../supabase/functions/company-copilot/specialist-handler.ts";
 import { parseSpecialistReply } from "../../../supabase/functions/company-copilot/specialist-contract.ts";
+import { createAiRuntimeResolver } from "../../../supabase/functions/_shared/ai-runtime.ts";
 import {
   specialistProfiles,
   specialistTurnSchema,
@@ -123,6 +124,89 @@ function fixture() {
   };
 }
 describe("orquestador con perfiles y coste controlado", () => {
+  it("los ocho perfiles comparten reservas, cuota y presupuesto; el noveno intento no llega al proveedor", async () => {
+    const f = fixture();
+    let reservations = 0,
+      settlements = 0;
+    const kinds: string[] = [];
+    const transport = vi.fn<typeof fetch>(async () =>
+      Response.json({
+        status: "completed",
+        usage: { input_tokens: 100, output_tokens: 20 },
+        output: [
+          {
+            content: [
+              {
+                type: "output_text",
+                text: JSON.stringify({
+                  reply: "Dato ficticio autorizado.",
+                  actions: [],
+                  citations: ["R1"],
+                  uncertainties: [],
+                }),
+              },
+            ],
+          },
+        ],
+      }),
+    );
+    const runtime = createAiRuntimeResolver(
+      {
+        config: async () => ({
+          enabled: true,
+          model: "gpt-6-luna",
+          monthly_budget_cents: 1000,
+        }),
+        budget: async (action, data) => {
+          if (action === "reserve") {
+            expect(data.organization_id).toBe(org);
+            expect(data.user_id).toBe(actor);
+            kinds.push(String(data.kind));
+            if (reservations === 8) return null;
+            reservations++;
+            return {
+              id: `fa220000-0000-4000-8000-${String(reservations).padStart(12, "0")}`,
+            };
+          }
+          expect(action).toBe("settle");
+          expect(data.input_tokens).toBe(100);
+          expect(data.output_tokens).toBe(20);
+          settlements++;
+          return {};
+        },
+      },
+      "sk-" + "synthetic".repeat(8),
+      transport,
+    );
+    const handler = createSpecialistHandler(f.gateway, {
+      origins: [origin],
+      resolveAI: async (o, u) =>
+        runtime.resolve({ organization_id: o, user_id: u, kind: "document" }),
+    });
+    for (const p of specialistProfiles) {
+      vi.mocked(f.gateway.server).mockImplementation(
+        async (_o, _u, a, input) =>
+          a === "begin"
+            ? { started: true }
+            : {
+                request_id: requestId,
+                organization_id: org,
+                profile: p.id,
+                state: "complete",
+                reply: input.reply,
+                actions: [],
+                sources: [],
+                uncertainties: [],
+              },
+      );
+      expect((await handler(request({ profile: p.id }))).status).toBe(200);
+    }
+    expect((await handler(request())).status).not.toBe(200);
+    expect(transport).toHaveBeenCalledTimes(8);
+    expect(reservations).toBe(8);
+    expect(settlements).toBe(8);
+    expect(kinds).toEqual(Array(9).fill("document"));
+  });
   for (const p of specialistProfiles)
     it(`conecta una llamada de ${p.id} con catálogo de herramientas cerrado`, async () => {
       const f = fixture();

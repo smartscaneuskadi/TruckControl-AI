@@ -76,6 +76,11 @@ revoke all on function private.tc_specialist_statistics(uuid,uuid,text) from pub
 
 create table private.tc_specialist_verifications(profile text primary key check(private.tc_specialist_entities(profile) is not null),verified_at timestamptz,verification_turn uuid,receipt jsonb not null default '{}');
 insert into private.tc_specialist_verifications(profile) select unnest(array['general','documents','finance','fuel','maintenance','drivers','trips','management']);
+-- Only explicitly provisioned synthetic organizations may use the private staging origin.
+-- No editable user metadata or company name grants staging authorization.
+create table private.tc_specialist_test_organizations(organization_id uuid primary key references public.organizations(id) on delete restrict,enabled boolean not null default false,created_at timestamptz not null default now());
+alter table private.tc_specialist_test_organizations enable row level security;
+revoke all on private.tc_specialist_test_organizations from public,anon,authenticated;
 create table private.tc_specialist_turns (
  organization_id uuid not null,user_id uuid not null,id uuid not null,profile text not null references private.tc_specialist_verifications(profile),
  context jsonb not null check(jsonb_typeof(context)='object' and octet_length(context::text)<=350000),
@@ -106,6 +111,9 @@ declare actor uuid:=(select auth.uid());base jsonb;f jsonb;p text;k text;item js
  if p_action='status' then
   if p_data<>'{}' then raise exception 'Solicitud no válida' using errcode='23514';end if;
   return jsonb_build_object('schema_version',2,'organization_id',p_org,'profiles',(select jsonb_agg(jsonb_build_object('id',v.profile,'allowed',private.tc_specialist_allowed(p_org,actor,v.profile),'connection_verified',v.verified_at is not null,'verified_at',v.verified_at) order by v.profile) from private.tc_specialist_verifications v));
+ elsif p_action='stage_access' then
+  if p_data<>'{}' or not exists(select 1 from private.tc_specialist_test_organizations where organization_id=p_org and enabled) then raise exception 'Staging solo admite empresas ficticias autorizadas' using errcode='42501';end if;
+  return jsonb_build_object('organization_id',p_org,'allowed',true);
  elsif p_action='result' then
   if p_data-array['request_id']<>'{}' then raise exception 'Solicitud no válida' using errcode='23514';end if;
   return private.tc_specialist_result(p_org,actor,(p_data->>'request_id')::uuid);
@@ -207,6 +215,16 @@ do $$ begin if exists(select 1 from pg_roles where rolname='service_role') then
  grant execute on function private.tc_specialists_server(uuid,uuid,text,jsonb),public.company_specialists_server(uuid,uuid,text,jsonb) to service_role;
 end if;end $$;
 
+create function private.tc_specialist_health() returns jsonb language sql stable security definer set search_path='' as $$
+ select jsonb_build_object('profiles',(select jsonb_agg(jsonb_build_object('id',profile,'connection_verified',verified_at is not null,'verified_at',verified_at) order by profile) from private.tc_specialist_verifications),'human_confirmation',true,'scheduled_paid_model_calls',0);
+$$;
+revoke all on function private.tc_specialist_health() from public,anon,authenticated;
+create function public.company_specialists_health() returns jsonb language sql stable security invoker set search_path='' as $$select private.tc_specialist_health();$$;
+revoke all on function public.company_specialists_health() from public,anon,authenticated;
+do $$ begin if exists(select 1 from pg_roles where rolname='service_role') then
+ grant execute on function private.tc_specialist_health(),public.company_specialists_health() to service_role;
+end if;end $$;
+
 -- Personal opt-in digests are database rules, not recurring paid model requests.
 create table private.tc_specialist_preferences (
  organization_id uuid not null references public.organizations(id) on delete restrict,
@@ -281,7 +299,7 @@ end;$$;
 revoke all on function private.tc_specialist_tick() from public,anon,authenticated;
 
 create function private.tc_specialist_jobs_user(p_org uuid,p_user uuid,p_action text,p_data jsonb) returns jsonb language plpgsql security definer set search_path='' as $$
-declare p text:=p_data->>'profile';pref private.tc_specialist_preferences;a jsonb;rows jsonb;expected bigint;begin
+declare p text:=p_data->>'profile';pref private.tc_specialist_preferences;a jsonb;rows jsonb;expected bigint;cron_ok boolean:=false;begin
  if p_user is distinct from (select auth.uid()) or not private.tc_specialist_allowed(p_org,p_user,p) then raise exception 'Avisos no autorizados' using errcode='42501';end if;
  a:=private.tc_copilot_access(p_org,p_user);
  perform pg_advisory_xact_lock(hashtextextended('truckcontrol.specialist.preference:'||p_org::text||':'||p_user::text||':'||p,0));
@@ -300,7 +318,10 @@ declare p text:=p_data->>'profile';pref private.tc_specialist_preferences;a json
  elsif p_action<>'jobs_status' or p_action is null or p_data-array['profile']<>'{}' then raise exception 'Consulta no válida' using errcode='23514';end if;
  select * into pref from private.tc_specialist_preferences where organization_id=p_org and user_id=p_user and profile=p;
  select coalesce(jsonb_agg(x),'[]') into rows from (select id,state,attempts,scheduled_for,summary,created_at,completed_at,error_code from private.tc_specialist_jobs where organization_id=p_org and user_id=p_user and profile=p and (capabilities is null or capabilities=a->'features') order by created_at desc,id limit 10) x;
- return jsonb_build_object('organization_id',p_org,'profile',p,'preference',jsonb_build_object('enabled',coalesce(pref.enabled,false),'cadence',coalesce(pref.cadence,'daily'),'version',coalesce(pref.row_version,0),'next_run_at',pref.next_run_at),'jobs',rows,'paid_model_calls',0);
+ if to_regclass('cron.job_run_details') is not null then
+  select exists(select 1 from cron.job j join cron.job_run_details r on r.jobid=j.jobid where j.jobname='truckcontrol-specialist-optin-v1' and j.active and r.status='succeeded' and r.end_time>now()-interval '5 minutes') into cron_ok;
+ end if;
+ return jsonb_build_object('organization_id',p_org,'profile',p,'preference',jsonb_build_object('enabled',coalesce(pref.enabled,false),'cadence',coalesce(pref.cadence,'daily'),'version',coalesce(pref.row_version,0),'next_run_at',pref.next_run_at),'jobs',rows,'paid_model_calls',0,'scheduler_ready',cron_ok);
 end;$$;
 revoke all on function private.tc_specialist_jobs_user(uuid,uuid,text,jsonb) from public,anon,authenticated;
 

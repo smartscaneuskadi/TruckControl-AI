@@ -1,0 +1,31 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migration": {
+    "local": "20261107063555_ai_specialists_and_opt_in_jobs.sql",
+    "remote": "20261107090047",
+    "sha256": "fddaa7a32933ba16763303ecb06b5a498e7456ba2ea62e65b486582d2bb22602",
+    "total": 60,
+    "applied_once": true
+  },
+  "native_rollback_contract": true,
+  "fixture_users_remaining": 0,
+  "fixture_companies_remaining": 0,
+  "fixture_turns_remaining": 0,
+  "fixture_jobs_remaining": 0,
+  "commercial_settings_preserved": true,
+  "old_business_data_preserved": true,
+  "cron": {
+    "name": "truckcontrol-specialist-optin-v1",
+    "registered": true,
+    "recent_successful_tick": true,
+    "paid_model_calls": 0
+  },
+  "security": {
+    "new_errors": 0,
+    "new_warnings": 0,
+    "deny_all_private_tables_without_client_grants": 2,
+    "existing_leaked_password_protection_warning": true
+  },
+  "real_profile_connections_verified": 0,
+  "backend_deployment_pending_browser_success": true
+}

@@ -191,6 +191,40 @@ beforeEach(() => db.exec("begin"));
 afterEach(() => db.exec("reset role;rollback"));
 afterAll(() => db.close());
 describe("ocho perfiles con evidencias y dominio de empresa", () => {
+  it("el nombre DEMO y los metadatos no autorizan el staging", async () => {
+    await expect(control("stage_access")).rejects.toThrow();
+    await db.query(
+      "insert into private.tc_specialist_test_organizations(organization_id,enabled) values($1,true)",
+      [org],
+    );
+    expect(await control("stage_access")).toMatchObject({
+      organization_id: org,
+      allowed: true,
+    });
+    await expect(control("stage_access", {}, foreign)).rejects.toThrow();
+    await db.query(
+      "update private.tc_specialist_test_organizations set enabled=false where organization_id=$1",
+      [org],
+    );
+    await expect(control("stage_access")).rejects.toThrow();
+  });
+  it("un cliente no puede autorizar staging ni certificar conexiones", async () => {
+    await expect(
+      as(owner, () =>
+        db.query(
+          "insert into private.tc_specialist_test_organizations(organization_id,enabled) values($1,true)",
+          [org],
+        ),
+      ),
+    ).rejects.toThrow();
+    await expect(
+      as(owner, () =>
+        db.exec(
+          "update private.tc_specialist_verifications set verified_at=now()",
+        ),
+      ),
+    ).rejects.toThrow();
+  });
   it("no presenta conexiones como verificadas antes de la aceptación real", async () => {
     const s = await control("status");
     expect(s.profiles).toHaveLength(8);

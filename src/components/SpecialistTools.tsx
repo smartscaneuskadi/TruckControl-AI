@@ -234,11 +234,21 @@ export function SpecialistTools({
         </p>
         {jobs && (
           <>
+            {!jobs.scheduler_ready && (
+              <p>
+                La programación automática todavía no tiene una ejecución
+                reciente verificada. No se presenta como activa.
+              </p>
+            )}
             <label className="checkbox-line">
               <input
                 type="checkbox"
                 checked={jobs.preference.enabled}
-                disabled={disabled || busy}
+                disabled={
+                  disabled ||
+                  busy ||
+                  (!jobs.scheduler_ready && !jobs.preference.enabled)
+                }
                 onChange={(e) => void update("jobs_save", e.target.checked)}
               />
               Activar avisos de {info.label.toLowerCase()}

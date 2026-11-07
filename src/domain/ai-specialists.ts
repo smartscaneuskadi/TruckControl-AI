@@ -117,6 +117,7 @@ export const specialistJobsSchema = z.strictObject({
   organization_id: uuid,
   profile: specialistIdSchema,
   paid_model_calls: z.literal(0),
+  scheduler_ready: z.boolean(),
   preference: z.strictObject({
     enabled: z.boolean(),
     cadence: z.enum(["daily", "weekly"]),
