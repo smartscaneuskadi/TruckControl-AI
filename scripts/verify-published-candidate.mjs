@@ -235,18 +235,34 @@ try {
                 ["company-mail", "invoice_ai_status"],
                 ["company-mail", "analyze_invoice"],
               ]) {
-                const response = await fetch(
-                  `https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/${service}`,
-                  {
-                    method: "POST",
-                    headers: {
-                      apikey: key,
-                      "content-type": "application/json",
-                      "x-client-info": "truckcontrol-public-mail-validation",
-                    },
-                    body: JSON.stringify({ action }),
-                  },
-                );
+                // Only anonymous, side-effect-free 401/CORS probes may be retried.
+                // A transient browser network error does not bypass the final
+                // authentication, status and error-code assertions below.
+                let response;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                  try {
+                    response = await fetch(
+                      `https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/${service}`,
+                      {
+                        method: "POST",
+                        headers: {
+                          apikey: key,
+                          "content-type": "application/json",
+                          "x-client-info": "truckcontrol-public-mail-validation",
+                        },
+                        body: JSON.stringify({ action }),
+                      },
+                    );
+                    break;
+                  } catch (error) {
+                    if (!(error instanceof TypeError) || attempt === 2)
+                      throw error;
+                    await new Promise((resolve) =>
+                      setTimeout(resolve, 600 * (attempt + 1)),
+                    );
+                  }
+                }
+                if (!response) throw Error("Anonymous CORS probe failed");
                 result.push({
                   service,
                   action,
