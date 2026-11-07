@@ -35,6 +35,14 @@ describe("manual TicketBAI invoice workflow (pure safety rules)", () => {
     expect(manualInvoiceTransitionAllowed("delivery_failed", "delivered", fiscal)).toBe(false);
     expect(manualInvoiceTransitionAllowed("delivery_failed", "delivery_pending", fiscal)).toBe(true);
   });
+  it("rejects incomplete fiscal references and blank PDFs", () => {
+    expect(manualInvoiceTransitionAllowed("pending_manual_issue", "fiscal_issued", {
+      ...fiscal, fiscalReference: " ",
+    })).toBe(false);
+    expect(manualInvoiceTransitionAllowed("pending_manual_issue", "fiscal_issued", {
+      ...fiscal, pdfStorageKey: "",
+    })).toBe(false);
+  });
   it("isolates payment keys by provider and merchant account", () => {
     const key = manualInvoicePaymentKey("stripe", "seller-a", "payment-1");
     expect(key).toBe(manualInvoicePaymentKey("stripe", "seller-a", "payment-1"));
