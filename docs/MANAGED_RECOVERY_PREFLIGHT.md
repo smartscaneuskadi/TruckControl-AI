@@ -18,8 +18,9 @@ una **recuperación lógica parcial**, no un backup de toda la infraestructura.
 - origen esperado `kkkemaycedexymrpaqtp`, destino diferente marcado como
   `isolated_test`, timestamps con zona horaria y duración observada;
 - rechazo de rutas que salen del directorio, artefactos incompletos,
-  alterados, checks falsos, manifiestos con campos de credenciales o
-  ensayos que declaran utilizar datos reales.
+  alterados, enlaces simbólicos internos o externos, o reutilización de un
+  mismo archivo como prueba de varios controles; también rechaza checks
+  falsos, campos de credenciales y ensayos que declaran usar datos reales.
 
 La herramienta no interpreta el contenido de los informes, no consulta el
 proveedor ni verifica firmas de una autoridad independiente. Un resultado
