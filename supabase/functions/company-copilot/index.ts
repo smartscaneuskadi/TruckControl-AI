@@ -3,6 +3,8 @@ import { createAiRuntimeResolver } from "../_shared/ai-runtime.ts";
 import { productionAppOrigins } from "../_shared/app-origins.ts";
 import { createCopilotHandler } from "./handler.ts";
 import type { CopilotGateway } from "./handler.ts";
+import { createSpecialistHandler } from "./specialist-handler.ts";
+import type { SpecialistGateway } from "./specialist-handler.ts";
 const url = Deno.env.get("SUPABASE_URL")!;
 const service = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
   auth: { persistSession: false, autoRefreshToken: false },
@@ -65,6 +67,57 @@ const handler = createCopilotHandler(gateway, {
   resolveAI: (organization_id, user_id) =>
     runtime.resolve({ organization_id, user_id, kind: "document" }),
 });
+const specialistGateway: SpecialistGateway = {
+  async authenticate(token) {
+    const client = createClient(url, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data, error } = await client.auth.getUser(token);
+    if (error || !data.user) return null;
+    return {
+      userId: data.user.id,
+      async control(org, action, input = {}) {
+        const { data, error } = await client.rpc("tc_company_specialists", {
+          p_org: org,
+          p_action: action,
+          p_data: input,
+        });
+        if (error) throw error;
+        return data;
+      },
+      async document(org, id) {
+        const { data, error } = await client.rpc("get_company_document", {
+          p_organization_id: org,
+          p_document_id: id,
+        });
+        return error ? null : (data?.[0] ?? null);
+      },
+      async download(path) {
+        const { data, error } = await client.storage
+          .from("truckcontrol-documents")
+          .download(path);
+        if (error || !data) throw Error("Document unavailable");
+        return new Uint8Array(await data.arrayBuffer());
+      },
+    };
+  },
+  async server(org, user, action, input) {
+    const { data, error } = await service.rpc("company_specialists_server", {
+      p_org: org,
+      p_user: user,
+      p_action: action,
+      p_data: input,
+    });
+    if (error) throw error;
+    return data;
+  },
+};
+const specialists = createSpecialistHandler(specialistGateway, {
+  origins: productionAppOrigins,
+  resolveAI: (organization_id, user_id) =>
+    runtime.resolve({ organization_id, user_id, kind: "document" }),
+});
 Deno.serve(async (request: Request) =>
   request.method === "GET" &&
   new URL(request.url).pathname.endsWith("/company-copilot/health")
@@ -83,5 +136,7 @@ Deno.serve(async (request: Request) =>
           },
         },
       )
-    : handler(request),
+    : new URL(request.url).pathname.endsWith("/company-copilot/specialists")
+      ? specialists(request)
+      : handler(request),
 );

@@ -1,0 +1,33 @@
+{
+  "issue": 37,
+  "aggregate_new_expense_ceiling_eur": 200,
+  "ceiling_is_not_a_spend_target": true,
+  "existing_monthly_ai_budget_usd": 10,
+  "existing_company_monthly_quota": 100,
+  "new_paid_services": [],
+  "new_recurring_commitments": [],
+  "new_provider_calls": 0,
+  "new_expenses_eur": 0,
+  "baseline_excluded_from_this_task": {
+    "month": "2026-11",
+    "settled_calls": 4,
+    "estimated_micro_usd": 2419,
+    "unsettled_reservations": 0
+  },
+  "planned_live_acceptance": {
+    "synthetic_data_only": true,
+    "max_model_attempts_per_profile": 1,
+    "profiles": 8,
+    "existing_budget_reservation_micro_usd_per_call": 1000000,
+    "no_automatic_model_retry": true,
+    "credentials": "Existing backend connection; no new key or local secret copy"
+  },
+  "periodic_jobs": {
+    "paid_model_calls": 0,
+    "opt_in_default": false,
+    "worker_batch_limit": 50,
+    "attempt_limit": 3,
+    "new_third_party_service": false
+  },
+  "cost_evidence_policy": "Record confirmed token usage and ledger settlement separately from estimated USD cost. No provider invoice or EUR conversion is claimed without provider billing evidence. Any additional purchase requires a connected authorized provider and checked cost within the aggregate ceiling."
+}
