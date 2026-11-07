@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   specialistProfiles,
   specialistIdSchema,
+  specialistDigestFacts,
   type SpecialistId,
   type SpecialistStatus,
   type SpecialistJobs,
@@ -297,6 +298,13 @@ export function SpecialistTools({
                         ? "cancelada"
                         : "no completada; revisa la conexión"}
                   .
+                  {j.state === "complete" && (
+                    <ul>
+                      {specialistDigestFacts(j.summary).map((fact) => (
+                        <li key={fact}>{fact}</li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               ))}
             </ul>
