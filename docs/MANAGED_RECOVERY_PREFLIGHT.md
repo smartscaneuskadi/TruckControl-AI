@@ -18,9 +18,16 @@ una **recuperación lógica parcial**, no un backup de toda la infraestructura.
 - origen esperado `kkkemaycedexymrpaqtp`, destino diferente marcado como
   `isolated_test`, timestamps con zona horaria y duración observada;
 - rechazo de rutas que salen del directorio, artefactos incompletos,
-  alterados, enlaces simbólicos internos o externos, o reutilización de un
-  mismo archivo como prueba de varios controles; también rechaza checks
+  alterados, enlaces simbólicos internos o externos (también en el manifiesto),
+  enlaces físicos/hardlinks a un mismo inode o archivo ajeno al directorio,
+  o reutilización de un mismo archivo como prueba de varios controles;
+  también rechaza checks
   falsos, campos de credenciales y ensayos que declaran usar datos reales.
+
+La herramienta verifica las evidencias solo por rutas e inodes locales; tampoco
+certifica la ausencia de montajes especiales ni la autoría del informe. Debe
+ejecutarse en un directorio privado de evidencias controlado por el operador,
+no en un árbol modificable por terceros durante la comprobación.
 
 La herramienta no interpreta el contenido de los informes, no consulta el
 proveedor ni verifica firmas de una autoridad independiente. Un resultado
