@@ -1,5 +1,7 @@
 # Registro de reanudación — 31 de octubre de 2026
 
+**Actualización07/11:** v32 publicada y issue37 cerrada; empieza la orden comercial integral en issue41. El estado y plan vigentes están en [PROGRESS raíz](../PROGRESS.md), [TODO](../TODO.md), [BLOCKERS](../BLOCKERS.md), [TEST_RESULTS](../TEST_RESULTS.md) y [DEPLOYMENT](../DEPLOYMENT.md). El resto de este archivo conserva su historial; no reactiva configuraciones antiguas.
+
 **Estado vigente:** producción conectada 13 publicada en https://truckcontrolai.com; propietario verificado con contraseña y rol global. Registro de clientes abierto tras comprobar las tres condiciones; cobros automáticos y SMS apagados. Ver CURRENT_DELIVERY.md, CLIENT_LAUNCH.md y el inventario de despliegue. Los apartados siguientes conservan el historial cronológico y no sustituyen ese estado.
 
 Repositorio: https://github.com/smartscaneuskadi/TruckControl-AI
