@@ -26,6 +26,9 @@
     "deny_all_private_tables_without_client_grants": 2,
     "existing_leaked_password_protection_warning": true
   },
-  "real_profile_connections_verified": 0,
-  "backend_deployment_pending_browser_success": true
+  "real_profile_connections_verified": 8,
+  "backend_deployment_pending_browser_success": false,
+  "backend_version": 2,
+  "remote_source_files_exact": 9,
+  "other_seven_functions_unchanged": true
 }

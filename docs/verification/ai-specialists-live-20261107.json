@@ -1,0 +1,732 @@
+{
+  "project_id": "kkkemaycedexymrpaqtp",
+  "implementation_commit": "d270df5cf996a6eb5120401e23bace18dc2cd6ec",
+  "checked_at": "2026-11-07T09:13:48.856003+00:00",
+  "synthetic_data_only": true,
+  "tls_verified": true,
+  "real_model_calls": 8,
+  "settled_calls": 8,
+  "estimated_micro_usd": 19465,
+  "actual_vendor_invoice_available": false,
+  "shared_model": "gpt-6-luna",
+  "ledger": [
+    {
+      "profile": "general",
+      "id": "be036ed4-27aa-4ec5-8011-dae6756281bc",
+      "state": "complete",
+      "source_count": 2,
+      "call_id": "b0eb7ffd-37e3-41df-83c4-2011f40b6818",
+      "model": "gpt-6-luna",
+      "call_state": "settled",
+      "input_tokens": 4233,
+      "output_tokens": 98,
+      "estimated_micro_usd": 3574
+    },
+    {
+      "profile": "documents",
+      "id": "971cf8b8-a8f8-4b7f-98e7-15d9865d6cb7",
+      "state": "complete",
+      "source_count": 1,
+      "call_id": "f777bb4d-001c-44a5-bf3b-e141888ddea4",
+      "model": "gpt-6-luna",
+      "call_state": "settled",
+      "input_tokens": 2110,
+      "output_tokens": 66,
+      "estimated_micro_usd": 1796
+    },
+    {
+      "profile": "finance",
+      "id": "bb52dd25-6989-42af-bf9a-333b4bf0fd68",
+      "state": "complete",
+      "source_count": 8,
+      "call_id": "9cb96a5f-3164-4687-976c-5314c3506411",
+      "model": "gpt-6-luna",
+      "call_state": "settled",
+      "input_tokens": 2824,
+      "output_tokens": 191,
+      "estimated_micro_usd": 2488
+    },
+    {
+      "profile": "fuel",
+      "id": "1bcc3524-7d4b-4f4b-9142-ad39c42ca40e",
+      "state": "complete",
+      "source_count": 6,
+      "call_id": "3f79b45c-1c91-4d59-b663-41467cbae88e",
+      "model": "gpt-6-luna",
+      "call_state": "settled",
+      "input_tokens": 2387,
+      "output_tokens": 125,
+      "estimated_micro_usd": 2073
+    },
+    {
+      "profile": "maintenance",
+      "id": "10553ad1-e628-4000-b986-ab7ddfbbabf5",
+      "state": "complete",
+      "source_count": 3,
+      "call_id": "90452e70-fee8-4158-a259-b18d93da1f09",
+      "model": "gpt-6-luna",
+      "call_state": "settled",
+      "input_tokens": 2106,
+      "output_tokens": 157,
+      "estimated_micro_usd": 1867
+    },
+    {
+      "profile": "drivers",
+      "id": "e483a66a-2db4-4558-9685-59d16aa1f003",
+      "state": "complete",
+      "source_count": 2,
+      "call_id": "9442a066-9e4f-4961-b2b1-4d82c9ae1693",
+      "model": "gpt-6-luna",
+      "call_state": "settled",
+      "input_tokens": 2297,
+      "output_tokens": 118,
+      "estimated_micro_usd": 1993
+    },
+    {
+      "profile": "trips",
+      "id": "42a0cfcf-6a1f-4549-b80d-d13ece492535",
+      "state": "complete",
+      "source_count": 2,
+      "call_id": "c8195552-413f-499f-92ff-795c30211105",
+      "model": "gpt-6-luna",
+      "call_state": "settled",
+      "input_tokens": 2313,
+      "output_tokens": 154,
+      "estimated_micro_usd": 2036
+    },
+    {
+      "profile": "management",
+      "id": "758a1196-da89-4ead-b16f-d7ae3347120d",
+      "state": "complete",
+      "source_count": 5,
+      "call_id": "5233ee39-1b9a-4b68-9ec6-5d5f602b9464",
+      "model": "gpt-6-luna",
+      "call_state": "settled",
+      "input_tokens": 4239,
+      "output_tokens": 170,
+      "estimated_micro_usd": 3638
+    }
+  ],
+  "latest_checks": [
+    {
+      "name": "new_backend_health",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "anonymous_denied_https://truckcontrolai.com",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "name": "anonymous_denied_https://truckcontrol-ai-specialists-staging.earlymug513.chatgpt.site",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "name": "anonymous_denied_https://www.truckcontrolai.com",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "name": "anonymous_denied_https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "passed": true,
+      "status": 401
+    },
+    {
+      "name": "foreign_origin_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "synthetic_login_0",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "eight_profiles_authorized_0",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "synthetic_login_1",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "eight_profiles_authorized_1",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "synthetic_login_2",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "eight_profiles_authorized_2",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "cross_tenant_rpc_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "cross_tenant_edge_denied",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "staging_denied_before_private_allowlist",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "client_denied_company_specialists_server",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "client_denied_company_specialists_health",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "client_denied_company_provider_runtime_config",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "viewer_read_only_context",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "private_synthetic_pdf_upload",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "private_pdf_registration",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_pdf_download_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "name": "public_pdf_download_denied",
+      "passed": true,
+      "status": 400
+    },
+    {
+      "name": "real_response_general",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error": null
+    },
+    {
+      "name": "real_sources_and_no_writes_general",
+      "passed": true
+    },
+    {
+      "name": "real_business_value_general",
+      "passed": true
+    },
+    {
+      "name": "recover_without_paid_retry_general",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_result_denied_general",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "real_response_documents",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error": null
+    },
+    {
+      "name": "real_sources_and_no_writes_documents",
+      "passed": true
+    },
+    {
+      "name": "real_business_value_documents",
+      "passed": true
+    },
+    {
+      "name": "real_pdf_content_and_citation",
+      "passed": true
+    },
+    {
+      "name": "recover_without_paid_retry_documents",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_result_denied_documents",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "real_response_finance",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error": null
+    },
+    {
+      "name": "real_sources_and_no_writes_finance",
+      "passed": true
+    },
+    {
+      "name": "real_business_value_finance",
+      "passed": true
+    },
+    {
+      "name": "recover_without_paid_retry_finance",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_result_denied_finance",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "real_response_fuel",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error": null
+    },
+    {
+      "name": "real_sources_and_no_writes_fuel",
+      "passed": true
+    },
+    {
+      "name": "real_business_value_fuel",
+      "passed": true
+    },
+    {
+      "name": "recover_without_paid_retry_fuel",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_result_denied_fuel",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "real_response_maintenance",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error": null
+    },
+    {
+      "name": "real_sources_and_no_writes_maintenance",
+      "passed": true
+    },
+    {
+      "name": "recover_without_paid_retry_maintenance",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_result_denied_maintenance",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "real_response_drivers",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error": null
+    },
+    {
+      "name": "real_sources_and_no_writes_drivers",
+      "passed": true
+    },
+    {
+      "name": "recover_without_paid_retry_drivers",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_result_denied_drivers",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "real_response_trips",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error": null
+    },
+    {
+      "name": "real_sources_and_no_writes_trips",
+      "passed": true
+    },
+    {
+      "name": "real_business_value_trips",
+      "passed": true
+    },
+    {
+      "name": "recover_without_paid_retry_trips",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_result_denied_trips",
+      "passed": true,
+      "status": 403
+    },
+    {
+      "name": "real_response_management",
+      "passed": true,
+      "status": 200,
+      "state": "complete",
+      "error": null
+    },
+    {
+      "name": "real_sources_and_no_writes_management",
+      "passed": true
+    },
+    {
+      "name": "real_business_value_management",
+      "passed": true
+    },
+    {
+      "name": "recover_without_paid_retry_management",
+      "passed": true,
+      "status": 200
+    },
+    {
+      "name": "foreign_result_denied_management",
+      "passed": true,
+      "status": 403
+    }
+  ],
+  "latest_checks_passed": true,
+  "old_corrected_setup_failures": [
+    "Initial password login attempted before fixture insert transaction completed; repeated after native constraint-compliant seed, then passed."
+  ],
+  "profiles": {
+    "general": {
+      "reply": "El camión registrado es un Scania Ficticio, año 2020, matrícula DEMO-SP-A. Su kilometraje registrado es 100.800 km; también figura esa lectura en el repostaje del 7 de noviembre de 2026. Inspección prevista para el 7 de diciembre de 2026.",
+      "state": "complete",
+      "actions": [],
+      "profile": "general",
+      "sources": [
+        {
+          "id": "ffa30000-0000-4000-8000-000000000001",
+          "kind": "truck",
+          "title": "DEMO-SP-A",
+          "version": 1,
+          "reference": "R1"
+        },
+        {
+          "id": "41961ee5-02ef-4509-9de8-b897ea80fc23",
+          "kind": "fuel",
+          "title": "fuel",
+          "version": 1,
+          "reference": "R7"
+        }
+      ],
+      "request_id": "be036ed4-27aa-4ec5-8011-dae6756281bc",
+      "uncertainties": [],
+      "organization_id": "ffa20000-0000-4000-8000-000000000001"
+    },
+    "documents": {
+      "reply": "El PDF indica el código **DEMO-SP-20261107** y fecha de vencimiento **15/01/2030**. El documento señala que no tiene validez fiscal.",
+      "state": "complete",
+      "actions": [],
+      "profile": "documents",
+      "sources": [
+        {
+          "id": "ffa40000-0000-4000-8000-000000000001",
+          "kind": "document",
+          "title": "Documento ficticio.pdf",
+          "version": null,
+          "reference": "D1",
+          "size_bytes": 701,
+          "content_type": "application/pdf"
+        }
+      ],
+      "request_id": "971cf8b8-a8f8-4b7f-98e7-15d9865d6cb7",
+      "uncertainties": [],
+      "organization_id": "ffa20000-0000-4000-8000-000000000001"
+    },
+    "finance": {
+      "reply": "En los apuntes de **2026-11**, el beneficio registrado es **770,00 €**: ingresos devengados 1.100,00 € menos gastos 330,00 €. El coste registrado por kilómetro es **0,33 €/km**, calculado como 330,00 € ÷ 1.000 km de distancia registrada en ingresos. Como referencia, el beneficio por kilómetro es 0,77 €/km (770,00 € ÷ 1.000 km). Son datos contables devengados, no una asignación de costes a viajes; el presupuesto del viaje no se cuenta como ingreso registrado.",
+      "state": "complete",
+      "actions": [],
+      "profile": "finance",
+      "sources": [
+        {
+          "id": "ffa30000-0000-4000-8000-000000000001",
+          "kind": "truck",
+          "title": "DEMO-SP-A",
+          "version": 1,
+          "reference": "R1"
+        },
+        {
+          "id": "5d74787c-b555-4e6d-bc88-c95ebc3cba15",
+          "kind": "income",
+          "title": "Ingreso ficticio",
+          "version": 1,
+          "reference": "R2"
+        },
+        {
+          "id": "fd1c96e2-e3af-4d92-8ce4-42765eeb9352",
+          "kind": "expense",
+          "title": "Gasto ficticio",
+          "version": 1,
+          "reference": "R3"
+        },
+        {
+          "id": "50c2789b-fef2-4fd9-9787-1367609c7027",
+          "kind": "trips",
+          "title": "DEMO-VIAJE-1",
+          "version": 1,
+          "reference": "R4"
+        },
+        {
+          "id": "2026-11",
+          "kind": "month",
+          "title": "Contabilidad EUR 2026-11",
+          "version": null,
+          "reference": "M2026-11"
+        },
+        {
+          "id": "finance_basis",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: finance_basis",
+          "version": null,
+          "reference": "A:finance_basis"
+        },
+        {
+          "id": "finance_by_truck",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: finance_by_truck",
+          "version": null,
+          "reference": "A:finance_by_truck"
+        },
+        {
+          "id": "trips",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: trips",
+          "version": null,
+          "reference": "A:trips"
+        }
+      ],
+      "request_id": "bb52dd25-6989-42af-bf9a-333b4bf0fd68",
+      "uncertainties": [],
+      "organization_id": "ffa20000-0000-4000-8000-000000000001"
+    },
+    "fuel": {
+      "reply": "Para DEMO-SP-A, el consumo medible es **30 l/100 km**: un intervalo completo de 800 km entre depósitos llenos, que incluye el repostaje parcial intermedio. Cálculo: 240 l (240.000 ml) ÷ 800 km × 100. Hay 1 intervalo válido; no permite generalizar el consumo habitual.",
+      "state": "complete",
+      "actions": [],
+      "profile": "fuel",
+      "sources": [
+        {
+          "id": "ffa30000-0000-4000-8000-000000000001",
+          "kind": "truck",
+          "title": "DEMO-SP-A",
+          "version": 1,
+          "reference": "R1"
+        },
+        {
+          "id": "0c9bc659-282c-42ad-9408-08126d89b12d",
+          "kind": "fuel",
+          "title": "fuel",
+          "version": 1,
+          "reference": "R2"
+        },
+        {
+          "id": "41961ee5-02ef-4509-9de8-b897ea80fc23",
+          "kind": "fuel",
+          "title": "fuel",
+          "version": 1,
+          "reference": "R3"
+        },
+        {
+          "id": "4b969251-d36f-47bb-b360-4fd855b5bbe3",
+          "kind": "fuel",
+          "title": "fuel",
+          "version": 1,
+          "reference": "R4"
+        },
+        {
+          "id": "fuel_by_truck",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: fuel_by_truck",
+          "version": null,
+          "reference": "A:fuel_by_truck"
+        },
+        {
+          "id": "fuel_basis",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: fuel_basis",
+          "version": null,
+          "reference": "A:fuel_basis"
+        }
+      ],
+      "request_id": "1bcc3524-7d4b-4f4b-9142-ad39c42ca40e",
+      "uncertainties": [],
+      "organization_id": "ffa20000-0000-4000-8000-000000000001"
+    },
+    "maintenance": {
+      "reply": "Hay una revisión de mantenimiento pendiente y vencida: “Revisión ficticia vencida”, planificada para el 5 de noviembre de 2026 y aún marcada como planificada. Está vinculada al camión DEMO-SP-A (Scania Ficticio, año 2020). El cálculo del servidor confirma 1 registro abierto y 1 vencido, a 7 de noviembre de 2026. La inspección del camión figura con vencimiento el 7 de diciembre de 2026, por lo que todavía no está vencida. Consulta únicamente; no se proponen cambios.",
+      "state": "complete",
+      "actions": [],
+      "profile": "maintenance",
+      "sources": [
+        {
+          "id": "30f6d826-15cf-4cf2-855f-b17a6d93dbd0",
+          "kind": "maintenance",
+          "title": "Revision ficticia vencida",
+          "version": 1,
+          "reference": "R2"
+        },
+        {
+          "id": "ffa30000-0000-4000-8000-000000000001",
+          "kind": "truck",
+          "title": "DEMO-SP-A",
+          "version": 1,
+          "reference": "R1"
+        },
+        {
+          "id": "maintenance",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: maintenance",
+          "version": null,
+          "reference": "A:maintenance"
+        }
+      ],
+      "request_id": "10553ad1-e628-4000-b986-ab7ddfbbabf5",
+      "uncertainties": [],
+      "organization_id": "ffa20000-0000-4000-8000-000000000001"
+    },
+    "drivers": {
+      "reply": "El permiso C+E del conductor ficticio figura vencido desde el 06/11/2026; requiere atención. La ficha registra 1 conductor activo y 1 permiso vencido. [R2; A:drivers]\n\nPara acreditar conducción y descanso faltan registros de tacógrafo y horas de conducción/trabajo; el contexto no contiene esos datos ni permite comprobar cumplimiento. [A:drivers]",
+      "state": "complete",
+      "actions": [],
+      "profile": "drivers",
+      "sources": [
+        {
+          "id": "ffa50000-0000-4000-8000-000000000001",
+          "kind": "driver",
+          "title": "Conductor ficticio",
+          "version": 1,
+          "reference": "R2"
+        },
+        {
+          "id": "drivers",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: drivers",
+          "version": null,
+          "reference": "A:drivers"
+        }
+      ],
+      "request_id": "e483a66a-2db4-4558-9685-59d16aa1f003",
+      "uncertainties": [],
+      "organization_id": "ffa20000-0000-4000-8000-000000000001"
+    },
+    "trips": {
+      "reply": "Viaje DEMO-VIAJE-1: completado del 6 al 7 de noviembre de 2026, entre Origen ficticio y Destino ficticio; 1.000 km registrados. Presupuesto neto: 1.400,00 €. No puedo conocer su beneficio real con estos datos: el presupuesto no equivale a ingreso devengado ni cobrado, y no hay aquí costes vinculados al viaje para calcular el beneficio. El cálculo disponible registra 1 viaje completado y 1.000 km en los últimos 12 meses; beneficio por viaje no disponible.",
+      "state": "complete",
+      "actions": [],
+      "profile": "trips",
+      "sources": [
+        {
+          "id": "50c2789b-fef2-4fd9-9787-1367609c7027",
+          "kind": "trips",
+          "title": "DEMO-VIAJE-1",
+          "version": 1,
+          "reference": "R3"
+        },
+        {
+          "id": "trips",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: trips",
+          "version": null,
+          "reference": "A:trips"
+        }
+      ],
+      "request_id": "42a0cfcf-6a1f-4549-b80d-d13ece492535",
+      "uncertainties": [],
+      "organization_id": "ffa20000-0000-4000-8000-000000000001"
+    },
+    "management": {
+      "reply": "Beneficio registrado de noviembre de 2026: **770,00 €** (ingresos devengados 1.100,00 € menos gastos 330,00 €); no equivale a saldo cobrado. Prioridades: **1)** renovar la licencia del conductor, vencida el 6/11/2026; **2)** atender la revisión preventiva planificada para el 5/11/2026, marcada como vencida. El cálculo de combustible disponible es 30 L/100 km en un único intervalo válido; es una muestra limitada, no una tendencia.",
+      "state": "complete",
+      "actions": [],
+      "profile": "management",
+      "sources": [
+        {
+          "id": "2026-11",
+          "kind": "month",
+          "title": "Contabilidad EUR 2026-11",
+          "version": null,
+          "reference": "M2026-11"
+        },
+        {
+          "id": "ffa50000-0000-4000-8000-000000000001",
+          "kind": "driver",
+          "title": "Conductor ficticio",
+          "version": 1,
+          "reference": "R2"
+        },
+        {
+          "id": "maintenance",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: maintenance",
+          "version": null,
+          "reference": "A:maintenance"
+        },
+        {
+          "id": "fuel_basis",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: fuel_basis",
+          "version": null,
+          "reference": "A:fuel_basis"
+        },
+        {
+          "id": "fuel_by_truck",
+          "kind": "aggregate",
+          "title": "Cálculo servidor: fuel_by_truck",
+          "version": null,
+          "reference": "A:fuel_by_truck"
+        }
+      ],
+      "request_id": "758a1196-da89-4ead-b16f-d7ae3347120d",
+      "uncertainties": [],
+      "organization_id": "ffa20000-0000-4000-8000-000000000001"
+    }
+  },
+  "automatic_cron_digest_verified": true,
+  "scheduled_paid_model_calls": 0,
+  "new_paid_services": [],
+  "monthly_ai_budget_usd_unchanged": 10,
+  "company_monthly_quota_unchanged": 100,
+  "aggregate_ceiling_eur": 200,
+  "new_commercial_writes_by_models": 0,
+  "new_mail_sent": 0,
+  "real_customer_data_used": false,
+  "fixture_cleanup_pending_production_browser": true
+}
