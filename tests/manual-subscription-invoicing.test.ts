@@ -104,6 +104,16 @@ describe("TicketBAI manual: contrato puro, sin emisión ni pagos", () => {
       issuedAt: "2026-11-07T12:00:00Z",
     });
     expect(recordManualInvoiceIssued(next, issue())).toBe(next);
+    const reordered = {
+      ...next,
+      invoice: {
+        issuedAt: next.invoice!.issuedAt,
+        privatePdfKey: next.invoice!.privatePdfKey,
+        ticketBaiReference: next.invoice!.ticketBaiReference,
+        invoiceNumber: next.invoice!.invoiceNumber,
+      },
+    };
+    expect(recordManualInvoiceIssued(reordered, issue())).toBe(reordered);
     expect(() => recordManualInvoiceIssued(next, issue({ invoiceNumber: "A-2026/124" })))
       .toThrow("conflicting_manual_invoice_issue");
   });
