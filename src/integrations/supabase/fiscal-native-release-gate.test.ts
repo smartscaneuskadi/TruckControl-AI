@@ -29,7 +29,7 @@ const request = (action: string) =>
   });
 const gateway = () => ({
   authenticate: vi.fn(async () => ({ id: account })),
-  server: vi.fn(async () => ({})),
+  server: vi.fn(async <T>(_action: string, _data: Record<string, unknown>): Promise<T> => ({} as T)),
 });
 
 describe("bloqueo nativo fiscal de suscripciones - Release 1.0", () => {
