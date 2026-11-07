@@ -55,6 +55,12 @@ def _local_digest(root: Path, relative: object, expected: object) -> None:
     _require(isinstance(expected, str) and bool(SHA256.fullmatch(expected)), "invalid SHA-256")
     name = Path(relative)
     _require(not name.is_absolute() and ".." not in name.parts, "unsafe evidence path")
+    # resolve() dereferences symlinks, so is_symlink() on the resolved file
+    # alone would silently accept links to other files under this directory.
+    probe = root
+    for part in name.parts:
+        probe = probe / part
+        _require(not probe.is_symlink(), "symlinked evidence path is not permitted")
     try:
         file = (root / name).resolve(strict=True)
         file.relative_to(root)
@@ -104,12 +110,18 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     artifacts = manifest.get("artifacts")
     _require(isinstance(artifacts, list), "missing artifact inventory")
     kinds: set[str] = set()
+    used_paths: set[str] = set()
     for item in artifacts:
         _require(isinstance(item, dict), "invalid artifact")
         kind = item.get("kind")
         _require(kind in ARTIFACTS and kind not in kinds, "invalid or duplicated artifact kind")
+        relative = item.get("path")
+        _require(isinstance(relative, str) and bool(relative), "missing evidence filename")
+        key = Path(relative).as_posix()
+        _require(key not in used_paths, "evidence file is reused across inventories or checks")
+        used_paths.add(key)
         kinds.add(kind)
-        _local_digest(root, item.get("path"), item.get("sha256"))
+        _local_digest(root, relative, item.get("sha256"))
     _require(kinds == ARTIFACTS, "incomplete database/storage/functions/config inventory")
 
     checks = manifest.get("checks")
@@ -117,7 +129,12 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     for name in sorted(CHECKS):
         check = checks[name]
         _require(isinstance(check, dict) and check.get("passed") is True, "recovery check not passed: " + name)
-        _local_digest(root, check.get("evidence_path"), check.get("sha256"))
+        relative = check.get("evidence_path")
+        _require(isinstance(relative, str) and bool(relative), "missing evidence filename")
+        key = Path(relative).as_posix()
+        _require(key not in used_paths, "evidence file is reused across inventories or checks")
+        used_paths.add(key)
+        _local_digest(root, relative, check.get("sha256"))
 
     capture = _date(manifest.get("backup_captured_at"))
     start = _date(manifest.get("restore_started_at"))
