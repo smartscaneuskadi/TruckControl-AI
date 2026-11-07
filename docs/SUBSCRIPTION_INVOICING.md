@@ -25,6 +25,14 @@ Los dos handlers de pago exigen ahora una comprobación explícita de facturaci�
 
 Solo debe habilitarse tras conectar y verificar la emisión fiscal y entrega automática, además de la autorización independiente de cobros ya existente. La clave de Stripe, una marca enviada por el navegador o una respuesta antigua sin ese campo no bastan. El estado recurrente publica `invoice_delivery_ready`; el cliente antiguo que no lo recibe conserva el bloqueo de nuevas compras en la interfaz actual. Cancelar renovaciones y procesar eventos de pago firmados anteriores siguen disponibles; emitir o enviar una factura nunca debe activar acceso por sí solo.
 
+### Protección adicional de Release 1.0 — 07/11/2026
+
+El código candidato de `fix/fiscal-env-only-gate-20261107` añade un **bloqueo nativo independiente del valor de la variable**. Los entrypoints de los dos handlers de Stripe consultan `subscriptionFiscalCheckoutAllowed` en `supabase/functions/_shared/subscription-fiscal-gate.ts`. Su capacidad nativa permanece **false** porque TruckControl AI aún no incluye un emisor fiscal de suscripciones integrado con envío comprobado. Así, configurar por error `BILLING_INVOICING_VERIFIED=true` **no abre compras** por sí solo. No se pretende acreditar con esto que ya exista integración, aceptación o factura fiscal.
+
+Los tests sintéticos verifican el cierre en cobro único y recurrente con flag `true`, sin consultar Stripe, emitir documentos ni alterar Supabase. Las pruebas positivas previas de los handlers mantienen su simulación aislada: **no constituyen aceptación nativa del proveedor**. La cancelación y los webhooks firmados de operaciones previas conservan su tratamiento independiente. El cambio solo entra en producción si hay decisión explícita y despliegue verificado; esta rama/PR no modifica la v32 pública.
+
+Para reemplazar este bloqueo deberá existir una implementación nativa por proveedor fiscal y aceptación real: confirmar emisor, territorio y normativa aplicable, numeración/serie real, firma/remisión donde corresponda, idempotencia ante timeout, entrega y descarga privada, IVA, rectificativas, fallos/reintentos y verificación en entorno autorizado del proveedor con datos ficticios. **No basta cambiar el retorno del helper a true ni activar una variable**: la emisión, almacenamiento, conciliación y auditoría deben implementarse y probarse antes de integrar y desplegar una habilitación.
+
 ## Próximo paso imprescindible
 
 Se ha preguntado al titular qué programa de facturación utiliza ELEVADANCOR S.L. y si está conectado a TicketBAI. El domicilio de Tolosa requiere comprobar el régimen fiscal aplicable y, en su caso, un software garante, firma y remisión válidos; no se da por confirmado el régimen solo por el domicilio. No se ha contratado un proveedor, inventado números fiscales, emitido facturas reales ni firmado declaraciones por el propietario.
