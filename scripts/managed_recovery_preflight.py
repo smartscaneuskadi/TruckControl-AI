@@ -50,7 +50,12 @@ def _no_secrets(value: object) -> None:
             _no_secrets(child)
 
 
-def _local_digest(root: Path, relative: object, expected: object) -> None:
+def _local_digest(
+    root: Path,
+    relative: object,
+    expected: object,
+    used_files: set[tuple[int, int]],
+) -> None:
     _require(isinstance(relative, str) and bool(relative), "missing evidence filename")
     _require(isinstance(expected, str) and bool(SHA256.fullmatch(expected)), "invalid SHA-256")
     name = Path(relative)
@@ -65,13 +70,24 @@ def _local_digest(root: Path, relative: object, expected: object) -> None:
         file = (root / name).resolve(strict=True)
         file.relative_to(root)
         _require(file.is_file() and not file.is_symlink(), "evidence is not a regular file")
+        stat = file.stat()
+        # A hard link points at the same inode while bypassing the path/symlink
+        # checks. It can also refer to an unrelated file outside this folder.
+        _require(stat.st_nlink == 1, "hardlinked evidence is not permitted")
+        identity = (stat.st_dev, stat.st_ino)
+        _require(identity not in used_files, "evidence inode is reused")
         digest = hashlib.sha256()
         with file.open("rb") as stream:
             for block in iter(lambda: stream.read(1024 * 1024), b""):
                 digest.update(block)
+    except PreflightError:
+        # Preserve explicit security failures (e.g. hardlinks) rather than
+        # replacing them with a generic missing-file error.
+        raise
     except (OSError, ValueError) as exc:
         raise PreflightError("evidence missing or outside its private directory") from exc
     _require(digest.hexdigest() == expected, "evidence SHA-256 mismatch")
+    used_files.add(identity)
 
 
 def _date(value: object) -> datetime:
@@ -85,6 +101,7 @@ def _date(value: object) -> datetime:
 
 
 def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
+    _require(not manifest_file.is_symlink(), "symlinked manifest is not permitted")
     manifest_file = manifest_file.resolve(strict=True)
     root = manifest_file.parent
     try:
@@ -111,6 +128,7 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     _require(isinstance(artifacts, list), "missing artifact inventory")
     kinds: set[str] = set()
     used_paths: set[str] = set()
+    used_files: set[tuple[int, int]] = set()
     for item in artifacts:
         _require(isinstance(item, dict), "invalid artifact")
         kind = item.get("kind")
@@ -121,7 +139,7 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
         _require(key not in used_paths, "evidence file is reused across inventories or checks")
         used_paths.add(key)
         kinds.add(kind)
-        _local_digest(root, relative, item.get("sha256"))
+        _local_digest(root, relative, item.get("sha256"), used_files)
     _require(kinds == ARTIFACTS, "incomplete database/storage/functions/config inventory")
 
     checks = manifest.get("checks")
@@ -134,7 +152,7 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
         key = Path(relative).as_posix()
         _require(key not in used_paths, "evidence file is reused across inventories or checks")
         used_paths.add(key)
-        _local_digest(root, relative, check.get("sha256"))
+        _local_digest(root, relative, check.get("sha256"), used_files)
 
     capture = _date(manifest.get("backup_captured_at"))
     start = _date(manifest.get("restore_started_at"))
