@@ -289,7 +289,10 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
   });
   it("rechaza pedidos históricos cuyo IVA es desconocido sin inferirlo del catálogo actual", async () => {
     // Historical requests explicitly keep VAT columns NULL by design.
-    await db.query("update private.tc_payment_requests set status='paid' where id=$1", [requestB]);
+    await db.query(
+      "update private.tc_payment_requests set status='paid',net_cents=null,vat_rate_bps=null,vat_cents=null where id=$1",
+      [requestB],
+    );
     const before = await db.query<{ n: number }>(
       "select count(*)::int n from private.tc_manual_subscription_invoice_tasks",
     );
