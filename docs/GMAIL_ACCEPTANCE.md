@@ -1,3 +1,13 @@
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+El cliente personal y el de facturas mantienen permisos y sesiones independientes. El servidor impide iniciar una autorización empresarial con una credencial rechazada. La prueba real de cliente guardado devolvió401/invalid_client; las pruebas nuevas de interfaz usan proveedores ficticios y no acreditan un buzón real. Rango30días por defecto/máximo12meses intacto.
+
+Recibo: [verificación](verification/gmail-account-repair-published-20261108.json).
+
 # Gmail empresarial: preparación y prueba de facturas
 
 ## Reparación de configuración y cuenta · candidata,08/11/2026

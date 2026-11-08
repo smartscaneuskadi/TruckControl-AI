@@ -1,3 +1,21 @@
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+CI de PR42533025198, rama42533020536 y fuente exacta42533027609 SUCCESS: **1.664 comprobaciones por ejecución**, sin sumar reejecuciones. Se conservan las64 originales/11hashes. Después de publicar: **75/75 hashes HTTPS y 42/42 recorridos de navegador**, sin fallos, omisiones ni flaky. SDK real con transporte ficticio y accesos privados no interceptados bloqueados. Android/Windows emulados; sin hardware físico ni nueva autenticación de un cliente real.
+
+Backend `company-gmail`15 ACTIVE:9/9 fuentes y7/7 controles HTTP verificados; las otras11 funciones intactas. Sin DDL, compras, nuevas llamadas IA ni lectura/envío de correo. Native63, cuotas10USD/mes y100llamadas/empresa, precios, RLS y cobrosOFF conservados. No repetir #37 ni las migraciones aplicadas.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+«Cuenta» permanece en la barra superior en ambos temas y los cuatro idiomas. El cierre usa access.signOut(), bloquea los estados privados y las claves offline, conserva los datos y evita pulsaciones duplicadas. En demo se puede volver al acceso empresarial sin cerrar la sesión verificada.
+
+La configuración tiene comprobación previa y posterior; un guardado cuyo runtime sigue rechazado no aparece como éxito. El diagnóstico exige administración global, no devuelve tokens, no crea vínculos y no consume IA. Comprueba autenticación del cliente mediante un código sintético inválido, nunca el consentimiento del buzón.
+
+Recibo: [verificación](verification/gmail-account-repair-published-20261108.json). Los checkpoints candidatos inferiores se conservan como historia; sus pendientes ya completados no prevalecen.
+
 # Reparación de cuenta y configuración Gmail
 
 Continuación de la incidencia #97. La versión publicada al comenzar es Sites38, fuente `ee43c0267bee67f45002b9a13736eaeb7cdb94f6`. No se modifica la demo ni se repiten migraciones.
