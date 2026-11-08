@@ -219,3 +219,48 @@ create trigger tc_manual_subscription_events_immutable
   on private.tc_manual_subscription_invoice_events
   for each statement
   execute function private.tc_manual_subscription_intake_reject_mutation();
+
+
+-- Defense in depth: the private intake function validates tenant and quote,
+-- but a future privileged server adapter could accidentally INSERT directly.
+-- Enforce the same buyer/request/organization and immutable quote relation at
+-- the table boundary. This does NOT authenticate Stripe or justify collecting
+-- payments: 'paid' is an internal state, never external settlement evidence.
+create function private.tc_manual_subscription_guard_task_insert()
+returns trigger language plpgsql security invoker set search_path='' as $$
+begin
+  if not exists (
+    select 1 from private.tc_payment_requests r
+      join private.tc_customers c on c.user_id=r.user_id
+      join public.organizations o on o.id=new.buyer_company_id
+    where r.id=new.request_id
+      and r.user_id=new.buyer_user_id
+      and r.status='paid'
+      and r.currency='EUR' and r.currency=new.currency
+      and r.quoted_cents=new.amount_cents
+      and r.net_cents=new.net_cents
+      and r.vat_rate_bps=new.vat_rate_bps
+      and r.vat_cents=new.vat_cents
+      and r.plan_id=new.plan_id
+      and r.plan_revision=new.plan_revision
+      and r.created_at=new.buyer_request_created_at
+      and o.owner_id=r.user_id
+      and c.company_name=new.buyer_company_name
+      and c.tax_id=new.buyer_tax_id
+      and c.address=new.buyer_address
+      and c.email=new.buyer_email
+      and c.updated_at=new.buyer_profile_updated_at
+      and (c.updated_at>r.created_at)=new.buyer_profile_changed_after_request
+      and (select count(*) from public.organizations
+           where owner_id=r.user_id)=1
+  ) then
+    raise exception 'manual_invoice_direct_insert_unreconciled'
+      using errcode='23514';
+  end if;
+  return new;
+end;$$;
+revoke all on function private.tc_manual_subscription_guard_task_insert()
+  from public,anon,authenticated;
+create trigger tc_manual_subscription_guard_task_insert
+  before insert on private.tc_manual_subscription_invoice_tasks
+  for each row execute function private.tc_manual_subscription_guard_task_insert();
