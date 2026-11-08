@@ -4842,42 +4842,39 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     return page.getByRole("complementary", { name: "Navegación principal" });
   }
 
-  test("CargoTrack abre sólo la URL oficial en otra pestaña sin compartir credenciales", async ({ page, context }, testInfo) => {
+  test("CargoTrack abre dentro de TruckControl y conserva su documento al navegar", async ({ page, context }, testInfo) => {
     const f = await fixtures(page);
     f.controls.companyPlan = "limited";
     await login(page, "customer@example.com");
     await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const outgoing: { url: string; referer?: string; authorization?: string; body: string | null }[] = [];
+    await context.route("https://on7.cargotrack.ro/**", async (route) => {
+      outgoing.push({ url: route.request().url(), referer: route.request().headers().referer,
+        authorization: route.request().headers().authorization, body: route.request().postData() });
+      await route.fulfill({ contentType: "text/html", body: '<!doctype html><html lang="es"><head><title>Proveedor ficticio</title></head><body><main><h1>CargoTrack ficticio</h1><label>Usuario del proveedor<input name="username"></label><script>document.body.dataset.instance=crypto.randomUUID();</script></main></body></html>' });
+    });
     const menu = await openMainMenu(page);
     const cargo = menu.getByRole("link", { name: "CargoTrack", exact: true });
     await expect(cargo.locator("svg")).toHaveCount(2);
     await cargo.click();
     await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
-    const link = page.getByRole("link", { name: "Entrar en CargoTrack", exact: true });
-    await expect(link).toHaveAttribute("href", "https://on7.cargotrack.ro/signin");
-    await expect(link).toHaveAttribute("target", "_blank");
-    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
-    await expect(link).toHaveAttribute("referrerpolicy", "no-referrer");
-    await expect(page.locator("main iframe, main input")).toHaveCount(0);
-    // Never send a test password to the external provider.
-    const outgoing: { url: string; referer?: string; authorization?: string; body: string | null }[] = [];
-    await context.route("https://on7.cargotrack.ro/**", async (route) => {
-      outgoing.push({
-        url: route.request().url(),
-        referer: route.request().headers().referer,
-        authorization: route.request().headers().authorization,
-        body: route.request().postData(),
-      });
-      await route.fulfill({ contentType: "text/html", body: "<!doctype html><html><title>Proveedor aislado para pruebas</title><body>Prueba de navegación, sin iniciar sesión.</body></html>" });
-    });
-    const popupPromise = context.waitForEvent("page");
-    await link.click();
-    const popup = await popupPromise;
-    await popup.waitForLoadState("domcontentloaded");
-    expect(popup.url()).toBe("https://on7.cargotrack.ro/signin");
-    expect(await popup.evaluate(() => window.opener)).toBeNull();
+    await expect(page.locator("main iframe")).toHaveCount(0);
+    const pagesBefore = context.pages().length;
+    await page.getByRole("button", { name: "Entrar en CargoTrack", exact: true }).click();
+    const element = page.locator("iframe.cargotrack-frame");
+    await expect(element).toHaveAttribute("src", "https://on7.cargotrack.ro/signin");
+    await expect(element).toHaveAttribute("referrerpolicy", "no-referrer");
+    await expect(element).toHaveAttribute("sandbox", "allow-forms allow-scripts allow-same-origin allow-downloads allow-popups");
+    const frame = page.frameLocator("iframe.cargotrack-frame");
+    await expect(frame.getByRole("heading", { name: "CargoTrack ficticio" })).toBeVisible();
+    await frame.getByLabel("Usuario del proveedor").fill("borrador-ficticio-sin-enviar");
+    const instance = await frame.locator("body").getAttribute("data-instance");
+    expect(context.pages()).toHaveLength(pagesBefore);
     expect(outgoing).toEqual([{ url: "https://on7.cargotrack.ro/signin", body: null }]);
-    await popup.close();
-    await expect(page).toHaveURL(/#\/cargotrack$/);
+    expect(await page.evaluate(() => {
+      try { void (document.querySelector("iframe.cargotrack-frame") as HTMLIFrameElement).contentWindow!.document; return false; }
+      catch { return true; }
+    })).toBe(true);
     for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
       await page.getByRole("button", { name: "Cambiar apariencia", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: "Apariencia de TruckControl" });
@@ -4890,8 +4887,69 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     }
     await page.getByRole("link", { name: "Volver al resumen", exact: true }).click();
     await expect(page).toHaveURL(/#\/dashboard$/);
-    expect(f.calls.filter((c) => c.path === "/auth/v1/logout")).toHaveLength(0);
-    expect(f.calls.some((c) => /cargotrack/i.test(c.path))).toBe(false);
+    await expect(element).toHaveCount(1);
+    await expect(element).toBeHidden();
+    await openMainMenu(page);
+    await cargo.click();
+    await expect(element).toBeVisible();
+    await expect(frame.getByLabel("Usuario del proveedor")).toHaveValue("borrador-ficticio-sin-enviar");
+    await expect(frame.locator("body")).toHaveAttribute("data-instance", instance!);
+    expect(outgoing).toHaveLength(1);
+    expect(f.calls.some((c) => c.path === "/auth/v1/logout" || /cargotrack/i.test(c.path))).toBe(false);
+  });
+
+  test("cerrar TruckControl elimina la vista integrada y una nueva sesión no la abre automáticamente", async ({ page, context }) => {
+    await fixtures(page);
+    let providerRequests = 0;
+    await context.route("https://on7.cargotrack.ro/**", async (route) => {
+      providerRequests++;
+      await route.fulfill({ contentType: "text/html", body: '<!doctype html><html><body>Proveedor ficticio sin credenciales</body></html>' });
+    });
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await page.getByRole("button", { name: "Entrar en CargoTrack", exact: true }).click();
+    await expect(page.frameLocator("iframe.cargotrack-frame").locator("body")).toContainText("Proveedor ficticio");
+    await openMainMenu(page);
+    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator("iframe.cargotrack-frame")).toHaveCount(0);
+    await page.getByLabel("Correo electrónico", { exact: true }).fill("customer@example.com");
+    await page.getByLabel("Contraseña", { exact: true }).fill("synthetic-password-123");
+    await page.getByRole("button", { name: "Entrar", exact: true }).click();
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    await openMainMenu(page);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Entrar en CargoTrack", exact: true })).toBeVisible();
+    await expect(page.locator("iframe.cargotrack-frame")).toHaveCount(0);
+    expect(providerRequests).toBe(1);
+  });
+
+  test("cambiar de empresa desmonta CargoTrack y exige abrir su vista de nuevo", async ({ page, context }) => {
+    const f = await fixtures(page);
+    const second = "20000000-0000-4000-8000-000000000099";
+    f.controls.additionalOrganizations.push({ id: second, name: "Segunda empresa CargoTrack ficticia" });
+    let providerRequests = 0;
+    await context.route("https://on7.cargotrack.ro/**", async (route) => {
+      providerRequests++;
+      await route.fulfill({ contentType: "text/html", body: '<!doctype html><html><body>Proveedor ficticio</body></html>' });
+    });
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await page.getByRole("button", { name: "Entrar en CargoTrack", exact: true }).click();
+    await expect(page.frameLocator("iframe.cargotrack-frame").locator("body")).toContainText("Proveedor ficticio");
+    await openMainMenu(page);
+    await menu.getByRole("link", { name: "Configuración", exact: true }).click();
+    await page.getByLabel("Empresa activa", { exact: true }).selectOption(second);
+    await expect(page.locator(".workspace-label")).toContainText("Segunda empresa CargoTrack ficticia");
+    await openMainMenu(page);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Entrar en CargoTrack", exact: true })).toBeVisible();
+    await expect(page.locator("iframe.cargotrack-frame")).toHaveCount(0);
+    expect(providerRequests).toBe(1);
   });
 
   test("el menú muestra Cerrar sesión debajo de Configuración y revoca una sola vez", async ({ page }) => {

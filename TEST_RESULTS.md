@@ -1,5 +1,12 @@
 # Evidencias de pruebas
 
+## Revisión CargoTrack integrado · 08/11/2026
+
+La nueva petición del titular sustituye el acceso en pestaña por una vista dentro de TruckControl. Implementación en feature/cargotrack-embedded-session, sin publicar todavía: iframe oficial por acción explícita, conservado fuera de Routes; reinicio al salir/cambiar empresa y sin capturar contraseñas. La sesión/caducidad pertenecen al proveedor; no se afirma autenticación por cargar la vista.
+
+Preview real Android/Windows: formulario oficial visible y mismo documento al volver desde Resumen, sin introducir credenciales. La prueba restablece únicamente el almacenamiento particionado de Chrome que Playwright desactiva. Ver docs/CARGOTRACK_EMBEDDED.md y docs/verification/cargotrack-embedded-preview-20261108.json. Producción continúa33 hasta CI/promoción/aceptación HTTPS. Conservar33/32/31 y demo6; no migrar ni repetirNative63/#37; gastos/IA nuevos0, cobrosOFF. Las notas inferiores de «sólo enlace externo» describen la versión anterior, no esta nueva petición.
+
+
 ## Publicación CargoTrack y Cerrar sesión verificada · 08/11/2026
 
 **Este bloque sustituye el estado de publicación y ejecutor de las notas históricas inferiores.** Producción **Sites33 / app0.5.21-rc.1**, https://truckcontrolai.com; source **89100d92c0b44d2b86c1495faffcab2944abacbb**, deploy **appgdep_6af0a4fe4ec881919f08b7ac80cda8d9 SUCCEEDED**. PR85 integrado en main1d3e88e; no volver a fusionarlo ni reconstruir CargoTrack/logout. Se conservan32/31 y demo6. Main mantiene el manifiesto de demo: no desplegarlo como producción.

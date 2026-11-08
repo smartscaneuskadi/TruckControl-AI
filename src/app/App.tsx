@@ -528,6 +528,11 @@ function Workspace() {
           </div>
         </header>
         <main id="main-content" tabIndex={-1} className="page-content">
+          <CargoTrack
+            key={`${access.mode}:${access.user?.id ?? "demo"}:${access.organization?.id ?? snapshot.organization.id}:${offline.offline}`}
+            active={location.pathname === "/cargotrack"}
+            available={!offline.offline}
+          />
           <Routes>
             <Route
               path="/suppliers"
@@ -641,7 +646,7 @@ function Workspace() {
                 </FeatureGate>
               }
             />
-            <Route path="/cargotrack" element={<CargoTrack />} />
+            <Route path="/cargotrack" element={null} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/mailbox" element={<PersonalMail />} />
             <Route
