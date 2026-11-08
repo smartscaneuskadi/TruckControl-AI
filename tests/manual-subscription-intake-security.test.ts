@@ -177,7 +177,7 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
         `delete from ${table}`,
       )).rejects.toThrow("manual_invoice_intake_immutable");
       await expect(db.query(
-        `truncate table ${table}`,
+        `truncate table ${table}${table.endsWith("_tasks") ? " cascade" : ""}`,
       )).rejects.toThrow("manual_invoice_intake_immutable");
     }
     const unchanged = await db.query<{ id: string; paid_at: string }>(
