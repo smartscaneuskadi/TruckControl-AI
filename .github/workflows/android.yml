@@ -27,7 +27,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --location --proto '=https' --tlsv1.2 --max-time 120 https://services.gradle.org/distributions/gradle-9.9.0-bin.zip --output "$RUNNER_TEMP/truckcontrol-gradle.zip"
+          truckcontrol_gradle_downloaded=false
+          for truckcontrol_gradle_host in services.gradle.org downloads.gradle.org; do
+            if curl --fail --location --proto '=https' --tlsv1.2 --connect-timeout 15 --max-time 60 --retry 1 --retry-delay 2 --retry-max-time 60 "https://$truckcontrol_gradle_host/distributions/gradle-9.9.0-bin.zip" --output "$RUNNER_TEMP/truckcontrol-gradle.zip"; then
+              truckcontrol_gradle_downloaded=true
+              break
+            fi
+          done
+          test "$truckcontrol_gradle_downloaded" = true
           python3 - <<'PY'
           import hashlib, os, pathlib, zipfile
           p = pathlib.Path(os.environ["RUNNER_TEMP"]) / "truckcontrol-gradle.zip"
