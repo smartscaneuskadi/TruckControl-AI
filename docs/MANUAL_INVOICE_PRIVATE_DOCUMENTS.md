@@ -6,7 +6,7 @@ Backend candidato: company-manual-invoices. No desplegado, sin nuevo almacén cr
 
 Recibe un PDF que administración ya ha emitido en GDTaller, valida tamaño y formato de transporte, calcula SHA256 en servidor, lo guarda sin sobrescritura y registra una evidencia privada tras leer y verificar el objeto. Esto no verifica la firma TicketBAI, el QR, la remisión a Hacienda ni la corrección fiscal. La emisión y su aceptación humana/legal siguen siendo independientes.
 
-La UI mantiene bloqueado el registro y las cargas hasta la aceptación nativa del worker. La propuesta SQL conserva uploads_enabled=false y no cambia las capacidades públicas existentes ni los cobros.
+La integración candidata de UI consulta el estado del worker nuevo por JWT y conserva el registro/cargas bloqueados hasta aceptación nativa. La propuesta SQL deja uploads_enabled=false y downloads_enabled=false. No cambia la capacidad histórica del RPC62 ni el guard fiscal o los cobros. El estado nuevo exige ambos permisos y un bucket privado compatible.
 
 ## Autorización y almacenamiento
 
@@ -18,11 +18,13 @@ Reservas inmutables de 30 minutos ligadas a operación, actor, sesión, tarea, v
 
 ## Contrato HTTP
 
+POST /capabilities: verifica Auth y administrador antes de leer el cuerpo, devuelve únicamente disponibilidad y los dos controles documentales. No confirma estado fiscal ni cobro.
+
 POST multipart: action=upload, task_id, expected_version, operation_id y un único file application/pdf. Solo se aceptan los tres orígenes exactos de producción. El tamaño se limita leyendo el cuerpo real, sin confiar en Content-Length. La respuesta devuelve metadatos autorizados y fiscal_validity_verified=false, nunca nonce ni credenciales.
 
 POST JSON: action=download, task_id, expected_version, operation_id, document_id. Devuelve el PDF como adjunto con no-store/private, nosniff y sin URL pública o enlace firmado. Administración debe estar autorizada de nuevo en el momento de devolverlo.
 
-No hay envío de correo, emisión, cobro, activación de licencia ni frontend nuevo conectado por estos archivos.
+La UI candidata guarda File/ACK/operaciones solamente en RAM. La petición fija el JWT del usuario verificado, descarta resultados de otro contexto y conserva el formulario ante resultado incierto. Un reintento es explícito y conserva la reserva; el registro fiscal requiere ACK comprobado y nueva confirmación de referencias manuales. Descargas comprueban MIME/tamaño/hash/no-store, generan una URL temporal y la revocan; desconectar, cambiar usuario o salir aborta y limpia el contexto. No hay envío de correo, emisión fiscal automática, cobro o activación de licencia.
 
 ## Evidencias necesarias antes de activar
 
@@ -32,4 +34,4 @@ No hay envío de correo, emisión, cobro, activación de licencia ni frontend nu
 4. Prueba nativa con PDF ficticio: reservar, subir, verificar hash por lectura, registrar evidencia, repetir sin sobrescribir, denegar ajenos/sesión revocada y descargar sin caché. No utilizar facturas reales para esta prueba.
 5. Solo tras aceptación, conectar la UI y modificar conscientemente la capacidad de carga. La integración con el registro de emisión manual, avisos y revisión fiscal se acepta por separado.
 
-Las 16 pruebas del handler usan un gateway en memoria y no prueban un bucket nativo, una firma fiscal o la entrega de correo. CI y despliegue se registran separadamente. No hay nuevas llamadas IA, servicios contratados o cobros.
+Pruebas preparadas: 18 del handler, 11 SQL aisladas, 15 del cliente y 6 escenarios nuevos de navegador ejecutados en Android/Windows emulados (12 casos), además de los 5 anteriores. No equivalen a bucket/worker nativos, firma fiscal, dispositivo físico ni entrega de correo. CI del head exacto y despliegue se registran por separado; los resultados pendientes nunca se presentan como aprobados. No hay nuevas llamadas IA, servicios contratados o cobros.
