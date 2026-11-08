@@ -166,12 +166,12 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
       "select id,paid_at::text from private.tc_manual_subscription_invoice_tasks",
     );
     expect(task.rows).toHaveLength(1);
-    for (const table of [
-      "private.tc_manual_subscription_invoice_tasks",
-      "private.tc_manual_subscription_invoice_events",
+    for (const [table, timestamp] of [
+      ["private.tc_manual_subscription_invoice_tasks", "created_at"],
+      ["private.tc_manual_subscription_invoice_events", "recorded_at"],
     ]) {
       await expect(db.query(
-        `update ${table} set created_at=now()`,
+        `update ${table} set ${timestamp}=now()`,
       )).rejects.toThrow("manual_invoice_intake_immutable");
       await expect(db.query(
         `delete from ${table}`,
