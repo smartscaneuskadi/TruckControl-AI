@@ -111,6 +111,7 @@ function knownUi(node) {
           "alert",
           "w",
           "change",
+          "fiscalOptions",
           "trend",
           "delta",
         ].includes(root);

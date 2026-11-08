@@ -72,7 +72,7 @@ describe("four interface languages", () => {
         transform: (code: string, id: string) => { code: string };
       }
     ).transform(
-      `export const View=()=> <><h1>Correo</h1><input placeholder="Asunto" value="income"/><option value="pending">Pendiente</option><p>{selected.text}</p><p>{selected.subject}</p><p>{selected.snippet}</p><p>{item.name}</p><p>{customer.name}</p><p>{source.title}</p><p>{record.description}</p><p>{option.label}</p></>`,
+      `export const View=()=> <><h1>Correo</h1><input placeholder="Asunto" value="income"/><option value="pending">Pendiente</option><p>{selected.text}</p><p>{selected.subject}</p><p>{selected.snippet}</p><p>{item.name}</p><p>{customer.name}</p><p>{source.title}</p><p>{record.description}</p><p>{option.label}</p><p>{fiscalOptions[regime].label}</p></>`,
       "/src/pages/PersonalMail.tsx",
     ) as { code: string };
     expect(out.code).toContain('__tcText("Correo")');
@@ -89,6 +89,7 @@ describe("four interface languages", () => {
     ])
       expect(out.code).not.toContain(`__tcText(${data})`);
     expect(out.code).toContain("__tcText(option.label)");
+    expect(out.code).toContain("__tcText(fiscalOptions[regime].label)");
   });
   it("changes date display formatting only, never business enum literals", () => {
     const out = (
