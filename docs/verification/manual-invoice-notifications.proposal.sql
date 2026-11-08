@@ -3,7 +3,7 @@
 -- Sending starts OFF; no provider, scheduler, global settings or secrets changed.
 create function private.tc_manual_invoice_notice_clock() returns timestamptz
 language sql volatile security invoker set search_path='' as $$select clock_timestamp()$$;
-revoke all on function private.tc_manual_invoice_notice_clock() from public,anon,authenticated,service_role;
+revoke all on function private.tc_manual_invoice_notice_clock() from public,anon,authenticated;
 
 create table private.tc_manual_invoice_notice_settings(
  id boolean primary key default true check(id),
@@ -62,7 +62,7 @@ create policy tc_manual_notice_outbox_no_client on private.tc_manual_invoice_not
 create policy tc_manual_notice_audit_no_client on private.tc_manual_invoice_notice_audit
  as restrictive for all to public using(false) with check(false);
 revoke all on private.tc_manual_invoice_notice_settings,private.tc_manual_invoice_notice_outbox,
- private.tc_manual_invoice_notice_audit from public,anon,authenticated,service_role;
+ private.tc_manual_invoice_notice_audit from public,anon,authenticated;
 
 create function private.tc_manual_invoice_notice_guard() returns trigger
 language plpgsql security invoker set search_path='' as $guard$
@@ -89,7 +89,7 @@ begin
  end if;
  return new;
 end;$guard$;
-revoke all on function private.tc_manual_invoice_notice_guard() from public,anon,authenticated,service_role;
+revoke all on function private.tc_manual_invoice_notice_guard() from public,anon,authenticated;
 create trigger tc_manual_notice_guard before insert or update on private.tc_manual_invoice_notice_outbox
  for each row execute function private.tc_manual_invoice_notice_guard();
 create trigger tc_manual_notice_no_remove before delete or truncate on private.tc_manual_invoice_notice_outbox
@@ -105,7 +105,7 @@ begin
   new.status,new.attempts,new.error_code,new.provider_email_id,'service_role');
  return new;
 end;$audit$;
-revoke all on function private.tc_manual_invoice_notice_log() from public,anon,authenticated,service_role;
+revoke all on function private.tc_manual_invoice_notice_log() from public,anon,authenticated;
 create trigger tc_manual_notice_log after insert or update on private.tc_manual_invoice_notice_outbox
  for each row execute function private.tc_manual_invoice_notice_log();
 
@@ -128,8 +128,8 @@ begin
  select id into strict result from private.tc_manual_invoice_notice_outbox where task_id=p_task_id;
  return result;
 end;$enqueue$;
-revoke all on function private.tc_manual_invoice_notice_enqueue(uuid) from public,anon,authenticated,service_role;
-grant execute on function private.tc_manual_invoice_notice_enqueue(uuid) to service_role;
+revoke all on function private.tc_manual_invoice_notice_enqueue(uuid) from public,anon,authenticated;
+
 
 create function private.tc_manual_invoice_notice_runtime() returns jsonb
 language plpgsql stable security definer set search_path='' as $runtime$
@@ -140,12 +140,12 @@ begin
   'enabled',s.enabled,'daily_limit',s.daily_limit,'monthly_limit',s.monthly_limit)
   from private.tc_manual_invoice_notice_settings s where id);
 end;$runtime$;
-revoke all on function private.tc_manual_invoice_notice_runtime() from public,anon,authenticated,service_role;
-grant execute on function private.tc_manual_invoice_notice_runtime() to service_role;
+revoke all on function private.tc_manual_invoice_notice_runtime() from public,anon,authenticated;
+
 create function public.tc_manual_invoice_notice_runtime() returns jsonb
 language sql stable security invoker set search_path='' as $$select private.tc_manual_invoice_notice_runtime()$$;
 revoke all on function public.tc_manual_invoice_notice_runtime() from public,anon,authenticated;
-grant execute on function public.tc_manual_invoice_notice_runtime() to service_role;
+
 
 create function private.tc_manual_invoice_notice_claim() returns jsonb
 language plpgsql security definer set search_path='' as $claim$
@@ -183,12 +183,12 @@ begin
   'attempt',n.attempts,'first_attempt_at',n.first_attempt_at,'lease_until',n.lease_until,
   'mode',n.mode,'template_version',n.template_version));
 end;$claim$;
-revoke all on function private.tc_manual_invoice_notice_claim() from public,anon,authenticated,service_role;
-grant execute on function private.tc_manual_invoice_notice_claim() to service_role;
+revoke all on function private.tc_manual_invoice_notice_claim() from public,anon,authenticated;
+
 create function public.tc_manual_invoice_notice_claim() returns jsonb
 language sql security invoker set search_path='' as $$select private.tc_manual_invoice_notice_claim()$$;
 revoke all on function public.tc_manual_invoice_notice_claim() from public,anon,authenticated;
-grant execute on function public.tc_manual_invoice_notice_claim() to service_role;
+
 
 create function private.tc_manual_invoice_notice_finish(
  p_notice uuid,p_lease uuid,p_expected bigint,p_outcome text,p_provider_id uuid default null
@@ -230,12 +230,37 @@ begin
  return jsonb_build_object('contract','manual-invoice-notice-finish-v1','id',n.id,'status',n.status,'replayed',false);
 end;$finish$;
 revoke all on function private.tc_manual_invoice_notice_finish(uuid,uuid,bigint,text,uuid)
- from public,anon,authenticated,service_role;
-grant execute on function private.tc_manual_invoice_notice_finish(uuid,uuid,bigint,text,uuid) to service_role;
+ from public,anon,authenticated;
+
 create function public.tc_manual_invoice_notice_finish(
  p_notice uuid,p_lease uuid,p_expected bigint,p_outcome text,p_provider_id uuid default null
 ) returns jsonb language sql security invoker set search_path='' as $$
  select private.tc_manual_invoice_notice_finish(p_notice,p_lease,p_expected,p_outcome,p_provider_id)
 $$;
 revoke all on function public.tc_manual_invoice_notice_finish(uuid,uuid,bigint,text,uuid) from public,anon,authenticated;
-grant execute on function public.tc_manual_invoice_notice_finish(uuid,uuid,bigint,text,uuid) to service_role;
+
+
+-- Historical isolated fixtures may not define service_role. PUBLIC/client
+-- revocations above are unconditional; only the optional server role is gated.
+do $notice_service_grants$
+begin
+ if exists(select 1 from pg_roles where rolname='service_role') then
+  revoke all on function private.tc_manual_invoice_notice_clock() from service_role;
+  revoke all on private.tc_manual_invoice_notice_settings,private.tc_manual_invoice_notice_outbox,
+ private.tc_manual_invoice_notice_audit from service_role;
+  revoke all on function private.tc_manual_invoice_notice_guard() from service_role;
+  revoke all on function private.tc_manual_invoice_notice_log() from service_role;
+  revoke all on function private.tc_manual_invoice_notice_enqueue(uuid) from service_role;
+  revoke all on function private.tc_manual_invoice_notice_runtime() from service_role;
+  revoke all on function private.tc_manual_invoice_notice_claim() from service_role;
+  revoke all on function private.tc_manual_invoice_notice_finish(uuid,uuid,bigint,text,uuid)
+ from service_role;
+  grant execute on function private.tc_manual_invoice_notice_enqueue(uuid) to service_role;
+  grant execute on function private.tc_manual_invoice_notice_runtime() to service_role;
+  grant execute on function public.tc_manual_invoice_notice_runtime() to service_role;
+  grant execute on function private.tc_manual_invoice_notice_claim() to service_role;
+  grant execute on function public.tc_manual_invoice_notice_claim() to service_role;
+  grant execute on function private.tc_manual_invoice_notice_finish(uuid,uuid,bigint,text,uuid) to service_role;
+  grant execute on function public.tc_manual_invoice_notice_finish(uuid,uuid,bigint,text,uuid) to service_role;
+ end if;
+end;$notice_service_grants$;

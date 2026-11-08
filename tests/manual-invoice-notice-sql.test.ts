@@ -193,4 +193,28 @@ describe("outbox de avisos: privado, deduplicado y cerrado por defecto",()=>{
     expect(Object.keys(row).some(key=>/buyer|tax|address|body|pdf|api_key/i.test(key))).toBe(false);
     expect(row.recipient).toBe("pedidos@smartscaneuskadi.com");
   });
+  it("cuota mensual permanece aunque haya cambiado el día UTC",async()=>{
+    await enqueue();await enqueue(taskB);await enable();
+    await db.exec("update private.tc_manual_invoice_notice_settings set daily_limit=20,monthly_limit=1 where id");
+    const c=(await claim())!;await finish(c.notice,"failed");
+    await clock("2026-11-10T12:00:00Z");
+    expect(await claim()).toBeNull();
+    expect((await db.query("select count(*)::int n from private.tc_manual_invoice_notice_audit where to_status='leased'")).rows).toEqual([{n:1}]);
+  });
+  it("instala sin service_role y conserva denegación de PUBLIC/anon/authenticated",async()=>{
+    const isolated=new PGlite();
+    try {
+      await isolated.exec(`
+        create role anon nologin;create role authenticated nologin;create schema private;
+        create table private.tc_manual_subscription_invoice_tasks(id uuid primary key);
+        create table private.tc_manual_stripe_bridge_receipts(task_id uuid,mode text);
+        create function private.tc_manual_subscription_intake_reject_mutation()
+        returns trigger language plpgsql as $immutable$ begin raise exception 'immutable' using errcode='23514';end;$immutable$;
+      `);
+      await isolated.exec(readFileSync("docs/verification/manual-invoice-notifications.proposal.sql","utf8"));
+      expect((await isolated.query("select has_function_privilege('anon','public.tc_manual_invoice_notice_claim()','EXECUTE') a,has_function_privilege('authenticated','public.tc_manual_invoice_notice_claim()','EXECUTE') b,has_table_privilege('authenticated','private.tc_manual_invoice_notice_outbox','SELECT,INSERT,UPDATE') c")).rows)
+        .toEqual([{a:false,b:false,c:false}]);
+    } finally {await isolated.close();}
+  },30000);
+
 });
