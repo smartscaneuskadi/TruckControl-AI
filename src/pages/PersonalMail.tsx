@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import {
@@ -258,6 +259,9 @@ function PersonalMailView() {
   const formError = error || account.error;
   return (
     <div className="personal-mail-page">
+      <Link className="button secondary" to="/mailbox">
+        Volver a Correo
+      </Link>
       <PageHeading
         eyebrow="COMUNICACIONES"
         title="Mi correo"

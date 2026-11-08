@@ -1239,7 +1239,7 @@ async function openPersonalMail(page: Page) {
   await login(page, "customer@example.com");
   await expect(page).toHaveURL(/#\/dashboard/);
   await page.evaluate(() => {
-    location.hash = "/mailbox";
+    location.hash = "/mailbox/gmail";
   });
   await page
     .getByRole("button", { name: "Preparar conexión con Google", exact: true })
@@ -1881,7 +1881,7 @@ test("correo personal demo: enviar responder y papelera son ficticios y no alter
     .getByRole("button", { name: "Explorar la demo", exact: true })
     .click();
   await page.evaluate(() => {
-    location.hash = "/mailbox";
+    location.hash = "/mailbox/gmail";
   });
   await page
     .getByRole("button", { name: "Abrir buzón ficticio", exact: true })
@@ -5086,4 +5086,42 @@ test("una página restaurada de la caché exige verificar la sesión antes de mo
   await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
   await expect(page.locator("body")).not.toContainText("8888 TST");
   await expect(page.locator(".sidebar")).toHaveCount(0);
+});
+
+test("correo unificado: proveedor persistente, facturas y sin pestañas nuevas", async ({ page, context }) => {
+  await fixtures(page);
+  await context.route("https://mail.yahoo.com/**", route => route.fulfill({ contentType: "text/html", body: "<h1>Yahoo ficticio</h1>" }));
+  await context.route("https://webmail.example.com/**", route => route.fulfill({
+    contentType: "text/html", body: '<!doctype html><html lang="es"><head><title>Correo ficticio</title></head><body><label>Borrador del proveedor<input></label></body></html>',
+  }));
+  await login(page, "customer@example.com");
+  await page.evaluate(() => { location.hash = "/mailbox"; });
+  await expect(page.getByRole("heading", { name: "Correo", exact: true })).toBeVisible();
+  const menu = page.getByRole("complementary", { name: "Navegación principal" });
+  await expect(menu.getByRole("link", { name: "Correo", exact: true })).toHaveCount(1);
+  await expect(menu.getByRole("link", { name: "Mi correo", exact: true })).toHaveCount(0);
+  await expect(menu.getByRole("link", { name: "Correo y facturas", exact: true })).toHaveCount(0);
+  for (const name of ["Gmail", "Yahoo Mail", "Webmail Porkbun", "Outlook"]) {
+    await expect(page.getByRole("button", { name, exact: true })).toBeVisible();
+  }
+  const pages = context.pages().length;
+  await page.getByLabel("Otro enlace · dirección de tu webmail").fill("https://webmail.example.com/");
+  await page.getByRole("button", { name: "Abrir correo aquí", exact: true }).click();
+  const frame = page.frameLocator('iframe[title="Correo · webmail.example.com"]');
+  await frame.getByLabel("Borrador del proveedor").fill("Borrador ficticio");
+  await page.getByRole("link", { name: "Facturas del correo", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Del correo a tus gastos", exact: true })).toBeVisible();
+  await expect(page.locator('iframe[title="Correo · webmail.example.com"]')).toBeHidden();
+  await page.getByRole("link", { name: "Volver a Correo", exact: true }).click();
+  await expect(frame.getByLabel("Borrador del proveedor")).toHaveValue("Borrador ficticio");
+  expect(context.pages()).toHaveLength(pages);
+  await page.getByRole("button", { name: "Añadir otro correo", exact: true }).click();
+  await page.getByRole("button", { name: "Yahoo Mail", exact: true }).click();
+  await expect(page.locator(".mail-provider-view iframe")).toHaveCount(2);
+  await page.getByRole("button", { name: "webmail.example.com · 1", exact: true }).click();
+  await expect(frame.getByLabel("Borrador del proveedor")).toHaveValue("Borrador ficticio");
+  expect(context.pages()).toHaveLength(pages);
+  await page.getByRole("button", { name: "Cerrar vista webmail.example.com · 1", exact: true }).click();
+  await expect(page.locator('iframe[title="Correo · webmail.example.com"]')).toHaveCount(0);
+  await expect(page.locator(".mail-provider-view iframe")).toHaveCount(1);
 });

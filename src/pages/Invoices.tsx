@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Mail, RefreshCw, ShieldCheck, Unplug } from "lucide-react";
@@ -545,6 +546,9 @@ export function Invoices() {
   }
   return (
     <>
+      <Link className="button secondary" to="/mailbox">
+        Volver a Correo
+      </Link>
       <PageHeading
         eyebrow="BANDEJA DE FACTURAS"
         title="Del correo a tus gastos"
