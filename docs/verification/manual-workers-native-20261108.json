@@ -1,0 +1,95 @@
+{
+  "schema": "truckcontrol-manual-workers-native-v1",
+  "date_utc": "2026-11-08",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "source_commit": "7d411fcccc4bf8ba1a1b017becc22c6a349422cd",
+  "functions": [
+    {
+      "name": "truckcontrol-stripe-fiscal",
+      "version": 1,
+      "deployed": true,
+      "status": "ACTIVE",
+      "business_activation": false,
+      "source_exact": true,
+      "uploaded_files": 8,
+      "returned_source_files": 7,
+      "config_not_in_bundle": [
+        "truckcontrol-stripe-fiscal/deno.json"
+      ],
+      "ezbr_sha256": "b8907a3d581103b6603eb6544b78c095b21700ef1b846f821b5bc8e1197d0d95",
+      "verify_jwt": false
+    },
+    {
+      "name": "company-manual-invoices",
+      "version": 1,
+      "deployed": true,
+      "status": "ACTIVE",
+      "business_activation": false,
+      "source_exact": true,
+      "uploaded_files": 4,
+      "returned_source_files": 3,
+      "config_not_in_bundle": [
+        "company-manual-invoices/deno.json"
+      ],
+      "ezbr_sha256": "571637ea5717ef7996bcdc2045cabd26732ca0038ddb7204a39e59e4619b7ca7",
+      "verify_jwt": false
+    },
+    {
+      "name": "truckcontrol-manual-invoice-notices",
+      "version": 1,
+      "deployed": true,
+      "status": "ACTIVE",
+      "business_activation": false,
+      "source_exact": true,
+      "uploaded_files": 3,
+      "returned_source_files": 2,
+      "config_not_in_bundle": [
+        "truckcontrol-manual-invoice-notices/deno.json"
+      ],
+      "ezbr_sha256": "d34cb72b1ea077d2fde4aedebeb5e3105e2c5fdb70486b7f500ca6a26266b07f",
+      "verify_jwt": false
+    }
+  ],
+  "business_activation": false,
+  "post_deploy_flags": {
+    "checked_at_utc": "2026-11-08 13:02:29.159968+00",
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false,
+    "fiscal_tasks": 0,
+    "notices": 0,
+    "notice_sender_off": true,
+    "private_documents_off": true,
+    "enabled_payment_channels": 0
+  },
+  "https_get": [
+    {
+      "name": "truckcontrol-stripe-fiscal",
+      "status": 405
+    },
+    {
+      "name": "company-manual-invoices",
+      "status": 403,
+      "explanation": "Missing allowed Origin is rejected before method/auth; no public PDF access."
+    },
+    {
+      "name": "truckcontrol-manual-invoice-notices",
+      "status": 405
+    }
+  ],
+  "fiscal_storage": {
+    "bucket": "tc-subscription-fiscal",
+    "public": false,
+    "limit_bytes": 10485760,
+    "allowed_mime_types": [
+      "application/pdf"
+    ],
+    "native_byte_transport_verified": false
+  },
+  "real_stripe_webhook_verified": false,
+  "real_invoice_issued": false,
+  "real_notification_sent": false,
+  "scheduler_created": false,
+  "credentials_rotated_or_retrieved": false,
+  "live_payments_enabled": false
+}
