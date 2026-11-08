@@ -10,7 +10,7 @@ import { TyresProvider } from "./TyresProvider";
 import { PersonalMailProvider } from "./PersonalMailProvider";
 import { SubscriptionProvider } from "./SubscriptionContext";
 import { OfflineContext } from "./OfflineContext";
-import { sessionExitEvent } from "./session-events";
+import { endPrivateSessions, sessionExitEvent } from "./session-events";
 import { listVaultScopes, VaultSession } from "../data/offline-vault";
 import type { VaultPayload } from "../data/offline-vault";
 import { synchronizeVault } from "../data/offline-sync";
@@ -33,6 +33,7 @@ class OfflineFleetRepository implements FleetRepository {
   }
 }
 export function OfflineApplication({ children }: { children: ReactNode }) {
+  const [sdkClient] = useState(getSupabaseClient);
   const [session, setSession] = useState<VaultSession | null>(null),
     [payload, setPayload] = useState<VaultPayload | null>(null),
     [entry, setEntry] = useState(false),
@@ -71,6 +72,21 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
       window.removeEventListener("pagehide", stop);
     };
   }, []);
+  useEffect(() => {
+    if (!sdkClient) return;
+    let alive = true;
+    const { data: { subscription } } = sdkClient.auth.onAuthStateChange((event, identity) => {
+      if (!alive || !mounted.current || event === "INITIAL_SESSION") return;
+      // CompanyAccessProvider is unmounted while an offline copy is open.
+      // Observe the real shared SDK here too, including logout in another tab.
+      if (event === "SIGNED_OUT") { endPrivateSessions(); return; }
+      const owner = currentSession.current?.scope.split("|")[1];
+      if (owner && identity?.user.id && identity.user.id !== owner) endPrivateSessions();
+      // A null initial session is not logout; same-user token refresh does not
+      // revoke a deliberately unlocked, passphrase-protected offline copy.
+    });
+    return () => { alive = false; subscription.unsubscribe(); };
+  }, [sdkClient]);
   useEffect(() => {
     const update = () => setOnline(navigator.onLine);
     window.addEventListener("online", update);

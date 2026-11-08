@@ -2290,6 +2290,44 @@ test.describe("copia cifrada y sincronización", () => {
     expect(encryptedAfter).not.toContain("customer@example.com");
     expect(encryptedAfter).not.toContain("8888 TST");
   });
+  test("cerrar sesión desde otra pestaña bloquea una copia ya abierta sin perder su cola", async ({ page, context }) => {
+    const f = await prepare(page);
+    await context.setOffline(true);
+    await page.reload();
+    await openAndEdit(page, f.phrase);
+    await context.setOffline(false);
+    const other = await context.newPage();
+    await fixtures(other);
+    await login(other, "customer@example.com");
+    await expect(other.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    // A fresh login by the same user must not lock an explicitly unlocked copy.
+    await expect(page.locator(".offline-workspace-banner")).toBeVisible();
+    const open = other.getByRole("button", { name: "Abrir menú", exact: true });
+    if (await open.isVisible()) await open.click();
+    await other.getByRole("complementary", { name: "Navegación principal" })
+      .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(other.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    // This notification is emitted by the real SDK through its browser channel.
+    await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("Cliente offline ficticio");
+    expect(await page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1"))).toBeNull();
+    expect(f.records.size).toBe(0);
+    expect(f.calls.some((call) => call.path.endsWith("/tc_save_record"))).toBe(false);
+    const encrypted = await page.evaluate(() => new Promise<string>((resolve, reject) => {
+      const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
+      r.onsuccess = () => {
+        const tx = r.result.transaction("vaults", "readonly");
+        const q = tx.objectStore("vaults").getAll();
+        tx.oncomplete = () => { resolve(JSON.stringify(q.result)); r.result.close(); };
+      };
+      r.onerror = () => reject(r.error);
+    }));
+    expect(JSON.parse(encrypted)).toHaveLength(1);
+    expect(encrypted).not.toContain("Cliente offline ficticio");
+    expect(encrypted).not.toContain(f.phrase);
+    await other.close();
+  });
   test("revocar la cuenta bloquea la copia y evita publicar cambios pendientes", async ({
     page,
     context,
