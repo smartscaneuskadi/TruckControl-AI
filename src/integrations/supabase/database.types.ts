@@ -115,6 +115,18 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_admin_manual_subscription_invoices: {
+        Args: {
+          p_action: string;
+          p_task_id?: string | null;
+          p_expected?: number | null;
+          /** Idempotency ID of the administrative operation, not the purchase. */
+          p_request_id?: string | null;
+          p_data?: Json;
+          p_after?: string | null;
+        };
+        Returns: Json;
+      };
       tc_commercial_backup_page: {
         Args: { p_org: string; p_kind: string; p_after?: string | null };
         Returns: Json;

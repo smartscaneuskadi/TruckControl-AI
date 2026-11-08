@@ -216,7 +216,12 @@ export function recordManualInvoiceSent(
   return { ...task, status: "sent_reported", dispatch };
 }
 
-/** Fail closed on unresolved/manual errors; the record is not auto-reopened. */
+/**
+ * Fail closed on unresolved/manual errors; the record is not auto-reopened.
+ * A later incident may follow a human send report (for example a bounce or a
+ * payment discrepancy). Preserve both fiscal and dispatch evidence; this is
+ * neither deletion/rectification of the invoice nor a claim of delivery.
+ */
 export function requireManualInvoiceReview(
   task: ManualInvoiceTask,
   reason: ManualReviewReason,
@@ -228,7 +233,6 @@ export function requireManualInvoiceReview(
     if (task.reviewReason !== reason) throw new Error("conflicting_manual_invoice_review");
     return task;
   }
-  if (task.status === "sent_reported") throw new Error("invalid_manual_invoice_transition");
   return { ...task, status: "needs_review", reviewReason: reason };
 }
 

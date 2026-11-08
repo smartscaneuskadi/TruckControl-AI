@@ -1,0 +1,10 @@
+.manual-subscription-admin .fiscal-company-row { min-width: 0; overflow-wrap: anywhere; }
+.manual-subscription-admin dl { display: grid; grid-template-columns: minmax(7rem, 0.7fr) minmax(0, 1.3fr); gap: .45rem .8rem; }
+.manual-subscription-admin dt { font-weight: 600; }
+.manual-subscription-admin dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.manual-subscription-admin .inline-actions { flex-wrap: wrap; }
+.manual-subscription-admin .fiscal-company-title h3 { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  .manual-subscription-admin dl { grid-template-columns: minmax(0, 1fr); gap: .25rem; }
+  .manual-subscription-admin dd { margin-bottom: .6rem; }
+}
