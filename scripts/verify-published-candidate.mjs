@@ -599,7 +599,7 @@ try {
                 localStorage.getItem("truckcontrol.demo.v1"),
               );
               await page.evaluate(() => {
-                location.hash = "/mailbox";
+                location.hash = "/mailbox/gmail";
               });
               await page
                 .getByRole("heading", { name: "Mi correo", exact: true })

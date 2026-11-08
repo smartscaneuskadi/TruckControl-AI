@@ -5088,40 +5088,173 @@ test("una página restaurada de la caché exige verificar la sesión antes de mo
   await expect(page.locator(".sidebar")).toHaveCount(0);
 });
 
-test("correo unificado: proveedor persistente, facturas y sin pestañas nuevas", async ({ page, context }) => {
+test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñas", async ({
+  page,
+  context,
+}) => {
   await fixtures(page);
-  await context.route("https://mail.yahoo.com/**", route => route.fulfill({ contentType: "text/html", body: "<h1>Yahoo ficticio</h1>" }));
-  await context.route("https://webmail.example.com/**", route => route.fulfill({
-    contentType: "text/html", body: '<!doctype html><html lang="es"><head><title>Correo ficticio</title></head><body><label>Borrador del proveedor<input></label></body></html>',
-  }));
+  const calls: { action: string; email: string }[] = [];
+  let reject = false;
+  await page.route("**/functions/v1/personal-mail", async (route) => {
+    const body = route.request().postDataJSON();
+    const email = body.connection.email;
+    calls.push({ action: body.action, email });
+    const headers = {
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
+    };
+    if (reject && body.action === "verify") {
+      await route.fulfill({
+        status: 403,
+        headers,
+        body: JSON.stringify({ error: "denied" }),
+      });
+      return;
+    }
+    const message = {
+      id: "fictitious-1",
+      threadId: "fictitious-1",
+      from: "sender@example.invalid",
+      to: email,
+      subject: "Mensaje IMAP ficticio",
+      date: "2026-11-08T12:00:00Z",
+      snippet: "",
+      labels: [],
+      text: "Texto IMAP ficticio privado",
+      htmlConverted: false,
+      messageId: "<fictitious@example.invalid>",
+      attachments: [],
+    };
+    const data =
+      body.action === "verify"
+        ? { email, reading: true, sending: true }
+        : body.action === "list"
+          ? { messages: [message], next: null }
+          : body.action === "read"
+            ? message
+            : body.action === "send"
+              ? { sent: true, sent_copy: true }
+              : { changed: true };
+    await route.fulfill({ status: 200, headers, body: JSON.stringify(data) });
+  });
   await login(page, "customer@example.com");
-  await page.evaluate(() => { location.hash = "/mailbox"; });
-  await expect(page.getByRole("heading", { name: "Correo", exact: true })).toBeVisible();
-  const menu = page.getByRole("complementary", { name: "Navegación principal" });
-  await expect(menu.getByRole("link", { name: "Correo", exact: true })).toHaveCount(1);
-  await expect(menu.getByRole("link", { name: "Mi correo", exact: true })).toHaveCount(0);
-  await expect(menu.getByRole("link", { name: "Correo y facturas", exact: true })).toHaveCount(0);
-  for (const name of ["Gmail", "Yahoo Mail", "Webmail Porkbun", "Outlook"]) {
-    await expect(page.getByRole("button", { name, exact: true })).toBeVisible();
-  }
+  await page.evaluate(() => {
+    location.hash = "/mailbox";
+  });
+  await expect(
+    page.getByRole("heading", { name: "Correo", exact: true }),
+  ).toBeVisible();
+  const menu = page.getByRole("complementary", {
+    name: "Navegación principal",
+  });
+  await expect(
+    menu.getByRole("link", { name: "Correo", exact: true }),
+  ).toHaveCount(1);
+  await expect(
+    menu.getByRole("link", { name: "Mi correo", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator("main iframe")).toHaveCount(0);
   const pages = context.pages().length;
-  await page.getByLabel("Otro enlace · dirección de tu webmail").fill("https://webmail.example.com/");
-  await page.getByRole("button", { name: "Abrir correo aquí", exact: true }).click();
-  const frame = page.frameLocator('iframe[title="Correo · webmail.example.com"]');
-  await frame.getByLabel("Borrador del proveedor").fill("Borrador ficticio");
-  await page.getByRole("link", { name: "Facturas del correo", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Del correo a tus gastos", exact: true })).toBeVisible();
-  await expect(page.locator('iframe[title="Correo · webmail.example.com"]')).toBeHidden();
-  await page.getByRole("link", { name: "Volver a Correo", exact: true }).click();
-  await expect(frame.getByLabel("Borrador del proveedor")).toHaveValue("Borrador ficticio");
+  async function fill(email: string) {
+    await page.getByLabel("Correo electrónico", { exact: true }).fill(email);
+    await page
+      .getByLabel("Contraseña del buzón o de aplicación", { exact: true })
+      .fill("app-password-ficticia-no-real");
+    await page
+      .getByLabel("Autorizo a TruckControl a conectar este buzón", {
+        exact: false,
+      })
+      .check();
+    await page
+      .getByRole("button", { name: "Conectar y verificar buzón", exact: true })
+      .click();
+  }
+  await fill("first@example.invalid");
+  await expect(
+    page.getByRole("heading", { name: "first@example.invalid", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button")
+    .filter({ hasText: "Mensaje IMAP ficticio" })
+    .click();
+  await expect(
+    page.getByText("Texto IMAP ficticio privado", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Redactar", exact: true }).click();
+  const draft = page.getByRole("dialog", { name: "Redactar correo" });
+  await draft
+    .getByLabel("Para", { exact: true })
+    .fill("recipient@example.invalid");
+  await draft.getByLabel("Asunto", { exact: true }).fill("Envío ficticio IMAP");
+  await draft
+    .getByLabel("Mensaje", { exact: true })
+    .fill("Solo transporte HTTP ficticio");
+  await draft
+    .getByRole("button", { name: "Revisar envío", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Confirmar envío" })
+    .getByRole("button", { name: "Enviar ahora", exact: true })
+    .click();
+  await expect(draft).toHaveCount(0);
+  expect(calls.filter((c) => c.action === "send")).toEqual([
+    { action: "send", email: "first@example.invalid" },
+  ]);
+  await page
+    .getByRole("button", { name: "Añadir otro correo", exact: true })
+    .click();
+  reject = true;
+  await fill("second@example.invalid");
+  await expect(page.getByRole("alert")).toContainText("proveedor ha rechazado");
+  await expect(
+    page
+      .getByRole("navigation", { name: "Correos conectados" })
+      .getByRole("button", { name: "second@example.invalid", exact: true }),
+  ).toHaveCount(0);
+  reject = false;
+  await fill("second@example.invalid");
+  await expect(
+    page.getByRole("heading", { name: "second@example.invalid", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Facturas del correo", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Del correo a tus gastos", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Volver a Correo", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "second@example.invalid", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("navigation", { name: "Correos conectados" })
+    .getByRole("button", { name: "first@example.invalid", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "first@example.invalid", exact: true }),
+  ).toBeVisible();
   expect(context.pages()).toHaveLength(pages);
-  await page.getByRole("button", { name: "Añadir otro correo", exact: true }).click();
-  await page.getByRole("button", { name: "Yahoo Mail", exact: true }).click();
-  await expect(page.locator(".mail-provider-view iframe")).toHaveCount(2);
-  await page.getByRole("button", { name: "webmail.example.com · 1", exact: true }).click();
-  await expect(frame.getByLabel("Borrador del proveedor")).toHaveValue("Borrador ficticio");
-  expect(context.pages()).toHaveLength(pages);
-  await page.getByRole("button", { name: "Cerrar vista webmail.example.com · 1", exact: true }).click();
-  await expect(page.locator('iframe[title="Correo · webmail.example.com"]')).toHaveCount(0);
-  await expect(page.locator(".mail-provider-view iframe")).toHaveCount(1);
+  const stored = await page.evaluate(() =>
+    JSON.stringify({
+      local: { ...localStorage },
+      session: { ...sessionStorage },
+    }),
+  );
+  expect(stored).not.toContain("app-password-ficticia-no-real");
+  expect(stored).not.toContain("Texto IMAP ficticio privado");
+  await page
+    .getByRole("button", {
+      name: "Desconectar first@example.invalid",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "first@example.invalid", exact: true }),
+  ).toHaveCount(0);
+  await page.reload();
+  await expect(
+    page.getByRole("navigation", { name: "Correos conectados" }),
+  ).toHaveCount(0);
 });

@@ -28,6 +28,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Typecheck personal mail runtime against installed pinned transports
+        run: npx --yes deno@2.9.6 check --node-modules-dir=manual --no-config supabase/functions/personal-mail/index.ts
       - run: npm run check
       - name: Check isolated email configuration
         run: python3 -m unittest discover -s tests/python -p 'test_*.py'
