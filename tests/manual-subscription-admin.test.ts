@@ -100,6 +100,16 @@ describe("administración fiscal manual con CAS, ámbito y evidencia honesta", (
       task(), "validate_buyer", buyer, op,
     )).rejects.toThrow("identidad fiscal");
   });
+  it("permite corregir el comprador antes de emitir y exige la nueva versión confirmada", async () => {
+    const corrected = { ...buyer, address: "Domicilio fiscal corregido 90" };
+    const next = { ...validated(), buyer_address: corrected.address, row_version: 3 };
+    const f = client({ task: next, replayed: false });
+    expect(await mutateManualSubscriptionInvoice(f.value, validated(), "validate_buyer", corrected, op)).toEqual(next);
+    expect(f.rpc.mock.calls[0]).toEqual(["tc_admin_manual_subscription_invoices", {
+      p_action: "validate_buyer", p_task_id: id, p_expected: 2, p_request_id: op,
+      p_data: corrected, p_after: null,
+    }]);
+  });
   it("conflicto y denegación nunca reintentan la mutación ni muestran errores privados", async () => {
     for (const code of ["40001", "42501"]) {
       const f = client(null, { code, message: "credential-synthetic-must-not-leak" });
@@ -107,11 +117,11 @@ describe("administración fiscal manual con CAS, ámbito y evidencia honesta", (
       expect(f.rpc).toHaveBeenCalledTimes(1);
     }
   });
-  it("rechaza campos extra, operación inválida y revalidaciones antes de llamar a red", async () => {
+  it("rechaza campos extra, operación inválida y cambios posteriores a emisión antes de llamar a red", async () => {
     const f = client({ task: validated(), replayed: false });
     await expect(mutateManualSubscriptionInvoice(f.value, task(), "validate_buyer", { ...buyer, is_admin: true }, op)).rejects.toThrow();
     await expect(mutateManualSubscriptionInvoice(f.value, task(), "validate_buyer", buyer, "bad-operation")).rejects.toThrow();
-    await expect(mutateManualSubscriptionInvoice(f.value, validated(), "validate_buyer", buyer, op)).rejects.toThrow();
+    await expect(mutateManualSubscriptionInvoice(f.value, issued(), "validate_buyer", buyer, op)).rejects.toThrow();
     expect(f.rpc).not.toHaveBeenCalled();
   });
   it("conserva la mensualidad independiente y rechaza períodos truncados o incoherentes", () => {

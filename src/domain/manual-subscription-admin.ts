@@ -120,7 +120,7 @@ export function validateManualInvoiceCommand(
   value: unknown,
 ): ManualInvoiceInput {
   if (action === "validate_buyer") {
-    if (task.status !== "awaiting_issue" || task.buyer_validated) throw Error("Los datos fiscales ya no admiten esta validación.");
+    if (task.status !== "awaiting_issue") throw Error("Los datos fiscales ya no admiten esta validación.");
     return validateBuyerInputSchema.parse(value);
   }
   if (action === "register_invoice") {

@@ -24,7 +24,8 @@ function sample(): ManualSubscriptionTask {
 async function fixtures(page: Page) {
   let actor = false, metadata: Record<string, unknown> = {};
   let task = sample();
-  const controls = { failure: "" as "" | "unavailable" | "denied" | "conflict" };
+  let resumeValidation: (() => void) | null = null;
+  const controls = { delayValidation: false, releaseValidation: () => resumeValidation?.(), failure: "" as "" | "unavailable" | "denied" | "conflict" };
   const calls: { action: string; body: Record<string, unknown> }[] = [];
   const user = () => ({ id: userId, aud: "authenticated", role: "authenticated",
     email: "pedidos@smartscaneuskadi.com", email_confirmed_at: stamp, user_metadata: metadata });
@@ -65,6 +66,7 @@ async function fixtures(page: Page) {
       else if (body?.p_task_id !== taskId || body?.p_expected !== task.row_version) { status = 409; data = { code: "40001" }; }
       else {
         const input = body?.p_data as Record<string, string>;
+        if (action === "validate_buyer" && controls.delayValidation) await new Promise<void>((resolve) => { resumeValidation = resolve; });
         if (action === "validate_buyer") task = { ...task, buyer_validated: true, buyer_snapshot_origin: "operator_validated",
           buyer_company_name: input.company_name, buyer_tax_id: input.tax_id, buyer_address: input.address, buyer_email: input.email, row_version: task.row_version + 1 };
         else if (action === "needs_review") task = { ...task, status: "needs_review",
@@ -164,4 +166,38 @@ test("datos fiscales solo en memoria, ambos temas accesibles y desconexión limp
   await expect(panel(page).getByRole("button", { name: "Actualizar facturas", exact: true })).toBeDisabled();
   await context.setOffline(false);
   await expect(panel(page)).toContainText("Cliente fiscal ficticio");
+});
+
+
+test("una respuesta de escritura anterior a la reconexión no reemplaza la consulta nueva", async ({ page }) => {
+  const f = await fixtures(page);
+  await open(page);
+  f.controls.delayValidation = true;
+  await panel(page).getByRole("button", { name: "Contrastar datos fiscales", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Contrastar comprador de la factura", exact: true });
+  await dialog.getByLabel("Referencia del soporte comprobado").fill("Soporte de contratación ficticio");
+  await dialog.getByLabel("He comprobado los datos y confirmo esta actuación administrativa.").check();
+  await dialog.getByRole("button", { name: "Confirmar y registrar", exact: true }).click();
+  await expect.poll(() => f.calls.filter((c) => c.action === "validate_buyer").length).toBe(1);
+  // Only the browser connectivity signal is controlled; the held HTTP response
+  // remains live so this exercises stale-result suppression rather than abort.
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false });
+    window.dispatchEvent(new Event("offline"));
+  });
+  await expect(panel(page)).toContainText("Conéctate para consultar");
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, "onLine", { configurable: true, get: () => true });
+    window.dispatchEvent(new Event("online"));
+  });
+  await expect(panel(page)).toContainText("Pendientes de contrastar");
+  const response = page.waitForResponse((r) => r.url().endsWith("/tc_admin_manual_subscription_invoices") && r.request().postDataJSON()?.p_action === "validate_buyer");
+  f.controls.releaseValidation();
+  await (await response).finished();
+  // The saving finally block enables Refresh; no arbitrary sleep is needed.
+  await expect(panel(page).getByRole("button", { name: "Actualizar facturas", exact: true })).toBeEnabled();
+  await expect(panel(page)).not.toContainText("Contrastados por administración");
+  await panel(page).getByRole("button", { name: "Actualizar facturas", exact: true }).click();
+  await expect(panel(page)).toContainText("Contrastados por administración");
+  expect(f.calls.filter((c) => c.action === "validate_buyer")).toHaveLength(1);
 });
