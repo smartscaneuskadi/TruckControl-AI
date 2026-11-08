@@ -74,7 +74,7 @@ beforeAll(async () => {
   // Standalone proposal branch has only schema62. After composite63 lands,
   // exercise the real migrated routines instead of patching over a regression.
   const installed = (await db.query<{ present: boolean }>(
-    "select to_regclass('private.tc_manual_stripe_channels') is not null present",
+    "select to_regprocedure('private.tc_actor_verified(uuid,boolean)') is not null present",
   )).rows[0].present;
   if (!installed) await db.exec(readFileSync("docs/verification/admin-session-freshness.proposal.sql", "utf8"));
   await db.query(
