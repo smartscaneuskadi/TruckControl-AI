@@ -64,3 +64,10 @@ La restricción `tc_manual_subscription_request_unique` impide que dos referenci
 ### Integridad adicional del registro privado de eventos (08/11)
 
 La cola candidata ahora obliga a que **cada evento de proveedor pertenezca a la misma cuenta Stripe que su tarea** mediante clave foránea compuesta `(task_id, provider_account_id) → (id, provider_account_id)`. Esto impide vincular eventos de una cuenta a tareas de otra incluso si un proceso privilegiado intentase insertar directamente en la tabla, y no depende únicamente del control de la función de ingesta. Se añadió prueba sintética de rechazo y ausencia de fila parcial en `tests/manual-subscription-intake-security.test.ts`. **No** autentica Stripe, no autoriza cobros y no concede acceso cliente. Todo sigue como migración local pendiente de verificación CI y auditoría, sin despliegue remoto.
+
+
+### Cierre adicional frente a mutaciones privilegiadas — candidato 08/11
+
+Las tablas privadas de **tareas y eventos de ingesta** son ahora deliberadamente **solo anexables** durante esta etapa: triggers PostgreSQL rechazan `UPDATE`, `DELETE` y `TRUNCATE`, incluso si quien escribe es propietario de tabla o usa una cuenta con acceso privilegiado. El RLS y los `REVOKE` de clientes, por sí solos, **no impiden** que un adaptador servidor con permisos elevados altere un evento después de ingerirlo. Prueba PGlite sobre ambas tablas comprueba que la evidencia previa no cambia tras esos tres intentos.
+
+**Limitación:** esto congela también las transiciones futuras del estado `awaiting_issue`, intencionadamente, hasta revisar una nueva migración de CAS con operadores autorizados y auditoría inmutable. La futura operación manual de TicketBAI, alertas, PDF privado y confirmación de envío **no existe aún**. No desactivar los triggers para hacer funcionar una pantalla, ni ejecutar `TRUNCATE` para corregir incidencias de factura; exigir una implementación transaccional revisada y pruebas de retención/rectificación. El acceso de administrador de base de datos al DDL sigue siendo una capacidad separada: este control no equivale a un registro criptográficamente inviolable.
