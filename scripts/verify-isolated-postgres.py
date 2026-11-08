@@ -246,7 +246,7 @@ def wait_for_backend(application: str, *, lock: bool) -> dict:
     deadline = time.monotonic() + 7
     while time.monotonic() < deadline:
         rows = value("""select coalesce(jsonb_agg(jsonb_build_object(
-          'pid',pid,'wait_type',wait_event_type,'wait',wait_event,'blockers',pg_blocking_pids(pid)),'[]')
+          'pid',pid,'wait_type',wait_event_type,'wait',wait_event,'blockers',pg_blocking_pids(pid))),'[]')
           from pg_stat_activity where application_name=""" + quote(application))
         if rows and ((lock and rows[0]["wait_type"] == "Lock")
                      or (not lock and rows[0]["wait"] == "PgSleep")):
@@ -317,6 +317,8 @@ def main():
     REPORT["container_image_id"] = run(["docker", "inspect", "--format", "{{.Image}}", CONTAINER]).stdout.decode().strip()
     images = json.loads(run(["docker", "image", "inspect", IMAGE]).stdout)
     REPORT["resolved_repository_digests"] = images[0].get("RepoDigests", [])
+    check("Running container uses the verified immutable image ID",
+          REPORT["container_image_id"] == images[0]["Id"])
     check("Official image digest resolves exactly",
           any("sha256:f3bd19c606e442c3d7bdfa8002e03fe260a1023351e0ea4598032022b68dd6e3" in digest
               for digest in REPORT["resolved_repository_digests"]))
