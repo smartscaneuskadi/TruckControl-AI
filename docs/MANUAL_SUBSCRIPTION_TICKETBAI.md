@@ -45,3 +45,12 @@ La futura persistencia y el panel deberán exigir actor autorizado, auditoría, 
 - El texto público de facturación aclara la opción manual futura en GDTaller. **Ningún envío ni factura real ha ocurrido por este PR.**
 
 **Faltan para un módulo operativo:** tablas privadas y restricciones únicas durables, transacciones CAS, validación de webhooks y pago con Stripe real autorizado, permisos/RLS, panel de administración, carga protegida de PDF, aviso a `pedidos@smartscaneuskadi.com` por canal confirmado, reintentos y auditoría. Estas funciones NO están implementadas por el reductor puro; no activar `BILLING_INVOICING_VERIFIED` ni modificar `nativeSubscriptionFiscalIssuerAvailable()`.
+
+
+## Candidato de persistencia privada (08/11/2026, no desplegado)
+
+El PR de ingesta durable añade `supabase/migrations/20261108013000_manual_subscription_invoice_intake.sql` (migración **nueva**, nunca aplicada; las **60 remotas existentes no cambian**) y pruebas locales `tests/manual-subscription-intake-security.test.ts`. Define tablas privadas para solicitudes pendientes y eventos del proveedor con unicidad por ID de pago y evento, RLS restrictivo deny-all, revocación de permisos para `anon` y `authenticated` y una función **privada** de ingesta con bloqueo transaccional del pedido. Rechaza empresas ajenas o ambiguas, pagos no marcados como confirmados, diferencias de céntimos y reintentos contradictorios.
+
+**Contrato de confianza:** el dato `status='paid'` de la tabla interna no verifica por sí mismo que Stripe haya cobrado. El código nuevo **no se conecta a ningún webhook, no verifica firmas ni acepta llamadas HTTP**; el futuro adaptador deberá autenticar el evento, consultar y reconciliar el pago/importe/cuenta contra Stripe y solo entonces invocar la función. No hay endpoint público, GRANT a clientes ni automatismos de aviso. El nuevo SQL no permite cambiar estado más allá de `awaiting_issue`; para registrar factura real, CAS/versionado y auditoría harán falta otra revisión y pruebas.
+
+**No aplicar en remoto, integrar en backend ni publicar una vista** antes de confirmar compatibilidad del esquema y aceptar el flujo fiscal. Aunque las pruebas SQL locales pasen, eso no demuestra servicio comercial, envío o TicketBAI real. Se mantienen los cobros apagados y el guard nativo `false`.
