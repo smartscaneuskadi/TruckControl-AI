@@ -60,6 +60,7 @@ export function CompanyOfflineContext({
   organization: Organization;
   onExit(): void;
 }) {
+  const signOutRequest = useRef<Promise<void> | null>(null);
   return (
     <Context.Provider
       value={{
@@ -73,9 +74,28 @@ export function CompanyOfflineContext({
         select: onExit,
         newCompany: onExit,
         refreshCompanies: onExit,
-        signOut: async () => {
-          endPrivateSessions();
-          onExit();
+        signOut: () => {
+          if (signOutRequest.current) return signOutRequest.current;
+          const request = (async () => {
+            const client = getSupabaseClient();
+            if (!client)
+              throw new Error(
+                "No se puede verificar el cierre. Conecta para cerrar la sesión; puedes bloquear tu copia sin conexión.",
+              );
+            const { error } = await client.auth.signOut();
+            if (error)
+              throw new Error(
+                "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.",
+              );
+            endPrivateSessions();
+            onExit();
+          })();
+          signOutRequest.current = request;
+          void request.then(
+            () => { signOutRequest.current = null; },
+            () => { signOutRequest.current = null; },
+          );
+          return request;
         },
         portal: onExit,
       }}
@@ -114,6 +134,7 @@ if (initialEmailAction)
   );
 export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   const observedUserId = useRef<string | null>(null);
+  const signOutRequest = useRef<Promise<void> | null>(null);
   const [emailAction, setEmailAction] = useState(initialEmailAction);
   const [client] = useState(getSupabaseClient);
   const [mode, setMode] = useState<"demo" | "company" | "portal">(() =>
@@ -287,15 +308,30 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
       }
       setRevision((n) => n + 1);
     },
-    signOut: async () => {
-      endPrivateSessions();
-      if (!client) return;
-      const { error } = await client.auth.signOut();
-      if (error)
-        throw new Error("No se ha podido cerrar la sesión. Reinténtalo.");
-      setAccount({ user: null, organizations: [], loaded: false });
-      setSelected(null);
-      setRecovery(false);
+    signOut: () => {
+      if (signOutRequest.current) return signOutRequest.current;
+      const request = (async () => {
+        // End RAM-only provider capabilities before awaiting network revocation.
+        endPrivateSessions();
+        if (client) {
+          const { error } = await client.auth.signOut();
+          if (error)
+            throw new Error(
+              "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.",
+            );
+        }
+        setAccount({ user: null, organizations: [], loaded: false });
+        setSelected(null);
+        setRecovery(false);
+        setEntryView("login");
+        changeMode("company");
+      })();
+      signOutRequest.current = request;
+      void request.then(
+        () => { signOutRequest.current = null; },
+        () => { signOutRequest.current = null; },
+      );
+      return request;
     },
   };
   return (

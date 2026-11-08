@@ -1786,6 +1786,7 @@ test("correo personal: un consentimiento tardío después de cerrar sesión no a
     location.hash = "/settings";
   });
   await page
+    .locator("main")
     .getByRole("button", { name: "Cerrar sesión", exact: true })
     .click();
   await logoutStarted;
@@ -4755,3 +4756,162 @@ function describeCopilot() {
     });
   });
 }
+
+
+test.describe("CargoTrack y cierre de sesión del menú", () => {
+  async function openMainMenu(page: Page) {
+    const open = page.getByRole("button", { name: "Abrir menú", exact: true });
+    if (await open.isVisible()) await open.click();
+    return page.getByRole("complementary", { name: "Navegación principal" });
+  }
+
+  test("CargoTrack abre sólo la URL oficial en otra pestaña sin compartir credenciales", async ({ page, context }, testInfo) => {
+    const f = await fixtures(page);
+    f.controls.companyPlan = "limited";
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    const cargo = menu.getByRole("link", { name: "CargoTrack", exact: true });
+    await expect(cargo.locator("svg")).toHaveCount(2);
+    await cargo.click();
+    await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
+    const link = page.getByRole("link", { name: "Entrar en CargoTrack", exact: true });
+    await expect(link).toHaveAttribute("href", "https://on7.cargotrack.ro/signin");
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    await expect(link).toHaveAttribute("referrerpolicy", "no-referrer");
+    await expect(page.locator("main iframe, main input")).toHaveCount(0);
+    // Never send a test password to the external provider.
+    const outgoing: { url: string; referer?: string; authorization?: string; body: string | null }[] = [];
+    await context.route("https://on7.cargotrack.ro/**", async (route) => {
+      outgoing.push({
+        url: route.request().url(),
+        referer: route.request().headers().referer,
+        authorization: route.request().headers().authorization,
+        body: route.request().postData(),
+      });
+      await route.fulfill({ contentType: "text/html", body: "<!doctype html><html><title>Proveedor aislado para pruebas</title><body>Prueba de navegación, sin iniciar sesión.</body></html>" });
+    });
+    const popupPromise = context.waitForEvent("page");
+    await link.click();
+    const popup = await popupPromise;
+    await popup.waitForLoadState("domcontentloaded");
+    expect(popup.url()).toBe("https://on7.cargotrack.ro/signin");
+    expect(await popup.evaluate(() => window.opener)).toBeNull();
+    expect(outgoing).toEqual([{ url: "https://on7.cargotrack.ro/signin", body: null }]);
+    await popup.close();
+    await expect(page).toHaveURL(/#\/cargotrack$/);
+    for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+      await page.getByRole("button", { name: "Cambiar apariencia", exact: true }).click();
+      const dialog = page.getByRole("dialog", { name: "Apariencia de TruckControl" });
+      await dialog.getByRole("radio", { name: theme, exact: true }).check();
+      await dialog.getByRole("button", { name: "Aplicar apariencia" }).click();
+      await dialog.getByRole("button", { name: "Cerrar ventana" }).click();
+      expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.locator(".cargotrack-page").screenshot({ path: testInfo.outputPath("cargotrack-" + theme.replace(" ", "-") + ".png") });
+    }
+    await page.getByRole("link", { name: "Volver al resumen", exact: true }).click();
+    await expect(page).toHaveURL(/#\/dashboard$/);
+    expect(f.calls.filter((c) => c.path === "/auth/v1/logout")).toHaveLength(0);
+    expect(f.calls.some((c) => /cargotrack/i.test(c.path))).toBe(false);
+  });
+
+  test("el menú muestra Cerrar sesión debajo de Configuración y revoca una sola vez", async ({ page }) => {
+    const f = await fixtures(page);
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    const settings = menu.getByRole("link", { name: "Configuración", exact: true });
+    const logout = menu.getByRole("button", { name: "Cerrar sesión", exact: true });
+    expect(await settings.evaluate((element) => element.nextElementSibling?.textContent?.trim())).toBe("Cerrar sesión");
+    let finish!: () => Promise<void>;
+    let started!: () => void;
+    const requestStarted = new Promise<void>((resolve) => { started = resolve; });
+    let logoutRequests = 0;
+    await page.route("http://127.0.0.1:9999/auth/v1/logout**", async (route) => {
+      if (route.request().method() !== "POST") { await route.fallback(); return; }
+      logoutRequests++;
+      expect(route.request().headers().authorization).toMatch(/^Bearer ey/);
+      finish = () => route.fulfill({
+        status: 200, headers: { "Access-Control-Allow-Origin": "http://127.0.0.1:4194", "Content-Type": "application/json" }, body: "{}",
+      });
+      started();
+    });
+    await logout.click();
+    await requestStarted;
+    const pending = menu.getByRole("button", { name: "Cerrando sesión…", exact: true });
+    await expect(pending).toBeDisabled();
+    await expect(pending).toHaveAttribute("aria-busy", "true");
+    await pending.evaluate((button) => { (button as HTMLButtonElement).click(); (button as HTMLButtonElement).click(); });
+    expect(logoutRequests).toBe(1);
+    await finish();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator(".sidebar, .workspace-label")).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1"))).toBeNull();
+    expect(f.records.size).toBe(0);
+    expect(f.calls.some((c) => /storage.*remove|delete_company|delete_organization/.test(c.path))).toBe(false);
+  });
+
+  test("una sesión cerrada no vuelve a mostrar datos con Atrás, recarga ni ruta privada", async ({ page }) => {
+    const f = await fixtures(page);
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    await page.evaluate(() => { location.hash = "/trucks"; });
+    await expect(page.locator("main")).toContainText("8888 TST");
+    await page.evaluate(() => { location.hash = "/cargotrack"; });
+    await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
+    const menu = await openMainMenu(page);
+    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    const callsAfterLogout = f.calls.length;
+    await page.goBack();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await page.evaluate(() => { location.hash = "/documents"; });
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await page.reload();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("8888 TST");
+    await expect(page.locator(".sidebar, .data-table, .personal-mail-reader")).toHaveCount(0);
+    const privateReads = f.calls.slice(callsAfterLogout).filter((c) => /^\/rest\/v1\/(organizations|trucks|drivers|finance_entries|company_records|company_documents)/.test(c.path));
+    expect(privateReads).toEqual([]);
+  });
+
+  test("un rechazo de Supabase muestra un error y permite reintentar sin fingir una salida", async ({ page }) => {
+    await fixtures(page);
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    let deny = true;
+    let requests = 0;
+    await page.route("http://127.0.0.1:9999/auth/v1/logout**", async (route) => {
+      if (route.request().method() !== "POST") { await route.fallback(); return; }
+      requests++;
+      await route.fulfill({
+        status: deny ? 400 : 200,
+        headers: { "Access-Control-Allow-Origin": "http://127.0.0.1:4194", "Content-Type": "application/json" },
+        body: deny ? JSON.stringify({ code: "synthetic_rejection", message: "Private provider diagnostic must not be displayed" }) : "{}",
+      });
+    });
+    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.locator("body")).toContainText("No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.");
+    await expect(page.locator("body")).not.toContainText("Private provider diagnostic");
+    await expect(menu.getByRole("button", { name: "Cerrar sesión", exact: true })).toBeEnabled();
+    expect(await page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1"))).not.toBeNull();
+    deny = false;
+    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    expect(requests).toBe(2);
+  });
+
+  test("la demo conserva CargoTrack y no muestra un cierre de sesión de empresa", async ({ page }) => {
+    await fixtures(page);
+    await page.goto("/");
+    await page.getByRole("button", { name: "Explorar la demo", exact: true }).click();
+    await expect(page.locator(".workspace-label")).toContainText("Flota de demostración");
+    const menu = await openMainMenu(page);
+    await expect(menu.getByRole("button", { name: "Cerrar sesión", exact: true })).toHaveCount(0);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
+  });
+});
