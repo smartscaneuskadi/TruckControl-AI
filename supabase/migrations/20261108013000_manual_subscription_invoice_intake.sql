@@ -576,7 +576,7 @@ revoke all on function private.tc_manual_subscription_invoice_renewal_intake(tex
 -- the table boundary. This does NOT authenticate Stripe or justify collecting
 -- payments: 'paid' is an internal state, never external settlement evidence.
 create function private.tc_manual_subscription_guard_task_insert()
-returns trigger language plpgsql security invoker set search_path='' as $
+returns trigger language plpgsql security invoker set search_path='' as $guard$
 begin
   if not isfinite(new.paid_at) or new.paid_at>now()+interval '5 minutes' then
     raise exception 'manual_invoice_intake_invalid' using errcode='22023';
@@ -619,7 +619,7 @@ begin
       using errcode='23514';
   end if;
   return new;
-end;$$;
+end;$guard$;
 revoke all on function private.tc_manual_subscription_guard_task_insert()
   from public,anon,authenticated;
 create trigger tc_manual_subscription_guard_task_insert
