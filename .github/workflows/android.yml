@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   compile:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
@@ -23,30 +23,21 @@ jobs:
           test -f "$ANDROID_HOME/platforms/android-36/android.jar"
           test -x "$ANDROID_HOME/build-tools/36.0.0/apksigner"
           test -x "$JAVA_HOME_21_X64/bin/javac"
-      - name: Verify and unpack pinned official Gradle
+      - name: Verify pinned Gradle already installed in the official runner image
         shell: bash
         run: |
           set -euo pipefail
-          truckcontrol_gradle_downloaded=false
-          for truckcontrol_gradle_host in services.gradle.org downloads.gradle.org; do
-            if curl --fail --location --proto '=https' --tlsv1.2 --connect-timeout 15 --max-time 60 --retry 1 --retry-delay 2 --retry-max-time 60 "https://$truckcontrol_gradle_host/distributions/gradle-9.9.0-bin.zip" --output "$RUNNER_TEMP/truckcontrol-gradle.zip"; then
-              truckcontrol_gradle_downloaded=true
-              break
-            fi
-          done
-          test "$truckcontrol_gradle_downloaded" = true
           python3 - <<'PY'
-          import hashlib, os, pathlib, zipfile
-          p = pathlib.Path(os.environ["RUNNER_TEMP"]) / "truckcontrol-gradle.zip"
-          if hashlib.sha256(p.read_bytes()).hexdigest() != "0b00b0ffe07c4d4789c12d4935a44a7057d55774b7540bd4a3f76f336deb177a":
-              raise SystemExit("Official Gradle checksum mismatch")
-          with zipfile.ZipFile(p) as archive:
-              root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "truckcontrol-gradle"
-              for name in archive.namelist():
-                  if pathlib.PurePosixPath(name).is_absolute() or ".." in pathlib.PurePosixPath(name).parts:
-                      raise SystemExit("Unsafe Gradle archive")
-              archive.extractall(root)
-          (root / "gradle-9.9.0/bin/gradle").chmod(0o755)
+          import os, re, shutil, subprocess
+          binary = shutil.which("gradle")
+          if not binary:
+              raise SystemExit("Pinned Gradle 9.8.2 is missing from the official runner")
+          env = os.environ.copy()
+          env["JAVA_HOME"] = env["JAVA_HOME_21_X64"]
+          version = subprocess.run([binary, "--version", "--console=plain"], check=True, capture_output=True, text=True, env=env).stdout
+          if not re.search(r"^Gradle 9\.8\.2\s*$", version, re.MULTILINE):
+              raise SystemExit("Installed Gradle differs from the approved 9.8.2 toolchain")
+          print("Verified official runner toolchain: Gradle 9.8.2 and Java 21")
           PY
       - name: Compile, test, lint and prepare unsigned release
         shell: bash
@@ -54,7 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           export JAVA_HOME="$JAVA_HOME_21_X64"
-          "$RUNNER_TEMP/truckcontrol-gradle/gradle-9.9.0/bin/gradle" --no-daemon --console=plain :app:testDebugUnitTest :app:lintRelease :app:assembleDebug :app:bundleRelease
+          gradle --no-daemon --console=plain :app:testDebugUnitTest :app:lintRelease :app:assembleDebug :app:bundleRelease
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/debug/app-debug.apk
           python3 - <<'PY'
           import hashlib, json, os, pathlib, subprocess, xml.etree.ElementTree as ET, zipfile
