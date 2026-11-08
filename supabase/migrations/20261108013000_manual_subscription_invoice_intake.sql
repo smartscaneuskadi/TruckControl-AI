@@ -12,7 +12,22 @@ create table private.tc_manual_subscription_invoice_tasks (
   request_id uuid not null references private.tc_payment_requests(id) on delete restrict,
   buyer_user_id uuid not null references private.tc_customers(user_id) on delete restrict,
   buyer_company_id uuid not null references public.organizations(id) on delete restrict,
+  -- Immutable at intake time; never compose a later invoice from mutable buyer
+  -- profile or the current plan catalogue. Private and NEVER client-exported.
+  buyer_company_name text not null check (char_length(btrim(buyer_company_name)) between 2 and 100),
+  buyer_tax_id text not null check (char_length(btrim(buyer_tax_id)) between 3 and 30),
+  buyer_address text not null check (char_length(btrim(buyer_address)) between 5 and 240),
+  buyer_email text not null check (char_length(btrim(buyer_email)) between 3 and 320),
+  plan_id text not null,
+  plan_revision bigint not null,
+  net_cents integer not null check (net_cents between 100 and 100000000),
+  vat_rate_bps integer not null check (vat_rate_bps between 0 and 10000),
+  vat_cents integer not null check (vat_cents between 0 and 100000000),
   amount_cents integer not null check (amount_cents between 100 and 100000000),
+  constraint tc_manual_subscription_quote_matches check (
+    net_cents+vat_cents=amount_cents
+    and vat_cents=((net_cents::bigint*vat_rate_bps+5000)/10000)::integer
+  ),
   currency text not null default 'EUR' check (currency='EUR'),
   paid_at timestamptz not null,
   status text not null default 'awaiting_issue' check (status='awaiting_issue'),
@@ -69,6 +84,7 @@ create function private.tc_manual_subscription_invoice_intake(
 language plpgsql security invoker set search_path='' as $$
 declare
   request_row private.tc_payment_requests;
+  customer_row private.tc_customers;
   task_row private.tc_manual_subscription_invoice_tasks;
   bound_event uuid;
   org_count integer;
@@ -90,6 +106,25 @@ begin
   then raise exception 'manual_invoice_unreconciled_payment'
     using errcode='23514'; end if;
 
+
+  -- Historical quotes with unknown tax components cannot be inferred from
+  -- today's plan, or represented as a valid fiscal task. Escalate to operator.
+  if request_row.net_cents is null or request_row.vat_rate_bps is null
+    or request_row.vat_cents is null
+  then raise exception 'manual_invoice_tax_quote_missing'
+    using errcode='23514'; end if;
+
+  -- The customer snapshot is captured at trusted intake, NOT retroactively
+  -- claimed to be proof of the details shown at checkout. This must be checked
+  -- by an operator before manual issue, especially on delayed webhooks.
+  select * into customer_row from private.tc_customers where user_id=request_row.user_id;
+  if not found or char_length(btrim(customer_row.company_name)) not between 2 and 100
+    or char_length(btrim(customer_row.tax_id)) not between 3 and 30
+    or char_length(btrim(customer_row.address)) not between 5 and 240
+    or char_length(btrim(customer_row.email)) not between 3 and 320
+  then raise exception 'manual_invoice_buyer_details_missing'
+    using errcode='23514'; end if;
+
   -- Do not guess which company paid if a user owns multiple organizations.
   select count(*) into org_count from public.organizations
     where owner_id=request_row.user_id;
@@ -100,11 +135,18 @@ begin
     using errcode='23514'; end if;
 
   insert into private.tc_manual_subscription_invoice_tasks (
+
     provider_account_id,provider_payment_id,request_id,buyer_user_id,
-    buyer_company_id,amount_cents,currency,paid_at
+    buyer_company_id,buyer_company_name,buyer_tax_id,buyer_address,buyer_email,
+    plan_id,plan_revision,net_cents,vat_rate_bps,vat_cents,
+    amount_cents,currency,paid_at
   ) values (
     p_account,p_payment,p_request,request_row.user_id,
-    p_company,p_amount,'EUR',p_paid_at
+    p_company,customer_row.company_name,customer_row.tax_id,
+    customer_row.address,customer_row.email,
+    request_row.plan_id,request_row.plan_revision,
+    request_row.net_cents,request_row.vat_rate_bps,request_row.vat_cents,
+    p_amount,'EUR',p_paid_at
   ) on conflict(provider_account_id,provider_payment_id) do nothing;
 
   select * into task_row from private.tc_manual_subscription_invoice_tasks
@@ -112,7 +154,13 @@ begin
   if not found or task_row.request_id<>p_request
     or task_row.buyer_user_id<>request_row.user_id
     or task_row.buyer_company_id<>p_company
+
     or task_row.amount_cents<>p_amount or task_row.currency<>'EUR'
+    or task_row.plan_id<>request_row.plan_id
+    or task_row.plan_revision<>request_row.plan_revision
+    or task_row.net_cents<>request_row.net_cents
+    or task_row.vat_rate_bps<>request_row.vat_rate_bps
+    or task_row.vat_cents<>request_row.vat_cents
     or task_row.paid_at<>p_paid_at
   then raise exception 'manual_invoice_conflicting_payment'
     using errcode='23514'; end if;
