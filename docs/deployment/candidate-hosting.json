@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "72526b86a74f2539f073e888015e477e4dbee401",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31bb5be99d8c8191b220d76104041206",
-  "published_version_number": 34,
-  "deployment_id": "appgdep_6af0b9aa501c819195e5bb1a8898895d",
-  "previous_deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
+  "published_commit": "5c954703c2d858add18501fef15efce6f1504bc9",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_4e70b8e4ef20819183cd90080ffd6106",
+  "published_version_number": 35,
+  "deployment_id": "appgdep_6af0c7f83fb881919bbb244517c0a8a6",
+  "previous_deployment_id": "appgdep_6af0b9aa501c819195e5bb1a8898895d",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-08T18:04:41.082212+00:00",
+  "deployed_at": "2026-11-08T19:05:41.195128+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 42507142648,
+  "source_ci_run": 42512311126,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {

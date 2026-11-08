@@ -1,5 +1,13 @@
 # TruckControl AI — continuidad y publicación
 
+## Correo unificado publicado · Sites35 · 08/11/2026
+
+Estado vigente: https://truckcontrolai.com, Sites35/app0.5.21-rc.1, fuente5c954703c2d858add18501fef15efce6f1504bc9. PR94 integrado en56ebbf6. Deploymentappgdep_6af0c7f83fb881919bbb244517c0a8a6 SUCCEEDED. Se conservan34/33/32/31 y demo6. No publicar el manifiesto de demo de main.
+
+Un único menú Correo abre Gmail/Yahoo/Porkbun/Outlook o una URL HTTPS propia. Vistas sin máximo configurado, persistentes al cambiar correo/sección; añadir o cerrar una no recarga las otras. Cookies/cuentas/caducidad dependen del proveedor; las vistas no equivalen a sesiones aisladas ni sobreviven a recargar toda la app. Gmail dio401 y Yahoo rechazó iframe en prueba pública previa: no afirmar login real ni quitar protecciones. Alternativa voluntaria en la misma pestaña. Facturas y cliente Gmail anterior conservan rutas/permisos.
+
+CI de PR42512225452 y fuente exacta42512311126 SUCCESS:1576 controles por ejecución (1191 unitarias/SQL,45Python,72demo,50empresa,178SaaS,14candidata,20producción,6perfiles públicos sobre la versión anterior). Paquete42512311132 SUCCESS.64originales/11hashes intactos. Tras publicar se comprobó release.json HTTPS con fuente exacta limpia y pantalla Correo pública en demo. Android/Windows emulados; sin login real ni hardware físico. Recibo: docs/verification/mail-workspace-published-20261108.json. Sin DDL/Edge/env de servidor/compras/IA/correos nuevos; cobros OFF.
+
 ## CargoTrack integrado publicado · Sites34 · 08/11/2026
 
 **Estado vigente: https://truckcontrolai.com, Sites34/app0.5.21-rc.1**, fuente72526b86a74f2539f073e888015e477e4dbee401. PR92 fusionado en7bd8de6c1bc9dbb67e8d2761f8620838114a0c76. Deploymentappgdep_6af0b9aa501c819195e5bb1a8898895d SUCCEEDED. Se conservan33/32/31 y demo6; no publicar main con su manifiesto de demo.
