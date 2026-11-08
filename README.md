@@ -25,13 +25,15 @@ La entrega actual es una PWA. Android firmado/Google Play aún no están acredit
 
 ## Lanzamiento comercial en curso
 
-PR75 está integrado en main71c72 tras **1.526 controles por ejecución**. Supabase tiene **63 migraciones**, con la última aplicada una vez, fuente/ACL verificadas y contrato nativo completo con rollback. Los7Edge existentes se han actualizado; los nuevos workers de pagos/PDF/avisos siguen sin desplegar y con flags OFF. La web pública continúa en **v32**, sin una nueva promoción del frontend. [Estado y pruebas](TEST_RESULTS.md), [despliegue](DEPLOYMENT.md).
+PR75 está integrado en main71c72 tras **1.526 controles por ejecución**. Supabase tiene **63 migraciones**, con la última aplicada una vez, fuente/ACL verificadas y contrato nativo completo con rollback. Los7Edge existentes y3workers de pagos/PDF/avisos se han desplegado con fuentes verificadas; las funciones comerciales de los workers permanecen OFF y sin scheduler de avisos. La web pública continúa en **v32**, sin una nueva promoción del frontend. [Estado y pruebas](TEST_RESULTS.md), [despliegue](DEPLOYMENT.md) y [recibo nativo63](https://github.com/smartscaneuskadi/TruckControl-AI/blob/9a2c0227bf4c2b2a5fe836c9b812a723d37d475d/docs/verification/session-fiscal-pipeline-native-20261108.json).
 
-El ensayo PostgreSQL17 de PR77 tiene69controles y recuperación lógica aislada correctos; no acredita recuperación gestionada de Supabase/Auth/Storage ni dispositivos físicos. Cobros, emisión/entrega fiscal, Google público y revisión comercial siguen pendientes.
+El ensayo PostgreSQL17 de PR77, integrado mediante PR78, tiene69controles y recuperación lógica aislada correctos; no acredita recuperación gestionada de Supabase/Auth/Storage ni dispositivos físicos. Cobros, emisión/entrega fiscal, Google público y revisión comercial siguen pendientes.
 
 Proveedores y margen por viaje con costes vinculados ya pasan aceptación nativa Supabase; sus pantallas y copias cifradas v4 están integradas, pendientes de promover al frontend público. El candidato Android pasa compilación, lint, cinco pruebas JVM y revisión de su manifiesto; aún no tiene firma comercial, aceptación física ni publicación Play. Faltan completar emisión/entrega fiscal manual, cobros, revisión pública Google y recuperación integral alojada. Gmail personal y recepción empresarial son flujos diferentes; un consentimiento individual no sustituye la aprobación pública de Google.
 
 [Avance](PROGRESS.md) · [Plan](TODO.md) · [Dependencias](BLOCKERS.md) · [Pruebas](TEST_RESULTS.md) · [Despliegue](DEPLOYMENT.md).
+
+El conector Stripe está disponible en sandbox ELEVADANCOR; las credenciales backend y la aceptación real siguen pendientes. Gmail está configurado, con0buzones empresariales vinculados en la última comprobación. La organización Supabase ya era Pro; no hubo upgrade. La protección de contraseñas filtradas sigue pendiente de configurar/verificar.
 
 ## Seguridad y mantenimiento
 
