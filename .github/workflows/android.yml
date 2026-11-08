@@ -1,0 +1,75 @@
+name: Android package candidate
+on:
+  push:
+    paths: ["android/**", ".github/workflows/android.yml"]
+  pull_request:
+    paths: ["android/**", ".github/workflows/android.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - name: Verify existing SDK and Java
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$ANDROID_HOME/platforms/android-36/android.jar"
+          test -x "$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          test -x "$JAVA_HOME_21_X64/bin/javac"
+      - name: Verify and unpack pinned official Gradle
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --proto '=https' --tlsv1.2 --max-time 120 https://services.gradle.org/distributions/gradle-9.9.0-bin.zip --output "$RUNNER_TEMP/truckcontrol-gradle.zip"
+          python3 - <<'PY'
+          import hashlib, os, pathlib, zipfile
+          p = pathlib.Path(os.environ["RUNNER_TEMP"]) / "truckcontrol-gradle.zip"
+          if hashlib.sha256(p.read_bytes()).hexdigest() != "0b00b0ffe07c4d4789c12d4935a44a7057d55774b7540bd4a3f76f336deb177a":
+              raise SystemExit("Official Gradle checksum mismatch")
+          with zipfile.ZipFile(p) as archive:
+              root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "truckcontrol-gradle"
+              for name in archive.namelist():
+                  if pathlib.PurePosixPath(name).is_absolute() or ".." in pathlib.PurePosixPath(name).parts:
+                      raise SystemExit("Unsafe Gradle archive")
+              archive.extractall(root)
+          (root / "gradle-9.9.0/bin/gradle").chmod(0o755)
+          PY
+      - name: Compile, test, lint and prepare unsigned release
+        shell: bash
+        working-directory: android
+        run: |
+          set -euo pipefail
+          export JAVA_HOME="$JAVA_HOME_21_X64"
+          "$RUNNER_TEMP/truckcontrol-gradle/gradle-9.9.0/bin/gradle" --no-daemon --console=plain :app:testDebugUnitTest :app:lintRelease :app:assembleDebug :app:bundleRelease
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/debug/app-debug.apk
+          python3 - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          apk = pathlib.Path("app/build/outputs/apk/debug/app-debug.apk")
+          aab = pathlib.Path("app/build/outputs/bundle/release/app-release.aab")
+          with zipfile.ZipFile(aab) as archive:
+              if any(name.upper().startswith("META-INF/") and name.upper().endswith((".RSA", ".DSA", ".EC")) for name in archive.namelist()):
+                  raise SystemExit("Unexpected release signing material")
+          report = {"commercial_signed": False, "play_published": False, "physical_device_verified": False,
+                    "files": [{"name":p.name,"sha256":hashlib.sha256(p.read_bytes()).hexdigest(),"bytes":p.stat().st_size} for p in (apk,aab)]}
+          pathlib.Path("app/build/outputs/android-candidate.json").write_text(json.dumps(report,indent=2))
+          print(json.dumps(report))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: android-candidate-${{ github.sha }}
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+            android/app/build/outputs/android-candidate.json
+            android/app/build/reports/
+            android/app/build/test-results/
+          retention-days: 3
+          if-no-files-found: warn
