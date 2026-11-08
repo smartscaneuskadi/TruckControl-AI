@@ -7,7 +7,7 @@ import {
   manualSubscriptionTaskSchema,
   validateManualInvoiceCommand,
 } from "../../domain/manual-subscription-admin";
-import type { ManualInvoiceAction, ManualSubscriptionTask } from "../../domain/manual-subscription-admin";
+import type { ManualInvoiceAction, ManualSubscriptionTask, RegisterManualInvoiceInput, ReportManualSentInput, ManualReviewInput } from "../../domain/manual-subscription-admin";
 
 function failure(error: { code?: string } | null) {
   return Error(
@@ -65,7 +65,7 @@ export async function mutateManualSubscriptionInvoice(
   if (next.id !== task.id || next.buyer_company_id !== task.buyer_company_id ||
       next.provider_payment_id !== task.provider_payment_id ||
       next.amount_cents !== task.amount_cents || next.currency !== task.currency ||
-      next.row_version < task.row_version + 1 || next.status !== target) {
+      next.row_version < task.row_version + 1 || (!result.replayed && next.row_version !== task.row_version + 1) || next.status !== target) {
     throw Error("El servidor no ha confirmado el cambio solicitado. Actualiza antes de continuar.");
   }
   if (action === "validate_buyer") {
@@ -74,6 +74,27 @@ export async function mutateManualSubscriptionInvoice(
         next.buyer_tax_id !== buyer.tax_id || next.buyer_address !== buyer.address || next.buyer_email !== buyer.email) {
       throw Error("No se ha confirmado la identidad fiscal indicada. Actualiza la solicitud.");
     }
+  }
+  if (action === "register_invoice") {
+    const issue = input as RegisterManualInvoiceInput;
+    if (!next.invoice || next.invoice.invoice_number !== issue.invoice_number ||
+        next.invoice.ticketbai_reference !== issue.ticketbai_reference ||
+        next.invoice.pdf_object_key !== issue.pdf_object_key ||
+        next.invoice.pdf_sha256 !== issue.pdf_sha256 ||
+        Date.parse(next.invoice.issued_at) !== Date.parse(issue.issued_at)) {
+      throw Error("No se ha confirmado la factura fiscal indicada. Actualiza la solicitud.");
+    }
+  }
+  if (action === "report_sent") {
+    const sent = input as ReportManualSentInput;
+    if (!next.dispatch || next.dispatch.recipient !== sent.recipient ||
+        next.dispatch.reference !== sent.reference ||
+        Date.parse(next.dispatch.sent_at) !== Date.parse(sent.sent_at)) {
+      throw Error("No se ha confirmado la declaración de envío indicada. Actualiza la solicitud.");
+    }
+  }
+  if (action === "needs_review" && next.review_reason !== (input as ManualReviewInput).reason) {
+    throw Error("No se ha confirmado la incidencia indicada. Actualiza la solicitud.");
   }
   return next;
 }

@@ -175,7 +175,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
                 {task.status === "awaiting_issue" && <Button variant="secondary" disabled title="Requiere carga privada del PDF fiscal verificada en servidor.">Registrar factura fiscal · pendiente</Button>}
                 {task.status === "awaiting_send" && <Button variant="secondary" disabled={busy || !online}
                   onClick={() => { setError(""); setMessage(""); setEditing({ task, action: "report_sent" }); }}>Registrar envío realizado</Button>}
-                {(task.status === "awaiting_issue" || task.status === "awaiting_send") && <Button variant="ghost" icon={AlertTriangle} disabled={busy || !online}
+                {(task.status === "awaiting_issue" || task.status === "awaiting_send" || task.status === "sent_reported") && <Button variant="ghost" icon={AlertTriangle} disabled={busy || !online}
                   onClick={() => { setError(""); setMessage(""); setEditing({ task, action: "needs_review" }); }}>Registrar incidencia</Button>}
               </div>
             </article>

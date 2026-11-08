@@ -64,6 +64,9 @@ export const manualSubscriptionTaskSchema = z.object({
   if ((task.period_start === null) !== (task.period_end === null) ||
       (task.period_start !== null && task.period_end !== null &&
        Date.parse(task.period_end) <= Date.parse(task.period_start))) reject("Período de facturación inválido.");
+  if (task.provider_invoice_id !== null &&
+      (task.provider_payment_id !== task.provider_invoice_id || task.period_start === null || task.period_end === null)) reject("La renovación no tiene identidad y período reconciliados.");
+  if (task.provider_invoice_id === null && (task.period_start !== null || task.period_end !== null)) reject("El período requiere su propia factura del procesador.");
   if (task.net_cents !== undefined && task.vat_cents !== undefined &&
       task.net_cents + task.vat_cents !== task.amount_cents) reject("Desglose fiscal incoherente.");
   if ((task.status === "awaiting_send" || task.status === "sent_reported") &&
@@ -71,9 +74,9 @@ export const manualSubscriptionTaskSchema = z.object({
   if (task.status === "sent_reported" && task.dispatch === null) reject("Falta la declaración de envío.");
   if (task.status === "needs_review" && task.review_reason === null) reject("Falta el motivo de revisión.");
   if (task.invoice) {
-    const prefix = "subscription-invoices/" + task.buyer_company_id + "/";
+    const prefix = "subscription-invoices/" + task.buyer_company_id + "/" + task.id + "/";
     const path = task.invoice.pdf_object_key;
-    if (!path.startsWith(prefix) || !/^[A-Za-z0-9/_\-.]+\.pdf$/i.test(path) ||
+    if (!path.startsWith(prefix) || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.pdf$/.test(path.slice(prefix.length)) ||
         path.includes("//") || path.split("/").some((part) => part === "." || part === "..")) reject("El PDF no pertenece al comprador.");
     if (Date.parse(task.invoice.issued_at) < Date.parse(task.paid_at)) reject("Fecha de emisión incoherente.");
   }
@@ -136,6 +139,6 @@ export function validateManualInvoiceCommand(
     manualSubscriptionTaskSchema.parse({ ...task, status: "sent_reported", dispatch: input });
     return input;
   }
-  if (task.status === "sent_reported" || task.status === "needs_review") throw Error("Actualiza el registro antes de comunicar otra incidencia.");
+  if (task.status === "needs_review") throw Error("Actualiza el registro antes de comunicar otra incidencia.");
   return manualReviewInputSchema.parse(value);
 }

@@ -51,7 +51,7 @@ function issued() {
   return { ...validated(), status: "awaiting_send" as const, row_version: 3,
     invoice: { invoice_number: "F-DEMO-001", ticketbai_reference: "TBAI-DEMO-001",
       issued_at: "2026-11-08T09:00:00Z",
-      pdf_object_key: "subscription-invoices/" + org + "/" + id + "/fiscal.pdf",
+      pdf_object_key: "subscription-invoices/" + org + "/" + id + "/fc610000-0000-4000-8000-000000000041.pdf",
       pdf_sha256: "a".repeat(64) } };
 }
 
@@ -135,9 +135,9 @@ describe("administración fiscal manual con CAS, ámbito y evidencia honesta", (
   it("no acepta como emitida una factura sin validación o con PDF público/ajeno", () => {
     for (const invalid of [
       { ...issued(), buyer_validated: false },
-      { ...issued(), invoice: { ...issued().invoice, pdf_object_key: "https://foreign.invalid/fiscal.pdf" } },
-      { ...issued(), invoice: { ...issued().invoice, pdf_object_key: "subscription-invoices/" + op + "/fiscal.pdf" } },
-      { ...issued(), invoice: { ...issued().invoice, pdf_object_key: "subscription-invoices/" + org + "/../fiscal.pdf" } },
+      { ...issued(), invoice: { ...issued().invoice, pdf_object_key: "https://foreign.invalid/fc610000-0000-4000-8000-000000000041.pdf" } },
+      { ...issued(), invoice: { ...issued().invoice, pdf_object_key: "subscription-invoices/" + op + "/fc610000-0000-4000-8000-000000000041.pdf" } },
+      { ...issued(), invoice: { ...issued().invoice, pdf_object_key: "subscription-invoices/" + org + "/../fc610000-0000-4000-8000-000000000041.pdf" } },
     ]) expect(() => manualSubscriptionTaskSchema.parse(invalid)).toThrow();
   });
   it("la declaración de envío requiere factura, destinatario y fecha coherentes; nunca se etiqueta delivered", () => {
@@ -147,6 +147,55 @@ describe("administración fiscal manual con CAS, ámbito y evidencia honesta", (
     expect(() => validateManualInvoiceCommand(issued(), "report_sent", { ...sent, recipient: "foreign@example.invalid" })).toThrow();
     expect(() => validateManualInvoiceCommand(issued(), "report_sent", { ...sent, sent_at: stamp })).toThrow();
     expect(() => manualSubscriptionTaskSchema.parse({ ...issued(), status: "delivered", dispatch: sent })).toThrow();
+  });
+  it("exige PDF de la misma tarea y un nombre UUID reservado por el servidor", () => {
+    const issue = issued();
+    for (const key of [
+      "subscription-invoices/" + org + "/" + op + "/fc610000-0000-4000-8000-000000000041.pdf",
+      "subscription-invoices/" + org + "/" + id + "/fiscal.pdf",
+      "subscription-invoices/" + org + "/" + id + "/00000000-0000-0000-0000-000000000000.pdf",
+    ]) expect(() => manualSubscriptionTaskSchema.parse({ ...issue, invoice: { ...issue.invoice, pdf_object_key: key } })).toThrow();
+  });
+  it("rechaza renovaciones sin período o con una identidad de pago diferente", () => {
+    for (const invalid of [
+      { ...task(), period_start: null, period_end: null },
+      { ...task(), provider_invoice_id: "in_otherMonthlyPeriod" },
+      { ...task(), provider_invoice_id: null },
+    ]) expect(() => manualSubscriptionTaskSchema.parse(invalid)).toThrow();
+  });
+  it("confirma los metadatos exactos de la factura antes de mostrar el resultado", async () => {
+    const source = validated();
+    const good = issued();
+    expect(await mutateManualSubscriptionInvoice(client({ task: good, replayed: false }).value, source, "register_invoice", good.invoice, op)).toEqual(good);
+    for (const invoice of [
+      { ...good.invoice, invoice_number: "F-OTRA" },
+      { ...good.invoice, ticketbai_reference: "TBAI-OTRA" },
+      { ...good.invoice, pdf_sha256: "b".repeat(64) },
+      { ...good.invoice, issued_at: "2026-11-08T09:01:00Z" },
+      { ...good.invoice, pdf_object_key: "subscription-invoices/" + org + "/" + id + "/fc610000-0000-4000-8000-000000000042.pdf" },
+    ]) await expect(mutateManualSubscriptionInvoice(client({ task: { ...good, invoice }, replayed: false }).value, source, "register_invoice", good.invoice, op)).rejects.toThrow();
+  });
+  it("exige confirmación exacta de la declaración de envío y conserva la factura", async () => {
+    const source = issued();
+    const dispatch = { sent_at: "2026-11-08T10:00:00Z", recipient: buyer.email, reference: "Envío ficticio 001" };
+    const sent = { ...source, status: "sent_reported" as const, row_version: 4, dispatch };
+    expect(await mutateManualSubscriptionInvoice(client({ task: sent, replayed: false }).value, source, "report_sent", dispatch, op)).toEqual(sent);
+    for (const changed of [
+      { ...dispatch, sent_at: "2026-11-08T10:01:00Z" },
+      { ...dispatch, reference: "Otro envío ficticio" },
+    ]) await expect(mutateManualSubscriptionInvoice(client({ task: { ...sent, dispatch: changed }, replayed: false }).value, source, "report_sent", dispatch, op)).rejects.toThrow();
+  });
+  it("una incidencia posterior al envío conserva factura y declaración sin borrar el historial", async () => {
+    const source = { ...issued(), status: "sent_reported" as const, row_version: 4,
+      dispatch: { sent_at: "2026-11-08T10:00:00Z", recipient: buyer.email, reference: "Envío ficticio 001" } };
+    const reviewed = { ...source, row_version: 5, status: "needs_review", review_reason: "dispatch_failure" };
+    const result = await mutateManualSubscriptionInvoice(client({ task: reviewed, replayed: false }).value, source, "needs_review", { reason: "dispatch_failure" }, op);
+    expect(result.invoice).toEqual(source.invoice);
+    expect(result.dispatch).toEqual(source.dispatch);
+    await expect(mutateManualSubscriptionInvoice(
+      client({ task: { ...reviewed, review_reason: "amount_mismatch" }, replayed: false }).value,
+      source, "needs_review", { reason: "dispatch_failure" }, op,
+    )).rejects.toThrow("incidencia");
   });
   it("una incidencia cierra el circuito sin borrar el pago ni autorizar licencias", async () => {
     const next = { ...task(), status: "needs_review", row_version: 2, review_reason: "customer_data_invalid" };
