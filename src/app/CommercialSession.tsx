@@ -138,6 +138,7 @@ export function CommercialSession({
   if (access.is_admin)
     return (
       <AdminConsole
+        userId={user.id}
         email={user.email ?? "Administrador"}
         onSignOut={onSignOut}
         onDemo={onDemo}
