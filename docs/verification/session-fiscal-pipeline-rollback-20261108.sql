@@ -264,7 +264,8 @@ begin
 end;$notice_pipeline$;
 
 do $revocation$
-declare denied boolean; a uuid; b uuid;
+declare denied boolean; a uuid; b uuid; sid text;
+ task uuid:=current_setting('truckcontrol_test.session_fiscal_task')::uuid;
 begin
  select id into strict a from public.organizations where owner_id='fca10000-0000-4000-8000-000000000002';
  select id into strict b from public.organizations where owner_id='fca10000-0000-4000-8000-000000000003';
@@ -302,6 +303,11 @@ begin
  begin perform public.tc_admin_manual_subscription_invoices('capabilities');
  exception when insufficient_privilege then denied:=true;end;
  if not denied then raise exception 'session_fiscal_expired_operator_accepted';end if;
+ denied:=false;
+ begin perform public.tc_admin_manual_subscription_invoices('needs_review',task,2,
+  'fca40000-0000-4000-8000-000000000003','{"reason":"Incidencia sintetica de sesion expirada"}');
+ exception when insufficient_privilege then denied:=true;end;
+ if not denied then raise exception 'session_fiscal_expired_operator_mutation_accepted';end if;
  execute 'reset role';
  execute 'set local role service_role';
  denied:=false;
@@ -309,6 +315,36 @@ begin
   '{"actor_id":"fca10000-0000-4000-8000-000000000001","session_id":"fca11000-0000-4000-8000-000000000001"}');
  exception when insufficient_privilege then denied:=true;end;
  if not denied then raise exception 'session_fiscal_expired_document_operator_accepted';end if;
+ execute 'reset role';
+ -- Restore ONLY the synthetic session, then test malformed/absent/foreign
+ -- session claims independently of time-boxed expiry.
+ update auth.sessions set not_after=null
+  where id='fca11000-0000-4000-8000-000000000001';
+ foreach sid in array array[null::text,'not-a-valid-session-uuid','fca11000-0000-4000-8000-000000000003'] loop
+  perform set_config('request.jwt.claim.sub','fca10000-0000-4000-8000-000000000001',true);
+  perform set_config('request.jwt.claims',jsonb_strip_nulls(jsonb_build_object(
+   'sub','fca10000-0000-4000-8000-000000000001','role','authenticated','session_id',sid))::text,true);
+  execute 'set local role authenticated';
+  if public.tc_verified_session() is distinct from false then
+   raise exception 'session_fiscal_bad_session_verified';
+  end if;
+  denied:=false;
+  begin perform public.tc_admin_manual_subscription_invoices('capabilities');
+  exception when insufficient_privilege then denied:=true;end;
+  if not denied then raise exception 'session_fiscal_bad_session_operator_accepted';end if;
+  execute 'reset role';
+ end loop;
+ perform set_config('request.jwt.claim.sub','fca10000-0000-4000-8000-000000000001',true);
+ perform set_config('request.jwt.claims','{"sub":"fca10000-0000-4000-8000-000000000001","role":"authenticated","session_id":"fca11000-0000-4000-8000-000000000001"}',true);
+ delete from private.tc_admins where user_id='fca10000-0000-4000-8000-000000000001';
+ execute 'set local role authenticated';
+ if private.tc_is_admin() is distinct from false or public.tc_verified_session() is distinct from true then
+  raise exception 'session_fiscal_admin_role_withdrawal_not_effective';
+ end if;
+ denied:=false;
+ begin perform public.tc_admin_manual_subscription_invoices('capabilities');
+ exception when insufficient_privilege then denied:=true;end;
+ if not denied then raise exception 'session_fiscal_withdrawn_operator_accepted';end if;
  execute 'reset role';
 end;$revocation$;
 

@@ -32,9 +32,21 @@ it("verifica sesiones reales, aislamiento, CAS y pipeline fiscal cerrado con rol
       $jwt$;
       grant usage on schema auth,public to anon,authenticated,service_role;
     `);
+    let originalOperator: Array<Record<string, unknown>> | undefined;
+    const operatorMetadata = () => db.query<Record<string, unknown>>(
+      "select oid::text,proacl::text,provolatile::text,prosecdef,proconfig from pg_proc " +
+      "where oid=to_regprocedure('private.tc_manual_subscription_operator()')",
+    );
     for (const file of readdirSync("supabase/migrations").filter((f) => f.endsWith(".sql")).sort()) {
+      const original = (await db.query<{ present: boolean }>(
+        "select to_regprocedure('private.tc_manual_subscription_operator()') is not null " +
+        "and to_regprocedure('private.tc_actor_verified(uuid,boolean)') is null present",
+      )).rows[0].present;
+      if (original) originalOperator = (await operatorMetadata()).rows;
       await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
     }
+    expect(originalOperator).toHaveLength(1);
+    expect((await operatorMetadata()).rows).toEqual(originalOperator);
     // Ephemeral database preconditions only. The reviewed native SQL changes no
     // flags and refuses to execute against an unexpectedly enabled deployment.
     await db.exec(
