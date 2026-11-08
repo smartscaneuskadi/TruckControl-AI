@@ -41,3 +41,23 @@
     flex-wrap: wrap;
   }
 }
+@media (max-width: 420px) {
+  .topbar {
+    height: auto;
+    min-height: 61px;
+    flex-wrap: wrap;
+    padding-block: 8px;
+    gap: 6px;
+  }
+  .topbar .breadcrumb {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+  .topbar .topbar-right {
+    flex: 1 1 100%;
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
