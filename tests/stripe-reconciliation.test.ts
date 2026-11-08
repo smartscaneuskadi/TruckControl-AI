@@ -50,7 +50,7 @@ function fixture(recurring = false, renewal = false) {
       currency: "eur", paid_out_of_band: false, amount_paid: amount, total: amount,
       amount_remaining: 0, status_transitions: { paid_at: stamp - 10 },
       billing_reason: renewal ? "subscription_cycle" : "subscription_create",
-      customer: "cus_Synthetic", parent: { subscription_details: { subscription: "sub_Synthetic" } },
+      customer: "cus_Synthetic", parent: { subscription_details: { subscription: "sub_Synthetic", metadata: { ...metadata } } },
       lines: { has_more: false, data: [{ quantity: 1, price: { id: "price_Synthetic" },
         period: { start: periodStart, end: periodStart + 30 * 86400 } }] } },
     "subscriptions/sub_Synthetic": { id: "sub_Synthetic", livemode: false,
@@ -208,6 +208,17 @@ describe("Stripe fiscal reconciliation: signed canonical reads only", () => {
     const lines = g.records["invoices/" + g.invoiceId].lines as { data: { period: { start: number; end: number } }[] };
     lines.data[0].period.end = lines.data[0].period.start + 86400;
     await expect(run(g)).rejects.toMatchObject({ code: "payment_not_confirmed" });
+  });
+  it("does not reattribute a historical invoice after subscription metadata changes", async () => {
+    const f = fixture(true);
+    f.records["subscriptions/sub_Synthetic"].metadata = { ...metadata,
+      tc_user_id: "dd110000-0000-4000-8000-000000000099" };
+    await expect(run(f)).rejects.toMatchObject({ code: "correlation_missing" });
+  });
+  it("requires the invoice creation snapshot even if current subscription metadata exists", async () => {
+    const f = fixture(true);
+    f.records["invoices/" + f.invoiceId].parent = { subscription_details: { subscription: "sub_Synthetic" } };
+    await expect(run(f)).rejects.toMatchObject({ code: "correlation_missing" });
   });
   it("bounds provider responses and sanitizes provider exceptions", async () => {
     const f = fixture();

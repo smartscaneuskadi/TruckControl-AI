@@ -188,7 +188,14 @@ export async function reconcileStripeManualInvoicePayment(
     if (!id(subRef, "sub")) return fail("unsupported_payment");
     const subscription = await get("subscriptions/" + subRef);
     live(subscription);
-    const correlation = correlate(subscription.metadata);
+    // Stripe snapshots subscription metadata onto the invoice at creation.
+    // A later subscription profile change must not reattribute a historical invoice.
+    const correlation = correlate(obj(obj(invoice.parent).subscription_details).metadata);
+    const currentCorrelation = correlate(subscription.metadata);
+    if (currentCorrelation.request_id !== correlation.request_id ||
+        currentCorrelation.user_id !== correlation.user_id ||
+        currentCorrelation.company_id !== correlation.company_id)
+      return fail("correlation_missing");
     const items = obj(subscription.items);
     const item = obj(Array.isArray(items.data) && items.data.length === 1 ? items.data[0] : null);
     const price = obj(item.price);
