@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import en from "../../src/i18n/locales/en.json";
-import ro from "../../src/i18n/locales/ro.json";
-import fr from "../../src/i18n/locales/fr.json";
+import en from "../../src/i18n/locales/en.json" with { type: "json" };
+import ro from "../../src/i18n/locales/ro.json" with { type: "json" };
+import fr from "../../src/i18n/locales/fr.json" with { type: "json" };
 const dictionaries = { es: {} as Record<string, string>, en, ro, fr };
 for (const lang of ["es", "ro", "en", "fr"] as const) {
   test(`${lang}: menu, forms and preference survive reload without changing fleet data`, async ({
