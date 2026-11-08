@@ -1,3 +1,4 @@
+import { t } from "../i18n/runtime";
 import {
   ArrowDownLeft,
   ArrowRight,
@@ -386,7 +387,7 @@ function FleetDonut({ trucks }: { trucks: { status: string }[] }) {
         aria-label={`${trucks.length} camiones: ${Object.entries(truckStatuses)
           .map(
             ([key, label]) =>
-              `${trucks.filter((truck) => truck.status === key).length} ${label.toLowerCase()}`,
+              `${trucks.filter((truck) => truck.status === key).length} ${t(label).toLowerCase()}`,
           )
           .join(", ")}`}
       >
