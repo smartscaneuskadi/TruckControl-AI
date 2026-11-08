@@ -8,7 +8,7 @@
 -- This is verification, never authority from mutable JWT/user metadata.
 create function private.tc_actor_verified(p_user uuid,p_require_session boolean)
 returns boolean language plpgsql stable security definer set search_path='' as $actor_verified$
-declare sid text;
+declare sid uuid;
 begin
   if p_user is null or p_require_session is null then return false; end if;
   if not exists(select 1 from auth.users u where u.id=p_user
@@ -18,9 +18,16 @@ begin
   end if;
   if p_require_session then
     if p_user is distinct from (select auth.uid()) then return false; end if;
-    sid:=nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'session_id';
+    begin
+      sid:=(nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'session_id')::uuid;
+    exception when invalid_text_representation then return false;
+    end;
     if sid is null or to_regclass('auth.sessions') is null then return false; end if;
-    if not exists(select 1 from auth.sessions s where s.id::text=sid and s.user_id=p_user) then
+    -- UUID equality uses the managed sessions primary key. not_after is an
+    -- optional managed Auth field; absent/NULL means no time-boxed expiry.
+    if not exists(select 1 from auth.sessions s where s.id=sid and s.user_id=p_user
+      and (nullif(to_jsonb(s)->>'not_after','') is null
+        or (to_jsonb(s)->>'not_after')::timestamptz>now())) then
       return false;
     end if;
   end if;
@@ -30,6 +37,21 @@ revoke all on function private.tc_actor_verified(uuid,boolean) from public,anon,
 -- Intentionally NO client grant. Existing definer wrappers call this predicate.
 -- p_require_session=false is reserved for an explicitly bound internal user;
 -- it still denies unconfirmed, banned and deleted users.
+
+-- Parameterless identity checker for user-triggered Edge requests. It does
+-- not require a company/profile/license, so verified onboarding remains valid.
+create function private.tc_verified_session()
+returns boolean language sql stable security definer set search_path='' as $verified_session$
+  select private.tc_actor_verified((select auth.uid()),true);
+$verified_session$;
+revoke all on function private.tc_verified_session() from public,anon,authenticated;
+grant execute on function private.tc_verified_session() to authenticated;
+create function public.tc_verified_session()
+returns boolean language sql stable security invoker set search_path='' as $verified_session_public$
+  select private.tc_verified_session();
+$verified_session_public$;
+revoke all on function public.tc_verified_session() from public,anon,authenticated;
+grant execute on function public.tc_verified_session() to authenticated;
 
 create or replace function private.tc_is_admin()
 returns boolean language plpgsql stable security definer set search_path='' as $admin_identity$

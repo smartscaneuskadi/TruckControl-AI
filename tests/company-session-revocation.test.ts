@@ -144,6 +144,13 @@ describe("company JWT session revocation: real-session isolated regression",()=>
     const a=await fixture(),b=await fixture();
     expect(await rows(a,b.sid)).toEqual({trucks:0,income:0,organizations:0});
   });
+  it("denies malformed and expired session identifiers",async()=>{
+    const malformed=await fixture();
+    expect(await rows(malformed,"not-a-session-uuid")).toEqual({trucks:0,income:0,organizations:0});
+    const expired=await fixture();
+    await db.query("update auth.sessions set not_after=now()-interval '1 minute' where id=$1",[expired.sid]);
+    expect(await rows(expired)).toEqual({trucks:0,income:0,organizations:0});
+  });
   it("does not treat an authenticated JWT without session_id as a trusted legacy session",async()=>{
     const f=await fixture();
     expect(await rows(f,null)).toEqual({trucks:0,income:0,organizations:0});
