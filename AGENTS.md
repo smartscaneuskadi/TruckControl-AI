@@ -1,3 +1,9 @@
+# Correo real publicado · Sites37 · 08/11/2026
+
+Vigente: https://truckcontrolai.com, fuente8c13c24172758546a40e76ffe7e484348fb2124a, deploymentappgdep_6af0d5f2a8b08191b89c782ebfbd7bf7 SUCCEEDED. PR95 integrado. Sites36 guardado pero nunca publicado. Main conserva manifiesto DEMO: usar checkout de producción.
+
+Correo conecta cuentas mediante IMAP993/SMTP465 con TLS estricto y sesión humana verificada. Contraseñas sólo en memoria temporal; sin WebStorage/BD/logs. Gmail OAuth existente conservado; Microsoft OAuth pendiente. Pruebas TLS nativas Yahoo/Porkbun correctas, 7 fuentes Edge iguales; no se autenticó ningún buzón ni se envió correo real. CI final y fuente exacta SUCCESS,1597 controles por ejecución,64originales/11hashes intactos. Recibo docs/verification/personal-mail-connectors-published-20261108.json. Sin DDL/compras/IA nueva, cobrosOFF. La siguiente entrega añade cuatro idiomas en la interfaz.
+
 # TruckControl AI — continuidad y publicación
 
 ## Correo unificado publicado · Sites35 · 08/11/2026

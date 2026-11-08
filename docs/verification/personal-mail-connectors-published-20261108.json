@@ -1,0 +1,47 @@
+{
+  "published": true,
+  "url": "https://truckcontrolai.com",
+  "version": 37,
+  "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_6fc4c9572014819182529cbd14eb197f",
+  "deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
+  "source_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
+  "deployed_at": "2026-11-08T20:05:21.366881+00:00",
+  "pr": 95,
+  "merge_commit": "a0922833e1bcf145b8d674db31905f09c1be22b5",
+  "ci_runs_success": [
+    42516696986,
+    42516776344,
+    42516776476
+  ],
+  "checks_per_execution": 1597,
+  "supabase_project": "kkkemaycedexymrpaqtp",
+  "personal_mail_edge_version": 1,
+  "native_sources_equal": 7,
+  "native_unauthenticated_request_denied": 401,
+  "native_tls_probe": {
+    "yahoo": {
+      "imap": true,
+      "smtp": true
+    },
+    "porkbun": {
+      "imap": true,
+      "smtp": true
+    }
+  },
+  "google_browser_configured": true,
+  "browser_verified": {
+    "published_real_connection_form": true,
+    "porkbun_service_check": true,
+    "actual_mailbox_login": false,
+    "real_send": false
+  },
+  "limits": [
+    "IMAP993 and SMTP465 compatible accounts require user authorisation",
+    "Microsoft OAuth remains pending",
+    "Gmail public OAuth review separate"
+  ],
+  "credentials_stored": false,
+  "migrations_changed": false,
+  "paid_model_calls": 0,
+  "real_sends": 0
+}

@@ -1,3 +1,4 @@
+import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownLeft,
@@ -482,6 +483,7 @@ function Workspace() {
             <strong>{currentPage}</strong>
           </div>
           <div className="topbar-right">
+            <LanguageSwitcher />
             <button
               className="theme-launcher"
               aria-label="Cambiar apariencia"
