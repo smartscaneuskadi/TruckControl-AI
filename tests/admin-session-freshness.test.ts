@@ -68,9 +68,18 @@ beforeAll(async () => {
     "create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}'::jsonb) $$;" +
     "grant usage on schema public,auth to anon,authenticated;",
   );
-  for (const file of readdirSync("supabase/migrations").filter((f) => f.endsWith(".sql")).sort())
+  for (const file of readdirSync("supabase/migrations").filter((f) => f.endsWith(".sql")).sort()) {
+    // Capture the original routines immediately before the first verifier
+    // installation, even when it is already part of the real migration chain.
+    const legacy = (await db.query<{ present: boolean }>(
+      "select to_regprocedure('private.tc_actor_verified(uuid,boolean)') is null " +
+      "and to_regprocedure('private.tc_is_admin()') is not null " +
+      "and to_regprocedure('private.tc_admin_control(text,jsonb)') is not null present",
+    )).rows[0].present;
+    if (legacy) routineBefore = (await routineMetadata()).rows;
     await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
-  routineBefore = (await routineMetadata()).rows;
+  }
+  if (!routineBefore) throw Error("missing original admin routine metadata");
   // Standalone proposal branch has only schema62. After composite63 lands,
   // exercise the real migrated routines instead of patching over a regression.
   const installed = (await db.query<{ present: boolean }>(
