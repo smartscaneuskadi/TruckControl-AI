@@ -18,7 +18,8 @@ create table private.tc_manual_subscription_invoice_tasks (
   status text not null default 'awaiting_issue' check (status='awaiting_issue'),
   row_version bigint not null default 1 check (row_version=1),
   created_at timestamptz not null default now(),
-  constraint tc_manual_subscription_payment_unique unique (provider_account_id,provider_payment_id)
+  constraint tc_manual_subscription_payment_unique unique (provider_account_id,provider_payment_id),
+  constraint tc_manual_subscription_payment_global_unique unique (provider_payment_id)
 );
 create index tc_manual_subscription_pending_idx
   on private.tc_manual_subscription_invoice_tasks (created_at,id);
