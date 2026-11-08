@@ -316,7 +316,7 @@ export function ProviderSetup() {
       <Button
         variant="secondary"
         icon={RefreshCw}
-        disabled={busy || !status?.google.configured}
+        disabled={busy || !status?.google.vault_available}
         onClick={() => void checkStoredConfiguration()}
       >
         Comprobar credenciales con Google
