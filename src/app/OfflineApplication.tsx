@@ -35,7 +35,9 @@ class OfflineFleetRepository implements FleetRepository {
 export function OfflineApplication({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<VaultSession | null>(null),
     [payload, setPayload] = useState<VaultPayload | null>(null),
-    [entry, setEntry] = useState(false);
+    [entry, setEntry] = useState(false),
+    [online, setOnline] = useState(navigator.onLine),
+    [notice, setNotice] = useState("");
   const [scopes, setScopes] = useState<string[]>([]),
     [selected, setSelected] = useState(""),
     [passphrase, setPassphrase] = useState(""),
@@ -70,6 +72,15 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
     };
   }, []);
   useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
+  useEffect(() => {
     if (!payload || !session || !shell.current || !banner.current) return;
     const resize = () =>
       shell.current?.style.setProperty(
@@ -99,6 +110,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
   }
   function openEntry() {
     if (running.current) return;
+    setNotice("");
     setEntry(true);
     setError("");
     setPassphrase("");
@@ -166,6 +178,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
       currentSession.current = next;
       setSession(next);
       setPayload(value);
+      setNotice("");
       setEntry(false);
       setPassphrase("");
       setRevision((n) => n + 1);
@@ -201,9 +214,13 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
         if (active(version, controller) && currentSession.current === current) setPayload(value);
       } catch {
         if (active(version, controller) && currentSession.current === current) {
+          const denied = errorMessage(e).includes("ya no permite el acceso");
           lock();
-          setEntry(true);
-          setError(errorMessage(e));
+          // Public notice only: a remounted account may emit session-exit
+          // again. It must not erase the denial or restore any private entry.
+          setNotice(denied
+            ? "Esta empresa ya no permite el acceso. La copia permanece cifrada y bloqueada hasta verificar de nuevo tus permisos."
+            : "La copia está bloqueada. Conéctate y verifica tus permisos antes de volver a abrirla. Los datos cifrados se conservan.");
         }
       }
     } finally {
@@ -310,7 +327,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
       ) : (
         children
       )}
-      {!offline && !navigator.onLine && (
+      {!offline && !online && (
         <Button
           className="offline-entry-button"
           variant="secondary"
@@ -320,6 +337,14 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
           Abrir copia sin conexión
         </Button>
       )}
+      {notice && <Modal
+        title="Copia bloqueada"
+        subtitle="Aviso de acceso sin datos de empresa"
+        onClose={() => setNotice("")}
+      >
+        <p role="alert">{notice}</p>
+        <div className="modal-actions"><Button onClick={() => setNotice("")}>Entendido</Button></div>
+      </Modal>}
       {entry && (
         <Modal
           title="Acceso sin conexión"
