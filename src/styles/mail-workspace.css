@@ -63,3 +63,28 @@
 .mail-provider-view[hidden] {
   display: none;
 }
+.mail-provider-card select {
+  width: 100%;
+  min-height: 44px;
+}
+.mail-provider-card input {
+  min-height: 44px;
+  padding: 10px 12px;
+  color: var(--theme-fg);
+  background: var(--theme-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  font: inherit;
+}
+.mail-consent {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  line-height: 1.6;
+}
+.mail-provider-card .mail-consent input {
+  width: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  margin-top: 3px;
+}
