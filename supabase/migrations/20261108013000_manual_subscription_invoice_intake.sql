@@ -18,6 +18,14 @@ create table private.tc_manual_subscription_invoice_tasks (
   buyer_tax_id text not null check (char_length(btrim(buyer_tax_id)) between 3 and 30),
   buyer_address text not null check (char_length(btrim(buyer_address)) between 5 and 240),
   buyer_email text not null check (char_length(btrim(buyer_email)) between 3 and 320),
+  -- Provenance is NOT checkout acceptance: the buyer snapshot is read from
+  -- the live customer profile during intake. Require independent fiscal
+  -- verification by an operator before invoice issue.
+  buyer_snapshot_origin text not null default 'profile_at_intake'
+    check (buyer_snapshot_origin='profile_at_intake'),
+  buyer_request_created_at timestamptz not null,
+  buyer_profile_updated_at timestamptz not null,
+  buyer_profile_changed_after_request boolean not null,
   plan_id text not null,
   plan_revision bigint not null,
   net_cents integer not null check (net_cents between 100 and 100000000),
@@ -138,12 +146,15 @@ begin
 
     provider_account_id,provider_payment_id,request_id,buyer_user_id,
     buyer_company_id,buyer_company_name,buyer_tax_id,buyer_address,buyer_email,
+    buyer_request_created_at,buyer_profile_updated_at,buyer_profile_changed_after_request,
     plan_id,plan_revision,net_cents,vat_rate_bps,vat_cents,
     amount_cents,currency,paid_at
   ) values (
     p_account,p_payment,p_request,request_row.user_id,
     p_company,customer_row.company_name,customer_row.tax_id,
     customer_row.address,customer_row.email,
+    request_row.created_at,customer_row.updated_at,
+    customer_row.updated_at>request_row.created_at,
     request_row.plan_id,request_row.plan_revision,
     request_row.net_cents,request_row.vat_rate_bps,request_row.vat_cents,
     p_amount,'EUR',p_paid_at
