@@ -50,13 +50,39 @@ jobs:
           "$RUNNER_TEMP/truckcontrol-gradle/gradle-9.9.0/bin/gradle" --no-daemon --console=plain :app:testDebugUnitTest :app:lintRelease :app:assembleDebug :app:bundleRelease
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/debug/app-debug.apk
           python3 - <<'PY'
-          import hashlib, json, pathlib, zipfile
+          import hashlib, json, os, pathlib, subprocess, xml.etree.ElementTree as ET, zipfile
           apk = pathlib.Path("app/build/outputs/apk/debug/app-debug.apk")
           aab = pathlib.Path("app/build/outputs/bundle/release/app-release.aab")
           with zipfile.ZipFile(aab) as archive:
               if any(name.upper().startswith("META-INF/") and name.upper().endswith((".RSA", ".DSA", ".EC")) for name in archive.namelist()):
                   raise SystemExit("Unexpected release signing material")
+          reports = list(pathlib.Path("app/build/test-results/testDebugUnitTest").glob("TEST-*.xml"))
+          suites = [ET.parse(p).getroot() for p in reports]
+          tests = sum(int(s.get("tests", 0)) for s in suites)
+          failures = sum(int(s.get("failures", 0)) + int(s.get("errors", 0)) for s in suites)
+          skipped = sum(int(s.get("skipped", 0)) for s in suites)
+          if tests < 5 or failures or skipped:
+              raise SystemExit("Android security tests missing, failing or skipped")
+          sdk = pathlib.Path(os.environ["ANDROID_HOME"])
+          analyzers = sorted(sdk.glob("cmdline-tools/*/bin/apkanalyzer"))
+          if not analyzers:
+              raise SystemExit("Installed APK manifest inspector unavailable")
+          printed = subprocess.run([str(analyzers[-1]), "manifest", "print", str(apk)], check=True, capture_output=True, text=True).stdout
+          manifest = ET.fromstring(printed)
+          ns = "{http://schemas.android.com/apk/res/android}"
+          package = manifest.get("package")
+          application = manifest.find("application")
+          sdk_levels = manifest.find("uses-sdk")
+          permissions = sorted({p.get(ns + "name") for p in manifest if p.tag.startswith("uses-permission")})
+          allowed = {"android.permission.INTERNET", "com.truckcontrolai.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}
+          if package != "com.truckcontrolai.app.debug" or set(permissions) - allowed:
+              raise SystemExit("Unexpected Android package or requested permissions")
+          if application is None or application.get(ns + "allowBackup") != "false" or application.get(ns + "usesCleartextTraffic") != "false":
+              raise SystemExit("Compiled Android network/backup safeguards missing")
+          if sdk_levels is None or sdk_levels.get(ns + "minSdkVersion") != "24" or sdk_levels.get(ns + "targetSdkVersion") != "36":
+              raise SystemExit("Compiled Android API levels differ from verified policy")
           report = {"commercial_signed": False, "play_published": False, "physical_device_verified": False,
+                    "unit_tests": tests, "failures": failures, "skipped": skipped, "permissions": permissions, "compiled_manifest_verified": True,
                     "files": [{"name":p.name,"sha256":hashlib.sha256(p.read_bytes()).hexdigest(),"bytes":p.stat().st_size} for p in (apk,aab)]}
           pathlib.Path("app/build/outputs/android-candidate.json").write_text(json.dumps(report,indent=2))
           print(json.dumps(report))
