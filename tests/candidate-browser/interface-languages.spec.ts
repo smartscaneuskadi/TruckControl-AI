@@ -20,9 +20,15 @@ for (const [lang, dict] of Object.entries({ en, ro, fr }))
     ).toBeVisible();
     await page.getByRole("button", { name: tr("Entrar"), exact: true }).click();
     await expect(
-      page.getByLabel(tr("Correo electrónico"), { exact: true }),
+      page.getByRole("heading", {
+        name: tr("Acceso comercial en preparación"),
+        exact: true,
+      }),
     ).toBeVisible();
     await expect(
-      page.getByLabel(tr("Contraseña"), { exact: true }),
+      page.getByRole("button", {
+        name: tr("Volver a la entrada"),
+        exact: true,
+      }),
     ).toBeVisible();
   });
