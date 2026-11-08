@@ -25,6 +25,8 @@ La entrega actual es una PWA. Android firmado/Google Play aún no están acredit
 
 ## Lanzamiento comercial en curso
 
+Supabase62 y el registro fiscal están aceptados con rollback; proveedores, margen por viaje, copiasv4 y panel fiscal están integrados en main pero todavía sin nueva publicación del frontend. CI del candidato:1.292 controles, originales64/11hashes conservados. [Aceptación nativa](docs/verification/manual-fiscal-native-20261108.json).
+
 Proveedores y margen por viaje con costes vinculados ya pasan aceptación nativa Supabase; sus pantallas y copias cifradas v4 están en PR42, pendientes de promover al frontend público. El candidato Android pasa compilación, lint, cinco pruebas JVM y revisión de su manifiesto; aún no tiene firma comercial, aceptación física ni publicación Play. Faltan completar emisión/entrega fiscal manual, cobros, revisión pública Google y recuperación integral alojada. Gmail personal y recepción empresarial son flujos diferentes; un consentimiento individual no sustituye la aprobación pública de Google.
 
 [Avance](PROGRESS.md) · [Plan](TODO.md) · [Dependencias](BLOCKERS.md) · [Pruebas](TEST_RESULTS.md) · [Despliegue](DEPLOYMENT.md).

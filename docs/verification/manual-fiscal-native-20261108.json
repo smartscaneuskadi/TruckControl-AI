@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-11-08T10:36:35Z",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "project_ref": "kkkemaycedexymrpaqtp",
+  "pr": 60,
+  "implementation_head": "033b94ffb41df89bd03be19a08e8c2e1c94d5ef0",
+  "merge_commit": "4d6b09ee806ca92a90da620fb9d47123b6398bc5",
+  "ci": {
+    "runs": [
+      42469487926,
+      42469491382
+    ],
+    "result": "success",
+    "unit_sql": 941,
+    "unit_files": 94,
+    "python": 45,
+    "demo": 72,
+    "company": 50,
+    "saas": 144,
+    "candidate": 14,
+    "production": 20,
+    "public_profiles": 6,
+    "total": 1292,
+    "original_tests": 64,
+    "retained_hashes": 11
+  },
+  "migration": {
+    "local_version": "20261108013000",
+    "remote_version": "20261108101437",
+    "name": "manual_subscription_invoice_intake",
+    "remote_count": 62,
+    "git_blob": "7504aca678710771ce550430cab5ab2b5f76068a",
+    "sha256": "7323ded662cf8ec4560662a86c9224d21eb3d45ad4689caa919cf2638672da7b",
+    "source_matches_native": true,
+    "immutable": true
+  },
+  "native_acceptance": {
+    "contract": "manual-fiscal-rollback-v1",
+    "result": "passed",
+    "synthetic_companies": 2,
+    "provider_calls": 0,
+    "real_emails": 0,
+    "cleanup": {
+      "contract": "manual-fiscal-rollback-cleanup-v1",
+      "fixture_users_remaining": 0,
+      "fixture_sessions_remaining": 0,
+      "fixture_admins_remaining": 0,
+      "fixture_requests_remaining": 0,
+      "fixture_tasks_remaining": 0,
+      "fixture_events_remaining": 0,
+      "fixture_actions_remaining": 0,
+      "fixture_subscriptions_remaining": 0,
+      "fixture_invoices_remaining": 0
+    },
+    "existing_business_and_flags_unchanged": true,
+    "concurrency_scope": "stale_writer_cas_only",
+    "direct_client_dml": false,
+    "operator_checks": [
+      "confirmed_email",
+      "not_banned_or_deleted",
+      "live_global_role",
+      "live_session_when_claimed",
+      "shared_locks",
+      "recheck_after_task_lock"
+    ],
+    "new_security_findings": 0
+  },
+  "production": {
+    "url": "https://truckcontrolai.com",
+    "frontend_version": 32,
+    "frontend_app_version": "0.5.20-rc.1",
+    "new_frontend_published": false,
+    "rollback": 31,
+    "demo": 6,
+    "payments_enabled": false,
+    "fiscal_guard": false
+  },
+  "next_cli_template": {
+    "cli_version": "3.0.0",
+    "official_registry_integrity": "sha512-cR4S5e3nygMaBShbbt6FOiMumtrFJjwdKMXMimC1y7FpxITlwLv36BveaifQZ8aY+v1u+w8oYANU2H72Y4ibWA==",
+    "generated_path": "supabase/migrations/20261108100352_manual_subscription_payment_and_documents.sql",
+    "template_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linked_project": false,
+    "database_queries": 0,
+    "remote_migrations_applied": 0,
+    "workflow_commit": "a243eb7f2d51ded4c6b838d88eb14953e3af19e1",
+    "run": 42469793645,
+    "job": 128697658000,
+    "template_is_not_applied_migration": true
+  },
+  "budget": {
+    "ceiling_eur": 200,
+    "new_purchases_eur": 0,
+    "new_model_calls": 0,
+    "actual_total_eur": null,
+    "actual_remaining_eur": null,
+    "provider_bills_reconciled": false,
+    "ai_monthly_usd": 10,
+    "company_monthly_calls": 100
+  },
+  "pending": [
+    "Verified frontend packaging and publication: ERS executor unavailable.",
+    "Atomic Stripe bridge, private PDF and notice workers remain disabled candidates.",
+    "Real sandbox/payment, GDTaller invoice and delivery acceptance; fiscal/legal approval.",
+    "Google public/restricted-scope review and actual company Gmail authorization.",
+    "Managed restore and physical Android/Windows acceptance."
+  ]
+}
