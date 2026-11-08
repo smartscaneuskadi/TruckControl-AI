@@ -1,0 +1,39 @@
+name: TruckControl production package only (NO DEPLOY)
+
+on:
+  push:
+    branches: ["deploy/cargotrack-production-*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-production:
+    if: startsWith(github.ref, 'refs/heads/deploy/cargotrack-production-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check packaging script syntax
+        run: node --check scripts/package-production.mjs
+      - name: Build exact production source using only its existing public client connection
+        run: node scripts/package-production.mjs
+      - name: Save UNPUBLISHED production package and SHA256 receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: unpublished-production-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/truckcontrol-production-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/truckcontrol-production-package.json
+          if-no-files-found: error
+          retention-days: 7
