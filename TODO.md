@@ -1,5 +1,22 @@
 # Plan de ejecución comercial
 
+## Prioridad CargoTrack/logout · 08/11/2026
+
+- [x] Reutilizar issue84, rama y PR85, conservando3057a37.
+- [x] Acceso oficial HTTPS en otra pestaña, sin credenciales ni API CargoTrack.
+- [x] Cierre SDK, antidoble, mensaje de fallo remoto y regreso al acceso.
+- [x] Bloqueo de estados privados, BFCache, operaciones tardías y copia abierta en otra pestaña; conservar cifrado/cola.
+- [x] Ambos CI de fuente821ba13:1.558 controles;64 originales/11hashes.
+- [x] Paquete conectado de producción89100d9 y recibo SHA256, sin publicar.
+- [ ] Integrar PR85 al head cuyos checks estén correctos.
+- [ ] Recuperar ejecutor operativo: la reconexión comunicada no resolvió No usable execution environment.
+- [ ] Enviar fuente exacta al Git de Sites y publicar el mismo archivo en el proyecto de producción.
+- [ ] Verificar HTTPS/CargoTrack/logout/PWA en la web nueva; conservar32/31/demo6.
+- [ ] Pruebas físicas Android/Windows cuando existan dispositivos autorizados.
+
+No abrir cobros ni promover los PR82/83/87/88 dentro de esta entrega. [Procedimiento](docs/CARGOTRACK.md).
+
+
 ## Estado vigente · 8 de noviembre de 2026
 
 Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 quedó integrado en71c72; PR78 incorporó también los ensayos PostgreSQL en main `1c4c44d32067fb0d2e885a0cec5020b25d361323`, tras los CI completos de los heads7d411 y f3205. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.

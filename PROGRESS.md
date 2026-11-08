@@ -1,5 +1,14 @@
 # TruckControl AI — avance comercial
 
+## CargoTrack y cerrar sesión · 08/11/2026
+
+Implementación y correcciones de seguridad verificadas en `821ba13d2f2dcf68fc0fd1990c0e7190d304f7e2`, PR85 existente. Ambos CI completos pasan **1.558 controles**; incluye dos pestañas, BFCache, expiración/denegación, conservación de la cola cifrada, dos temas y Android/Windows emulados. Originales64/11hashes conservados.
+
+Paquete de producción conectado `89100d9` generado en Actions42496353868/artifact13623149793, sin publicar ni activar cobros. Producción32, respaldo31 y demo6 conservados. El ejecutor sigue fallando tras la reconexión del titular; la transmisión de la fuente por Git de Sites queda pendiente. No se ha creado otro sitio Netlify.
+
+[Entrega y procedimientos](docs/CARGOTRACK.md) · [recibo verificable](docs/verification/cargotrack-logout-20261108.json) · [PR85/checks](https://github.com/smartscaneuskadi/TruckControl-AI/pull/85/checks). Los commits posteriores de registro no modifican la aplicación de821ba13; comprobar sus propios checks antes de integrar.
+
+
 ## Estado vigente · 8 de noviembre de 2026
 
 Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 quedó integrado en71c72; PR78 incorporó también los ensayos PostgreSQL en main `1c4c44d32067fb0d2e885a0cec5020b25d361323`, tras los CI completos de los heads7d411 y f3205. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.

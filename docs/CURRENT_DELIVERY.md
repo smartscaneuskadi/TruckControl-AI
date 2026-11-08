@@ -1,5 +1,16 @@
 # TruckControl AI — entrega vigente, 8 de noviembre de 2026
 
+## CargoTrack/logout · entrega84/PR85 · 08/11/2026
+
+**Aplicación verificada, publicación pendiente de ejecutor operativo.** Fuente821ba13: ambos CI42495957998/42495963203 SUCCESS,1.558controles/ejecución. Revisión6723621040. Conserva64 originales/11hashes y el commit3057a37.
+
+CargoTrack: menú camión/GPS, dos temas y acceso oficial HTTPS/noopener/noreferrer en pestaña independiente. Sin contraseñas/API/sincronización. Logout: SDK Supabase, promesa única, aviso de cierre local cuando servidor no confirma, regreso al acceso, protección Atrás/BFCache, cierre de claves/operaciones tardías y copia abierta en otra pestaña. Cifrado/outbox/datos de empresa se conservan. No hay cambios de RLS, DDL, credenciales, precios, IA o cobros.
+
+Release89100d9, rama deploy/cargotrack-production-20261108, paquete conectado verificado por42496353868/artifact13623149793: **NO PUBLICADO/NO ENVIADO A SITES**. La web continúa Sites32/0.5.20-rc.1 en https://truckcontrolai.com; respaldo31 y demo6 disponibles. El ejecutor sigue No usable execution environment después de la reconexión del titular; Netlify no contiene TruckControl. No inventar un despliegue ni exportar credenciales de conector a Actions.
+
+Leer [CargoTrack y salida segura](CARGOTRACK.md), [recibo](verification/cargotrack-logout-20261108.json) y DEPLOYMENT.md. Esperar checks del head documental final antes de integrar PR85; desplegar con fuente/archivo exactos al recuperar ejecución. Hardware físico no disponible; emulación y transportes ficticios no prueban login CargoTrack real ni lanzamiento comercial completo. PR82/83/87/88 se conservan fuera de esta entrega.
+
+
 ## Estado vigente · 8 de noviembre de 2026
 
 Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 quedó integrado en71c72; PR78 incorporó también los ensayos PostgreSQL en main `1c4c44d32067fb0d2e885a0cec5020b25d361323`, tras los CI completos de los heads7d411 y f3205. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.

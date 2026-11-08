@@ -1,5 +1,14 @@
 # Registro de reanudación — 31 de octubre de 2026
 
+## Entrega CargoTrack/logout · 08/11/2026
+
+Fuente821ba13, PR85, verificada por dos CI SUCCESS de1.558controles cada uno. Incluye salida oficial SDK, rutas privadas/BFCache, claves y cola offline, denegación explícita y cierre desde otra pestaña;16 recorridos nuevos y64 originales/11hashes preservados. Revisión6723621040 sin bloqueante crítico en este alcance.
+
+Release89100d9 sólo prepara producción y su archivo(42496353868/artifact13623149793). El archivo es conectado, conserva cobrosOFF y NO está publicado ni enviado al Git de Sites. Producción32, respaldo31 y demo6 siguen disponibles. La reconexión informada no resolvió No usable execution environment; continuar desde GitHub/CI, sin duplicar proyectos ni trasladar secretos.
+
+[Recibo verificable](verification/cargotrack-logout-20261108.json) y [procedimiento](CARGOTRACK.md). Los avances independientes PR82/83/87/88 permanecen conservados. No se repite la aceptaciónIA37 ni se modifica Supabase en esta entrega.
+
+
 ## Estado vigente · 8 de noviembre de 2026
 
 Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 quedó integrado en71c72; PR78 incorporó también los ensayos PostgreSQL en main `1c4c44d32067fb0d2e885a0cec5020b25d361323`, tras los CI completos de los heads7d411 y f3205. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.

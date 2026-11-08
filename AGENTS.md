@@ -1,5 +1,18 @@
 # TruckControl AI — continuidad y publicación
 
+## Entrega84/PR85 · CargoTrack y salida segura · 08/11/2026
+
+Fuente de aplicación verificada `821ba13d2f2dcf68fc0fd1990c0e7190d304f7e2`: ambos CI42495957998/42495963203 SUCCESS, **1.558 comprobaciones por ejecución**, sin sumar reejecuciones. Revisión de seguridad6723621040. Este bloque se refiere a CargoTrack/logout; no declara completado el lanzamiento comercial general.
+
+Código en la rama existente feature/cargotrack-access-84/PR85. CargoTrack sólo enlaza HTTPS oficial en pestaña segura: sin contraseña, API ni sincronización. Salida por SDK Supabase con promesa única, aviso persistente si sólo se confirma cierre local, rutas privadas/BFCache y claves/copias offline protegidas también ante logout desde otra pestaña. No modificar los64 casos originales/11hashes ni relajar Axe.
+
+**Publicación nueva bloqueada:** el ejecutor sigue devolviendo No usable execution environment después de la reconexión comunicada por el titular. GitHub permite escribir y Actions prueba/compila. Producción continúa Sites32/0.5.20-rc.1; respaldo31 y demo6 verificados. Netlify no contiene TruckControl: no crear duplicados ni mover DNS. No exportar credenciales de Sites a Actions para sortear el bloqueo.
+
+Paquete conectado preparado en deploy/cargotrack-production-20261108/`89100d92c0b44d2b86c1495faffcab2944abacbb`, workflow42496353868 SUCCESS, artifact13623149793. Es **UNPUBLISHED**, no fuente enviada a Sites. Sólo su rama tiene el manifiesto de producción; main conserva el de demo. Antes de desplegar, checks del head final, PR85 integrado, fuente exacta por Git oficial, archivo correspondiente y comprobación HTTPS/recorridos posteriores. Ver docs/CARGOTRACK.md y docs/verification/cargotrack-logout-20261108.json.
+
+No hay DDL, cambios de permisos/cuotas/credenciales ni nuevas llamadas IA/compras por esta entrega. Conservar63 migraciones aplicadas y #37. Segundo conductor(PR87), incidencias backend(PR88), panel(PR83) y pruebas Stripe(PR82) permanecen separados; no incluirlos en esta publicación.
+
+
 ## Estado vigente · 8 de noviembre de 2026
 
 Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 quedó integrado en71c72; PR78 incorporó también los ensayos PostgreSQL en main `1c4c44d32067fb0d2e885a0cec5020b25d361323`, tras los CI completos de los heads7d411 y f3205. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.

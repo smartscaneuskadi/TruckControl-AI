@@ -1,5 +1,27 @@
 # Evidencias de pruebas
 
+## CargoTrack/logout · fuente821ba13 · 08/11/2026
+
+CI push[42495957998](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42495957998) y PR[42495963203](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42495963203): **SUCCESS**,1.558 controles por ejecución, sin sumar duplicados.
+
+| Batería | Correctos |
+| --- | ---: |
+| Unitarias/SQL(111 archivos) |1179 |
+| Python |45 |
+| Demo navegador |72 |
+| Empresas navegador |50 |
+| SaaS navegador |172 |
+| Candidata navegador |14 |
+| Producción navegador aislado |20 |
+| HTTPS/navegador público(version32 vigente) |6 |
+
+Instalación bloqueada npm ci y npm run check(typecheck/test/build) correctos. Retenidos64 casos iniciales y11hashes; no se eliminan aserciones ni se relaja Axe. Vault11 y sync8 cubren descifrado/IDB tardíos, outbox, rechazo42501/401/403 y fallos transitorios. Los16 recorridos nuevos(8×2plataformas) comprueban CargoTrack, SDK/error local/remoto, antidoble, Atrás/recarga/BFCache, copia cifrada y logout entre dos pestañas. SDK real con transporte ficticio; sin credenciales ni operaciones CargoTrack reales.
+
+Release89100d9: paquete[42496353868](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42496353868) SUCCESS; PostgreSQL aislado42496353729 SUCCESS(69), Android42496353748 SUCCESS(5JVM/0fallos/0omisiones,lint,APKdebug yAAB sin firma comercial). No se suman estos controles a la batería de1558 ni se presentan como dispositivos físicos, Play o restauración gestionada.
+
+Revisión independiente[6723621040](https://github.com/smartscaneuskadi/TruckControl-AI/pull/85#issuecomment-6723621040). Paquete todavía NO publicado: los seis checks públicos siguen verificando la web32 existente. [Recibo](docs/verification/cargotrack-logout-20261108.json).
+
+
 ## Estado vigente · 8 de noviembre de 2026
 
 Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 quedó integrado en71c72; PR78 incorporó también los ensayos PostgreSQL en main `1c4c44d32067fb0d2e885a0cec5020b25d361323`, tras los CI completos de los heads7d411 y f3205. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.
