@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "local_empty_template_generated_not_applied",
+  "intended_migration": 64,
+  "generated_by_cli": {
+    "cli_version": "3.0.0",
+    "official_registry_integrity": "sha512-cR4S5e3nygMaBShbbt6FOiMumtrFJjwdKMXMimC1y7FpxITlwLv36BveaifQZ8aY+v1u+w8oYANU2H72Y4ibWA==",
+    "generated_path": "supabase/migrations/20261108134217_subscription_payment_incidents.sql",
+    "template_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template_bytes": 0,
+    "existing_migrations_unchanged": true,
+    "linked_project": false,
+    "database_queries": 0,
+    "remote_migrations_applied": 0,
+    "cli_command": "supabase migration new subscription_payment_incidents",
+    "workflow_source_commit": "92921d7d1760d567e2e052ca50f3c2e9b05f830a",
+    "run_id": "42486198366",
+    "run_url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42486198366",
+    "base_workflow_commit": "a243eb7f2d51ded4c6b838d88eb14953e3af19e1",
+    "base_workflow_blob": "4a8270f6f939008761d26f90482f70c4a02c3849"
+  },
+  "workflow_path": ".github/workflows/subscription-incidents-template.yml",
+  "workflow_run_conclusion": "success",
+  "workflow_job_id": 128748489599,
+  "artifact": {
+    "id": 13619650996,
+    "name": "subscription-incidents-template-local-only",
+    "size_in_bytes": 986,
+    "digest": "sha256:1620c2d3cfb9791b9086d57c2433582d9ed20001870ff5d8f44a05a382c9f4e1",
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42486198366/artifacts/13619650996",
+    "expires_at": "2026-11-15T13:42:17Z"
+  },
+  "safety": {
+    "existing_migrations_unchanged": true,
+    "remote_project_linked": false,
+    "database_queries": 0,
+    "remote_migrations_applied": 0,
+    "provider_calls": 0,
+    "ai_calls": 0,
+    "new_service_purchases": 0,
+    "production_preserved": "Sites v32 / 0.5.20-rc.1; v31 and demo v6 retained"
+  },
+  "continuation": "Use the exact CLI-generated filename for the reviewed incidents SQL. This empty template is not an implemented or applied migration. Preserve migration 63 and all earlier applied sources."
+}
