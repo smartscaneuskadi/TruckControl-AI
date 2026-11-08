@@ -1,0 +1,781 @@
+{
+  "schema": "truckcontrol-session-fiscal-pipeline-native-v1",
+  "date_utc": "2026-11-08",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "project": {
+    "id": "kkkemaycedexymrpaqtp",
+    "name": "truckcontrol-ai",
+    "fixpilot_modified": false
+  },
+  "source": {
+    "pull_request": 75,
+    "verified_commit": "7d411fcccc4bf8ba1a1b017becc22c6a349422cd",
+    "merged_commit": "71c72bed48e64e8f4d25b778c8aa2cef06260d47",
+    "file": "supabase/migrations/20261108100352_manual_subscription_payment_and_documents.sql",
+    "git_blob": "36786ff4a510b3e0df0cde32ddd71a630fc0214b",
+    "cli_generated": true,
+    "cli_version": "3.0.0",
+    "cli_run": 42469793645
+  },
+  "migration": {
+    "checked_at_utc": "2026-11-08 12:33:53.515825+00",
+    "migration_count": 63,
+    "version": "20261108123230",
+    "name": "manual_subscription_payment_and_documents",
+    "statement_count": 1,
+    "source_equals_reviewed": true,
+    "source_sha256": "cbfe47861f20129c4fbc51ebf35b2e37b46784489aee406f49291896fa81e069",
+    "session_checker": "tc_verified_session()",
+    "preserved_routines": [
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "oid": "18083",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "identity": "private.tc_is_admin()",
+        "volatility": "s"
+      },
+      {
+        "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+        "oid": "18118",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "identity": "private.tc_admin_control(text,jsonb)",
+        "volatility": "v"
+      },
+      {
+        "acl": "{postgres=X/postgres}",
+        "oid": "19429",
+        "config": [
+          "search_path=\"\""
+        ],
+        "definer": true,
+        "identity": "private.tc_manual_subscription_operator()",
+        "volatility": "v"
+      }
+    ],
+    "immutable_after_application": true,
+    "must_not_reapply": true,
+    "previous_applied_61_62_untouched": true
+  },
+  "routines_before": [
+    {
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "oid": "18083",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "identity": "private.tc_is_admin()",
+      "volatility": "s",
+      "source_sha256": "895446c50895887847670d663d781c7d52b3db0ca31feae31c08b3390e9986d2"
+    },
+    {
+      "acl": "{postgres=X/postgres,authenticated=X/postgres}",
+      "oid": "18118",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "identity": "private.tc_admin_control(text,jsonb)",
+      "volatility": "v",
+      "source_sha256": "49a1e0ada64b36ba17792f51a99d22ea9d32e88ae555ec3a3a574bc8fc127e77"
+    },
+    {
+      "acl": "{postgres=X/postgres}",
+      "oid": "19429",
+      "config": [
+        "search_path=\"\""
+      ],
+      "definer": true,
+      "identity": "private.tc_manual_subscription_operator()",
+      "volatility": "v",
+      "source_sha256": "6680b8d7ba15966fd733c81e6afe0bdecf0f2c48803253b6c89ad493de8968b2"
+    }
+  ],
+  "acceptance": {
+    "contract_file": "docs/verification/session-fiscal-pipeline-rollback-20261108.sql",
+    "contract_git_blob": "ace04d8b048d412a60b8e2ccad5fee5c09b977e5",
+    "native_executed": true,
+    "all_assertions_passed": true,
+    "baseline_18_tables_restored": true,
+    "cleanup": {
+      "contract": "session-fiscal-pipeline-cleanup-v1",
+      "fixture_users_remaining": 0,
+      "fixture_sessions_remaining": 0,
+      "fixture_admins_remaining": 0,
+      "fixture_requests_remaining": 0,
+      "fixture_tasks_remaining": 0,
+      "fixture_events_remaining": 0,
+      "fixture_actions_remaining": 0,
+      "fixture_channels_remaining": 0,
+      "fixture_bridge_receipts_remaining": 0,
+      "fixture_notices_remaining": 0
+    },
+    "providers_called": 0,
+    "ai_calls": 0,
+    "emails_sent": 0,
+    "real_payments": 0,
+    "storage_bytes_uploaded": 0,
+    "real_customer_data_used": false
+  },
+  "ci": {
+    "verified_source": "7d411fcccc4bf8ba1a1b017becc22c6a349422cd",
+    "runs": [
+      42479488860,
+      42479482785
+    ],
+    "conclusion": "success",
+    "checks_per_run": 1526,
+    "unit_sql": 1163,
+    "unit_sql_files": 109,
+    "python": 45,
+    "demo_browser": 72,
+    "company_browser": 50,
+    "saas_browser": 156,
+    "candidate_browser": 14,
+    "production_browser": 20,
+    "public_https": 6,
+    "original64_retained_hashes": 11,
+    "skipped": 0
+  },
+  "isolated_postgres": {
+    "pull_requests": [
+      77,
+      78
+    ],
+    "source_commit": "4ea39a5647b3f2b22b2ae239eded74b5b677a705",
+    "checks_per_run": 69,
+    "successful_runs": [
+      42480734805,
+      42480739225
+    ],
+    "promotion_successful_runs": [
+      42482102333,
+      42482022641
+    ],
+    "version": "17.6",
+    "two_real_backends": true,
+    "logical_dump_restore_passed": true,
+    "managed_supabase_restore": false,
+    "artifact_id": 13617780781,
+    "artifact_sha256": "34099ffb713fc5ab5d3f97eff22f5a37858a714a19ad52f3e4252b54778146d5"
+  },
+  "post_rollout_flags": {
+    "checked_at_utc": "2026-11-08 13:02:29.159968+00",
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false,
+    "fiscal_tasks": 0,
+    "notices": 0,
+    "notice_sender_off": true,
+    "private_documents_off": true,
+    "enabled_payment_channels": 0
+  },
+  "advisors": {
+    "security": {
+      "lints": [
+        {
+          "name": "rls_enabled_no_policy",
+          "title": "RLS Enabled No Policy",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Detects cases where row level security (RLS) has been enabled on a table but no RLS policies have been created.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+          "count": 2,
+          "findings": [
+            {
+              "detail": "Table \\`private.tc_specialist_test_organizations\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "tc_specialist_test_organizations",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.001Z"
+            },
+            {
+              "detail": "Table \\`private.tc_specialist_verifications\\` has RLS enabled, but no policies exist",
+              "metadata": {
+                "name": "tc_specialist_verifications",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.001Z"
+            }
+          ]
+        },
+        {
+          "name": "auth_leaked_password_protection",
+          "title": "Leaked Password Protection Disabled",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "SECURITY"
+          ],
+          "description": "Leaked password protection is currently disabled.",
+          "remediation": "https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection",
+          "count": 1,
+          "findings": [
+            {
+              "detail": "Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.",
+              "metadata": {
+                "type": "auth",
+                "entity": "Auth"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "performance": {
+      "lints": [
+        {
+          "name": "unindexed_foreign_keys",
+          "title": "Unindexed foreign keys",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Identifies foreign key constraints without a covering index, which can impact database performance.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0001_unindexed_foreign_keys",
+          "count": 17,
+          "findings": [
+            {
+              "detail": "Table \\`private.tc_auth_legal_consents\\` has a foreign key \\`tc_auth_legal_consents_mail_attempt_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_auth_legal_consents",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_auth_legal_consents_mail_attempt_fkey",
+                "fkey_columns": [
+                  4
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_stripe_bridge_receipts\\` has a foreign key \\`tc_manual_stripe_bridge_receip_task_id_provider_account_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_stripe_bridge_receipts",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_stripe_bridge_receip_task_id_provider_account_id_fkey",
+                "fkey_columns": [
+                  7,
+                  2
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_stripe_bridge_receipts\\` has a foreign key \\`tc_manual_stripe_bridge_receipts_provider_account_id_mode_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_stripe_bridge_receipts",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_stripe_bridge_receipts_provider_account_id_mode_fkey",
+                "fkey_columns": [
+                  2,
+                  3
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_stripe_bridge_receipts\\` has a foreign key \\`tc_manual_stripe_bridge_receipts_request_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_stripe_bridge_receipts",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_stripe_bridge_receipts_request_id_fkey",
+                "fkey_columns": [
+                  6
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_subscription_document_access\\` has a foreign key \\`tc_manual_subscription_document_access_document_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_subscription_document_access",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_subscription_document_access_document_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_subscription_document_access\\` has a foreign key \\`tc_manual_subscription_document_access_task_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_subscription_document_access",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_subscription_document_access_task_id_fkey",
+                "fkey_columns": [
+                  4
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_subscription_document_reservations\\` has a foreign key \\`tc_manual_subscription_document_reservations_task_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_subscription_document_reservations",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_subscription_document_reservations_task_id_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_subscription_invoice_actions\\` has a foreign key \\`tc_manual_subscription_invoice_actions_actor_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_subscription_invoice_actions",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_subscription_invoice_actions_actor_id_fkey",
+                "fkey_columns": [
+                  5
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_subscription_invoice_events\\` has a foreign key \\`tc_manual_subscription_event_task_account_fk\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_subscription_invoice_events",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_subscription_event_task_account_fk",
+                "fkey_columns": [
+                  3,
+                  1
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_subscription_invoice_tasks\\` has a foreign key \\`tc_manual_subscription_invoice_tasks_buyer_company_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_subscription_invoice_tasks",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_subscription_invoice_tasks_buyer_company_id_fkey",
+                "fkey_columns": [
+                  10
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_subscription_invoice_tasks\\` has a foreign key \\`tc_manual_subscription_invoice_tasks_buyer_user_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_subscription_invoice_tasks",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_subscription_invoice_tasks_buyer_user_id_fkey",
+                "fkey_columns": [
+                  9
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_manual_subscription_invoice_tasks\\` has a foreign key \\`tc_manual_subscription_invoice_tasks_subscription_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_manual_subscription_invoice_tasks",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_manual_subscription_invoice_tasks_subscription_id_fkey",
+                "fkey_columns": [
+                  6
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_specialist_preferences\\` has a foreign key \\`tc_specialist_preferences_profile_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_specialist_preferences",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_specialist_preferences_profile_fkey",
+                "fkey_columns": [
+                  3
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_specialist_preferences\\` has a foreign key \\`tc_specialist_preferences_user_id_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_specialist_preferences",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_specialist_preferences_user_id_fkey",
+                "fkey_columns": [
+                  2
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.tc_specialist_turns\\` has a foreign key \\`tc_specialist_turns_profile_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "tc_specialist_turns",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "tc_specialist_turns_profile_fkey",
+                "fkey_columns": [
+                  4
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.trip_finance_links\\` has a foreign key \\`trip_finance_links_created_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "trip_finance_links",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "trip_finance_links_created_by_fkey",
+                "fkey_columns": [
+                  4
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Table \\`private.trip_finance_reviews\\` has a foreign key \\`trip_finance_reviews_reviewed_by_fkey\\` without a covering index. This can lead to suboptimal query performance.",
+              "metadata": {
+                "name": "trip_finance_reviews",
+                "type": "table",
+                "schema": "private",
+                "fkey_name": "trip_finance_reviews_reviewed_by_fkey",
+                "fkey_columns": [
+                  4
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            }
+          ]
+        },
+        {
+          "name": "unused_index",
+          "title": "Unused Index",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Detects if an index has never been used and may be a candidate for removal.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+          "count": 23,
+          "findings": [
+            {
+              "detail": "Index \\`tc_documents_driver_idx\\` on table \\`private.company_documents\\` has not been used",
+              "metadata": {
+                "name": "company_documents",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_oauth_pending_org_idx\\` on table \\`private.gmail_oauth_pending\\` has not been used",
+              "metadata": {
+                "name": "gmail_oauth_pending",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_oauth_pending_user_idx\\` on table \\`private.gmail_oauth_pending\\` has not been used",
+              "metadata": {
+                "name": "gmail_oauth_pending",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_memberships_inviter_idx\\` on table \\`private.tc_memberships\\` has not been used",
+              "metadata": {
+                "name": "tc_memberships",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_oauth_states_org_idx\\` on table \\`private.gmail_oauth_states\\` has not been used",
+              "metadata": {
+                "name": "gmail_oauth_states",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_customers_paid_plan_idx\\` on table \\`private.tc_customers\\` has not been used",
+              "metadata": {
+                "name": "tc_customers",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_customers_requested_plan_idx\\` on table \\`private.tc_customers\\` has not been used",
+              "metadata": {
+                "name": "tc_customers",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_payment_plan_idx\\` on table \\`private.tc_payment_requests\\` has not been used",
+              "metadata": {
+                "name": "tc_payment_requests",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`fleet_records_driver_idx\\` on table \\`private.fleet_records\\` has not been used",
+              "metadata": {
+                "name": "fleet_records",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_subscription_plan_idx\\` on table \\`private.tc_billing_subscriptions\\` has not been used",
+              "metadata": {
+                "name": "tc_billing_subscriptions",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_subscription_event_subscription_idx\\` on table \\`private.tc_subscription_events\\` has not been used",
+              "metadata": {
+                "name": "tc_subscription_events",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`company_mail_receipts_inbox_idx\\` on table \\`private.company_mail_receipts\\` has not been used",
+              "metadata": {
+                "name": "company_mail_receipts",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_subscription_invoice_subscription_idx\\` on table \\`private.tc_subscription_invoices\\` has not been used",
+              "metadata": {
+                "name": "tc_subscription_invoices",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`company_mail_inboxes_actor_idx\\` on table \\`private.company_mail_inboxes\\` has not been used",
+              "metadata": {
+                "name": "company_mail_inboxes",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_document_details_expiry_idx\\` on table \\`private.tc_document_details\\` has not been used",
+              "metadata": {
+                "name": "tc_document_details",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`invoice_documents_backup_cursor_idx\\` on table \\`private.invoice_documents\\` has not been used",
+              "metadata": {
+                "name": "invoice_documents",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_customers_trial_plan_idx\\` on table \\`private.tc_customers\\` has not been used",
+              "metadata": {
+                "name": "tc_customers",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`invoices_org_id_page_idx\\` on table \\`private.invoice_documents\\` has not been used",
+              "metadata": {
+                "name": "invoice_documents",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`company_tyre_history_page\\` on table \\`private.company_tyre_history\\` has not been used",
+              "metadata": {
+                "name": "company_tyre_history",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_manual_subscription_pending_idx\\` on table \\`private.tc_manual_subscription_invoice_tasks\\` has not been used",
+              "metadata": {
+                "name": "tc_manual_subscription_invoice_tasks",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_manual_document_reservation_actor_idx\\` on table \\`private.tc_manual_subscription_document_reservations\\` has not been used",
+              "metadata": {
+                "name": "tc_manual_subscription_document_reservations",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_manual_document_access_actor_idx\\` on table \\`private.tc_manual_subscription_document_access\\` has not been used",
+              "metadata": {
+                "name": "tc_manual_subscription_document_access",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            },
+            {
+              "detail": "Index \\`tc_manual_notice_due_idx\\` on table \\`private.tc_manual_invoice_notice_outbox\\` has not been used",
+              "metadata": {
+                "name": "tc_manual_invoice_notice_outbox",
+                "type": "table",
+                "schema": "private"
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            }
+          ]
+        },
+        {
+          "name": "duplicate_index",
+          "title": "Duplicate Index",
+          "level": "WARN",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Detects cases where two ore more identical indexes exist.",
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0009_duplicate_index",
+          "count": 1,
+          "findings": [
+            {
+              "detail": "Table \\`private.invoice_documents\\` has identical indexes {invoice_documents_backup_cursor_idx,invoices_org_id_page_idx}. Drop all except one of them",
+              "metadata": {
+                "name": "invoice_documents",
+                "type": "table",
+                "schema": "private",
+                "indexes": [
+                  "invoice_documents_backup_cursor_idx",
+                  "invoices_org_id_page_idx"
+                ]
+              },
+              "observed_at": "2026-11-08T12:43:48.214Z"
+            }
+          ]
+        },
+        {
+          "name": "auth_db_connections_absolute",
+          "title": "Auth DB Connection Strategy is not Percentage",
+          "level": "INFO",
+          "facing": "EXTERNAL",
+          "categories": [
+            "PERFORMANCE"
+          ],
+          "description": "Using a percentage based allocation connection strategy for Auth can help to improve the server's performance when increasing instance size.",
+          "remediation": "https://supabase.com/docs/guides/deployment/going-into-prod",
+          "count": 1,
+          "findings": [
+            {
+              "detail": "Your project's Auth server is configured to use at most 10 connections. Increasing the instance size without manually adjusting this number will not improve the performance of the Auth server. Switch to a percentage based connection allocation strategy instead.",
+              "metadata": {
+                "type": "auth",
+                "entity": "Auth"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "no_new_security_findings": true,
+    "organization_plan_observed": "pro",
+    "plan_changed_by_this_work": false
+  },
+  "publication": {
+    "frontend_sites_version": 32,
+    "app_version": "0.5.20-rc.1",
+    "url": "https://truckcontrolai.com",
+    "frontend_redeployed": false,
+    "preserved": [
+      "production32",
+      "rollback31",
+      "demo6"
+    ],
+    "commercial_release_complete": false
+  },
+  "cost": {
+    "additional_purchases_eur": 0,
+    "new_model_acceptance_calls": 0,
+    "ceiling_eur": 200,
+    "actual_accumulated_eur": null,
+    "remaining_eur": null,
+    "ai_budget_usd_per_month": 10,
+    "ai_quota_per_company": 100,
+    "note": "Historical bills, taxes and FX are not reconciled; do not claim the entire budget remains."
+  },
+  "limitations": [
+    "Stripe sandbox backend credential and isolated signed webhook acceptance not verified",
+    "GDTaller valid invoice issuance and actual fiscal delivery not verified",
+    "Gmail enterprise links/public Google review not verified",
+    "Managed full-service restore, physical Android/Windows and external legal approval missing",
+    "New frontend source publication blocked by unavailable executor"
+  ]
+}

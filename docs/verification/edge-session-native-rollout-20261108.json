@@ -1,0 +1,120 @@
+{
+  "schema": "truckcontrol-edge-session-native-rollout-v1",
+  "date_utc": "2026-11-08",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "source_commit": "7d411fcccc4bf8ba1a1b017becc22c6a349422cd",
+  "prerequisite_native_migration": "20261108123230",
+  "native_acceptance_passed": true,
+  "functions": [
+    {
+      "name": "company-assistant",
+      "version": 11,
+      "status": "ACTIVE",
+      "source_exact": true,
+      "uploaded_files": 7,
+      "returned_source_files": 7,
+      "build_config_not_in_bundle": [],
+      "ezbr_sha256": "0a6115f7ef6387b6abdc3e617b75fb328402884d0fe7e1d80cefbeaef942e881",
+      "verify_jwt": false
+    },
+    {
+      "name": "company-gmail",
+      "version": 14,
+      "status": "ACTIVE",
+      "source_exact": true,
+      "uploaded_files": 9,
+      "returned_source_files": 8,
+      "build_config_not_in_bundle": [
+        "company-gmail/deno.json"
+      ],
+      "ezbr_sha256": "8d0747f3838ec262ca41d75b2d3826284ef1404fcbb46eff8c64f529d83e3766",
+      "verify_jwt": false
+    },
+    {
+      "name": "truckcontrol-billing",
+      "version": 13,
+      "status": "ACTIVE",
+      "source_exact": true,
+      "uploaded_files": 8,
+      "returned_source_files": 7,
+      "build_config_not_in_bundle": [
+        "truckcontrol-billing/deno.json"
+      ],
+      "ezbr_sha256": "7b27bcffa2b23cf0856d51801ba4d5c90820f872adecf39a0f32fce26da23d42",
+      "verify_jwt": false
+    },
+    {
+      "name": "truckcontrol-subscriptions",
+      "version": 13,
+      "status": "ACTIVE",
+      "source_exact": true,
+      "uploaded_files": 9,
+      "returned_source_files": 8,
+      "build_config_not_in_bundle": [
+        "truckcontrol-subscriptions/deno.json"
+      ],
+      "ezbr_sha256": "e3228a6771f60851c13b1cbc1481ddfe81cff25d60cebf9b0bd0d332f52baedf",
+      "verify_jwt": false
+    },
+    {
+      "name": "company-mail",
+      "version": 13,
+      "status": "ACTIVE",
+      "source_exact": true,
+      "uploaded_files": 12,
+      "returned_source_files": 12,
+      "build_config_not_in_bundle": [],
+      "ezbr_sha256": "273546eab95545ab113fed966233eaa23543796ae510ec3ccfe7381af3d92e1c",
+      "verify_jwt": false
+    },
+    {
+      "name": "company-auth",
+      "version": 5,
+      "status": "ACTIVE",
+      "source_exact": true,
+      "uploaded_files": 4,
+      "returned_source_files": 3,
+      "build_config_not_in_bundle": [
+        "company-auth/deno.json"
+      ],
+      "ezbr_sha256": "b74131b8be061b8e435245ad21ed5e310bbe7a794aef3cced74a216a9e54d5f8",
+      "verify_jwt": false
+    },
+    {
+      "name": "company-copilot",
+      "version": 3,
+      "status": "ACTIVE",
+      "source_exact": true,
+      "uploaded_files": 10,
+      "returned_source_files": 10,
+      "build_config_not_in_bundle": [],
+      "ezbr_sha256": "293b29ce5d1aed201f4947ac214534ca60f8d5960f20ae13a5d67094773db8cf",
+      "verify_jwt": false
+    }
+  ],
+  "runtime_source_files_verified": 55,
+  "signature_or_authorization_headers_unchanged": true,
+  "legacy_paid_mutations_remain_closed": true,
+  "global_keys_and_provider_budgets_unchanged": true,
+  "https_smoke": {
+    "get_405": [
+      "company-auth",
+      "truckcontrol-billing",
+      "truckcontrol-subscriptions",
+      "company-mail",
+      "company-copilot",
+      "company-assistant"
+    ],
+    "gmail_invalid_callback": "https://truckcontrolai.com/#/invoices?gmail_error=invalid_state",
+    "gmail_health": {
+      "configured": true
+    },
+    "enterprise_oauth_acceptance": false
+  },
+  "not_redeployed": {
+    "name": "company-mail-resend",
+    "version": 3,
+    "scope": "existing signed inbound receiver"
+  },
+  "physical_devices_tested": false
+}
