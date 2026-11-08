@@ -10,6 +10,7 @@ import {
   entrySchema,
   truckSchema,
   truckStatuses,
+  truckDriverIds,
 } from "../domain/models";
 import { parseMoney } from "../domain/finance";
 import { today } from "../lib/format";
@@ -62,6 +63,7 @@ export function EntityEditor({
           odometerKm: integer(data, "odometerKm"),
           status: text(data, "status"),
           driverId: text(data, "driverId") || null,
+          coDriverId: text(data, "coDriverId") || null,
           inspectionDueOn: text(data, "inspectionDueOn"),
           route: text(data, "route"),
         });
@@ -293,7 +295,7 @@ function TruckFields({ value }: { value?: Truck }) {
   const assigned = new Set(
     snapshot.trucks
       .filter((truck) => truck.id !== value?.id)
-      .map((truck) => truck.driverId),
+      .flatMap(truckDriverIds),
   );
   return (
     <>
@@ -370,6 +372,21 @@ function TruckFields({ value }: { value?: Truck }) {
               </option>
             ))}
         </select>
+      </Field>
+      <Field label="Segundo conductor (opcional)">
+        <select name="coDriverId" defaultValue={value?.coDriverId ?? ""}>
+          <option value="">Sin segundo conductor</option>
+          {snapshot.drivers
+            .filter(
+              (driver) => driver.status === "active" && !assigned.has(driver.id),
+            )
+            .map((driver) => (
+              <option key={driver.id} value={driver.id}>
+                {driver.name}
+              </option>
+            ))}
+        </select>
+        <small>Debe ser distinto del conductor principal. Deja esta opción vacía para trabajar con uno.</small>
       </Field>
       <Field label="Próxima ITV">
         <input

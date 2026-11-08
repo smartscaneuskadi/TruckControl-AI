@@ -79,6 +79,8 @@ export interface Database {
           odometer_km: number;
           status: "on_route" | "available" | "maintenance";
           driver_id: string | null;
+          /** Optional while reading legacy snapshots; new server column defaults to null. */
+          co_driver_id?: string | null;
           inspection_due_on: string;
           route: string;
         }

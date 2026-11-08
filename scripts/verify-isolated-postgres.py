@@ -437,20 +437,24 @@ def main():
     REPORT["local_migrations"] = [{"name": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()} for path in paths]
     check("Immutable native migration62 source is unchanged",
           next(item["sha256"] for item in REPORT["local_migrations"] if item["name"] == FROZEN62) == FROZEN62_SHA)
-    check("Only the expected candidate63 follows immutable62",
-          paths[-1].name == CANDIDATE63 and paths[-2].name == FROZEN62)
+    names = [path.name for path in paths]
+    schema63_index = names.index(CANDIDATE63)
+    check("Migration63 follows immutable62 before later migrations",
+          schema63_index > 0 and paths[schema63_index - 1].name == FROZEN62)
     sql((ROOT / "tests/postgres/prelude.sql").read_text())
     check("Provider/network extensions and Vault credentials are absent",
           value("select jsonb_build_object('network',exists(select 1 from pg_extension where extname in ('http','pg_net','pg_cron')),'vault',to_regclass('vault.secrets') is not null)") ==
           {"network": False, "vault": False})
-    for path in paths[:-1]:
+    for path in paths[:schema63_index]:
         sql("begin;" + path.read_text() + ";commit;")
     baseline = catalog_fingerprint(SOURCE)
-    candidate = paths[-1].read_text()
+    candidate = paths[schema63_index].read_text()
     sql("begin;" + candidate + ";rollback;")
     check("Candidate63 DDL rolls back to the exact prior functions, ACLs, RLS and tables",
           catalog_fingerprint(SOURCE) == baseline)
     sql("begin;" + candidate + ";commit;")
+    for path in paths[schema63_index + 1:]:
+        sql("begin;" + path.read_text() + ";commit;")
     check("All repository migrations applied transactionally to the isolated database",
           value("select jsonb_build_object('bridge',to_regprocedure('public.tc_manual_subscription_apply_payment(text,text,jsonb)') is not null,'sessions',to_regprocedure('private.tc_actor_verified(uuid,boolean)') is not null)") ==
           {"bridge": True, "sessions": True}, local_file_count=len(paths))

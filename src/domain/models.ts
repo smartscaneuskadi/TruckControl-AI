@@ -43,6 +43,8 @@ export const truckSchema = z.object({
   odometerKm: z.number().int().min(0).max(10_000_000),
   status: z.enum(["on_route", "available", "maintenance"]),
   driverId: z.uuid().nullable(),
+  // Missing in legacy records; validateSnapshot normalizes it to null.
+  coDriverId: z.uuid().nullable().optional(),
   inspectionDueOn: dateSchema,
   route: z.string().trim().max(120),
 });
@@ -106,6 +108,13 @@ export type FinanceEntry = z.infer<typeof entrySchema>;
 export type FleetSnapshot = z.infer<typeof snapshotSchema>;
 export type Period = string; // YYYY-MM, or "all"
 
+/** Both assignments share the existing one-driver-per-truck allocation rule. */
+export function truckDriverIds(truck: Pick<Truck, "driverId" | "coDriverId">): string[] {
+  return [truck.driverId, truck.coDriverId].filter(
+    (id): id is string => typeof id === "string",
+  );
+}
+
 export function normalizePlate(plate: string) {
   return plate.replace(/[ -]/g, "").toUpperCase();
 }
@@ -124,14 +133,17 @@ export function validateSnapshot(input: unknown): FleetSnapshot {
   }
   const assigned = new Set<string>();
   for (const truck of data.trucks) {
-    if (truck.driverId) {
-      const driver = data.drivers.find((item) => item.id === truck.driverId);
-      if (!driver) throw new Error("El conductor asignado no existe.");
+    truck.coDriverId ??= null;
+    if (truck.coDriverId && truck.coDriverId === truck.driverId)
+      throw new Error("El conductor principal y el segundo conductor deben ser distintos.");
+    for (const driverId of truckDriverIds(truck)) {
+      const driver = data.drivers.find((item) => item.id === driverId);
+      if (!driver) throw new Error("El conductor asignado no existe en esta empresa.");
       if (driver.status !== "active")
         throw new Error("Desasigna al conductor antes de ponerlo de permiso.");
-      if (assigned.has(truck.driverId))
+      if (assigned.has(driverId))
         throw new Error("El conductor ya está asignado a otro camión.");
-      assigned.add(truck.driverId);
+      assigned.add(driverId);
     }
   }
   const trucks = new Set(data.trucks.map((truck) => truck.id));
