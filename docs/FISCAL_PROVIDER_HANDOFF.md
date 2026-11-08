@@ -1,5 +1,7 @@
 # Release 1.0 — contrato previo de conciliación fiscal (no conectado)
 
+> **Actualización del titular (07/11/2026):** GDTaller con TicketBAI está configurado en ELEVADANCOR; la primera vía elegida es emisión/envío **manual asistido**, no integración API del emisor. Ver [manual](MANUAL_SUBSCRIPTION_TICKETBAI.md). Este contrato de emisor automático se conserva como antecedente y sus requisitos de autenticación/numeración son aplicables si se conecta una API más adelante. No se han aceptado facturas o cobros reales.
+
 **Estado 07/11/2026: preparación de código y pruebas sintéticas, NO emisión ni entrega real.**
 El emisor comercial de suscripciones es ELEVADANCOR S.L. (según
 `docs/SUBSCRIPTION_INVOICING.md`); no confundirlo con los clientes que

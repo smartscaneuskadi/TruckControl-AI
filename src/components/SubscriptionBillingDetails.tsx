@@ -62,9 +62,10 @@ export function SubscriptionBillingDetails({
       </div>
       {customer && !automaticInvoicesReady && (
         <p className="subscription-billing-pending">
-          La contratación estará disponible cuando la emisión y entrega
-          automática de facturas al cliente esté habilitada. La prueba gratuita
-          no genera cargos ni facturas de compra.
+          Los pagos de suscripción estarán disponibles cuando el proceso fiscal
+          y el envío de facturas estén verificados y autorizados. Inicialmente,
+          ELEVADANCOR emitirá manualmente las facturas TicketBAI en GDTaller.
+          La prueba gratuita no genera cargos ni facturas de compra.
         </p>
       )}
     </section>
