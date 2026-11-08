@@ -23,3 +23,5 @@ Reembolsos, disputas y rectificativas posteriores requieren un flujo separado de
 Antes de publicar el endpoint: probar la migración final del PR60 y esta propuesta juntas, verificar permisos reales, RLS y aislamiento, conectar Stripe oficial en sandbox, demostrar pago→solicitud→emisión GDTaller→entrega con el operador autorizado y obtener aceptación fiscal/comercial. Conservar producción32/v31/demo6 y los límites existentes.
 
 La futura publicación oficial deberá declarar verify_jwt=false exclusivamente para este webhook de proveedor; su seguridad depende de HMAC y conciliación, no de una sesión de navegador. No hay despliegue automático de esta carpeta en esta entrega.
+
+El fence de runtime rechaza siempre mode=test contra kkkemaycedexymrpaqtp: exige SUPABASE_URL canónica de otro proyecto aislado autorizado y TRUCKCONTROL_MANUAL_STRIPE_TEST_PROJECT_REF coincidente. La marca aislada en SQL no sustituye este control. No hay proyecto de pruebas nuevo contratado por esta rama.
