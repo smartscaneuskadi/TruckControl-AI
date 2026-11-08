@@ -9,8 +9,11 @@ import {
 } from "../../domain/manual-subscription-admin";
 import type { ManualInvoiceAction, ManualSubscriptionTask, RegisterManualInvoiceInput, ReportManualSentInput, ManualReviewInput } from "../../domain/manual-subscription-admin";
 
+export class ManualInvoiceAdminError extends Error {
+  constructor(readonly permissionDenied: boolean, message: string) { super(message); this.name = "ManualInvoiceAdminError"; }
+}
 function failure(error: { code?: string } | null) {
-  return Error(
+  return new ManualInvoiceAdminError(error?.code === "42501",
     error?.code === "40001"
       ? "La solicitud ha cambiado en otro dispositivo. Actualiza y comprueba los datos antes de continuar."
       : error?.code === "42501"
@@ -97,4 +100,15 @@ export async function mutateManualSubscriptionInvoice(
     throw Error("No se ha confirmado la incidencia indicada. Actualiza la solicitud.");
   }
   return next;
+}
+
+
+/** Fresh operator-scoped read used to resolve an uncertain invoice registration. */
+export async function loadManualSubscriptionTask(client: SupabaseClient<Database>, taskId: string, signal?: AbortSignal) {
+  z.uuid().parse(taskId);
+  const page = manualSubscriptionPageSchema.parse(await request(client, "detail", taskId, null, null, {}, null, signal));
+  if (page.items.length !== 1 || page.next_cursor !== null || page.items[0].id !== taskId) {
+    throw Error("No se puede comprobar esta solicitud de factura.");
+  }
+  return page.items[0];
 }

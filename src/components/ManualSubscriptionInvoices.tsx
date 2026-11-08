@@ -19,9 +19,12 @@ import type {
   ManualSubscriptionTask,
 } from "../domain/manual-subscription-admin";
 import { money } from "../lib/format";
+import { ManualFiscalPdfDialog } from "./ManualFiscalPdfDialog";
+import { ManualDocumentError, downloadManualFiscalPdf, loadManualDocumentCapabilities } from "../integrations/supabase/manual-fiscal-documents";
+import type { ManualDocumentCapabilities } from "../domain/manual-fiscal-documents";
 import "../styles/manual-subscription-admin.css";
 
-type Editor = { task: ManualSubscriptionTask; action: Exclude<ManualInvoiceAction, "register_invoice"> };
+type Editor = { task: ManualSubscriptionTask; action: ManualInvoiceAction };
 function time(value: string) {
   return new Intl.DateTimeFormat("es-ES", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
@@ -29,6 +32,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
   const client = getSupabaseClient();
   const [page, setPage] = useState<ManualSubscriptionPage | null>(null);
   const [capabilities, setCapabilities] = useState<ManualInvoiceCapabilities | null>(null);
+  const [documentCapabilities, setDocumentCapabilities] = useState<ManualDocumentCapabilities | null>(null);
   const [cursor, setCursor] = useState<string | null>(null);
   const [history, setHistory] = useState<(string | null)[]>([]);
   const [revision, setRevision] = useState(0);
@@ -39,11 +43,22 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
   const [message, setMessage] = useState("");
   const [editing, setEditing] = useState<Editor | null>(null);
   const lock = useRef(false), mounted = useRef(true), generation = useRef(0);
+  const downloads = useRef(new Set<string>()), downloadTimers = useRef(new Set<ReturnType<typeof setTimeout>>());
+  const transfer = useRef<AbortController | null>(null);
+  const discardDownloads = () => {
+    transfer.current?.abort();
+    for (const timer of downloadTimers.current) clearTimeout(timer);
+    downloadTimers.current.clear();
+    for (const url of downloads.current) URL.revokeObjectURL(url);
+    downloads.current.clear();
+  };
 
   useEffect(() => {
     mounted.current = true;
     const change = () => {
       generation.current++;
+      discardDownloads();
+      setDocumentCapabilities(null);
       setOnline(navigator.onLine);
       setPage(null);
       setCapabilities(null);
@@ -55,6 +70,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
     return () => {
       mounted.current = false;
       generation.current++;
+      discardDownloads();
       window.removeEventListener("online", change);
       window.removeEventListener("offline", change);
     };
@@ -63,7 +79,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
     const controller = new AbortController();
     generation.current++;
     let active = true;
-    setPage(null); setCapabilities(null); setEditing(null);
+    setPage(null); setCapabilities(null); setDocumentCapabilities(null); setEditing(null);
     setError(""); setLoading(true);
     if (!client || !online) {
       setLoading(false);
@@ -76,6 +92,15 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
       if (!available.available) return;
       const next = await loadManualSubscriptionInvoices(client, cursor, controller.signal);
       if (active && navigator.onLine) setPage(next);
+      try {
+        const documents = await loadManualDocumentCapabilities(client, controller.signal);
+        if (active && navigator.onLine) setDocumentCapabilities(documents);
+      } catch (failure) {
+        if (active && navigator.onLine && failure instanceof ManualDocumentError && failure.kind === "denied") {
+          setPage(null); setCapabilities(null);
+          setError(failure.message);
+        }
+      }
     })().catch((failure: unknown) => {
       if (active) {
         setPage(null); setCapabilities(null);
@@ -88,7 +113,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!client || !editing || !online || lock.current) return;
+    if (!client || !editing || editing.action === "register_invoice" || !online || lock.current) return;
     const form = new FormData(event.currentTarget);
     if (form.get("confirmed") !== "on") return;
     const selected = editing;
@@ -128,6 +153,31 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
       if (mounted.current) setBusy(false);
     }
   }
+  async function download(task: ManualSubscriptionTask) {
+    if (!client || lock.current || !online || !documentCapabilities?.downloads_ready) return;
+    const epoch = generation.current, controller = new AbortController();
+    transfer.current = controller; lock.current = true; setBusy(true); setError(""); setMessage("");
+    try {
+      const blob = await downloadManualFiscalPdf(client, task, controller.signal);
+      if (!mounted.current || generation.current !== epoch || !navigator.onLine) return;
+      const url = URL.createObjectURL(blob);
+      downloads.current.add(url);
+      const anchor = document.createElement("a");
+      anchor.href = url; anchor.download = "factura-fiscal.pdf"; anchor.rel = "noopener";
+      document.body.appendChild(anchor); anchor.click(); anchor.remove();
+      const timer = setTimeout(() => {
+        URL.revokeObjectURL(url); downloads.current.delete(url); downloadTimers.current.delete(timer);
+      }, 1000);
+      downloadTimers.current.add(timer);
+    } catch (failure) {
+      if (mounted.current && generation.current === epoch) {
+        if (failure instanceof ManualDocumentError && failure.kind === "denied") {
+          setPage(null); setEditing(null); setDocumentCapabilities(null); discardDownloads();
+        }
+        setError(failure instanceof ManualDocumentError ? failure.message : "No se ha podido comprobar la descarga del PDF.");
+      }
+    } finally { lock.current = false; if (mounted.current && generation.current === epoch) setBusy(false); }
+  }
   return (
     <section className="card admin-section manual-subscription-admin" aria-label="Facturas del servicio TruckControl">
       <div className="admin-section-heading">
@@ -140,7 +190,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
       {!online && <p role="status">Conéctate para consultar o gestionar estas facturas. Los datos fiscales no se guardan para uso sin conexión.</p>}
       {loading && <p role="status">Comprobando acceso a las facturas…</p>}
       {capabilities && !capabilities.available && <p role="status">El registro de facturación todavía está en preparación.</p>}
-      {capabilities?.available && !capabilities.document_upload_ready && (
+      {capabilities?.available && !documentCapabilities?.document_upload_ready && (
         <p className="fiscal-revocation-note">La carga privada del PDF y el registro de emisión siguen pendientes de habilitación. Puedes revisar los datos fiscales y registrar incidencias. Esta pantalla no habilita cobros ni emite facturas.</p>
       )}
       {message && <p role="status" className="access-message">{message}</p>}
@@ -172,7 +222,12 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
               <div className="inline-actions">
                 {task.status === "awaiting_issue" && <Button variant="secondary" icon={ClipboardCheck} disabled={busy || !online}
                   onClick={() => { setError(""); setMessage(""); setEditing({ task, action: "validate_buyer" }); }}>{task.buyer_validated ? "Corregir datos fiscales" : "Contrastar datos fiscales"}</Button>}
-                {task.status === "awaiting_issue" && <Button variant="secondary" disabled title="Requiere carga privada del PDF fiscal verificada en servidor.">Registrar factura fiscal · pendiente</Button>}
+                {task.status === "awaiting_issue" && <Button variant="secondary"
+                  disabled={busy || !online || !task.buyer_validated || !documentCapabilities?.document_upload_ready || !documentCapabilities.downloads_ready}
+                  onClick={() => { setError(""); setMessage(""); setEditing({ task, action: "register_invoice" }); }}>
+                  {documentCapabilities?.document_upload_ready ? "Adjuntar PDF y registrar factura" : "Registrar factura fiscal · pendiente"}
+                </Button>}
+                {task.invoice && <Button variant="secondary" disabled={busy || !online || !documentCapabilities?.downloads_ready} onClick={() => void download(task)}>Descargar PDF fiscal</Button>}
                 {task.status === "awaiting_send" && <Button variant="secondary" disabled={busy || !online}
                   onClick={() => { setError(""); setMessage(""); setEditing({ task, action: "report_sent" }); }}>Registrar envío realizado</Button>}
                 {(task.status === "awaiting_issue" || task.status === "awaiting_send" || task.status === "sent_reported") && <Button variant="ghost" icon={AlertTriangle} disabled={busy || !online}
@@ -188,7 +243,15 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
             onClick={() => { setHistory((items) => [...items, cursor]); setCursor(page.next_cursor); }}>Más facturas</Button>
         </div>
       </>}
-      {editing && <Modal title={editing.action === "validate_buyer" ? "Contrastar comprador de la factura" : editing.action === "report_sent" ? "Registrar envío manual realizado" : "Registrar incidencia de facturación"}
+      {editing?.action === "register_invoice" && client && <ManualFiscalPdfDialog
+        key={userId + ":" + editing.task.id} client={client} task={editing.task} userId={userId}
+        onClose={() => setEditing(null)}
+        onDenied={() => { setEditing(null); setPage(null); setDocumentCapabilities(null); setError("Tu sesión ya no permite gestionar estas facturas."); }}
+        onSaved={(next) => {
+          setPage((current) => current ? { ...current, items: current.items.map((row) => row.id === next.id ? next : row) } : null);
+          setEditing(null); setMessage("Estado fiscal actualizado desde el servidor.");
+        }} />}
+      {editing && editing.action !== "register_invoice" && <Modal title={editing.action === "validate_buyer" ? "Contrastar comprador de la factura" : editing.action === "report_sent" ? "Registrar envío manual realizado" : "Registrar incidencia de facturación"}
         onClose={() => { if (!busy) setEditing(null); }}>
         <form onSubmit={(event) => void save(event)}>
           <fieldset className="fiscal-fieldset" disabled={busy || !online}>
