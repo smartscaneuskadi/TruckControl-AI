@@ -18,6 +18,10 @@ create table private.tc_manual_subscription_invoice_tasks (
   status text not null default 'awaiting_issue' check (status='awaiting_issue'),
   row_version bigint not null default 1 check (row_version=1),
   created_at timestamptz not null default now(),
+  -- A checkout purchase can yield exactly one fiscal task. Recurring invoice
+  -- periods need a separate verified subscription-invoice association; do not
+  -- reuse tc_payment_requests.id across renewal tasks without that design.
+  constraint tc_manual_subscription_request_unique unique (request_id),
   constraint tc_manual_subscription_payment_unique unique (provider_account_id,provider_payment_id),
   constraint tc_manual_subscription_payment_global_unique unique (provider_payment_id)
 );
