@@ -413,6 +413,7 @@ function Workspace() {
               className="nav-link"
               type="button"
               disabled={signingOut}
+              aria-label={signingOut ? "Cerrando sesión de TruckControl…" : "Cerrar sesión de TruckControl"}
               onClick={async () => {
                 if (signingOut) return;
                 setSigningOut(true);
