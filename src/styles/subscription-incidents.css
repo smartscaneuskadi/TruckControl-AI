@@ -15,5 +15,5 @@
   .subscription-incidents dl { grid-template-columns: minmax(0, 1fr); gap: .25rem; }
   .subscription-incidents dd { margin-bottom: .6rem; }
   .subscription-incidents .admin-section-heading { align-items: stretch; }
-  .incident-history ol { padding-left: 1rem; }
+  .subscription-incidents .incident-history ol { padding-left: 1rem; }
 }
