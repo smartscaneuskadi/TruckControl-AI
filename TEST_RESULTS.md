@@ -4,9 +4,11 @@
 
 Aceptación real Supabase:commercial-records-rollback-v1 PASS,205 proveedores/dos empresas,aislamiento,versiones,idempotencia,vínculos sin duplicar importes,candidatos/revisión/copia. Rollback completo:0fixtures nuevos y0filas en3tablas nuevas; huellas comerciales/planes/ajustes sin cambios. RLS activa,sin DML directo ni ejecución anónima; asesor sin avisos nuevos.
 
-CI e880f16:42432881227 y42432885795 verdes. El ensayo PR sobre su base integrada alcanza853 unitarias/SQL,45 Python,72 demo,50 empresa,134 SaaS,14 candidata,20 producción y6 públicas. No sumar ejecuciones duplicadas. Local anterior:823/43 y8 recorridos nuevos,con64 originales y11 hashes conservados. La diferencia de recuento corresponde a avances de main incorporados, no a nuevas llamadas IA.
+Head1866f8d:CI447/448 (42466436798/42466440658) SUCCESS. Por ejecución,853 unitarias/SQL,45 Python,72 demo,50 empresa,134 SaaS,14 candidata,20 producción y6 públicas =1.194 controles. No sumar ejecuciones duplicadas. Local anterior:823/43 y8 recorridos nuevos,con64 originales y11 hashes conservados. La diferencia de recuento corresponde a avances de main incorporados, no a nuevas llamadas IA.
 
-Android:primera compilación detecta minSdk24 obligatorio de la dependencia. Corrección preparada; sus5 tests JVM,lint,APK/AAB y CI final quedan pendientes. No afirmar prueba de dispositivo, firma comercial,Play o promoción de frontend.
+Android:CI8/9 (42466436890/42466440590) SUCCESS.5JVM sin fallos ni omisiones,lintRelease,APK debug firmado efímero y AAB unsigned correctos; el manifiesto compilado pasa permisos,API24/36,red HTTPS y exclusión de backup. Gradle9.8.2 preinstalado de Ubuntu24.04,versión exacta verificada. Total distinto1199 al incluir5JVM, sin sumar reejecuciones. No afirmar prueba de dispositivo, firma comercial,Play o promoción de frontend.
+
+Billing/subscriptionsv11:5/6fuentes nativas exactas y GET anónimo405; guard fiscalfalse incluso con flag de entorno. No prueba checkout ni emite facturas/pagos/IA/correo. Recibos [comercial](docs/verification/commercial-completion-20261108.json) y [Android](docs/verification/android-candidate-20261108.json).
 
 ## Referencia preservada · v32
 
@@ -18,7 +20,7 @@ Android:primera compilación detecta minSdk24 obligatorio de la dependencia. Cor
 
 Fuente: [recibo v32](docs/verification/ai-specialists-20261107.json), [aceptación pública](docs/verification/ai-specialists-public-20261107.json), [PR38](https://github.com/smartscaneuskadi/TruckControl-AI/pull/38).
 
-## Nueva fase comercial
+## Histórico · inicio de la fase comercial
 
 Auditoría nativa:60 migraciones,registro abierto,pagos apagados,IA habilitada/límite10USD,8 perfiles previamente verificados. Asesor:sin nuevos WARN/ERROR; continúa el aviso previo de contraseñas filtradas y dos INFO de tablas administrativas con RLS denegando acceso por defecto.
 

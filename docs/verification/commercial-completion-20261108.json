@@ -4,7 +4,7 @@
   "official_repo": "smartscaneuskadi/TruckControl-AI",
   "issue": 41,
   "pull_request": 42,
-  "source_commit_verified": "e880f166729ece07eae1f6c3762f84763819bfbc",
+  "source_commit_verified": "1866f8ddf0f208c9d00e5d324f7f6748c0150cd5",
   "upstream_preserved": "7d47ee9f9288f6450ded8e0759cbe36162070ec2",
   "production": {
     "url": "https://truckcontrolai.com",
@@ -44,8 +44,8 @@
     "retained_original_tests": 64,
     "retained_file_hashes": 11,
     "green_ci_runs": [
-      42432881227,
-      42432885795
+      42466436798,
+      42466440658
     ],
     "ci_pr_merged_base": {
       "unit_sql": 853,
@@ -57,24 +57,65 @@
       "production": 20,
       "public_checks": 6
     },
-    "final_merged_head_ci": "pending"
+    "final_merged_head_ci": "source_head_success_before_documentation_checkpoint",
+    "ci_total_distinct": 1194,
+    "android_jvm_additional": 5,
+    "total_with_android_jvm": 1199
   },
   "android": {
     "min_sdk": 24,
     "target_sdk": 36,
     "browser_helper": "2.7.4",
-    "gradle": "9.9.0",
+    "gradle": "9.8.2",
     "agp": "9.5.1",
     "commercial_signed": false,
     "play_published": false,
-    "compile_status": "minimum_sdk_fix_pending_ci",
-    "physical_device_verified": false
+    "compile_status": "success",
+    "physical_device_verified": false,
+    "runner": "ubuntu-24.04",
+    "toolchain_source": "preinstalled official GitHub runner image; exact version verified",
+    "unit_tests": 5,
+    "failures": 0,
+    "skipped": 0,
+    "compiled_manifest_verified": true,
+    "green_ci_runs": [
+      42466436890,
+      42466440590
+    ],
+    "artifact_id": 13612255717,
+    "artifact_sha256": "fe79ac6556865d4ddebb912579da2652dc04a3e43ced4ad8c6085ad301c2edad",
+    "receipt": "android-candidate-20261108.json"
   },
   "billing": {
     "owner_decision": "GDTaller + TicketBAI manual initial",
     "automatic_provider_api_required_for_mvp": false,
     "native_queue_ui_delivery_verified": false,
-    "payments_enabled": false
+    "payments_enabled": false,
+    "native_guard": {
+      "provider_calls": 0,
+      "functions": [
+        {
+          "slug": "truckcontrol-billing",
+          "version": 11,
+          "files_verified": 5,
+          "verify_jwt": false,
+          "bundle_sha256": "7a6b544cbbba982aba41ec728c3899192c1273843061b66a1c3c879b7055844a",
+          "anonymous_get_status": 405
+        },
+        {
+          "slug": "truckcontrol-subscriptions",
+          "version": 11,
+          "files_verified": 6,
+          "verify_jwt": false,
+          "bundle_sha256": "0a2ade869fdd6f95a1540aea3942368a7d3cc00f91ba996d2426f05c2daf52e5",
+          "anonymous_get_status": 405
+        }
+      ],
+      "native_fiscal_issuer_available": false,
+      "env_flag_alone_cannot_enable_checkout": true,
+      "existing_auth_and_signed_webhook_controls_preserved": true,
+      "checkout_acceptance_proven": false
+    }
   },
   "budget": {
     "aggregate_ceiling_eur": 200,

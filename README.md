@@ -25,15 +25,15 @@ La entrega actual es una PWA. Android firmado/Google Play aún no están acredit
 
 ## Lanzamiento comercial en curso
 
-Se continúa el código existente: faltan proveedores, beneficio por viaje con costes vinculados, emisión/entrega fiscal, cobros, revisión pública Google, Android/Play, monitorización y recuperación integral alojada. Gmail personal y recepción empresarial son flujos diferentes; un consentimiento individual no sustituye la aprobación pública de Google.
+Proveedores y margen por viaje con costes vinculados ya pasan aceptación nativa Supabase; sus pantallas y copias cifradas v4 están en PR42, pendientes de promover al frontend público. El candidato Android pasa compilación, lint, cinco pruebas JVM y revisión de su manifiesto; aún no tiene firma comercial, aceptación física ni publicación Play. Faltan completar emisión/entrega fiscal manual, cobros, revisión pública Google y recuperación integral alojada. Gmail personal y recepción empresarial son flujos diferentes; un consentimiento individual no sustituye la aprobación pública de Google.
 
 [Avance](PROGRESS.md) · [Plan](TODO.md) · [Dependencias](BLOCKERS.md) · [Pruebas](TEST_RESULTS.md) · [Despliegue](DEPLOYMENT.md).
 
 ## Seguridad y mantenimiento
 
-Supabase exclusivo: truckcontrol-ai / kkkemaycedexymrpaqtp, organización fixpilot-dev. FIXPilot separado. Hay 60 migraciones conciliadas; no ejecutar db push sin revisar versiones/nombres/hashes. Secretos solo en backend, originales privados y RLS. Ni chat ni Gmail personal se copian automáticamente offline.
+Supabase exclusivo: truckcontrol-ai / kkkemaycedexymrpaqtp, organización fixpilot-dev. FIXPilot separado. Hay 61 migraciones conciliadas; no ejecutar db push sin revisar versiones/nombres/hashes. Secretos solo en backend, originales privados y RLS. Ni chat ni Gmail personal se copian automáticamente offline.
 
-V32 supera 1.107 controles, conserva las 64 pruebas originales mediante 11 hashes y acredita 8 conexiones IA y 75 hashes HTTPS. Las 8 llamadas se estiman en 0,019465 USD sin factura del proveedor; no es un saldo de caja. [Evidencia](docs/verification/ai-specialists-20261107.json).
+El head1866f8d de PR42 supera1.194 controles y5 JVM adicionales; [recibos](docs/verification/commercial-completion-20261108.json). Todavía no se ha desplegado ese frontend. V32 supera 1.107 controles, conserva las 64 pruebas originales mediante 11 hashes y acredita 8 conexiones IA y 75 hashes HTTPS. Las 8 llamadas se estiman en 0,019465 USD sin factura del proveedor; no es un saldo de caja. [Evidencia](docs/verification/ai-specialists-20261107.json).
 
 El máximo 200 EUR es acumulado, no por servicio ni una orden de gasto. Se concilian costes previos y se verifican precio, impuestos y recurrencia antes de contratar. IA mantiene su límite global de 10 USD/mes y cuota compartida de 100 consultas por empresa.
 

@@ -24,7 +24,7 @@ Tres tablas privadas con RLS, sin DML directo de clientes, y tres RPC públicos 
 
 Las copias cifradas de empresa v4 incluyen proveedores y, con permisos completos, vínculos y revisiones. Se comprueban ámbito, duplicados, relaciones y cobertura; si falta la API nueva se detiene la copia antes de descargar originales. Se siguen leyendo v1/v2/v3 y conservando neumáticos y documentos. No existe restauración automática encima de producción; la revisión histórica exportada tampoco acredita una revisión vigente tras una futura restauración.
 
-Migración local creada con CLI:20261107145959_company_suppliers_and_trip_allocations.sql. Hasta registrar aplicación nativa, permanece pendiente. No editarla tras aplicarla ni repetir migraciones anteriores.
+Migración creada con CLI:20261107145959_company_suppliers_and_trip_allocations.sql,aplicada una vez como remota20261108081848;61migraciones totales. SHA256 nativo e78473c5cd859d17e70d5903c1314ceea663db74969ea78d60e75363e8daa784. Inmutable:NO editar/reaplicar. Contrato nativo commercial-records-rollback-v1 PASS:205 proveedores,dos empresas,rollback completo,0fixtures nuevos y huellas anteriores intactas. El frontend nuevo aún no se ha promovido.
 
 ## Evidencias
 
@@ -32,6 +32,6 @@ Migración local creada con CLI:20261107145959_company_suppliers_and_trip_alloca
 -6 pruebas de dominio/copias, incluyendo cifrado v4 y rechazo de pérdida de relaciones.
 -1 contrato de aceptación completo con205 proveedores, dos empresas y rollback, ensayado primero en PGlite.
 -8 recorridos de pantalla en Android/Windows emulados, dos temas y accesibilidad Axe, sin modificar contabilidad.
--823 unitarias/SQL y TypeScript/build correctos en el árbol probado; las64 iniciales conservan sus11 hashes.
+-CI447/448 del head1866f8d SUCCESS:853unitarias/SQL,45Python y recorridos completos=1.194controles por ejecución; las64 iniciales conservan sus11hashes. Véase [recibo](verification/commercial-completion-20261108.json).
 
 No implica facturación fiscal conectada, cobros activos, firma Android o publicación Play. Las ocho aceptaciones reales de IA de v32 se conservan y no se repiten para estas funciones sin necesidad.

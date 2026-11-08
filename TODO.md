@@ -26,14 +26,15 @@ La lista se cierra con evidencias; una interfaz o un flag no acredita una conexi
 
 ## P2 · aceptación y lanzamiento
 
-- [ ] Pruebas nuevas unitarias, SQL, integración, permisos, costes y extremo a extremo.
-- [ ] CI verde del head final, candidato aislado y archivos publicados contrastados.
+- [x] Pruebas nuevas de proveedores/viajes/copias: unitarias,SQL,integración,permisos y extremo a extremo; aceptación nativa con rollback.
+- [x] CI del código head1866f8d:1.194 controles y5JVM Android adicionales, todos correctos.
+- [ ] CI del checkpoint documental final, candidato aislado y archivos publicados contrastados.
 - [ ] Registro/recuperación/correo mediante cuentas controladas autorizadas, sin clientes ficticios presentados como reales.
 - [ ] Revisión legal/contratos/ficha Play del titular y revisión externa cuando corresponda.
 - [ ] Producción comercial completa, versión Android publicada, gasto/saldo conciliados e informe final.
 
 La frase de publicación comercial completada solo se utiliza tras verificar estos requisitos. Una dependencia externa no impide avanzar en las demás filas.
 
-Preparado y probado localmente:proveedores y vínculos/revisiones de viaje,copias v4,823 unitarias/SQL y8 recorridos nuevos. Se cerrarán las dos tareas de operaciones tras aceptación nativa y publicación. Monitor:workflow real verde,horario pendiente de merge. Android:documentación oficial actual y dependencias consultadas; SDK/Play y acuerdos del titular no aceptados aún.
+Proveedores y vínculos/revisiones de viaje,copias v4:aceptación nativa correcta y frontend pendiente de publicación. Monitor:workflow real verde,horario pendiente de integración en main. Android:APK debug/AAB unsigned construidos y verificados; firma comercial,DAL,dispositivos físicos y Play pendientes.
 
-Actualización08/11:Supabase61,contrato nativo y rollback correctos; no repetir migración. Conservar main7d47ee9 y sus controles. Android requiereminSdk24; CI y publicación final pendientes. La pregunta anterior de proveedor fiscal queda resuelta por la decisión de GDTaller/TicketBAI. Ver recibo comercial para recuentos y límites.
+Actualización08/11:Supabase61,contrato nativo y rollback correctos; no repetir migración. Conservar main7d47ee9 y sus controles. Android minSdk24/API36 con Gradle9.8.2:compilación,lint,5JVM y manifiesto compilado correctos; publicación final pendiente. La pregunta anterior de proveedor fiscal queda resuelta por la decisión de GDTaller/TicketBAI. Ver recibo comercial para recuentos y límites.
