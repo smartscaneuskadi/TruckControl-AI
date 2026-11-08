@@ -238,15 +238,17 @@ describe("operador fiscal: permisos frescos, CAS y evidencia append-only", () =>
   it("impide registrar una factura sin datos validados o PDF comprobado por servidor", async () => {
     await expect(adminCall("register_invoice", taskA, 1, operation(9), {
       invoice_number: "PRUEBA-NO-FISCAL", ticketbai_reference: "NO-ES-FACTURA",
-      private_pdf_key: "subscription-invoices/" + orgA + "/no-existe.pdf",
+      pdf_object_key: "subscription-invoices/" + orgA + "/" + taskA + "/" + operation(9) + ".pdf",
+      pdf_sha256: "0".repeat(64),
       issued_at: new Date().toISOString(),
-    })).rejects.toThrow();
+    })).rejects.toThrow("manual_invoice_buyer_not_validated");
     await adminCall("validate_buyer", taskA, 1, operation(10), buyer);
     await expect(adminCall("register_invoice", taskA, 2, operation(11), {
       invoice_number: "PRUEBA-NO-FISCAL", ticketbai_reference: "NO-ES-FACTURA",
-      private_pdf_key: "subscription-invoices/" + orgA + "/no-existe.pdf",
+      pdf_object_key: "subscription-invoices/" + orgA + "/" + taskA + "/" + operation(11) + ".pdf",
+      pdf_sha256: "0".repeat(64),
       issued_at: new Date().toISOString(),
-    })).rejects.toThrow();
+    })).rejects.toThrow("manual_invoice_document_not_verified");
     expect((await actions()).rows.map((row) => row.action)).toEqual(["validate_buyer"]);
   });
 

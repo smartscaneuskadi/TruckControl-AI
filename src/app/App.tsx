@@ -58,6 +58,7 @@ import { Documents } from "../pages/Documents";
 import { Invoices } from "../pages/Invoices";
 import { Operations } from "../pages/Operations";
 import { Tyres } from "../pages/Tyres";
+import { Suppliers } from "../pages/Suppliers";
 import { PersonalMail } from "../pages/PersonalMail";
 import { Team } from "../pages/Team";
 import { Reports } from "../pages/Reports";
@@ -119,6 +120,12 @@ const navigation = [
     feature: "customers",
   },
   { to: "/trips", label: "Viajes", icon: RouteIcon, feature: "trips" },
+  {
+    to: "/suppliers",
+    label: "Proveedores",
+    icon: Building2,
+    feature: "expenses",
+  },
   {
     to: "/maintenance",
     label: "Mantenimiento",
@@ -481,6 +488,16 @@ function Workspace() {
         </header>
         <main id="main-content" tabIndex={-1} className="page-content">
           <Routes>
+            <Route
+              path="/suppliers"
+              element={
+                <FeatureGate feature="expenses">
+                  <Suppliers
+                    key={`${cloud}:${access.user?.id ?? "demo"}:${snapshot.organization.id}`}
+                  />
+                </FeatureGate>
+              }
+            />
             <Route
               path="/tyres"
               element={

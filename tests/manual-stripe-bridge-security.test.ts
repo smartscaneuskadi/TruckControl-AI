@@ -169,6 +169,14 @@ describe("atomic Stripe-to-manual-fiscal proposal: isolated PGlite only", () => 
     expect(await call("subscription_invoice",monthly(b,true))).toMatchObject({duplicate:true,task_id:second.task_id});
     expect(await snapshot(b)).toEqual(before);
   });
+  it("retains both monthly invoices delivered out of order without reducing paid access", async () => {
+    const b=await buyer();await reserve(b);
+    await call("subscription_invoice",monthly(b,true,{provider_event_created:now+1}));
+    const second=await snapshot(b);
+    await call("subscription_invoice",monthly(b,false));
+    const both=await snapshot(b);
+    expect(both).toMatchObject({tasks:2,receipts:2,invoices:2,paid_until:second.paid_until});
+  });
   it("cannot reuse a monthly event for another invoice or rewrite the historical period", async () => {
     const b=await buyer();await reserve(b);await call("subscription_invoice",monthly(b));
     const before=await snapshot(b);

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "official_repo": "smartscaneuskadi/TruckControl-AI",
+  "source_commit": "1866f8ddf0f208c9d00e5d324f7f6748c0150cd5",
+  "ci": {
+    "run_id": 42466436890,
+    "job_id": 128686934525,
+    "result": "success",
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42466436890"
+  },
+  "toolchain": {
+    "runner": "ubuntu-24.04",
+    "gradle": "9.8.2",
+    "gradle_source": "preinstalled official GitHub Actions image; exact --version check",
+    "agp": "9.5.1",
+    "browser_helper": "2.7.4",
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "java_runtime": 21,
+    "java_source": 17
+  },
+  "verification": {
+    "unit_tests": 5,
+    "failures": 0,
+    "skipped": 0,
+    "lint_release": "passed",
+    "debug_apk_signature_verified": true,
+    "release_aab_unsigned_verified": true,
+    "compiled_manifest_verified": true,
+    "permissions": [
+      "android.permission.INTERNET",
+      "com.truckcontrolai.app.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    ],
+    "allow_backup": false,
+    "uses_cleartext_traffic": false
+  },
+  "artifact": {
+    "id": 13612255717,
+    "name": "android-candidate-1866f8ddf0f208c9d00e5d324f7f6748c0150cd5",
+    "bytes": 5402889,
+    "sha256": "fe79ac6556865d4ddebb912579da2652dc04a3e43ced4ad8c6085ad301c2edad",
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42466436890/artifacts/13612255717",
+    "retention_days": 3
+  },
+  "files": [
+    {
+      "name": "app-debug.apk",
+      "sha256": "32ef98b9b29fbf16c3f3e663745d99240a3244e06827b14922f5b8f53e04f1c2",
+      "bytes": 4911448
+    },
+    {
+      "name": "app-release.aab",
+      "sha256": "a62532386ea03459385e45e7607989fcfb9a77f65844fe5aa6e8d7507a6066e0",
+      "bytes": 900197
+    }
+  ],
+  "commercial_signed": false,
+  "play_published": false,
+  "physical_device_verified": false,
+  "digital_asset_links_production_certificate_verified": false,
+  "limits": [
+    "APK uses ephemeral CI debug certificate; never add it to production Digital Asset Links.",
+    "AAB is unsigned and cannot be submitted as a signed commercial release.",
+    "Compilation and JVM tests do not establish physical device acceptance or Play publication."
+  ],
+  "new_purchases_eur": 0,
+  "new_model_calls": 0
+}

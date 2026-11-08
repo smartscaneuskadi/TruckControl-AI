@@ -1,5 +1,43 @@
 # Gmail público — expediente y aceptación empresarial
 
+## Comprobación de lanzamiento · 08/11/2026
+
+Esta sección prevalece sobre los estados históricos inferiores. El proyecto Google sigue siendo **TruckControlAI / 468881730124** y se conserva el cliente existente. No se ha creado, rotado ni ampliado ninguna credencial.
+
+**Lectura real, 08/11/2026 a las 09:28:46 UTC**, exclusivamente en `truckcontrol-ai / kkkemaycedexymrpaqtp`:
+
+| Evidencia | Resultado | Alcance |
+| --- | --- | --- |
+| Salud pública `company-gmail/health` | `configured=true` | Configuración disponible; no prueba consentimiento. |
+| Configuración pública `company-gmail/browser-config` | `configured=true`, ID público existente y modo `personal_browser` | No devuelve ni se ha leído un secreto. |
+| Vínculos empresariales nativos | **0** | No existe aceptación actual de un importador empresarial conectado. |
+| Estados OAuth / autorizaciones pendientes | **0 / 0** | No se ha iniciado un consentimiento nuevo para esta revisión. |
+| Migraciones del proyecto | **61**, última `20261108081848` | La ampliación de proveedores de PR #42 ya existe; no repetirla ni confundirla con PR #60. |
+| Aviso, privacidad y condiciones en HTTPS | Tres páginas públicas legibles, emisor y versión legal `2026-11-02` visibles | Lectura pública, sin sesión ni datos de clientes. |
+
+La prueba personal comunicada por el titular el 03/11 se conserva como tal. El estado actual de **audiencia, expediente o aprobación pública de Google no se ha podido consultar**: no existe conector administrativo de Google disponible y la sesión privada de administración requiere renovación por el titular. El último estado observado directamente en Google es **Pruebas, 05/11/2026**. No afirmar que ese dato antiguo sea una observación nueva ni solicitar de nuevo publicar la marca, recrear el cliente o copiar claves.
+
+### Requisitos externos exactos para Gmail público
+
+Fuentes oficiales consultadas de nuevo el **08/11/2026** confirman:
+
+1. `gmail.readonly` y `gmail.modify` son **alcances restringidos**. El consentimiento de un usuario de prueba o una marca publicada no equivale a aprobación pública de esos alcances.
+2. El importador transmite y almacena documentos obtenidos de Gmail mediante servidores de terceros. Requiere la revisión de alcance restringido y una evaluación de seguridad **CASA, al menos cada doce meses desde la aprobación de la LOA**, salvo excepción expresamente confirmada por Google. No hay excepción ni evaluación acreditadas; no contratarla sin precio y aprobación.
+3. El expediente debe mostrar **ambos** recorridos: Mi correo en el navegador e importación empresarial en backend. El vídeo real debe incluir el consentimiento OAuth en inglés, las funciones que usan los permisos, la retirada de acceso y datos ficticios autorizados. El vídeo, la declaración y el envío final **no están acreditados**.
+4. Debe acreditarse la propiedad del dominio mediante una cuenta asociada al proyecto, y mantenerse privacidad pública en el mismo dominio, identidad de marca y contactos controlados. Las páginas públicas ya están accesibles; eso no prueba por sí solo la propiedad en Search Console.
+5. Las restricciones Limited Use también alcanzan transferencias a proveedores IA, acceso humano y datos derivados. No utilizar estos datos para publicidad ni para crear, entrenar o mejorar modelos generales. Revisar las condiciones del proveedor y la configuración efectiva antes de firmar la declaración.
+6. Google advierte de que la revisión puede tardar varias semanas. **No existe una aprobación garantizada para hoy.** El registro, flota y demás funciones seguras pueden continuar sin habilitar importaciones Gmail no aceptadas.
+
+### Operación pendiente del titular o del revisor
+
+El acceso privado oficial solo se solicita cuando deba renovarse la sesión; ninguna contraseña, MFA, token o clave se envía al chat. Tras disponer de acceso, consultar **el expediente existente**, completar pruebas con un buzón autorizado, preparar/subir el vídeo y remitir la declaración real. La aceptación contractual y la revisión/LOA corresponden al titular y a los revisores autorizados.
+
+Enlaces del proyecto existente: [centro de verificación](https://console.cloud.google.com/auth/verification?project=468881730124), [audiencia](https://console.cloud.google.com/auth/audience?project=468881730124), [acceso a datos](https://console.cloud.google.com/auth/scopes?project=468881730124). No navegar de pago ni repetir consentimientos a ciegas para comprobar un estado.
+
+**Esta revisión:** solo lecturas agregadas y páginas públicas; cero llamadas al modelo, cero lectura/envío de correo, cero cambios Google/Supabase/planes. No certifica Gmail conectado, CASA, entrega de correo ni aprobación jurídica. [Acta legal de lanzamiento](COMMERCIAL_LEGAL_ACCEPTANCE.md).
+
+## Historial conservado · preparación del 05/11/2026
+
 Actualización del **05/11/2026**: los cuatro alcances de ambos recorridos están declarados en el proyecto existente tras guardar el titular su sesión privada. **La aplicación sigue en Pruebas y no se ha enviado la verificación pública.** Marca publicada según el titular; no recrear cliente ni secretos. Faltan vídeo real, declaración del titular y completar la solicitud, además de la evaluación anual aplicable salvo excepción confirmada por Google. [Nueva prueba integral y límites](GMAIL_ACCEPTANCE.md).
 
 La consulta agregada del 05/11/2026 a las 22:22:15 UTC encuentra **cero Gmail empresariales vinculados**, cero estados OAuth activos y 57 migraciones. `company-gmail` continúa v13. La prueba previa de Mi correo no acredita el importador empresarial. El nuevo recorrido automático combina handler, IA y SQL con proveedores simulados; no ha leído un buzón ni invocado un modelo real. [Entrega vigente](CURRENT_DELIVERY.md).
