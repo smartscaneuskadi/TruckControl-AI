@@ -195,23 +195,74 @@ def payment_snapshot(n: int) -> dict:
     )""")
 
 
+def acl_expression(acl: str, kind: str, owner: str) -> str:
+    # NULL ACL means the PostgreSQL default, not no access. Preserve every
+    # grantee, grantor, privilege and grant option; normalize only array order
+    # and equivalent NULL/materialized defaults emitted by pg_dump.
+    return """coalesce((select jsonb_agg(jsonb_build_object(
+      'grantee',case when a.grantee=0 then 'PUBLIC' else pg_get_userbyid(a.grantee) end,
+      'grantor',pg_get_userbyid(a.grantor),'privilege',a.privilege_type,
+      'grantable',a.is_grantable) order by a.grantee,a.grantor,a.privilege_type,a.is_grantable)
+      from aclexplode(coalesce(""" + acl + ",acldefault(" + quote(kind) + "," + owner + """))) a),'[]')"""
+
+
+def raw_acl_snapshot(database: str) -> list:
+    return value("""select coalesce(jsonb_agg(x order by x->>'kind',x->>'name'),'[]') from (
+      select jsonb_build_object('kind','table','name',n.nspname||'.'||c.relname,
+        'acl',c.relacl::text) x from pg_class c join pg_namespace n on n.oid=c.relnamespace
+        where n.nspname in ('auth','public','private','storage') and c.relkind='r'
+      union all
+      select jsonb_build_object('kind','function','name',n.nspname||'.'||p.proname||'('||
+        pg_get_function_identity_arguments(p.oid)||')','acl',p.proacl::text)
+        from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+        where n.nspname in ('auth','public','private','storage') and p.prokind='f'
+      union all
+      select jsonb_build_object('kind','schema','name',n.nspname,'acl',n.nspacl::text)
+        from pg_namespace n where n.nspname in ('auth','public','private','storage')
+    ) q""", database)
+
+
 def catalog_fingerprint(database: str) -> dict:
     tables = value("""select coalesce(jsonb_agg(jsonb_build_object(
-      'schema',n.nspname,'name',c.relname,'rls',c.relrowsecurity,'force_rls',c.relforcerowsecurity,
-      'acl',c.relacl::text) order by n.nspname,c.relname),'[]')
+      'schema',n.nspname,'name',c.relname,'owner',pg_get_userbyid(c.relowner),
+      'rls',c.relrowsecurity,'force_rls',c.relforcerowsecurity,
+      'acl',""" + acl_expression("c.relacl", "r", "c.relowner") + """)
+      order by n.nspname,c.relname),'[]')
       from pg_class c join pg_namespace n on n.oid=c.relnamespace
       where n.nspname in ('auth','public','private','storage') and c.relkind='r'""", database)
+    schemas = value("""select coalesce(jsonb_agg(jsonb_build_object(
+      'schema',n.nspname,'owner',pg_get_userbyid(n.nspowner),'acl',""" +
+      acl_expression("n.nspacl", "n", "n.nspowner") + """) order by n.nspname),'[]')
+      from pg_namespace n where n.nspname in ('auth','public','private','storage')""", database)
     policies = value("""select coalesce(jsonb_agg(to_jsonb(p) order by schemaname,tablename,policyname),'[]')
       from pg_policies p where schemaname in ('auth','public','private','storage')""", database)
     functions = value("""select jsonb_build_object('sha',
       md5(coalesce(string_agg(pg_get_functiondef(p.oid),E'\n'
         order by n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)),'')),
       'acl',coalesce(jsonb_agg(jsonb_build_object('schema',n.nspname,'name',p.proname,
-        'args',pg_get_function_identity_arguments(p.oid),'acl',p.proacl::text)
+        'args',pg_get_function_identity_arguments(p.oid),'owner',pg_get_userbyid(p.proowner),
+        'acl',""" + acl_expression("p.proacl", "f", "p.proowner") + """)
         order by n.nspname,p.proname,pg_get_function_identity_arguments(p.oid)),'[]'))
       from pg_proc p join pg_namespace n on n.oid=p.pronamespace
       where n.nspname in ('auth','public','private','storage') and p.prokind='f'""", database)
-    return {"tables": tables, "policies": policies, "functions": functions}
+    constraints = value("""select coalesce(jsonb_agg(jsonb_build_object(
+      'schema',n.nspname,'table',c.relname,'name',con.conname,
+      'validated',con.convalidated,'definition',pg_get_constraintdef(con.oid))
+      order by n.nspname,c.relname,con.conname),'[]')
+      from pg_constraint con join pg_class c on c.oid=con.conrelid
+      join pg_namespace n on n.oid=c.relnamespace
+      where n.nspname in ('auth','public','private','storage')""", database)
+    indexes = value("""select coalesce(jsonb_agg(to_jsonb(i) order by schemaname,tablename,indexname),'[]')
+      from pg_indexes i where schemaname in ('auth','public','private','storage')""", database)
+    triggers = value("""select coalesce(jsonb_agg(jsonb_build_object(
+      'schema',n.nspname,'table',c.relname,'name',t.tgname,
+      'enabled',t.tgenabled,'definition',pg_get_triggerdef(t.oid))
+      order by n.nspname,c.relname,t.tgname),'[]')
+      from pg_trigger t join pg_class c on c.oid=t.tgrelid
+      join pg_namespace n on n.oid=c.relnamespace where not t.tgisinternal
+      and n.nspname in ('auth','public','private','storage')""", database)
+    return {"tables": tables, "schemas": schemas, "policies": policies, "functions": functions,
+            "constraints": constraints, "indexes": indexes, "triggers": triggers}
 
 
 def database_fingerprint(database: str) -> dict:
@@ -455,6 +506,7 @@ def main():
           guards == {"payments": False, "notices": False, "uploads": False, "downloads": False, "live_channels": 0})
     sql("drop policy ci_broad_storage_read on storage.objects;")
     before_dump = database_fingerprint(SOURCE)
+    before_raw_acls = raw_acl_snapshot(SOURCE)
     dump = run(["docker", "exec", CONTAINER, "pg_dump", "-U", "postgres",
                 "-d", SOURCE, "-Fc", "--no-owner"]).stdout
     (RESULTS / "synthetic-postgres.dump").write_bytes(dump)
@@ -464,6 +516,11 @@ def main():
     run(["docker", "exec", "-i", CONTAINER, "pg_restore", "-U", "postgres",
          "-d", RESTORED, "--no-owner", "--exit-on-error"], data=dump)
     after_restore = database_fingerprint(RESTORED)
+    after_raw_acls = raw_acl_snapshot(RESTORED)
+    REPORT["raw_acl_representation_differences"] = fingerprint_differences(before_raw_acls, after_raw_acls)
+    REPORT["acl_comparison"] = "aclexplode with PostgreSQL defaults; owner, grantee, grantor, privilege and grant option preserved"
+    (RESULTS / "before-raw-acls.json").write_text(json.dumps(before_raw_acls, indent=2) + "\n")
+    (RESULTS / "after-raw-acls.json").write_text(json.dumps(after_raw_acls, indent=2) + "\n")
     if before_dump != after_restore:
         REPORT["restore_differences"] = fingerprint_differences(before_dump, after_restore)
         (RESULTS / "before-fingerprint.json").write_text(json.dumps(before_dump, indent=2) + "\n")
@@ -476,6 +533,9 @@ def main():
           visible_counts(2, RESTORED) == {"trucks": 1, "organizations": 1})
     check("Restored revoked session remains revoked",
           visible_counts(1, RESTORED) == {"trucks": 0, "organizations": 0})
+    require_error("Restored fiscal audit remains append-only",
+                  "update private.tc_manual_subscription_invoice_actions set state=state",
+                  "manual_invoice_intake_immutable", RESTORED)
     REPORT["passed"] = True
 
 
