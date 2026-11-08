@@ -1,5 +1,9 @@
 # TruckControl AI — entrega vigente, 8 de noviembre de 2026
 
+## Candidata de cuenta/Gmail · producción38 conservada
+
+La publicación vigente comprobada por HTTPS es Sites38/source`ee43c0267bee67f45002b9a13736eaeb7cdb94f6`; los estados34/33 inferiores son históricos. Reparación en `fix/gmail-setup-account-flow-20261108`, issue97: [estado y pruebas](GMAIL_ACCOUNT_REPAIR.md). No se ha publicado aún ni modificado Native63/credenciales/IA/cobros. Gmail personal aceptado por el titular; Google rechaza la pareja empresarial guardada con`invalid_client`. No confundir la corrección del programa con una credencial o buzón real verificados.
+
 ## CargoTrack integrado publicado · Sites34 · 08/11/2026
 
 **Estado vigente: https://truckcontrolai.com, Sites34/app0.5.21-rc.1**, fuente72526b86a74f2539f073e888015e477e4dbee401. PR92 fusionado en7bd8de6c1bc9dbb67e8d2761f8620838114a0c76. Deploymentappgdep_6af0b9aa501c819195e5bb1a8898895d SUCCEEDED. Se conservan33/32/31 y demo6; no publicar main con su manifiesto de demo.

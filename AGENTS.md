@@ -1,3 +1,17 @@
+# Reparación de cuenta/Gmail candidata · 08/11/2026
+
+Producción comprobada sigue Sites38/sourceee43c0267bee67f45002b9a13736eaeb7cdb94f6; conservarla y demo6. Trabajo en fix/gmail-setup-account-flow-20261108, issue97. Leer docs/GMAIL_ACCOUNT_REPAIR.md antes de continuar. Cuenta accesible en barra, tarjeta de cuenta primero, validación Google antes de guardar y antes de iniciar OAuth; solo administración global comprueba candidatas/configuración. Sin DDL/nuevas claves/IA/cobros. Google rechaza la credencial real guardada con401/invalid_client; no declarar buzón empresarial conectado ni pedir repetir consentimiento antes de resolverla. El titular confirma Gmail personal.1248unit/SQL,45Python,Deno y18focalizadas correctas; regresión completa y arreglo de anchuras pendientes en este checkpoint, no anunciar CI verde. Publicar backend verificado antes de frontend, exclusivamente en el proyecto existente y tras controles completos. Conservar14/38 para recuperación. Native63/64pruebas/11hashes/#37 y cuotas intactos.
+
+# Cuatro idiomas publicados · Sites38 · 08/11/2026
+
+Este bloque prevalece sobre el histórico inferior. Vigente https://truckcontrolai.com, Sites38/app0.5.21-rc.1, fuenteee43c0267bee67f45002b9a13736eaeb7cdb94f6, deploymentappgdep_6af0dfe58e408191a072932ea5cd9a30 SUCCEEDED. PR96 integrado en6b439a880122a47ad31985687f6133e19f9a54b4. Se conservan37/35/34/33/32/31 y demo6;36 nunca publicado. Main conserva manifiesto DEMO: no desplegarlo como producción.
+
+Selector Español/Română/English/Français en portal y barra de la app; preferencia local persistente y compartida entre pestañas.2664 claves por idioma destino,7992 traducciones locales. No remonta formularios ni buzones al cambiar idioma. Fechas/importes según idioma, EUR y datos guardados intactos. Correo, nombres/documentos del usuario, páginas externas y plantillas de servidor conservan idioma original. Barra adaptable a320px. Ver docs/INTERFACE_LANGUAGES.md.
+
+CI PR42520790998 y fuente exacta42520789841 SUCCESS; paquete42520789863 SUCCESS:1622 controles por ejecución (1221unit/SQL,45Python,82demo,50empresa,178SaaS,20candidata,20producción,6perfiles publicados sobre37).64originales/11hashes intactos. Tras publicar se comprobaron interactivamente los4idiomas en portal y app, persistencia tras recarga y actualización PWA. Fuente/deployment nativos coinciden; GET del ejecutor devolvió403, sin afirmar hashes HTTPS pospublicación. Android/Windows emulados, sin hardware físico. Recibo docs/verification/interface-languages-published-20261108.json.
+
+Correo real de37 conservado: Gmail OAuth existente y cuentas compatibles IMAP993/SMTP465; autorización de cada usuario necesaria, Microsoft OAuth pendiente. No se autenticó un buzón real ni se envió correo real. Sin DDL, compras, llamadas IA o cambios de cobros; continúanOFF. No repetir aceptación nativa63 ni llamadas de IA previas.
+
 # Correo real publicado · Sites37 · 08/11/2026
 
 Vigente: https://truckcontrolai.com, fuente8c13c24172758546a40e76ffe7e484348fb2124a, deploymentappgdep_6af0d5f2a8b08191b89c782ebfbd7bf7 SUCCEEDED. PR95 integrado. Sites36 guardado pero nunca publicado. Main conserva manifiesto DEMO: usar checkout de producción.

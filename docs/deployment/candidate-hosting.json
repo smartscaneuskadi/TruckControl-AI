@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_6fc4c9572014819182529cbd14eb197f",
-  "published_version_number": 37,
-  "deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
-  "previous_deployment_id": "appgdep_6af0c7f83fb881919bbb244517c0a8a6",
+  "published_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_1158214ceae48191aac244710231626b",
+  "published_version_number": 38,
+  "deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
+  "previous_deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-08T20:05:21.366881+00:00",
+  "deployed_at": "2026-11-08T20:47:46.339781+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 42516776344,
+  "source_ci_run": 42520789841,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,17 +65,17 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
+  "source_ci_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
   "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 33,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_211a6e3f0b708191a852c348a6dcafd5",
-    "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
-    "deployment_id": "appgdep_6af0a4fe4ec881919f08b7ac80cda8d9",
+    "version": 37,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_6fc4c9572014819182529cbd14eb197f",
+    "source_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
+    "deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
     "app_version": "0.5.21-rc.1"
   },
-  "source_deployment_ci_run": 42516776476,
+  "source_deployment_ci_run": 42520789863,
   "app_version": "0.5.21-rc.1",
   "expected_company_backup": true,
   "production_history": [
@@ -223,6 +223,13 @@
       "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_4e70b8e4ef20819183cd90080ffd6106",
       "published_version_number": 35,
       "deployment_id": "appgdep_6af0c7f83fb881919bbb244517c0a8a6"
+    },
+    {
+      "version": 37,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_6fc4c9572014819182529cbd14eb197f",
+      "source_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
+      "deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
+      "app_version": "0.5.21-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -288,29 +295,26 @@
     "time_zone": "Europe/Madrid",
     "action": "sync_period"
   },
-  "ci_scope_note": "Real personal mail: PR95 and exact source CI succeeded, 1597 checks per execution; native TLS probes do not authenticate a mailbox.",
+  "ci_scope_note": "Four-language release: PR96 and exact production source pass1622 checks per execution. Six published profiles before publication cover Sites37; native publication and interactive four-language verification cover Sites38. No repeat AI or authenticated mailbox acceptance.",
   "final_release_verification": {
-    "code_commit": "b68ae352147ad458fc981079ddfe5d675b34bd9e",
-    "source_commit": "72526b86a74f2539f073e888015e477e4dbee401",
-    "checks_before_publication": 1564,
-    "unit_sql_passed": 1181,
+    "code_commit": "1ebc1ed976c03b6d732412908a08eadb5ecb647d",
+    "source_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+    "checks_before_publication": 1622,
+    "unit_sql_passed": 1221,
     "python_passed": 45,
-    "demo_browser_passed": 72,
+    "demo_browser_passed": 82,
     "company_browser_passed": 50,
-    "saas_browser_passed": 176,
-    "candidate_browser_passed": 14,
+    "saas_browser_passed": 178,
+    "candidate_browser_passed": 20,
     "production_build_passed": 20,
     "public_profiles": 6,
-    "published_cargo_logout_cases": 20,
-    "native_provider_public_profiles": 2,
-    "provider_account_authentication_verified": false,
-    "https_file_hashes_after_publication": 75,
+    "public_profile_baseline_version": 37,
     "migrations": 63,
-    "postpublication_checks": "docs/verification/cargotrack-embedded-published-20261108.json",
+    "postpublication_checks": "docs/verification/interface-languages-published-20261108.json",
     "scheduled_paid_model_calls": 0,
     "emission_available": false
   },
-  "source_branch": "deploy/cargotrack-production-real-mail-20261108",
+  "source_branch": "deploy/cargotrack-production-four-languages-20261108",
   "production_source_manifest_only_diff_scope": "Application b68ae35 and release72526b8 have byte-identical runtime. Production manifest, guarded packaging workflow/helper and two preparation records are the only release differences.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
@@ -399,6 +403,35 @@
       "postpublication_checks": "docs/verification/cargotrack-v33-published-20261108.json",
       "scheduled_paid_model_calls": 0,
       "emission_available": false
+    },
+    {
+      "code_commit": "b68ae352147ad458fc981079ddfe5d675b34bd9e",
+      "source_commit": "72526b86a74f2539f073e888015e477e4dbee401",
+      "checks_before_publication": 1564,
+      "unit_sql_passed": 1181,
+      "python_passed": 45,
+      "demo_browser_passed": 72,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 176,
+      "candidate_browser_passed": 14,
+      "production_build_passed": 20,
+      "public_profiles": 6,
+      "published_cargo_logout_cases": 20,
+      "native_provider_public_profiles": 2,
+      "provider_account_authentication_verified": false,
+      "https_file_hashes_after_publication": 75,
+      "migrations": 63,
+      "postpublication_checks": "docs/verification/cargotrack-embedded-published-20261108.json",
+      "scheduled_paid_model_calls": 0,
+      "emission_available": false
     }
-  ]
+  ],
+  "expected_languages": [
+    "es",
+    "ro",
+    "en",
+    "fr"
+  ],
+  "default_ui_language": "es",
+  "translation_catalog_keys": 2664
 }
