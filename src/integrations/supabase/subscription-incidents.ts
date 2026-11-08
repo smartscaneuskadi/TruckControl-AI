@@ -50,6 +50,7 @@ export async function createSubscriptionIncidentClient(client: SupabaseClient<Da
   async function request(action: string, caseId: string | null = null, expected: number | null = null,
     operationId: string | null = null, data: Json = {}, after: string | null = null, abort?: AbortSignal) {
     const writing = action === "review" || action === "report_rectification";
+    if (closed || signal?.aborted || abort?.aborted) throw new SubscriptionIncidentError("cancelled");
     if (action !== "capabilities" && !available) throw new SubscriptionIncidentError("unavailable");
     await live(abort);
     try {
