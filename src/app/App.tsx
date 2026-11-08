@@ -62,6 +62,8 @@ import { Invoices } from "../pages/Invoices";
 import { Operations } from "../pages/Operations";
 import { Tyres } from "../pages/Tyres";
 import { Suppliers } from "../pages/Suppliers";
+import { MailWorkspace } from "../pages/MailWorkspace";
+import "../styles/mail-workspace.css";
 import { PersonalMail } from "../pages/PersonalMail";
 import { Team } from "../pages/Team";
 import { Reports } from "../pages/Reports";
@@ -114,8 +116,7 @@ const navigation = [
     icon: FileText,
     feature: "documents",
   },
-  { to: "/invoices", label: "Correo y facturas", icon: Mail, feature: "gmail" },
-  { to: "/mailbox", label: "Mi correo", icon: Mail, feature: null },
+  { to: "/mailbox", label: "Correo", icon: Mail, feature: null },
   { to: "/trailers", label: "Remolques", icon: Container, feature: "trailers" },
   {
     to: "/customers",
@@ -235,9 +236,12 @@ function Workspace() {
   ];
   const currentPage =
     navigation.find((item) => item.to === location.pathname)?.label ??
-    (location.pathname === "/assistant"
-      ? "Copiloto de flota"
-      : "Configuración");
+    (location.pathname.startsWith("/mailbox/") ||
+    location.pathname === "/invoices"
+      ? "Correo"
+      : location.pathname === "/assistant"
+        ? "Copiloto de flota"
+        : "Configuración");
   useEffect(() => {
     setMenu(false);
     document.title = `${currentPage} · TruckControl AI`;
@@ -533,6 +537,11 @@ function Workspace() {
             active={location.pathname === "/cargotrack"}
             available={!offline.offline}
           />
+          <MailWorkspace
+            key={`mail:${access.mode}:${access.user?.id ?? "demo"}:${access.organization?.id ?? snapshot.organization.id}:${offline.offline}`}
+            active={location.pathname === "/mailbox"}
+            available={!offline.offline}
+          />
           <Routes>
             <Route
               path="/suppliers"
@@ -648,7 +657,8 @@ function Workspace() {
             />
             <Route path="/cargotrack" element={null} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/mailbox" element={<PersonalMail />} />
+            <Route path="/mailbox" element={null} />
+            <Route path="/mailbox/gmail" element={<PersonalMail />} />
             <Route
               path="/documents"
               element={

@@ -1,0 +1,65 @@
+.mail-workspace {
+  max-width: 1100px;
+  margin-inline: auto;
+}
+.mail-workspace[hidden] {
+  display: none;
+}
+.mail-actions,
+.mail-provider-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.mail-provider-card {
+  padding: clamp(20px, 4vw, 36px);
+  display: grid;
+  gap: 20px;
+}
+.mail-provider-card p {
+  line-height: 1.7;
+}
+.mail-provider-card form {
+  display: grid;
+  gap: 12px;
+}
+.mail-provider-card input {
+  width: 100%;
+  min-width: 0;
+}
+.mail-provider-card button,
+.mail-actions .button,
+.mail-provider-grid .button {
+  min-height: 44px;
+  white-space: normal;
+}
+.mail-security {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--theme-muted);
+}
+.mail-security svg {
+  flex-shrink: 0;
+}
+.mail-open-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.mail-view-tab {
+  display: flex;
+  max-width: 100%;
+  min-width: 0;
+  gap: 4px;
+}
+.mail-view-tab .button {
+  min-height: 44px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.mail-provider-view[hidden] {
+  display: none;
+}
