@@ -1,4 +1,5 @@
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
+import { AccountControls } from "../components/AccountControls";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownLeft,
@@ -528,9 +529,7 @@ function Workspace() {
               <Bell size={19} />
               {insights.length > 0 && <i />}
             </button>
-            <span className="topbar-avatar">
-              {cloud ? initials(snapshot.organization.name) : "DF"}
-            </span>
+            <AccountControls />
           </div>
         </header>
         <main id="main-content" tabIndex={-1} className="page-content">

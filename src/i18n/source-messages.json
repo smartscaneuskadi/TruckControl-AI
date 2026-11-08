@@ -16263,5 +16263,101 @@
     "contexts": [
       "build transform coverage"
     ]
+  },
+  {
+    "key": "Cuenta y acceso",
+    "contexts": [
+      "src/components/AccountControls.tsx:account"
+    ]
+  },
+  {
+    "key": "Cuenta",
+    "contexts": [
+      "src/components/AccountControls.tsx:account"
+    ]
+  },
+  {
+    "key": "Credenciales comprobadas con Google.",
+    "contexts": [
+      "src/components/ProviderSetup.tsx:configuration"
+    ]
+  },
+  {
+    "key": "La configuración guardada todavía no se ha comprobado con Google en esta sesión.",
+    "contexts": [
+      "src/components/ProviderSetup.tsx:configuration"
+    ]
+  },
+  {
+    "key": "Comprobar credenciales con Google",
+    "contexts": [
+      "src/components/ProviderSetup.tsx:configuration"
+    ]
+  },
+  {
+    "key": "Credenciales guardadas en el almacén cifrado y aceptadas por Google. Cada empresa debe autorizar su propio buzón; esta comprobación no conecta ni lee correos.",
+    "contexts": [
+      "src/components/ProviderSetup.tsx:configuration"
+    ]
+  },
+  {
+    "key": "Google acepta las credenciales del servidor. La autorización de cada buzón y la revisión pública de permisos se comprueban por separado.",
+    "contexts": [
+      "src/components/ProviderSetup.tsx:configuration"
+    ]
+  },
+  {
+    "key": "Google rechaza las credenciales de Gmail empresarial. La administración debe corregir el ID y el secreto del cliente antes de volver a conectar.",
+    "contexts": [
+      "src/integrations/gmail/errors.ts:message"
+    ]
+  },
+  {
+    "key": "No se ha podido comprobar la configuración con Google. No se ha iniciado una nueva autorización. Vuelve a comprobarla cuando haya conexión.",
+    "contexts": [
+      "src/integrations/gmail/errors.ts:message"
+    ]
+  },
+  {
+    "key": "Falta completar la configuración de Gmail empresarial en Administración → Servicios.",
+    "contexts": [
+      "src/integrations/gmail/errors.ts:message"
+    ]
+  },
+  {
+    "key": "Solo la administración global puede comprobar o sustituir estas credenciales.",
+    "contexts": [
+      "src/integrations/gmail/errors.ts:message"
+    ]
+  },
+  {
+    "key": "Usa el ID del proyecto TruckControl y el secreto completo de ese cliente, sin asteriscos.",
+    "contexts": [
+      "src/integrations/gmail/errors.ts:message"
+    ]
+  },
+  {
+    "key": "No se ha podido verificar la configuración de Google. No se han guardado cambios.",
+    "contexts": [
+      "src/integrations/gmail/errors.ts:message"
+    ]
+  },
+  {
+    "key": "La configuración se ha guardado, pero su comprobación ha fallado. {0}",
+    "contexts": [
+      "src/components/ProviderSetup.tsx:configuration"
+    ]
+  },
+  {
+    "key": "No se ha guardado la configuración. {0}",
+    "contexts": [
+      "src/components/ProviderSetup.tsx:configuration"
+    ]
+  },
+  {
+    "key": "No se ha podido comprobar Google.",
+    "contexts": [
+      "src/components/ProviderSetup.tsx:configuration"
+    ]
   }
 ]

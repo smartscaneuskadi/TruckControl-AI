@@ -107,6 +107,9 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
   >();
   const controls = {
     providerDenied: false,
+    googleCredentialResult: "accepted" as "accepted" | "rejected" | "unavailable",
+    googleRuntimeCredentialResult: "accepted" as "accepted" | "rejected" | "unavailable",
+    googleCompanyReady: false,
     providerStatus: {
       google: {
         client_id: null,
@@ -1057,8 +1060,21 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
           data = { code: "23514" };
         }
       }
-    } else if (url.pathname === "/functions/v1/company-gmail")
-      data = { oauth_ready: false, ai_enabled: false };
+    } else if (url.pathname === "/functions/v1/company-gmail") {
+      if (["validate_configuration", "check_configuration"].includes(String(body?.action))) {
+        const result = body?.action === "validate_configuration" ? controls.googleCredentialResult : controls.googleRuntimeCredentialResult;
+        if (identity !== admin || controls.providerDenied) {
+          status = 403;
+          data = { error: "admin_required" };
+        } else if (result !== "accepted") {
+          status = result === "rejected" ? 422 : 503;
+          data = { error: result === "rejected" ? "google_client_rejected" : "google_validation_unavailable" };
+        } else data = { credential_validation: 1, status: "accepted", scope: "client_authentication_only", mailbox_connected: false };
+      } else if (body?.action === "start" && controls.googleCompanyReady) {
+        status = 503;
+        data = { error: "google_client_rejected" };
+      } else data = { oauth_ready: controls.googleCompanyReady, ai_enabled: false };
+    }
     else if (url.pathname === "/functions/v1/truckcontrol-subscriptions") {
       if (body?.action === "status") data = controls.recurring;
       else if (controls.recurringFailure) {
@@ -1280,6 +1296,129 @@ async function openProviders(page: Page) {
     }),
   ).toBeEnabled();
 }
+test("Gmail: comprueba credenciales antes de guardar y conserva la configuración cuando Google rechaza la candidata", async ({ page }) => {
+  const f = await fixtures(page);
+  f.controls.googleCredentialResult = "rejected";
+  await openProviders(page);
+  await page.getByLabel("ID del cliente web de TruckControl").fill("468881730124-synthetic-browser.apps.googleusercontent.com");
+  await page.getByLabel("Secreto nuevo de Google").fill("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00000");
+  await page.getByLabel("Confirmo que guardaré la configuración de TruckControl").check();
+  await page.getByRole("button", { name: "Guardar Google de forma segura", exact: true }).click();
+  await expect(page.locator(".provider-setup [role=alert]")).toContainText("Google rechaza las credenciales");
+  expect(f.calls.filter((c) => c.body?.p_action === "set_google")).toHaveLength(0);
+  expect(f.controls.providerStatus.google.configured).toBe(false);
+  expect(f.calls.filter((c) => c.body?.action === "validate_configuration")).toHaveLength(1);
+});
+
+test("Gmail: comprueba la configuración guardada y rellena el ID público sin pedir copiarlo otra vez", async ({ page }) => {
+  const f = await fixtures(page);
+  f.controls.providerStatus.google = { client_id: "468881730124-synthetic-browser.apps.googleusercontent.com", id_valid: true, secret_valid: false, configured: false, vault_available: true, connections: 0 };
+  f.controls.googleRuntimeCredentialResult = "rejected";
+  await openProviders(page);
+  await expect(page.getByLabel("ID del cliente web de TruckControl")).toHaveValue(f.controls.providerStatus.google.client_id!);
+  await expect(page.getByRole("button", { name: "Comprobar credenciales con Google", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Comprobar credenciales con Google", exact: true }).click();
+  await expect(page.locator(".provider-setup [role=alert]")).toContainText("Google rechaza las credenciales");
+  expect(f.calls.some((c) => c.body?.p_action === "set_google")).toBe(false);
+  await expect(page.getByLabel("Secreto nuevo de Google")).toHaveValue("");
+});
+
+test("Gmail: no declara éxito si la configuración se guarda pero el runtime sigue rechazado", async ({ page }) => {
+  const f = await fixtures(page);
+  f.controls.googleRuntimeCredentialResult = "rejected";
+  await openProviders(page);
+  await page.getByLabel("ID del cliente web de TruckControl").fill("468881730124-synthetic-browser.apps.googleusercontent.com");
+  await page.getByLabel("Secreto nuevo de Google").fill("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00000");
+  await page.getByLabel("Confirmo que guardaré la configuración de TruckControl").check();
+  await page.getByRole("button", { name: "Guardar Google de forma segura", exact: true }).click();
+  await expect(page.locator(".provider-setup [role=alert]")).toContainText("se ha guardado, pero su comprobación ha fallado");
+  await expect(page.getByLabel("Secreto nuevo de Google")).toHaveValue("");
+  expect(f.calls.filter((c) => c.body?.p_action === "set_google")).toHaveLength(1);
+  await expect(page.getByRole("status").filter({ hasText: "Credenciales guardadas" })).toHaveCount(0);
+});
+
+test("cuenta visible: cierra sesión desde la barra, impide volver con Atrás y permite entrar como administrador", async ({ page }, info) => {
+  const f = await fixtures(page);
+  await login(page, "customer@example.com");
+  await expect(page).toHaveURL(/#\/dashboard/);
+  const account = page.getByRole("button", { name: "Cuenta y acceso", exact: true });
+  await expect(account).toBeInViewport();
+  await account.click();
+  const dialog = page.getByRole("dialog", { name: "Cuenta y acceso", exact: true });
+  await expect(dialog).toContainText("customer@example.com");
+  await dialog.getByRole("button", { name: "Cerrar sesión", exact: true }).evaluate((element) => { (element as HTMLButtonElement).click(); (element as HTMLButtonElement).click(); });
+  await expect(page.getByRole("heading", { name: "Bienvenido a TruckControl", exact: true })).toBeVisible();
+  expect(f.calls.filter((c) => c.path.includes("/auth/v1/logout"))).toHaveLength(1);
+  await page.goBack();
+  await expect(page.locator(".sidebar, .data-table")).toHaveCount(0);
+  await openProviders(page);
+  await expect(page.getByRole("heading", { name: "Servicios y conexiones", exact: true })).toBeVisible();
+  await page.screenshot({ path: info.outputPath("account-to-provider-administration.png") });
+});
+
+test("cuenta visible: el administrador vuelve desde la demo a Servicios sin cerrar ni sustituir su sesión", async ({ page }) => {
+  const f = await fixtures(page);
+  await openProviders(page);
+  await page.getByRole("button", { name: "Ver demo de flota", exact: true }).click();
+  await expect(page.locator(".sidebar")).toHaveCount(1);
+  await page.getByRole("button", { name: "Cuenta y acceso", exact: true }).click();
+  const account = page.getByRole("dialog", { name: "Cuenta y acceso", exact: true });
+  await expect(account).toContainText("pedidos@smartscaneuskadi.com");
+  await account.getByRole("button", { name: "Acceso de empresas", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Tu centro de administración", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Servicios", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Servicios y conexiones", exact: true })).toBeVisible();
+  expect(f.calls.filter((c) => c.path.includes("/auth/v1/logout"))).toHaveLength(0);
+});
+
+test("cuenta visible: el acceso permanece dentro de 320 a 1440 píxeles y conserva los cuatro idiomas", async ({ page }, info) => {
+  await fixtures(page);
+  await login(page, "customer@example.com");
+  await expect(page).toHaveURL(/#\/dashboard/);
+  for (const width of [320, 393, 600, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const account = page.getByRole("button", { name: "Cuenta y acceso", exact: true });
+    await expect(account).toBeInViewport();
+    expect(await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1)).toBe(true);
+  }
+  for (const [language, title] of [["en", "Account and sign-in"], ["ro", "Cont și acces"], ["fr", "Compte et accès"], ["es", "Cuenta y acceso"]]) {
+    await page.locator(".language-switcher select").selectOption(language);
+    await page.getByRole("button", { name: title, exact: true }).click();
+    const account = page.getByRole("dialog", { name: title, exact: true });
+    await expect(account).toBeVisible();
+    await expect(account).toContainText("customer@example.com");
+    await page.keyboard.press("Escape");
+    await expect(account).toHaveCount(0);
+  }
+  await page.setViewportSize({ width: 393, height: 852 });
+  await page.getByRole("button", { name: "Cuenta y acceso", exact: true }).click();
+  expect((await new AxeBuilder({ page }).include(".account-controls").analyze()).violations).toEqual([]);
+  await page.screenshot({ path: info.outputPath("account-mobile.png") });
+});
+
+test("Gmail: salir del panel durante la comprobación no guarda credenciales con una respuesta tardía", async ({ page }) => {
+  const f = await fixtures(page);
+  let release!: () => void;
+  let started!: () => void;
+  const blocked = new Promise<void>((resolve) => { release = resolve; });
+  const observed = new Promise<void>((resolve) => { started = resolve; });
+  await page.route("http://127.0.0.1:9999/functions/v1/company-gmail", async (route) => {
+    if (route.request().method() !== "POST" || route.request().postDataJSON()?.action !== "validate_configuration") { await route.fallback(); return; }
+    started(); await blocked;
+    await route.fulfill({ status: 200, contentType: "application/json", headers: { "Access-Control-Allow-Origin": "http://127.0.0.1:4194" }, body: JSON.stringify({ credential_validation: 1, status: "accepted", scope: "client_authentication_only", mailbox_connected: false }) });
+  });
+  await openProviders(page);
+  await page.getByLabel("ID del cliente web de TruckControl").fill("468881730124-synthetic-browser.apps.googleusercontent.com");
+  await page.getByLabel("Secreto nuevo de Google").fill("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00000");
+  await page.getByLabel("Confirmo que guardaré la configuración de TruckControl").check();
+  await page.getByRole("button", { name: "Guardar Google de forma segura", exact: true }).click();
+  await observed;
+  await page.getByRole("button", { name: "Clientes", exact: true }).click();
+  const response = page.waitForResponse((r) => r.url().includes("/functions/v1/company-gmail") && r.request().method() === "POST");
+  release(); await (await response).finished();
+  await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+  expect(f.calls.some((c) => c.body?.p_action === "set_google")).toBe(false);
+});
 test("la administración global explica el enlace de Gmail de empresa y limpia el retorno", async ({
   page,
 }, info) => {
@@ -1546,7 +1685,9 @@ test("el propietario importa Google en el panel sin guardar ni devolver el secre
         c.body?.p_action === "set_google",
     ),
   ).toHaveLength(1);
-  expect(f.calls.filter((c) => c.path.includes("functions/v1"))).toEqual([]);
+  expect(f.calls.filter((c) => c.path.includes("functions/v1")).map((c) => c.body?.action)).toEqual([
+    "validate_configuration", "check_configuration",
+  ]);
 });
 test("el panel rechaza archivos ajenos y soporta ambos temas sin desbordarse", async ({
   page,

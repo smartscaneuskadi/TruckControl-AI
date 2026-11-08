@@ -43,30 +43,7 @@ export function Settings() {
             : "Controla tus datos de demostración y lleva la aplicación contigo."
         }
       />
-      <AppearanceSettings />
-      <div className="settings-grid">
-        <CompanyFiscalSettings />
-        <OfflineSettings />
-        {cloud && <CompanyBackupTools />}
-        <section className="card settings-card">
-          <span className="settings-icon">
-            <MonitorSmartphone size={25} />
-          </span>
-          <Badge tone="green">Windows + Android</Badge>
-          <h2>Tu flota, donde estés</h2>
-          <p>
-            Instala la aplicación desde Edge o Chrome. La demo funciona sin
-            conexión después de la primera visita.
-          </p>
-          <Button icon={Download} onClick={install}>
-            {installed
-              ? "Ver instrucciones de instalación"
-              : "Instalar aplicación"}
-          </Button>
-          <small>
-            Aplicación web instalable (PWA). Sin .exe ni .apk en esta fase.
-          </small>
-        </section>
+      <div className="settings-account">
         <section className="card settings-card">
           <span className="settings-icon">
             <Database size={25} />
@@ -125,7 +102,9 @@ export function Settings() {
                       offline.lock();
                       return;
                     }
-                    void access.signOut().catch((e) => setError(errorMessage(e)));
+                    void access
+                      .signOut()
+                      .catch((e) => setError(errorMessage(e)));
                   }}
                 >
                   {offline.offline ? "Bloquear copia" : "Cerrar sesión"}
@@ -145,6 +124,31 @@ export function Settings() {
               <Button onClick={access.openAccount}>Acceso de empresas</Button>
             </>
           )}
+        </section>
+      </div>
+      <AppearanceSettings />
+      <div className="settings-grid">
+        <CompanyFiscalSettings />
+        <OfflineSettings />
+        {cloud && <CompanyBackupTools />}
+        <section className="card settings-card">
+          <span className="settings-icon">
+            <MonitorSmartphone size={25} />
+          </span>
+          <Badge tone="green">Windows + Android</Badge>
+          <h2>Tu flota, donde estés</h2>
+          <p>
+            Instala la aplicación desde Edge o Chrome. La demo funciona sin
+            conexión después de la primera visita.
+          </p>
+          <Button icon={Download} onClick={install}>
+            {installed
+              ? "Ver instrucciones de instalación"
+              : "Instalar aplicación"}
+          </Button>
+          <small>
+            Aplicación web instalable (PWA). Sin .exe ni .apk en esta fase.
+          </small>
         </section>
         <section className="card settings-card">
           <span className="settings-icon">

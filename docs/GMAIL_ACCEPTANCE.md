@@ -1,5 +1,9 @@
 # Gmail empresarial: preparación y prueba de facturas
 
+## Reparación de configuración y cuenta · candidata,08/11/2026
+
+El titular confirma Gmail personal conectado. El empresarial falla: el probe seguro real de la pareja guardada devuelve401/`invalid_client`; cero vínculos empresariales. No repetir consentimientos para corregir una credencial de servidor rechazada. Se prepara [la reparación del flujo completo](GMAIL_ACCOUNT_REPAIR.md): acceso a cuenta visible, prevalidación antes de guardar, comprobación del runtime y rechazo concreto antes de OAuth. Producción38 y Native63 conservadas; nueva publicación pendiente de CI y aceptación. La aprobación pública Google sigue separada.
+
 ## Aceptación actual de lanzamiento · 08/11/2026
 
 Se conserva el código y la configuración existentes. La consulta nativa agregada de **09:28:46 UTC** confirma **0 vínculos Gmail empresariales, 0 estados OAuth y 0 autorizaciones pendientes**, en el proyecto exclusivo `kkkemaycedexymrpaqtp`, con **61 migraciones**. No se leen tokens, documentos, direcciones de buzones ni secretos.
