@@ -10,6 +10,7 @@ import {
   CircleDot,
   Download,
   LayoutDashboard,
+  LogOut,
   Menu,
   Search,
   Settings as SettingsIcon,
@@ -191,6 +192,7 @@ function Workspace() {
   const [notifications, setNotifications] = useState(false);
   const [menu, setMenu] = useState(false);
   const [help, setHelp] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const truck = snapshot.trucks.find((truck) => truck.id === truckId);
   const operationsReady =
     !operations.loading &&
@@ -406,6 +408,28 @@ function Workspace() {
             <SettingsIcon size={18} />
             <span>Configuración</span>
           </NavLink>
+          {cloud && (
+            <button
+              className="nav-link"
+              type="button"
+              disabled={signingOut}
+              onClick={async () => {
+                if (signingOut) return;
+                setSigningOut(true);
+                try {
+                  await access.signOut();
+                  access.openAccount();
+                } catch (error) {
+                  notify(error instanceof Error ? error.message : "No se ha podido cerrar la sesión.");
+                } finally {
+                  setSigningOut(false);
+                }
+              }}
+            >
+              <LogOut size={18} />
+              <span>{signingOut ? "Cerrando sesión…" : "Cerrar sesión"}</span>
+            </button>
+          )}
           <button className="nav-link" onClick={() => setHelp(true)}>
             <CircleHelp size={18} />
             <span>Guía de la demo</span>
