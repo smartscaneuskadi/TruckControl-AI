@@ -238,4 +238,27 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
     );
     expect(flags.rows[0].payments_enabled).toBe(false);
   });
+  it("impide reutilizar un event ID ya contabilizado por otra cuenta Stripe", async () => {
+    // Two purchases are valid, but an evt_ from the first merchant must not
+    // be re-applied to the second, even via a privileged SQL function.
+    const second = {
+      account: "acct_SecondMerchant",
+      payment: "in_SyntheticSecondMerchant001",
+      event: "evt_SyntheticSecondMerchant001",
+      request: requestA2,
+    };
+    const secondTask = await intake(second);
+    expect(secondTask).toMatch(/^[0-9a-f-]{36}$/i);
+    const before = await db.query<{ provider_account_id: string; provider_event_id: string }>(
+      "select provider_account_id,provider_event_id from private.tc_manual_subscription_invoice_events order by provider_account_id,provider_event_id",
+    );
+    await expect(intake({ ...second, event: "evt_SyntheticConfirmed001" }))
+      .rejects.toThrow("tc_manual_subscription_event_global_unique");
+    const after = await db.query<{ provider_account_id: string; provider_event_id: string }>(
+      "select provider_account_id,provider_event_id from private.tc_manual_subscription_invoice_events order by provider_account_id,provider_event_id",
+    );
+    expect(after.rows).toEqual(before.rows);
+    expect(await intake(second)).toBe(secondTask);
+  });
+
 });
