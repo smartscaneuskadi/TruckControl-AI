@@ -169,7 +169,7 @@ describe("financial incidents: real migrated SQL, synthetic PGlite database",()=
  });
  it("preserves provider observations and operator audit against UPDATE, DELETE and TRUNCATE",async()=>{
   for(const table of ["tc_subscription_financial_cases","tc_subscription_financial_entries"])
-   for(const statement of ["update private."+table+" set created_at=now()","delete from private."+table,"truncate private."+table])
+   for(const statement of ["update private."+table+" set created_at=now()","delete from private."+table,"truncate private."+table+" cascade"])
     await expect(db.exec(statement)).rejects.toThrow("manual_invoice_intake_immutable");
  });
  it("paginates history by immutable version without omitting or repeating entries",async()=>{
