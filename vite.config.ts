@@ -1,3 +1,4 @@
+import { localizeUi } from "./scripts/localize-ui.mjs";
 import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
@@ -80,6 +81,7 @@ if (
 export default defineConfig({
   base: publicBase,
   plugins: [
+    localizeUi(),
     react(),
     {
       name: "truckcontrol-release-provenance",
