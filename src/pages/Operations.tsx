@@ -38,6 +38,8 @@ import type { OperationKind, OperationRecord } from "../domain/operations";
 import { money, number, today } from "../lib/format";
 import { useCurrentDay } from "../lib/use-current-day";
 import { exportCsv } from "../lib/export";
+import { TripFinanceDialog } from "../components/TripFinanceDialog";
+import { useCompany } from "../app/CompanyAccess";
 
 const descriptions: Record<OperationKind, string> = {
   trailers: "Capacidad, disponibilidad, seguros e ITV de tus remolques.",
@@ -55,6 +57,8 @@ export function Operations({ kind }: { kind: OperationKind }) {
     fleet = useFleet(),
     subscription = useSubscription();
   const day = useCurrentDay();
+  const company = useCompany();
+  const [financeTrip, setFinanceTrip] = useState<OperationRecord | null>(null);
   const documents = useDocuments();
   const tyres = useTyres();
   const [alertFilter, setAlertFilter] = useState("all"),
@@ -430,6 +434,17 @@ export function Operations({ kind }: { kind: OperationKind }) {
                         </td>
                         <td>
                           <div className="operation-actions">
+                            {kind === "trips" &&
+                              (!subscription.enabled ||
+                                subscription.features.profitability) && (
+                                <Button
+                                  variant="secondary"
+                                  icon={Wallet}
+                                  onClick={() => setFinanceTrip(row)}
+                                >
+                                  Rentabilidad del viaje
+                                </Button>
+                              )}
                             <Button
                               variant="ghost"
                               icon={Pencil}
@@ -488,6 +503,16 @@ export function Operations({ kind }: { kind: OperationKind }) {
           </section>
         </>
       )}
+      {financeTrip &&
+        (!subscription.enabled ||
+          (subscription.features.trips &&
+            subscription.features.profitability)) && (
+          <TripFinanceDialog
+            key={`${company.user?.id ?? "demo"}:${fleet.snapshot.organization.id}:${financeTrip.id}`}
+            trip={financeTrip}
+            close={() => setFinanceTrip(null)}
+          />
+        )}
       {editor && (
         <OperationEditor
           kind={kind}
