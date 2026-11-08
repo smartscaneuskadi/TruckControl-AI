@@ -77,8 +77,10 @@ beforeAll(async () => {
   )).rows[0].id;
   for (const [id, user] of [[requestA, buyerA], [requestA2, buyerA], [requestB, buyerB]]) {
     await db.query(
-      `insert into private.tc_payment_requests(id,user_id,plan_id,quoted_cents,plan_revision,status)
-         select $1,$2,id,36300,revision,'paid' from private.tc_plans where id='limited'`,
+      `insert into private.tc_payment_requests(
+         id,user_id,plan_id,quoted_cents,plan_revision,status,net_cents,vat_rate_bps,vat_cents
+       ) select $1,$2,id,36300,revision,'paid',30000,2100,6300
+         from private.tc_plans where id='limited'`,
       [id, user],
     );
   }
@@ -259,6 +261,49 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
     );
     expect(after.rows).toEqual(before.rows);
     expect(await intake(second)).toBe(secondTask);
+  });
+
+  it("congela identidad fiscal y desglose del pedido aunque después cambie el perfil del comprador", async () => {
+    const sql = `select buyer_company_name,buyer_tax_id,buyer_address,buyer_email,
+      plan_id,plan_revision::text,net_cents,vat_rate_bps,vat_cents,amount_cents
+      from private.tc_manual_subscription_invoice_tasks where request_id=$1`;
+    const before = (await db.query(sql,[requestA])).rows;
+    expect(before).toHaveLength(1);
+    expect(before[0]).toMatchObject({
+      buyer_company_name: "Empresa simulada 1",
+      buyer_tax_id: "SIMULADO-1",
+      net_cents: 30000,
+      vat_rate_bps: 2100,
+      vat_cents: 6300,
+      amount_cents: 36300,
+    });
+    await db.query(
+      "update private.tc_customers set company_name='Empresa modificada simulada', address='Otra calle ficticia 900' where user_id=$1",
+      [buyerA],
+    );
+    // A repeated reconciled event must not overwrite the original details
+    // or recompute tax from a possibly changed public plan.
+    expect(await intake({ event: "evt_SyntheticPostEdit001" })).toMatch(/^[0-9a-f-]{36}$/i);
+    const after = (await db.query(sql,[requestA])).rows;
+    expect(after).toEqual(before);
+  });
+  it("rechaza pedidos históricos cuyo IVA es desconocido sin inferirlo del catálogo actual", async () => {
+    // Historical requests explicitly keep VAT columns NULL by design.
+    await db.query("update private.tc_payment_requests set status='paid' where id=$1", [requestB]);
+    const before = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_tasks",
+    );
+    await expect(intake({
+      request: requestB,
+      company: orgB,
+      account: "acct_SyntheticLegacy001",
+      payment: "in_SyntheticLegacy001",
+      event: "evt_SyntheticLegacy001",
+    })).rejects.toThrow("manual_invoice_tax_quote_missing");
+    const after = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_tasks",
+    );
+    expect(after.rows).toEqual(before.rows);
   });
 
 });
