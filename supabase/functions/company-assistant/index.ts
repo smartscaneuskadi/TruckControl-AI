@@ -1,3 +1,4 @@
+import { getSessionVerifiedUser } from "../_shared/auth-session.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createAssistantHandler } from "./handler.ts";
 import type { AssistantGateway } from "./handler.ts";
@@ -17,10 +18,10 @@ const gateway: AssistantGateway = {
       global: { headers: { Authorization: `Bearer ${token}` } },
       auth: { persistSession: false, autoRefreshToken: false },
     });
-    const { data, error } = await client.auth.getUser(token);
-    if (error || !data.user) return null;
+    const user = await getSessionVerifiedUser(client, token);
+    if (!user) return null;
     return {
-      userId: data.user.id,
+      userId: user.id,
       async access(organizationId) {
         const { data, error } = await client.rpc("tc_organization_access", {
           p_org: organizationId,

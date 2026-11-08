@@ -1,3 +1,4 @@
+import { getSessionVerifiedUser } from "../_shared/auth-session.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createAuthMailHandler } from "./handler.ts";
 const client = createClient(
@@ -43,10 +44,8 @@ Deno.serve(
       return !error && data === true;
     },
     async completeProfile(token, profile, version) {
-      const { data: identity, error: authError } =
-        await client.auth.getUser(token);
-      const user = identity.user;
-      if (authError || !user?.email_confirmed_at) return false;
+      const user = await getSessionVerifiedUser(client, token);
+      if (!user?.email_confirmed_at) return false;
       const { data, error } = await client.rpc("company_auth_mail_consent", {
         p_user_id: user.id,
         p_request_id: null,

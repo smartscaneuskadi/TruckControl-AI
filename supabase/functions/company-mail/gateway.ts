@@ -1,3 +1,4 @@
+import { getSessionVerifiedUser } from "../_shared/auth-session.ts";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAiRuntimeResolver } from "../_shared/ai-runtime.ts";
 import { extractInvoice } from "../_shared/invoice.ts";
@@ -46,8 +47,7 @@ export function createMailGateway(
       return new Uint8Array(await data.arrayBuffer());
     },
     async authenticate(token) {
-      const { data, error } = await client.auth.getUser(token);
-      return error ? null : data.user;
+      return getSessionVerifiedUser(client, token);
     },
     async access(org, user) {
       const { data, error } = await client.rpc("tc_company_server_access", {
