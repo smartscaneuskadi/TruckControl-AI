@@ -6,6 +6,7 @@ import { getSupabaseClient } from "../integrations/supabase/client";
 import {
   loadManualInvoiceCapabilities,
   loadManualSubscriptionInvoices,
+  loadManualSubscriptionTask,
   mutateManualSubscriptionInvoice,
   ManualInvoiceAdminError,
 } from "../integrations/supabase/manual-subscription-admin";
@@ -29,7 +30,7 @@ type Editor = { task: ManualSubscriptionTask; action: ManualInvoiceAction };
 function time(value: string) {
   return new Intl.DateTimeFormat("es-ES", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
-export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
+export function ManualSubscriptionInvoices({ userId, focusTaskId, onClearFocus }: { userId: string; focusTaskId?: string; onClearFocus?(): void }) {
   const client = getSupabaseClient();
   const [page, setPage] = useState<ManualSubscriptionPage | null>(null);
   const [capabilities, setCapabilities] = useState<ManualInvoiceCapabilities | null>(null);
@@ -91,7 +92,9 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
       if (!active || !navigator.onLine) return;
       setCapabilities(available);
       if (!available.available) return;
-      const next = await loadManualSubscriptionInvoices(client, cursor, controller.signal, userId);
+      const next = focusTaskId
+        ? { items: [await loadManualSubscriptionTask(client, focusTaskId, controller.signal, userId)], next_cursor: null }
+        : await loadManualSubscriptionInvoices(client, cursor, controller.signal, userId);
       if (active && navigator.onLine) setPage(next);
       try {
         const documents = await loadManualDocumentCapabilities(client, userId, controller.signal);
@@ -110,7 +113,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
       }
     }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; controller.abort(); };
-  }, [client, cursor, revision, online, userId]);
+  }, [client, cursor, revision, online, userId, focusTaskId]);
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -187,6 +190,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
         <Button variant="secondary" icon={RefreshCw} disabled={loading || busy || Boolean(editing) || !online}
           onClick={() => { setCursor(null); setHistory([]); setRevision((value) => value + 1); }}>Actualizar facturas</Button>
       </div>
+      {focusTaskId && <div className="inline-actions"><Badge tone="blue">Solicitud fiscal seleccionada</Badge>{onClearFocus && <Button variant="secondary" disabled={busy || Boolean(editing)} onClick={onClearFocus}>Volver a todas las facturas</Button>}</div>}
       <p>Emisor: ELEVADANCOR S.L. · B02993426 · Polígono Arzabalza n.º 50, 20400 Tolosa, Gipuzkoa.</p>
       <p>La emisión fiscal se realiza en GDTaller. El objetivo operativo de envío es de 24–48 horas, sujeto a los plazos legales aplicables.</p>
       {!online && <p role="status">Conéctate para consultar o gestionar estas facturas. Los datos fiscales no se guardan para uso sin conexión.</p>}
@@ -238,12 +242,12 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
             </article>
           ))}
         </div>
-        <div className="fiscal-pagination">
+        {!focusTaskId && <div className="fiscal-pagination">
           <Button variant="ghost" icon={ChevronLeft} disabled={busy || Boolean(editing) || !history.length || !online}
             onClick={() => { setCursor(history.at(-1) ?? null); setHistory((items) => items.slice(0, -1)); }}>Facturas anteriores</Button>
           <Button variant="secondary" icon={ChevronRight} disabled={busy || Boolean(editing) || !page.next_cursor || !online}
             onClick={() => { setHistory((items) => [...items, cursor]); setCursor(page.next_cursor); }}>Más facturas</Button>
-        </div>
+        </div>}
       </>}
       {editing?.action === "register_invoice" && client && <ManualFiscalPdfDialog
         key={userId + ":" + editing.task.id} client={client} task={editing.task} userId={userId}

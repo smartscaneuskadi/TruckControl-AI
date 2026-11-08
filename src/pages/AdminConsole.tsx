@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import {
   Activity,
+  AlertTriangle,
   Blocks,
   CreditCard,
   LogOut,
@@ -33,6 +34,7 @@ import { useAppearance } from "../app/AppearanceContext";
 import { ProviderSetup } from "../components/ProviderSetup";
 import { FiscalAdminSettings } from "../components/FiscalAdminSettings";
 import { ManualSubscriptionInvoices } from "../components/ManualSubscriptionInvoices";
+import { SubscriptionIncidents } from "../components/SubscriptionIncidents";
 
 export function AdminConsole({
   userId,
@@ -56,6 +58,19 @@ export function AdminConsole({
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [companyMailReturn, setCompanyMailReturn] = useState(false);
+  const [fiscalTaskId, setFiscalTaskId] = useState<string | null>(null);
+  useEffect(() => {
+    setFiscalTaskId(null);
+    let token: string | null | undefined;
+    const clear = () => setFiscalTaskId(null);
+    const subscription = client?.auth.onAuthStateChange((event, session) => {
+      const next = session?.user.id === userId ? session.access_token : null;
+      if (event === "SIGNED_OUT" || (token !== undefined && token !== next)) clear();
+      token = next;
+    });
+    window.addEventListener("offline", clear);
+    return () => { subscription?.data.subscription.unsubscribe(); window.removeEventListener("offline", clear); };
+  }, [client, userId]);
   useEffect(() => {
     const capture = () => {
       const [route, query = ""] = window.location.hash.split("?");
@@ -147,6 +162,7 @@ export function AdminConsole({
     { id: "providers", label: "Servicios", icon: ShieldCheck },
     { id: "fiscal", label: "Facturación de empresas", icon: Landmark },
     { id: "subscription_invoices", label: "Facturas del servicio", icon: CreditCard },
+    { id: "subscription_incidents", label: "Incidencias de pagos", icon: AlertTriangle },
   ];
   return (
     <main className="admin-page">
@@ -279,7 +295,8 @@ export function AdminConsole({
             ))}
           </nav>
           {tab === "providers" && <ProviderSetup />}
-          {tab === "subscription_invoices" && <ManualSubscriptionInvoices key={userId} userId={userId} />}
+          {tab === "subscription_invoices" && <ManualSubscriptionInvoices key={userId} userId={userId} focusTaskId={fiscalTaskId ?? undefined} onClearFocus={() => setFiscalTaskId(null)} />}
+          {tab === "subscription_incidents" && <SubscriptionIncidents key={userId} userId={userId} onOpenTask={(taskId) => { setFiscalTaskId(taskId); setTab("subscription_invoices"); }} />}
           {tab === "fiscal" && (
             <FiscalAdminSettings onSaved={() => setRevision((n) => n + 1)} />
           )}

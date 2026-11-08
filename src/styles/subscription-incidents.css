@@ -1,0 +1,19 @@
+.subscription-incidents { min-width: 0; }
+.subscription-incidents .inline-actions { flex-wrap: wrap; }
+.incident-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
+.incident-card, .incident-detail, .incident-observation, .incident-history li { min-width: 0; border: 1px solid var(--border); border-radius: 1rem; padding: 1rem; }
+.incident-detail, .incident-history { margin-top: 1.2rem; }
+.subscription-incidents h3, .subscription-incidents h4, .subscription-incidents p, .subscription-incidents dd { overflow-wrap: anywhere; }
+.subscription-incidents dl { display: grid; grid-template-columns: minmax(8rem, .65fr) minmax(0, 1.35fr); gap: .5rem 1rem; }
+.subscription-incidents dt { font-weight: 600; }
+.subscription-incidents dd { margin: 0; min-width: 0; }
+.incident-observation { margin: 1rem 0; }
+.incident-observation h4 { margin-top: 0; }
+.incident-history ol { padding-left: 1.4rem; }
+.incident-history li { margin-bottom: 1rem; }
+@media (max-width: 600px) {
+  .subscription-incidents dl { grid-template-columns: minmax(0, 1fr); gap: .25rem; }
+  .subscription-incidents dd { margin-bottom: .6rem; }
+  .subscription-incidents .admin-section-heading { align-items: stretch; }
+  .incident-history ol { padding-left: 1rem; }
+}
