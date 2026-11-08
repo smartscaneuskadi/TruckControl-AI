@@ -224,11 +224,29 @@ def database_fingerprint(database: str) -> dict:
     return result
 
 
+def fingerprint_differences(before, after, path: str = "") -> list:
+    differences = []
+    if isinstance(before, dict) and isinstance(after, dict):
+        for key in sorted(set(before) | set(after)):
+            if key not in before or key not in after:
+                differences.append({"path": path + "/" + key, "kind": "missing"})
+            else:
+                differences.extend(fingerprint_differences(before[key], after[key], path + "/" + key))
+    elif isinstance(before, list) and isinstance(after, list):
+        if len(before) != len(after):
+            differences.append({"path": path, "before_length": len(before), "after_length": len(after)})
+        for index, (left, right) in enumerate(zip(before, after)):
+            differences.extend(fingerprint_differences(left, right, path + "/" + str(index)))
+    elif before != after:
+        differences.append({"path": path, "before": str(before)[:400], "after": str(after)[:400]})
+    return differences[:20]
+
+
 def wait_for_backend(application: str, *, lock: bool) -> dict:
     deadline = time.monotonic() + 7
     while time.monotonic() < deadline:
         rows = value("""select coalesce(jsonb_agg(jsonb_build_object(
-          'pid',pid,'wait_type',wait_event_type,'wait',wait_event)),'[]')
+          'pid',pid,'wait_type',wait_event_type,'wait',wait_event,'blockers',pg_blocking_pids(pid)),'[]')
           from pg_stat_activity where application_name=""" + quote(application))
         if rows and ((lock and rows[0]["wait_type"] == "Lock")
                      or (not lock and rows[0]["wait"] == "PgSleep")):
@@ -263,8 +281,10 @@ def concurrent(first_sql: str, second_sql: str, prefix: str,
         first_out, first_err = first.communicate(timeout=25)
         second_out, second_err = second.communicate(timeout=25)
         check(prefix + ": distinct backends and real row-lock contention",
-              holder["pid"] != contender["pid"], holder_pid=holder["pid"],
-              contender_pid=contender["pid"], observed_wait=contender["wait_type"])
+              holder["pid"] != contender["pid"] and holder["pid"] in contender["blockers"],
+              holder_pid=holder["pid"],
+              contender_pid=contender["pid"], observed_wait=contender["wait_type"],
+              blocking_pids=contender["blockers"])
         if first.returncode:
             raise AssertionError(first_err.decode()[-2000:])
         if second_error is not None:
@@ -442,6 +462,11 @@ def main():
     run(["docker", "exec", "-i", CONTAINER, "pg_restore", "-U", "postgres",
          "-d", RESTORED, "--no-owner", "--exit-on-error"], data=dump)
     after_restore = database_fingerprint(RESTORED)
+    if before_dump != after_restore:
+        REPORT["restore_differences"] = fingerprint_differences(before_dump, after_restore)
+        (RESULTS / "before-fingerprint.json").write_text(json.dumps(before_dump, indent=2) + "\n")
+        (RESULTS / "after-fingerprint.json").write_text(json.dumps(after_restore, indent=2) + "\n")
+        print("RESTORE_DIFFERENCES " + json.dumps(REPORT["restore_differences"]), flush=True)
     check("Actual pg_dump/pg_restore preserves every synthetic row, function, RLS policy and ACL",
           before_dump == after_restore, tables=len(before_dump["rows"]))
     REPORT["fingerprint_sha256"] = hashlib.sha256(json.dumps(before_dump, sort_keys=True).encode()).hexdigest()
