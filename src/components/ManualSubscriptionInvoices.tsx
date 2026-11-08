@@ -93,7 +93,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
       const next = await loadManualSubscriptionInvoices(client, cursor, controller.signal);
       if (active && navigator.onLine) setPage(next);
       try {
-        const documents = await loadManualDocumentCapabilities(client, controller.signal);
+        const documents = await loadManualDocumentCapabilities(client, userId, controller.signal);
         if (active && navigator.onLine) setDocumentCapabilities(documents);
       } catch (failure) {
         if (active && navigator.onLine && failure instanceof ManualDocumentError && failure.kind === "denied") {
@@ -158,7 +158,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
     const epoch = generation.current, controller = new AbortController();
     transfer.current = controller; lock.current = true; setBusy(true); setError(""); setMessage("");
     try {
-      const blob = await downloadManualFiscalPdf(client, task, controller.signal);
+      const blob = await downloadManualFiscalPdf(client, task, userId, controller.signal);
       if (!mounted.current || generation.current !== epoch || !navigator.onLine) return;
       const url = URL.createObjectURL(blob);
       downloads.current.add(url);

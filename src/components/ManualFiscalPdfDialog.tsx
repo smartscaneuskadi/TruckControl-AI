@@ -6,7 +6,7 @@ import type { ManualSubscriptionTask } from "../domain/manual-subscription-admin
 import { registerManualInvoiceInputSchema } from "../domain/manual-subscription-admin";
 import type { ManualDocumentAck } from "../domain/manual-fiscal-documents";
 import { MAX_MANUAL_FISCAL_PDF_BYTES } from "../domain/manual-fiscal-documents";
-import { ManualDocumentError, uploadManualFiscalPdf } from "../integrations/supabase/manual-fiscal-documents";
+import { ManualDocumentError, loadManualDocumentCapabilities, uploadManualFiscalPdf } from "../integrations/supabase/manual-fiscal-documents";
 import { ManualInvoiceAdminError, loadManualSubscriptionTask, mutateManualSubscriptionInvoice } from "../integrations/supabase/manual-subscription-admin";
 import { Button, Field, Modal } from "./ui";
 
@@ -34,7 +34,7 @@ export function ManualFiscalPdfDialog({ client, task: initial, userId, onSaved, 
     pending.current = controller;
     operation.current ??= crypto.randomUUID();
     try {
-      const result = await uploadManualFiscalPdf(client, task, file, operation.current, controller.signal);
+      const result = await uploadManualFiscalPdf(client, task, file, operation.current, userId, controller.signal);
       if (!current(epoch)) return;
       setAck(result);
       setMessage("PDF guardado y comprobado. Revisa sus referencias fiscales antes de registrar la emisión.");
@@ -77,13 +77,17 @@ export function ManualFiscalPdfDialog({ client, task: initial, userId, onSaved, 
     if (!input.success) { setError("Revisa el número, referencia y fecha reales de la factura emitida en GDTaller."); return; }
     const intent = JSON.stringify({ expected: task.row_version, data: input.data });
     if (registration.current?.key !== intent) registration.current = { key: intent, id: crypto.randomUUID() };
-    const epoch = generation.current;
+    const epoch = generation.current, controller = new AbortController();
+    pending.current = controller;
     lock.current = true; setBusy(true); setError(""); setMessage("");
     try {
+      const ready = await loadManualDocumentCapabilities(client, userId, controller.signal);
+      if (!current(epoch)) return;
+      if (!ready.available || !ready.document_upload_ready || !ready.downloads_ready) throw new ManualDocumentError("unavailable");
       const next = await mutateManualSubscriptionInvoice(client, task, "register_invoice", input.data, registration.current.id);
       if (current(epoch)) onSaved(next);
     } catch (failure) {
-      if (current(epoch) && failure instanceof ManualInvoiceAdminError && failure.permissionDenied) { onDenied(); return; }
+      if (current(epoch) && ((failure instanceof ManualInvoiceAdminError && failure.permissionDenied) || (failure instanceof ManualDocumentError && failure.kind === "denied"))) { onDenied(); return; }
       if (current(epoch)) setError("No se ha podido confirmar el registro de emisión. Conservamos los campos y el PDF comprobado. Comprueba el estado antes de volver a registrar.");
     } finally { lock.current = false; if (current(epoch)) setBusy(false); }
   }
