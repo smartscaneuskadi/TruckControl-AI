@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Sparkles,
   Truck,
+  MapPinned,
   UsersRound,
   Wallet,
   X,
@@ -48,6 +49,7 @@ import { useInstall } from "../components/PwaTools";
 import { Badge, Button, Modal } from "../components/ui";
 import { LocalInsightProvider } from "../domain/insights";
 import { Dashboard } from "../pages/Dashboard";
+import { CargoTrack } from "../pages/CargoTrack";
 import { Trucks } from "../pages/Trucks";
 import { Drivers } from "../pages/Drivers";
 import { Finance } from "../pages/Finance";
@@ -85,6 +87,7 @@ const navigation = [
     feature: "dashboard",
   },
   { to: "/trucks", label: "Camiones", icon: Truck, feature: "trucks" },
+  { to: "/cargotrack", label: "CargoTrack", icon: MapPinned, feature: null },
   {
     to: "/drivers",
     label: "Conductores",
@@ -600,6 +603,7 @@ function Workspace() {
                 </FeatureGate>
               }
             />
+            <Route path="/cargotrack" element={<CargoTrack />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/mailbox" element={<PersonalMail />} />
             <Route
