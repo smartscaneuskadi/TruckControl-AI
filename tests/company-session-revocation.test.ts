@@ -76,6 +76,14 @@ beforeAll(async()=>{
     grant usage on schema public,auth to anon,authenticated,service_role;`);
   for(const file of readdirSync("supabase/migrations").filter(f=>f.endsWith(".sql")).sort())
     await db.exec(readFileSync("supabase/migrations/"+file,"utf8"));
+  const helper=(await db.query<{installed:boolean}>(
+    "select to_regprocedure('private.tc_actor_verified(uuid,boolean)') is not null installed",
+  )).rows[0].installed;
+  if(!helper)await db.exec(readFileSync("docs/verification/admin-session-freshness.proposal.sql","utf8"));
+  const company=(await db.query<{installed:boolean}>(
+    "select to_regprocedure('private.tc_current_actor_verified()') is not null installed",
+  )).rows[0].installed;
+  if(!company)await db.exec(readFileSync("docs/verification/company-session-freshness.proposal.sql","utf8"));
   await db.exec("update private.tc_settings set enforce_access=true,sms_ready=false where id=true");
 },30000);
 afterAll(async()=>{await db?.close();});
@@ -149,6 +157,44 @@ describe("company JWT session revocation: real-session isolated regression",()=>
     expect((await claims(member.user,member.sid,query)).rows).toHaveLength(1);
     await db.query("update private.tc_memberships set status='revoked' where organization_id=$1 and user_id=$2",[owner.org,member.user]);
     expect((await claims(member.user,member.sid,query)).rows).toEqual([]);
+  });
+  it("protects organization UPDATE without WHERE or RETURNING after revocation",async()=>{
+    const f=await fixture();
+    await claims(f.user,f.sid,()=>db.query("update public.organizations set name='Fresh permitted'"));
+    await db.query("delete from auth.sessions where id=$1",[f.sid]);
+    try{await claims(f.user,f.sid,()=>db.query("update public.organizations set name='Stale denied'"));}catch{}
+    const name=(await db.query<{name:string}>("select name from public.organizations where id=$1",[f.org])).rows[0].name;
+    expect(name).toBe("Fresh permitted");
+  });
+  it("denies subscription requests and AI preference mutations after logout",async()=>{
+    const f=await fixture();await db.query("delete from auth.sessions where id=$1",[f.sid]);
+    await expect(claims(f.user,f.sid,()=>db.query("select public.tc_request_plan('limited')"))).rejects.toThrow();
+    await expect(claims(f.user,f.sid,()=>db.query("select public.tc_set_ai_opt_in(true)"))).rejects.toThrow();
+    const user=(await db.query<{ai_opt_in:boolean}>("select ai_opt_in from private.tc_customers where user_id=$1",[f.user])).rows[0];
+    expect(user.ai_opt_in).toBe(false);
+  });
+  it("does not accept an invitation using a revoked session",async()=>{
+    const owner=await fixture(),member=await fixture();
+    await db.query(`insert into private.tc_memberships(
+      organization_id,user_id,role,status,invited_by) values($1,$2,'viewer','invited',$3)`,
+      [owner.org,member.user,owner.user]);
+    await db.query("delete from auth.sessions where id=$1",[member.sid]);
+    let accepted=false;
+    try{await claims(member.user,member.sid,()=>db.query("select public.tc_team_control($1,'accept','{}')",[owner.org]));accepted=true;}catch{}
+    const status=(await db.query<{status:string}>(
+      "select status from private.tc_memberships where organization_id=$1 and user_id=$2",
+      [owner.org,member.user],
+    )).rows[0].status;
+    expect({accepted,status}).toEqual({accepted:false,status:"invited"});
+  });
+  it("retains organization visibility for renewing an expired but freshly authenticated company",async()=>{
+    const f=await fixture();
+    await db.query(`update private.tc_customers set trial_started_at=now()-interval '20 days',
+      trial_ends_at=now()-interval '10 days' where user_id=$1`,[f.user]);
+    const visible=await claims(f.user,f.sid,()=>db.query("select id from public.organizations where id=$1",[f.org]));
+    expect(visible.rows).toHaveLength(1);
+    expect((await rows(f)).trucks).toBe(0);
+    expect((await access(f)).active).toBe(false);
   });
   it("keeps explicit background access without a human session but denies a banned actor",async()=>{
     const f=await fixture();
