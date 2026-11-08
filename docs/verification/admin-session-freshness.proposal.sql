@@ -69,11 +69,14 @@ language plpgsql security definer set search_path='' as $admin_control$
 declare actor uuid := (select auth.uid()); target uuid; result jsonb; old_record jsonb; updated_record jsonb;
   plan private.tc_plans; request private.tc_payment_requests; receipt text; until_date timestamptz;
 begin
- perform private.tc_manual_subscription_operator();
  if not private.tc_actor_verified(actor,true) then
   raise exception 'Solo la cuenta administradora verificada puede realizar esta operación' using errcode='42501';end if;
  if actor is null or not exists(select 1 from private.tc_admins where user_id=actor) then
   raise exception 'Solo la cuenta administradora puede realizar esta operación' using errcode='42501';end if;
+ perform private.tc_manual_subscription_operator();
+ -- Revalidate after acquiring live Auth/admin/session SHARE locks.
+ if not private.tc_actor_verified(actor,true) then
+  raise exception 'Solo la cuenta administradora verificada puede realizar esta operación' using errcode='42501';end if;
  if p_action='snapshot' then return private.tc_admin_snapshot(p_data);end if;
  if p_action='module' then return private.tc_admin_module(p_data);end if;
  if p_action='customer' then return private.tc_admin_customer(p_data);end if;

@@ -1,0 +1,61 @@
+{
+  "schema": "truckcontrol-native-legacy-payment-closure-v1",
+  "date_utc": "2026-11-08",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "source_pull_request": 70,
+  "source_commit": "46b5d0004ce76573841d3fdf132ada2aec3bb511",
+  "merged_commit": "847060b2478eae3cd92da437c66c278d2fe510ee",
+  "verification": {
+    "exact_native_source_files": true,
+    "https_get_status": 405,
+    "native_migrations": 62,
+    "paid_requests": 0,
+    "providers_called": false,
+    "ai_calls": 0,
+    "emails_sent": 0
+  },
+  "functions": [
+    {
+      "name": "truckcontrol-billing",
+      "version": 12,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "ezbr_sha256": "601b0efa4df52ed04adfb6130c44028c59307ab58ce22326c7ac34bbaa4cfed7",
+      "files": [
+        "truckcontrol-billing/index.ts",
+        "_shared/subscription-legacy-payment-gate.ts",
+        "_shared/subscription-fiscal-gate.ts",
+        "truckcontrol-billing/handler.ts",
+        "_shared/invoice.ts",
+        "_shared/billing-origins.ts"
+      ]
+    },
+    {
+      "name": "truckcontrol-subscriptions",
+      "version": 12,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "ezbr_sha256": "1c3a6130816d56c2dfc148adb4caecd649e281db1a1bf3b23accb05177491d58",
+      "files": [
+        "truckcontrol-subscriptions/index.ts",
+        "_shared/subscription-legacy-payment-gate.ts",
+        "_shared/subscription-fiscal-gate.ts",
+        "truckcontrol-subscriptions/handler.ts",
+        "_shared/invoice.ts",
+        "truckcontrol-billing/handler.ts",
+        "_shared/billing-origins.ts"
+      ]
+    }
+  ],
+  "effect": "Reject all legacy paid-event mutation paths before any payment/license mutation; preserve cancellation, failure, expiry and status operations. No environment flag can reopen legacy paid paths.",
+  "paid_activation": false,
+  "rollback_warning": "Do not restore pre-closure v11 when enabling any future paid webhook; keep the closed legacy paths and route verified payments only through the accepted atomic fiscal bridge.",
+  "cost": {
+    "new_purchases_eur": 0,
+    "new_ai_calls": 0,
+    "aggregate_eur_ceiling": 200,
+    "actual_accumulated_eur": null,
+    "balance_eur": null,
+    "note": "Historical provider receipts/taxes/FX not reconciled; no assertion of full remaining balance."
+  }
+}

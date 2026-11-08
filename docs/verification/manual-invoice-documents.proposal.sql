@@ -106,7 +106,9 @@ begin
   if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
   perform 1 from private.tc_admins a where a.user_id=p_actor for share;
   if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
-  perform 1 from auth.sessions s where s.id=p_session and s.user_id=p_actor for share;
+  perform 1 from auth.sessions s where s.id=p_session and s.user_id=p_actor
+    and (nullif(to_jsonb(s)->>'not_after','') is null
+      or (to_jsonb(s)->>'not_after')::timestamptz>now()) for share;
   if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
 end;$actor$;
 revoke all on function private.tc_manual_fiscal_document_actor(uuid,uuid)
