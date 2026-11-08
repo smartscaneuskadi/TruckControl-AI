@@ -1,6 +1,6 @@
 # CargoTrack integrado y persistente
 
-Revisión solicitada después de Sites33: el acceso principal se abre **dentro de TruckControl**, sin otra pestaña. La versión estable33 se conserva mientras se verifican y publican estos cambios.
+Revisión solicitada después de Sites33: el acceso principal se abre **dentro de TruckControl**, sin otra pestaña. La revisión está publicada en Sites34;33,32,31 y demo6 se conservan.
 
 El usuario pulsa «Entrar en CargoTrack» y completa el formulario del proveedor dentro de un iframe HTTPS de https://on7.cargotrack.ro/signin. TruckControl no contiene un formulario de contraseña de CargoTrack, no intercepta credenciales, no lee su almacenamiento y no añade API ni sincronización. La política del mismo origen separa los documentos.
 
@@ -20,4 +20,4 @@ Variables opcionales: PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, TRUCKCONTROL_CARGOTRA
 
 ## Publicación
 
-Pendiente de CI completo, integración y promoción de fuente/paquete exactos en Sites de producción. No desplegar el manifiesto de demo de main. Preservar Sites33/32/31 y demo6. Sin DDL ni Edge ni compras ni llamadas IA. Native63 y tarea37 no se repiten. Una sesión real y sus permisos los concede el titular directamente en CargoTrack; no enviar credenciales al chat.
+CI completo e integraciónPR92 correctos. Publicado Sites34, source72526b8, deploymentappgdep_6af0b9aa501c819195e5bb1a8898895d SUCCEEDED.75/75hashes,6/6perfiles,20/20regresiones y2/2formularios reales públicos verificados. Ver verification/cargotrack-embedded-published-20261108.json. No desplegar el manifiesto de demo de main. Preservar Sites33/32/31 y demo6. Sin DDL ni Edge ni compras ni llamadas IA. Native63 y tarea37 no se repiten. Una sesión real y sus permisos los concede el titular directamente en CargoTrack; no enviar credenciales al chat.

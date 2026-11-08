@@ -80,7 +80,7 @@ test.beforeEach(async ({ context, page }) => {
     release_source_asserted_before_each_case: true,
     external_provider: "navigation intercepted, no CargoTrack login",
     devices: "Desktop Chrome / Pixel 7 emulation, not physical devices",
-    assertions: "original eight regression cases unchanged; only fixture URL and CORS origin adapted",
+    assertions: "original CargoTrack/session regression assertions unchanged; only fixture URL and CORS origin adapted",
     exit_code: status,
   }, null, 2) + "\n");
 } finally {

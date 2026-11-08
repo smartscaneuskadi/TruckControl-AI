@@ -1,0 +1,36 @@
+{
+  "checked_at": "2026-11-08T18:06:17.065Z",
+  "origin": "https://truckcontrolai.com",
+  "expected_source_commit": "72526b86a74f2539f073e888015e477e4dbee401",
+  "authentication_scope": "public provider login and document lifetime, no account login",
+  "framework_partitioning_override_removed": true,
+  "privacy_controls_weakened": false,
+  "results": [
+    {
+      "device": "windows",
+      "physical": false,
+      "credentials_entered": false,
+      "login_submitted": false,
+      "native_storage_partitioning": true,
+      "passed": true,
+      "source_commit": "72526b86a74f2539f073e888015e477e4dbee401",
+      "live_login_form_visible": true,
+      "same_document_retained": true,
+      "new_tabs": 0,
+      "authenticated_provider_session_verified": false
+    },
+    {
+      "device": "android",
+      "physical": false,
+      "credentials_entered": false,
+      "login_submitted": false,
+      "native_storage_partitioning": true,
+      "passed": true,
+      "source_commit": "72526b86a74f2539f073e888015e477e4dbee401",
+      "live_login_form_visible": true,
+      "same_document_retained": true,
+      "new_tabs": 0,
+      "authenticated_provider_session_verified": false
+    }
+  ]
+}

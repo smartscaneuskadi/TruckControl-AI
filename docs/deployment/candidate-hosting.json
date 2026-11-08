@@ -6,10 +6,10 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_211a6e3f0b708191a852c348a6dcafd5",
-  "published_version_number": 33,
-  "deployment_id": "appgdep_6af0a4fe4ec881919f08b7ac80cda8d9",
+  "published_commit": "72526b86a74f2539f073e888015e477e4dbee401",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31bb5be99d8c8191b220d76104041206",
+  "published_version_number": 34,
+  "deployment_id": "appgdep_6af0b9aa501c819195e5bb1a8898895d",
   "previous_deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-08T16:36:28.830645+00:00",
+  "deployed_at": "2026-11-08T18:04:41.082212+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 42496353761,
+  "source_ci_run": 42507142648,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,17 +65,17 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+  "source_ci_commit": "72526b86a74f2539f073e888015e477e4dbee401",
   "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 32,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_3b00f4822e408191b957e7b7189bddcc",
-    "source_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
-    "deployment_id": "appgdep_6aeef12e3624819185ab700077042c21",
-    "app_version": "0.5.20-rc.1"
+    "version": 33,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_211a6e3f0b708191a852c348a6dcafd5",
+    "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+    "deployment_id": "appgdep_6af0a4fe4ec881919f08b7ac80cda8d9",
+    "app_version": "0.5.21-rc.1"
   },
-  "source_deployment_ci_run": 42496353868,
+  "source_deployment_ci_run": 42507142653,
   "app_version": "0.5.21-rc.1",
   "expected_company_backup": true,
   "production_history": [
@@ -210,6 +210,13 @@
       "source_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
       "deployment_id": "appgdep_6aeef12e3624819185ab700077042c21",
       "app_version": "0.5.20-rc.1"
+    },
+    {
+      "version": 33,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_211a6e3f0b708191a852c348a6dcafd5",
+      "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+      "deployment_id": "appgdep_6af0a4fe4ec881919f08b7ac80cda8d9",
+      "app_version": "0.5.21-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -275,28 +282,30 @@
     "time_zone": "Europe/Madrid",
     "action": "sync_period"
   },
-  "ci_scope_note": "CargoTrack/logout application source821ba13d and exact production source89100d9 pass1558 checks per full CI execution; original64 tests/11 hashes retained. Postpublication receipts in docs/verification/cargotrack-v33-published-20261108.json. Public UI/SDK transports use fictitious identities; no new model calls or native user data.",
+  "ci_scope_note": "Embedded CargoTrack sourceb68ae35 and production72526b8 pass1564 controls per execution; no repeat model acceptance. See cargotrack-embedded-published-20261108 receipt for postpublication checks.",
   "final_release_verification": {
-    "code_commit": "821ba13d2f2dcf68fc0fd1990c0e7190d304f7e2",
-    "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
-    "checks_before_publication": 1558,
-    "unit_sql_passed": 1179,
+    "code_commit": "b68ae352147ad458fc981079ddfe5d675b34bd9e",
+    "source_commit": "72526b86a74f2539f073e888015e477e4dbee401",
+    "checks_before_publication": 1564,
+    "unit_sql_passed": 1181,
     "python_passed": 45,
     "demo_browser_passed": 72,
     "company_browser_passed": 50,
-    "saas_browser_passed": 172,
+    "saas_browser_passed": 176,
     "candidate_browser_passed": 14,
     "production_build_passed": 20,
     "public_profiles": 6,
-    "published_cargo_logout_cases": 16,
+    "published_cargo_logout_cases": 20,
+    "native_provider_public_profiles": 2,
+    "provider_account_authentication_verified": false,
     "https_file_hashes_after_publication": 75,
     "migrations": 63,
-    "postpublication_checks": "docs/verification/cargotrack-v33-published-20261108.json",
+    "postpublication_checks": "docs/verification/cargotrack-embedded-published-20261108.json",
     "scheduled_paid_model_calls": 0,
     "emission_available": false
   },
-  "source_branch": "deploy/cargotrack-production-20261108",
-  "production_source_manifest_only_diff_scope": "Compared with application821ba13d: production manifest, build-only production package workflow/helper and deployment documentation; runtime files are identical. Main keeps the demo manifest.",
+  "source_branch": "deploy/cargotrack-production-embedded-20261108",
+  "production_source_manifest_only_diff_scope": "Application b68ae35 and release72526b8 have byte-identical runtime. Production manifest, guarded packaging workflow/helper and two preparation records are the only release differences.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
     "docs/**",
@@ -307,7 +316,8 @@
     "TEST_RESULTS.md",
     "DEPLOYMENT.md",
     "scripts/verify-published-cargotrack.mjs",
-    ".openai/hosting.json"
+    ".openai/hosting.json",
+    "scripts/verify-cargotrack-embedding.mjs"
   ],
   "expected_billing_issuer": {
     "name": "ELEVADANCOR S.L.",
@@ -340,5 +350,49 @@
     "chat_writes_require_human_confirmation": true,
     "scheduled_paid_model_calls": 0,
     "emission_available": false
-  }
+  },
+  "expected_cargotrack_embedded": true,
+  "release_verification_history": [
+    {
+      "code_commit": "56eeef208e0cd2cfd13926cdf8ab44bc09855fcc",
+      "source_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
+      "checks_before_publication": 1107,
+      "unit_sql_passed": 789,
+      "python_passed": 32,
+      "demo_browser_passed": 64,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 132,
+      "candidate_browser_passed": 14,
+      "production_build_passed": 20,
+      "public_profiles": 6,
+      "native_live_profiles": 8,
+      "native_browser_online_devices": 2,
+      "native_browser_themes": 2,
+      "https_file_hashes_after_publication": 75,
+      "migrations": 60,
+      "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/38/checks",
+      "chat_writes_require_human_confirmation": true,
+      "scheduled_paid_model_calls": 0,
+      "emission_available": false
+    },
+    {
+      "code_commit": "821ba13d2f2dcf68fc0fd1990c0e7190d304f7e2",
+      "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+      "checks_before_publication": 1558,
+      "unit_sql_passed": 1179,
+      "python_passed": 45,
+      "demo_browser_passed": 72,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 172,
+      "candidate_browser_passed": 14,
+      "production_build_passed": 20,
+      "public_profiles": 6,
+      "published_cargo_logout_cases": 16,
+      "https_file_hashes_after_publication": 75,
+      "migrations": 63,
+      "postpublication_checks": "docs/verification/cargotrack-v33-published-20261108.json",
+      "scheduled_paid_model_calls": 0,
+      "emission_available": false
+    }
+  ]
 }
