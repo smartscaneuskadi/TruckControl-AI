@@ -219,7 +219,7 @@ begin
      values(reservation.document_id,task.id,reservation.object_key,wanted_hash,wanted_size)
      on conflict(id) do nothing;
    select * into document from private.tc_manual_subscription_invoice_documents where id=reservation.document_id;
-   if document.task_id<>task.id or document.object_key<>reservation.object_key
+   if not found or document.task_id<>task.id or document.object_key<>reservation.object_key
      or document.sha256<>wanted_hash or document.size_bytes<>wanted_size then
      raise exception 'manual_document_conflicting_evidence' using errcode='23514';
    end if;
