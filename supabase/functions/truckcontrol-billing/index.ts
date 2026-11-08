@@ -1,3 +1,4 @@
+import { subscriptionFiscalCheckoutAllowed } from "../_shared/subscription-fiscal-gate.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createBillingHandler } from "./handler.ts";
 import {
@@ -35,7 +36,7 @@ Deno.serve(
       allowedOrigins: productionBillingOrigins,
       stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
       webhookSecret: Deno.env.get("STRIPE_WEBHOOK_SECRET"),
-      invoicingVerified: Deno.env.get("BILLING_INVOICING_VERIFIED") === "true",
+      invoicingVerified: subscriptionFiscalCheckoutAllowed(Deno.env.get("BILLING_INVOICING_VERIFIED")),
     },
   ),
 );

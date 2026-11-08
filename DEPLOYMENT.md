@@ -1,5 +1,11 @@
 # Despliegue y recuperación
 
+## Ampliación nativa verificada · 08/11
+
+Supabase61 migraciones. Local20261107145959 → remota20261108081848,company_suppliers_and_trip_allocations; SHA256 nativo exacto e78473c5cd859d17e70d5903c1314ceea663db74969ea78d60e75363e8daa784. No editar/reaplicar. Ensayo nativo con rollback completado; datos existentes conservados.
+
+Frontend público sigue32/0.5.20-rc.1; el código nuevo0.5.21-rc.1 aún no se ha promovido. Android candidato en android/ y workflow propio,con minSdk24; no hay Play ni firma comercial. Incorporar main7d47ee9 antes de congelar la fuente. El entorno ERS no está disponible; no inventar empaquetado,despliegue o pruebas locales. Reanudar desde los commits remotos y preservar el worktree.
+
 ## Producción que se conserva
 
 - URL principal: https://truckcontrolai.com.

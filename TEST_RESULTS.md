@@ -1,5 +1,13 @@
 # Evidencias de pruebas
 
+## 8 de noviembre · pruebas nativas y CI
+
+Aceptación real Supabase:commercial-records-rollback-v1 PASS,205 proveedores/dos empresas,aislamiento,versiones,idempotencia,vínculos sin duplicar importes,candidatos/revisión/copia. Rollback completo:0fixtures nuevos y0filas en3tablas nuevas; huellas comerciales/planes/ajustes sin cambios. RLS activa,sin DML directo ni ejecución anónima; asesor sin avisos nuevos.
+
+CI e880f16:42432881227 y42432885795 verdes. El ensayo PR sobre su base integrada alcanza853 unitarias/SQL,45 Python,72 demo,50 empresa,134 SaaS,14 candidata,20 producción y6 públicas. No sumar ejecuciones duplicadas. Local anterior:823/43 y8 recorridos nuevos,con64 originales y11 hashes conservados. La diferencia de recuento corresponde a avances de main incorporados, no a nuevas llamadas IA.
+
+Android:primera compilación detecta minSdk24 obligatorio de la dependencia. Corrección preparada; sus5 tests JVM,lint,APK/AAB y CI final quedan pendientes. No afirmar prueba de dispositivo, firma comercial,Play o promoción de frontend.
+
 ## Referencia preservada · v32
 
 - 1.107 controles por ejecución CI:789 unitarias/SQL,32 Python,64 demo,50 empresas,132 SaaS,14 candidata,20 producción,6 públicas.

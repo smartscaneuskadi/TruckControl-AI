@@ -1,5 +1,15 @@
 # Facturación de las suscripciones de TruckControl AI
 
+## Actualización de decisión — 08/11/2026 (prevalece sobre el plan histórico de API)
+
+El titular confirmó el 07/11 que **ELEVADANCOR S.L. ya dispone de GDTaller configurado para TicketBAI** y que, en la primera etapa, **emitirá y enviará manualmente** las facturas fiscales en PDF; no se exige contratar ni integrar una API GDTaller para comenzar a preparar la apertura. El objetivo operativo de correo a las 24–48 horas **no sustituye el plazo legal de emisión**, que debe validar asesoría (incluidos anticipos/devengo y rectificativas).
+
+El [PR #47](https://github.com/smartscaneuskadi/TruckControl-AI/pull/47) se integró en `main` el 08/11 con merge `326838601c3990a1c2d36040f01814e14ae00094`, tras [CI completo verde](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42425385079). Solo introduce un contrato de estados y validaciones **sin I/O** para pago previamente confirmado por servidor, factura registrada por operador y envío declarado, **que NO equivale a entrega confirmada**. Ver [contrato y checklist](MANUAL_SUBSCRIPTION_TICKETBAI.md). La referencia fiscal y el PDF no se generan desde la app. **No existe implementación operativa aún:** faltan persistencia transaccional y RLS, webhook de pago firmado y conciliado, panel de administración, almacenamiento privado y correo real, procedimiento GDTaller y aceptación de asesoría.
+
+La sección «Próximo paso imprescindible» de abajo describe el **plan histórico de integración fiscal automática anterior a la decisión manual** y no impone hoy una API GDTaller como requisito de desarrollo del MVP. El guard `nativeSubscriptionFiscalIssuerAvailable() === false` y `BILLING_INVOICING_VERIFIED` permanecen cerrados: **no habilitar cobros por tener simplemente la posibilidad de facturar manualmente**. Antes de cualquier cambio de guard, exigir revisión del circuito completo, cumplimiento legal y autorización explícita de lanzamiento, con evidencia nativa en entorno permitido. Gmail público/empresarial, restore real, dispositivos físicos y revisión jurídica siguen pendientes. Sin nuevos gastos directos por esta decisión y sin afectar a v32, v31, demo v6 o las 60 migraciones ya aplicadas.
+
+> **Decisión posterior del titular (07/11/2026):** ELEVADANCOR ya utiliza **GDTaller con TicketBAI** y ha aprobado **emitir y enviar manualmente** las facturas de suscripciones al principio. Ver [procedimiento de facturación manual](MANUAL_SUBSCRIPTION_TICKETBAI.md). Las instrucciones históricas inferiores sobre una API y entrega automática no son requisito de la estrategia inicial; el circuito manual, su control y el momento de emisión siguen **sin implementar ni validar**. Pago real bloqueado: el guard nativo de Stripe continúa cerrado hasta pruebas y autorización fiscal y comercial.
+
 ## Emisor aprobado por el titular
 
 - ELEVADANCOR S.L.
@@ -24,6 +34,14 @@ La verificación HTTP también detectó que ambos servicios respondían con el o
 Los dos handlers de pago exigen ahora una comprobación explícita de facturación: `BILLING_INVOICING_VERIFIED=true`. El valor predeterminado es cerrado. **Esta variable es un control de lanzamiento, no un motor de facturas ni una prueba de integración por sí misma. No activarla para saltar la tarea pendiente.**
 
 Solo debe habilitarse tras conectar y verificar la emisión fiscal y entrega automática, además de la autorización independiente de cobros ya existente. La clave de Stripe, una marca enviada por el navegador o una respuesta antigua sin ese campo no bastan. El estado recurrente publica `invoice_delivery_ready`; el cliente antiguo que no lo recibe conserva el bloqueo de nuevas compras en la interfaz actual. Cancelar renovaciones y procesar eventos de pago firmados anteriores siguen disponibles; emitir o enviar una factura nunca debe activar acceso por sí solo.
+
+### Protección adicional de Release 1.0 — 07/11/2026
+
+El código candidato de `fix/fiscal-env-only-gate-20261107` añade un **bloqueo nativo independiente del valor de la variable**. Los entrypoints de los dos handlers de Stripe consultan `subscriptionFiscalCheckoutAllowed` en `supabase/functions/_shared/subscription-fiscal-gate.ts`. Su capacidad nativa permanece **false** porque TruckControl AI aún no incluye un emisor fiscal de suscripciones integrado con envío comprobado. Así, configurar por error `BILLING_INVOICING_VERIFIED=true` **no abre compras** por sí solo. No se pretende acreditar con esto que ya exista integración, aceptación o factura fiscal.
+
+Los tests sintéticos verifican el cierre en cobro único y recurrente con flag `true`, sin consultar Stripe, emitir documentos ni alterar Supabase. Las pruebas positivas previas de los handlers mantienen su simulación aislada: **no constituyen aceptación nativa del proveedor**. La cancelación y los webhooks firmados de operaciones previas conservan su tratamiento independiente. El cambio solo entra en producción si hay decisión explícita y despliegue verificado; esta rama/PR no modifica la v32 pública.
+
+Para reemplazar este bloqueo deberá existir una implementación nativa por proveedor fiscal y aceptación real: confirmar emisor, territorio y normativa aplicable, numeración/serie real, firma/remisión donde corresponda, idempotencia ante timeout, entrega y descarga privada, IVA, rectificativas, fallos/reintentos y verificación en entorno autorizado del proveedor con datos ficticios. **No basta cambiar el retorno del helper a true ni activar una variable**: la emisión, almacenamiento, conciliación y auditoría deben implementarse y probarse antes de integrar y desplegar una habilitación.
 
 ## Próximo paso imprescindible
 

@@ -5,7 +5,7 @@ android {
     buildToolsVersion = "36.0.0"
     defaultConfig {
         applicationId = "com.truckcontrolai.app"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "0.5.21-rc.1"

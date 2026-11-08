@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "project_ref": "kkkemaycedexymrpaqtp",
+  "official_repo": "smartscaneuskadi/TruckControl-AI",
+  "issue": 41,
+  "pull_request": 42,
+  "source_commit_verified": "e880f166729ece07eae1f6c3762f84763819bfbc",
+  "upstream_preserved": "7d47ee9f9288f6450ded8e0759cbe36162070ec2",
+  "production": {
+    "url": "https://truckcontrolai.com",
+    "version": 32,
+    "demo_preserved": 6,
+    "new_frontend_published": false
+  },
+  "migration": {
+    "local_version": "20261107145959",
+    "remote_version": "20261108081848",
+    "name": "company_suppliers_and_trip_allocations",
+    "remote_count": 61,
+    "git_blob": "bee5a1b952e19bc8623565f352ada530a1da16a6",
+    "recorded_sha256": "e78473c5cd859d17e70d5903c1314ceea663db74969ea78d60e75363e8daa784",
+    "source_matches_native": true,
+    "immutable": true
+  },
+  "native_acceptance": {
+    "contract": "commercial-records-rollback-v1",
+    "result": "passed",
+    "synthetic_companies": 2,
+    "suppliers_tested": 205,
+    "fixture_users_remaining": 0,
+    "new_tables_rows_remaining": 0,
+    "existing_business_fingerprints_unchanged": true,
+    "real_emails": 0,
+    "provider_calls": 0,
+    "rls_tables": 3,
+    "direct_customer_dml": false,
+    "anonymous_rpc_execute": false,
+    "new_security_findings": 0
+  },
+  "verification": {
+    "local_unit_sql": 823,
+    "local_python": 43,
+    "new_browser_cases": 8,
+    "retained_original_tests": 64,
+    "retained_file_hashes": 11,
+    "green_ci_runs": [
+      42432881227,
+      42432885795
+    ],
+    "ci_pr_merged_base": {
+      "unit_sql": 853,
+      "python": 45,
+      "demo_browser": 72,
+      "company_browser": 50,
+      "saas_browser": 134,
+      "candidate": 14,
+      "production": 20,
+      "public_checks": 6
+    },
+    "final_merged_head_ci": "pending"
+  },
+  "android": {
+    "min_sdk": 24,
+    "target_sdk": 36,
+    "browser_helper": "2.7.4",
+    "gradle": "9.9.0",
+    "agp": "9.5.1",
+    "commercial_signed": false,
+    "play_published": false,
+    "compile_status": "minimum_sdk_fix_pending_ci",
+    "physical_device_verified": false
+  },
+  "billing": {
+    "owner_decision": "GDTaller + TicketBAI manual initial",
+    "automatic_provider_api_required_for_mvp": false,
+    "native_queue_ui_delivery_verified": false,
+    "payments_enabled": false
+  },
+  "budget": {
+    "aggregate_ceiling_eur": 200,
+    "new_purchases_eur": 0,
+    "new_openai_calls": 0,
+    "new_tinyfish_estimated_usd": 0.0483,
+    "provider_invoice_reconciled": false,
+    "actual_total_eur": null,
+    "actual_remaining_eur": null,
+    "protective_reserves_eur": {
+      "historical_fx_taxes": 45,
+      "browser_automation": 1,
+      "play_if_owner_confirms": 30
+    },
+    "planning_unallocated_eur": 124,
+    "planning_is_not_actual_balance": true
+  },
+  "blockers": [
+    "Local execution environment failed ERS readiness; no new frontend artifact can yet be packaged there.",
+    "Google private profile renewal / public Gmail review pending.",
+    "Stripe connection and signed sandbox payment acceptance pending.",
+    "Native manual invoicing workflow and legal acceptance pending; pure reducer is insufficient.",
+    "Managed restore and physical device acceptance pending."
+  ]
+}

@@ -173,6 +173,40 @@ class RecoveryPreflightTests(unittest.TestCase):
         with self.assertRaisesRegex(gate.PreflightError, "reused"):
             self.inspect()
 
+    def test_rejects_duplicate_json_keys_even_when_values_are_identical(self) -> None:
+        manifest_file = self.root / "manifest.json"
+        original = manifest_file.read_text(encoding="utf-8")
+        duplicate_top = original.replace(
+            '"schema_version": 1', '"schema_version": 1, "schema_version": 1', 1
+        )
+        self.assertNotEqual(duplicate_top, original)
+        manifest_file.write_text(duplicate_top, encoding="utf-8")
+        with self.assertRaisesRegex(gate.PreflightError, "duplicate JSON field"):
+            gate.inspect(manifest_file, SOURCE)
+
+        duplicate_nested = original.replace(
+            '"passed": true', '"passed": true, "passed": true', 1
+        )
+        self.assertNotEqual(duplicate_nested, original)
+        manifest_file.write_text(duplicate_nested, encoding="utf-8")
+        with self.assertRaisesRegex(gate.PreflightError, "duplicate JSON field"):
+            gate.inspect(manifest_file, SOURCE)
+
+    def test_rejects_undocumented_fields_at_every_manifest_level(self) -> None:
+        self.manifest["claim_certified"] = True
+        with self.assertRaisesRegex(gate.PreflightError, "unexpected or missing"):
+            self.inspect()
+        self.manifest.pop("claim_certified")
+
+        self.manifest["artifacts"][0]["source_url"] = "https://example.invalid"
+        with self.assertRaisesRegex(gate.PreflightError, "unexpected or missing"):
+            self.inspect()
+        self.manifest["artifacts"][0].pop("source_url")
+
+        self.manifest["checks"]["auth_login"]["native_verified"] = True
+        with self.assertRaisesRegex(gate.PreflightError, "unexpected or missing"):
+            self.inspect()
+
     def test_no_secrets_or_personal_data_backups_in_manifest(self) -> None:
         self.manifest["api_token"] = "not-a-real-token"
         with self.assertRaises(gate.PreflightError):

@@ -1,5 +1,13 @@
 # TruckControl AI — avance comercial
 
+## 8 de noviembre · continuidad desde GitHub
+
+Migración aplicada con aprobación oficial:61 remotas,20261108081848. Proveedores y vínculos/revisión de viajes pasan aceptación nativa real con205 proveedores,dos empresas y rollback;0fixtures nuevos,datos/planes/ajustes idénticos antes/después,0 llamadas a modelos/proveedores y0 correos reales. RLS y permisos de las3 tablas verificados,sin nuevos avisos. Fuente/hash inmutables en el recibo comercial.
+
+CI e880f16 completo verde tras adaptar la API simulada de copias v4; se incorporan PR39–48 de main sin perder sus controles. Decisión vigente:GDTaller+TicketBAI manual inicial; no volver a pedir proveedor ni bloquear MVP por su API. Faltan persistencia/panel/aviso/aceptación del flujo manual, no se habilitan cobros por disponer del reductor puro.
+
+Android TWA guardado y lanzado en CI. Primer fallo real:minSdk23 incompatible con Browser Helper2.7.4; corregido a24 sin overrideLibrary ni saltar pruebas. Firma comercial/Play/dispositivos físicos pendientes. El entorno local ha fallado al recuperar ERS; las tareas continúan por conectores y CI. Producción32 y demo6 intactas. Publicación del frontend0.5.21-rc.1 pendiente de empaquetado y promoción verificados.
+
 ## 7 de noviembre de 2026 · auditoría desde v32
 
 Seguimiento: https://github.com/smartscaneuskadi/TruckControl-AI/issues/41.
