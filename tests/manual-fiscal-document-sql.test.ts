@@ -75,7 +75,18 @@ beforeAll(async () => {
     "grant usage on schema storage to anon,authenticated; grant select,insert on storage.objects to authenticated;" +
     "create policy existing_fleet_policy on storage.objects for all to authenticated using(true) with check(true);" +
     "insert into storage.buckets values('another-fleet-bucket','another-fleet-bucket',false,10485760,array['application/pdf']);");
-  await db.exec(readFileSync("docs/verification/manual-invoice-documents.proposal.sql", "utf8"));
+  const proposal = readFileSync("docs/verification/manual-invoice-documents.proposal.sql", "utf8");
+  const installed = (await db.query<{ installed: boolean }>(
+    "select to_regclass('private.tc_manual_subscription_document_runtime') is not null installed",
+  )).rows[0].installed;
+  if (installed) {
+    // Once the CLI-named migration contains these functions, do not execute a
+    // second schema. All migrations were already loaded above. Provision ONLY
+    // this test's Storage stand-in through the proposal's exact guarded prefix.
+    const marker = proposal.indexOf("create table private.tc_manual_subscription_document_runtime(");
+    if (marker < 0) throw Error("Missing reviewed Storage proposal boundary");
+    await db.exec(proposal.slice(0, marker));
+  } else await db.exec(proposal);
 }, 60000);
 beforeEach(async () => { await db.exec("begin"); });
 afterEach(async () => { await db.exec("reset role; rollback"); });
@@ -99,6 +110,14 @@ describe("propuesta PDF en PostgreSQL efímero: rol, nonce, CAS y storage privad
       await db.exec("insert into storage.objects(bucket_id,name,metadata) values('tc-subscription-fiscal','forbidden.pdf','{}')");
     })).rejects.toThrow();
     expect((await db.query("select bucket_id from storage.objects")).rows).toEqual([{ bucket_id: "another-fleet-bucket" }]);
+    await db.exec("insert into storage.objects(bucket_id,name,metadata) values('tc-subscription-fiscal','owner-only.pdf','{}')");
+    const visible = await attempt(async () => {
+      await db.exec("set local role authenticated");
+      const rows = (await db.query("select bucket_id from storage.objects")).rows;
+      await db.exec("reset role");
+      return rows;
+    });
+    expect(visible).toEqual([{ bucket_id: "another-fleet-bucket" }]);
   });
   it("reserva una ruta derivada del comprador y la tarea; el replay idéntico conserva nonce e identidad", async () => {
     await enable();

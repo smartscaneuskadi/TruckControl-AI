@@ -1,26 +1,36 @@
 -- REVIEW PROPOSAL ONLY. NOT A MIGRATION. DO NOT APPLY TO PRODUCTION.
--- Depends on the reviewed PR60 schema. Create a CLI-named additive migration
--- only after isolated tests, storage/Edge acceptance and official approval.
--- No TicketBAI certification, fiscal issuance, email or payment enablement.
--- The storage bucket is exclusively for subscription fiscal PDFs, not fleet docs.
-insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
-  values('tc-subscription-fiscal','tc-subscription-fiscal',false,10485760,array['application/pdf'])
-  on conflict(id) do nothing;
-do $bucket$
+-- Depends on reviewed PR60. Generate a CLI-named additive migration only after
+-- isolated tests, storage/Edge acceptance and official approval.
+-- No fiscal certification, email or payment enablement.
+-- Absent managed resources in PGlite stay unavailable; runtime flags remain false.
+do $storage$
 begin
+ if to_regclass('storage.buckets') is not null and to_regclass('storage.objects') is not null then
+  insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
+    values('tc-subscription-fiscal','tc-subscription-fiscal',false,10485760,array['application/pdf'])
+    on conflict(id) do nothing;
   if not exists(select 1 from storage.buckets where id='tc-subscription-fiscal'
     and public=false and file_size_limit between 8 and 10485760
     and allowed_mime_types=array['application/pdf']) then
     raise exception 'manual_document_private_bucket_required';
   end if;
-end;$bucket$;
--- A restrictive guard denies this bucket even if an older fleet policy is broad.
--- Other buckets are unaffected. NO client table privilege or permissive policy.
-create policy tc_subscription_fiscal_backend_only on storage.objects as restrictive
-  for all to anon,authenticated
-  using(bucket_id<>'tc-subscription-fiscal')
-  with check(bucket_id<>'tc-subscription-fiscal');
-revoke all on private.tc_manual_subscription_invoice_documents from service_role;
+  if not exists(select 1 from pg_class where oid='storage.objects'::regclass and relrowsecurity) then
+    raise exception 'manual_document_storage_rls_required';
+  end if;
+  -- Restrictive guard denies this bucket even if an older fleet policy is broad.
+  -- Other buckets and their existing permissions are unaffected.
+  create policy tc_subscription_fiscal_backend_only on storage.objects as restrictive
+    for all to anon,authenticated
+    using(bucket_id<>'tc-subscription-fiscal')
+    with check(bucket_id<>'tc-subscription-fiscal');
+ end if;
+end;$storage$;
+do $service_privileges$
+begin
+ if exists(select 1 from pg_roles where rolname='service_role') then
+  revoke all on private.tc_manual_subscription_invoice_documents from service_role;
+ end if;
+end;$service_privileges$;
 create table private.tc_manual_subscription_document_runtime(
   id boolean primary key default true check(id),
   uploads_enabled boolean not null default false
@@ -59,7 +69,15 @@ alter table private.tc_manual_subscription_document_reservations enable row leve
 alter table private.tc_manual_subscription_document_access enable row level security;
 revoke all on private.tc_manual_subscription_document_runtime,
   private.tc_manual_subscription_document_reservations,
-  private.tc_manual_subscription_document_access from public,anon,authenticated,service_role;
+  private.tc_manual_subscription_document_access from public,anon,authenticated;
+do $service_private$
+begin
+ if exists(select 1 from pg_roles where rolname='service_role') then
+  revoke all on private.tc_manual_subscription_document_runtime,
+    private.tc_manual_subscription_document_reservations,
+    private.tc_manual_subscription_document_access from service_role;
+ end if;
+end;$service_private$;
 create policy tc_manual_document_runtime_denied on private.tc_manual_subscription_document_runtime
   as restrictive for all to public using(false) with check(false);
 create policy tc_manual_document_reservations_denied on private.tc_manual_subscription_document_reservations
@@ -91,7 +109,7 @@ begin
   if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
 end;$actor$;
 revoke all on function private.tc_manual_fiscal_document_actor(uuid,uuid)
-  from public,anon,authenticated,service_role;
+  from public,anon,authenticated;
 
 -- Privileged backend adapter only. Each request ALSO verifies the caller JWT
 -- via Auth getUser and the existing admin RPC before entering this function.
@@ -210,14 +228,21 @@ begin
    'object_key',document.object_key,'sha256',document.sha256,'size_bytes',document.size_bytes);
 end;$document$;
 revoke all on function private.tc_manual_subscription_document_server(text,jsonb) from public,anon,authenticated;
-grant usage on schema private to service_role;
-grant execute on function private.tc_manual_subscription_document_server(text,jsonb) to service_role;
+
 create function public.tc_manual_subscription_document_server(p_action text,p_data jsonb)
 returns jsonb language sql security invoker set search_path='' as $wrapper$
  select private.tc_manual_subscription_document_server(p_action,p_data);
 $wrapper$;
 revoke all on function public.tc_manual_subscription_document_server(text,jsonb) from public,anon,authenticated;
-grant execute on function public.tc_manual_subscription_document_server(text,jsonb) to service_role;
+do $service_functions$
+begin
+ if exists(select 1 from pg_roles where rolname='service_role') then
+  revoke all on function private.tc_manual_fiscal_document_actor(uuid,uuid) from service_role;
+  grant usage on schema private to service_role;
+  grant execute on function private.tc_manual_subscription_document_server(text,jsonb) to service_role;
+  grant execute on function public.tc_manual_subscription_document_server(text,jsonb) to service_role;
+ end if;
+end;$service_functions$;
 
 -- Acceptance BEFORE activation:
 -- * isolated PGlite/Postgres schema, role/tenant/revoked-session/CAS/replay tests;
