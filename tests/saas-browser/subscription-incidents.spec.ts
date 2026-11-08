@@ -108,6 +108,7 @@ async function fixtures(page: Page) {
         data = { items: [fiscal], next_cursor: null };
       } else data = { items: [fiscal, { ...fiscal, id: "fc640000-0000-4000-8000-000000000099", buyer_company_name: "Otra solicitud ficticia" }], next_cursor: null };
     } else if (url.pathname.endsWith("/company-manual-invoices/capabilities")) data = { available: true, document_upload_ready: false, downloads_ready: false };
+    else { status = 400; data = { message: "Unexpected synthetic request: " + url.pathname }; }
     await route.fulfill({ status, headers, body: JSON.stringify(data) }).catch(() => {});
   });
   return { controls, calls, writes: () => completed.size };
@@ -117,7 +118,9 @@ async function open(page: Page) {
   await page.getByLabel("Correo electrónico", { exact: true }).fill("pedidos@smartscaneuskadi.com");
   await page.getByLabel("Contraseña", { exact: true }).fill("synthetic-password-123");
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
-  await page.getByRole("button", { name: "Incidencias de pagos", exact: true }).click();
+  const target = page.getByRole("button", { name: "Incidencias de pagos", exact: true });
+  await expect(target).toBeVisible().catch(async (failure) => { throw Error("La administración no abrió con el fixture sintético: " + (await page.locator("body").innerText()).slice(0, 6000) + "\n" + String(failure)); });
+  await target.click();
 }
 const panel = (page: Page) => page.getByRole("region", { name: "Incidencias de pagos del servicio" });
 async function detail(page: Page) { await panel(page).getByRole("button", { name: "Revisar incidencia", exact: true }).click(); await expect(panel(page).getByRole("region", { name: "Historial inmutable de la incidencia" })).toBeVisible(); }
@@ -237,7 +240,7 @@ test("logout con respuesta fiscal tardía limpia la selección y no muestra dato
   await expect(page.getByRole("button", { name: "Entrar", exact: true }).first()).toBeVisible();
   expect(f.writes()).toBe(0);
 });
-test("una confirmación tardía tras logout no reaparece en el panel ni en otra sesión", async ({ page }) => {
+test("una confirmación tardía tras logout no reaparece en la entrada", async ({ page }) => {
   const f = await fixtures(page); await open(page); await detail(page); f.controls.delayWrite = true;
   await review(page, "NOTA-PRIVADA-FICTICIA");
   await expect.poll(() => f.writes()).toBe(1);
