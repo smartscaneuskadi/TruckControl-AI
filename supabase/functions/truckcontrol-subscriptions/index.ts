@@ -1,3 +1,4 @@
+import { createLegacyStripeServer } from "../_shared/subscription-legacy-payment-gate.ts";
 import { subscriptionFiscalCheckoutAllowed } from "../_shared/subscription-fiscal-gate.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createRecurringHandler } from "./handler.ts";
@@ -19,17 +20,14 @@ Deno.serve(
         const { data, error } = await client.auth.getUser(token);
         return error ? null : data.user;
       },
-      async server<T>(
-        action: string,
-        data: Record<string, unknown>,
-      ): Promise<T> {
+      server: createLegacyStripeServer("recurring", async (action, data) => {
         const result = await client.rpc("tc_recurring_billing", {
           p_action: action,
           p_data: data,
         });
         if (result.error) throw new Error("Billing operation unavailable");
-        return result.data as T;
-      },
+        return result.data;
+      }),
     },
     {
       appOrigin: productionBillingOrigin(
