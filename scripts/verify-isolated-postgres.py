@@ -222,6 +222,15 @@ def raw_acl_snapshot(database: str) -> list:
     ) q""", database)
 
 
+def raw_constraint_snapshot(database: str) -> list:
+    return value("""select coalesce(jsonb_agg(jsonb_build_object(
+      'schema',n.nspname,'table',c.relname,'name',con.conname,
+      'definition',pg_get_constraintdef(con.oid)) order by n.nspname,c.relname,con.conname),'[]')
+      from pg_constraint con join pg_class c on c.oid=con.conrelid
+      join pg_namespace n on n.oid=c.relnamespace
+      where n.nspname in ('auth','public','private','storage')""", database)
+
+
 def catalog_fingerprint(database: str) -> dict:
     tables = value("""select coalesce(jsonb_agg(jsonb_build_object(
       'schema',n.nspname,'name',c.relname,'owner',pg_get_userbyid(c.relowner),
@@ -247,7 +256,9 @@ def catalog_fingerprint(database: str) -> dict:
       where n.nspname in ('auth','public','private','storage') and p.prokind='f'""", database)
     constraints = value("""select coalesce(jsonb_agg(jsonb_build_object(
       'schema',n.nspname,'table',c.relname,'name',con.conname,
-      'validated',con.convalidated,'definition',pg_get_constraintdef(con.oid))
+      'type',con.contype,'validated',con.convalidated,'deferrable',con.condeferrable,
+      'deferred',con.condeferred,'no_inherit',con.connoinherit,
+      'definition',pg_get_constraintdef(con.oid,true))
       order by n.nspname,c.relname,con.conname),'[]')
       from pg_constraint con join pg_class c on c.oid=con.conrelid
       join pg_namespace n on n.oid=c.relnamespace
@@ -352,6 +363,55 @@ def concurrent(first_sql: str, second_sql: str, prefix: str,
             if process is not None and process.poll() is None:
                 process.kill()
                 process.communicate(timeout=5)
+
+
+def constraint_boundaries(database: str):
+    # Exercise exactly the three CHECK expressions whose internal BETWEEN/AND
+    # parse trees can be deparsed differently by pg_dump. Real INSERT/UPDATE,
+    # positive boundaries and adversarial values, always ROLLBACK.
+    company = buyer_company(2)
+    mailbox = "fc660000-0000-4000-8000-000000000002"
+    def inbox(recipient: str) -> str:
+        return ("insert into private.company_mail_inboxes(organization_id,id,recipient,created_by)"
+                " values(" + quote(company) + "::uuid," + quote(mailbox) + "::uuid,"
+                + quote(recipient) + "," + quote(uid(2)) + "::uuid)")
+    def accepts(label: str, statement: str):
+        accepted = value("begin;" + statement
+                         + ";select jsonb_build_object('accepted',true);rollback;", database)
+        check(database + ": " + label, accepted == {"accepted": True})
+    def rejects(label: str, statement: str, constraint: str):
+        require_error(database + ": " + label, "begin;" + statement + ";rollback;",
+                      constraint, database)
+    for recipient, label in [("a@b.c", "minimum recipient length"),
+                             ("a" * 316 + "@b.c", "maximum recipient length")]:
+        accepts(label, inbox(recipient))
+    for recipient, label in [("a@bc", "rejects recipient below length minimum"),
+                             ("a" * 317 + "@b.c", "rejects recipient above length maximum"),
+                             ("bad!@example.invalid", "rejects invalid recipient character")]:
+        rejects(label, inbox(recipient), "company_mail_inboxes_recipient_check")
+    def receipt(delivery: str) -> str:
+        return (inbox("ci-boundary@example.invalid") + ";"
+                "insert into private.company_mail_receipts(organization_id,inbox_id,delivery_id,body_hash)"
+                " values(" + quote(company) + "::uuid," + quote(mailbox) + "::uuid,"
+                + quote(delivery) + "," + quote("0" * 64) + ")")
+    for delivery, label in [("x", "minimum delivery identity length"),
+                            ("x" * 160, "maximum delivery identity length")]:
+        accepts(label, receipt(delivery))
+    for delivery, label in [("", "rejects empty delivery identity"),
+                            ("x" * 161, "rejects oversized delivery identity"),
+                            ("bad id", "rejects invalid delivery identity character")]:
+        rejects(label, receipt(delivery), "company_mail_receipts_delivery_id_check")
+    def domain(value: str | None) -> str:
+        return ("update private.tc_provider_settings set receiving_domain="
+                + ("null" if value is None else quote(value)) + " where id=true")
+    for receiving, label in [(None, "nullable receiving domain remains allowed"),
+                             ("a.b", "minimum receiving domain length"),
+                             ("a" * 249 + ".com", "maximum receiving domain length")]:
+        accepts(label, domain(receiving))
+    for receiving, label in [("ab", "rejects receiving domain below minimum"),
+                             ("a" * 250 + ".com", "rejects receiving domain above maximum"),
+                             ("Bad_Domain.invalid", "rejects invalid receiving domain character")]:
+        rejects(label, domain(receiving), "tc_provider_settings_receiving_domain_check")
 
 
 def main():
@@ -505,8 +565,19 @@ def main():
     check("All live payment, document and email workers remain disabled",
           guards == {"payments": False, "notices": False, "uploads": False, "downloads": False, "live_channels": 0})
     sql("drop policy ci_broad_storage_read on storage.objects;")
+    existing_contract = (ROOT / "docs/verification/session-fiscal-pipeline-rollback-20261108.sql").read_bytes()
+    contract_blob = hashlib.sha1(b"blob " + str(len(existing_contract)).encode() + b"\0" + existing_contract).hexdigest()
+    check("Existing reviewed rollback contract is reused byte for byte",
+          contract_blob == "ace04d8b048d412a60b8e2ccad5fee5c09b977e5")
+    REPORT["rollback_contract_git_blob"] = contract_blob
+    cleanup = sql(existing_contract.decode()).splitlines()[-1].split("|")
+    check("Existing session/fiscal rollback contract passes PostgreSQL with zero remaining fixtures",
+          cleanup[0] == "session-fiscal-pipeline-cleanup-v1"
+          and len(cleanup) == 11 and all(count == "0" for count in cleanup[1:]))
+    constraint_boundaries(SOURCE)
     before_dump = database_fingerprint(SOURCE)
     before_raw_acls = raw_acl_snapshot(SOURCE)
+    before_raw_constraints = raw_constraint_snapshot(SOURCE)
     dump = run(["docker", "exec", CONTAINER, "pg_dump", "-U", "postgres",
                 "-d", SOURCE, "-Fc", "--no-owner"]).stdout
     (RESULTS / "synthetic-postgres.dump").write_bytes(dump)
@@ -517,6 +588,17 @@ def main():
          "-d", RESTORED, "--no-owner", "--exit-on-error"], data=dump)
     after_restore = database_fingerprint(RESTORED)
     after_raw_acls = raw_acl_snapshot(RESTORED)
+    after_raw_constraints = raw_constraint_snapshot(RESTORED)
+    REPORT["raw_constraint_representation_differences"] = [
+        {"schema": before["schema"], "table": before["table"], "name": before["name"],
+         "before": before["definition"], "after": after["definition"]}
+        for before, after in zip(before_raw_constraints, after_raw_constraints) if before != after
+    ]
+    REPORT["constraint_comparison"] = "Complete native pg_get_constraintdef(oid,true), type/validation/deferral/inheritance; raw definitions retained"
+    (RESULTS / "before-raw-constraints.json").write_text(json.dumps(before_raw_constraints, indent=2) + "\n")
+    (RESULTS / "after-raw-constraints.json").write_text(json.dumps(after_raw_constraints, indent=2) + "\n")
+    print("RAW_CONSTRAINT_REPRESENTATION_DIFFERENCES "
+          + json.dumps(REPORT["raw_constraint_representation_differences"]), flush=True)
     REPORT["raw_acl_representation_differences"] = fingerprint_differences(before_raw_acls, after_raw_acls)
     REPORT["acl_comparison"] = "aclexplode with PostgreSQL defaults; owner, grantee, grantor, privilege and grant option preserved"
     (RESULTS / "before-raw-acls.json").write_text(json.dumps(before_raw_acls, indent=2) + "\n")
@@ -536,6 +618,7 @@ def main():
     require_error("Restored fiscal audit remains append-only",
                   "update private.tc_manual_subscription_invoice_actions set state=state",
                   "manual_invoice_intake_immutable", RESTORED)
+    constraint_boundaries(RESTORED)
     REPORT["passed"] = True
 
 
