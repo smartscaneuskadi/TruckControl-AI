@@ -325,7 +325,7 @@ describe("correo general: aislamiento y control en PostgreSQL", () => {
       "select to_jsonb(s) value from private.tc_settings s",
     );
     const result = await db.exec(
-      readFileSync("docs/verification/company-mail-rollback.sql", "utf8"),
+      readFileSync("docs/verification/company-mail-session-rollback-20261108.sql", "utf8"),
     );
     expect(result.at(-1)?.rows[0]).toMatchObject({
       verification: "company_mail_passed_and_rolled_back",

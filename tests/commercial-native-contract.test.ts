@@ -15,7 +15,7 @@ it("ensaya el contrato nativo comercial completo y revierte todos los datos sint
       "update private.tc_settings set registration_open=true,enforce_access=true,payments_enabled=false,sms_ready=false;",
     );
     const result = await db.exec(
-      readFileSync("docs/verification/commercial-records-rollback.sql", "utf8"),
+      readFileSync("docs/verification/commercial-records-session-rollback-20261108.sql", "utf8"),
     );
     expect(
       result.some((r) =>

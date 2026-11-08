@@ -73,7 +73,15 @@ beforeAll(async () => {
   // feature, and their durability is exercised in a separate security suite.
   // Drop only these candidate tables in this disposable in-memory database;
   // NEVER disable their production triggers or weaken the security migration.
-  await db.exec(`drop table if exists private.tc_manual_subscription_invoice_documents;
+  await db.exec(`drop table if exists private.tc_manual_invoice_notice_audit;
+    drop table if exists private.tc_manual_invoice_notice_outbox;
+    drop table if exists private.tc_manual_invoice_notice_settings;
+    drop table if exists private.tc_manual_subscription_document_access;
+    drop table if exists private.tc_manual_subscription_document_reservations;
+    drop table if exists private.tc_manual_subscription_document_runtime;
+    drop table if exists private.tc_manual_stripe_bridge_receipts;
+    drop table if exists private.tc_manual_stripe_channels;
+    drop table if exists private.tc_manual_subscription_invoice_documents;
     drop table if exists private.tc_manual_subscription_invoice_actions;
     drop table if exists private.tc_manual_subscription_invoice_events;
     drop table if exists private.tc_manual_subscription_invoice_tasks;`);

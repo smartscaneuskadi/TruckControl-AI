@@ -19,7 +19,7 @@ it("el ensayo nativo de tareas pasa íntegro con rollback y conserva datos anter
       "update private.tc_settings set enforce_access=true,sms_ready=false,prices_are_examples=true;update private.tc_modules set enabled=true;update private.tc_provider_settings set ai_enabled=true,ai_monthly_budget_cents=1000",
     );
     const results = await db.exec(
-      readFileSync("supabase/tests/company-copilot-acceptance.sql", "utf8"),
+      readFileSync("docs/verification/company-copilot-session-acceptance-20261108.sql", "utf8"),
     );
     expect(results.at(-1)?.rows[0]).toMatchObject({
       migrations: 59,
