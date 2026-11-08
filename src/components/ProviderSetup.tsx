@@ -7,9 +7,11 @@ import {
   googleSecretSchema,
   parseGoogleClientFile,
   providerStatusSchema,
+  checkGoogleConfiguration,
 } from "../integrations/supabase/provider-setup";
 import type { ProviderStatus } from "../integrations/supabase/provider-setup";
 import { Badge, Button, Field } from "./ui";
+import { t } from "../i18n/runtime";
 
 export function ProviderSetup() {
   const client = getSupabaseClient(),
@@ -23,6 +25,14 @@ export function ProviderSetup() {
     [busy, setBusy] = useState(false);
   const lock = useRef(false),
     fileInput = useRef<HTMLInputElement>(null);
+  const mounted = useRef(true);
+  const [googleChecked, setGoogleChecked] = useState(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   async function refresh() {
     if (!client) return;
     const { data, error } = await client.rpc("tc_provider_control", {
@@ -35,6 +45,7 @@ export function ProviderSetup() {
       );
     const next = providerStatusSchema.parse(data);
     setStatus(next);
+    setClientId((previous) => previous || next.google.client_id || "");
     return next;
   }
   useEffect(() => {
@@ -46,7 +57,9 @@ export function ProviderSetup() {
           if (!active) return;
           try {
             if (error || !data) throw Error();
-            setStatus(providerStatusSchema.parse(data));
+            const next = providerStatusSchema.parse(data);
+            setStatus(next);
+            setClientId((previous) => previous || next.google.client_id || "");
           } catch {
             setError(
               "No se puede comprobar el estado. Solo la administración global tiene acceso.",
@@ -64,6 +77,8 @@ export function ProviderSetup() {
     setBusy(true);
     setError("");
     setMessage("");
+    setGoogleChecked(false);
+    let saved = false;
     try {
       const id = googleClientSchema.safeParse(clientId),
         value = googleSecretSchema.safeParse(secret);
@@ -71,6 +86,11 @@ export function ProviderSetup() {
         throw Error(
           "Usa el ID del proyecto TruckControl y el secreto completo, sin asteriscos.",
         );
+      await checkGoogleConfiguration(client, {
+        client_id: id.data,
+        client_secret: value.data,
+      });
+      if (!mounted.current) return;
       const { data, error } = await client.rpc("tc_provider_control", {
         p_action: "set_google",
         p_data: {
@@ -83,24 +103,62 @@ export function ProviderSetup() {
         throw Error(
           "No se ha guardado. Comprueba la autorización, la confirmación de sustitución y que no haya buzones vinculados ni autorizaciones en curso.",
         );
+      saved = true;
+      if (!mounted.current) return;
       setStatus(providerStatusSchema.parse(data));
       setSecret("");
-      setClientId("");
+      setClientId(id.data);
       setConfirmed(false);
       setReplace(false);
       if (fileInput.current) fileInput.current.value = "";
+      await checkGoogleConfiguration(client);
+      if (!mounted.current) return;
+      setGoogleChecked(true);
       setMessage(
-        "Credenciales guardadas en el almacén cifrado. Cada empresa debe autorizar su Gmail para comprobar la conexión.",
+        "Credenciales guardadas en el almacén cifrado y aceptadas por Google. Cada empresa debe autorizar su propio buzón; esta comprobación no conecta ni lee correos.",
       );
     } catch (e) {
-      setError(
-        e instanceof Error
-          ? e.message
-          : "No se ha podido guardar la configuración.",
-      );
+      if (mounted.current)
+        setError(
+          t(
+            saved
+              ? "La configuración se ha guardado, pero su comprobación ha fallado. {0}"
+              : "No se ha guardado la configuración. {0}",
+            [
+              e instanceof Error
+                ? e.message
+                : t("No se ha podido comprobar Google."),
+            ],
+          ),
+        );
     } finally {
       lock.current = false;
-      setBusy(false);
+      if (mounted.current) setBusy(false);
+    }
+  }
+  async function checkStoredConfiguration() {
+    if (!client || lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    setGoogleChecked(false);
+    try {
+      await checkGoogleConfiguration(client);
+      if (mounted.current) {
+        setGoogleChecked(true);
+        setMessage(
+          "Google acepta las credenciales del servidor. La autorización de cada buzón y la revisión pública de permisos se comprueban por separado.",
+        );
+      }
+    } catch (e) {
+      if (mounted.current)
+        setError(
+          e instanceof Error ? e.message : "No se ha podido comprobar Google.",
+        );
+    } finally {
+      lock.current = false;
+      if (mounted.current) setBusy(false);
     }
   }
   return (
@@ -250,6 +308,19 @@ export function ProviderSetup() {
         <code>https://truckcontrolai.com/gmail-callback</code>. La configuración
         no vincula ningún buzón ni publica la aplicación en Google.
       </p>
+      <p role="status" aria-live="polite">
+        {googleChecked
+          ? "Credenciales comprobadas con Google."
+          : "La configuración guardada todavía no se ha comprobado con Google en esta sesión."}
+      </p>
+      <Button
+        variant="secondary"
+        icon={RefreshCw}
+        disabled={busy || !status?.google.configured}
+        onClick={() => void checkStoredConfiguration()}
+      >
+        Comprobar credenciales con Google
+      </Button>
       <p>
         <a
           href="https://console.cloud.google.com/auth/clients?project=468881730124"

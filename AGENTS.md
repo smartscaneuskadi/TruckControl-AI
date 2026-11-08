@@ -1,3 +1,7 @@
+# Reparación de cuenta/Gmail candidata · 08/11/2026
+
+Producción comprobada sigue Sites38/sourceee43c0267bee67f45002b9a13736eaeb7cdb94f6; conservarla y demo6. Trabajo en fix/gmail-setup-account-flow-20261108, issue97. Leer docs/GMAIL_ACCOUNT_REPAIR.md antes de continuar. Cuenta accesible en barra, tarjeta de cuenta primero, validación Google antes de guardar y antes de iniciar OAuth; solo administración global comprueba candidatas/configuración. Sin DDL/nuevas claves/IA/cobros. Google rechaza la credencial real guardada con401/invalid_client; no declarar buzón empresarial conectado ni pedir repetir consentimiento antes de resolverla. El titular confirma Gmail personal.1248unit/SQL,45Python,Deno y18focalizadas correctas; regresión completa y arreglo de anchuras pendientes en este checkpoint, no anunciar CI verde. Publicar backend verificado antes de frontend, exclusivamente en el proyecto existente y tras controles completos. Conservar14/38 para recuperación. Native63/64pruebas/11hashes/#37 y cuotas intactos.
+
 # Cuatro idiomas publicados · Sites38 · 08/11/2026
 
 Este bloque prevalece sobre el histórico inferior. Vigente https://truckcontrolai.com, Sites38/app0.5.21-rc.1, fuenteee43c0267bee67f45002b9a13736eaeb7cdb94f6, deploymentappgdep_6af0dfe58e408191a072932ea5cd9a30 SUCCEEDED. PR96 integrado en6b439a880122a47ad31985687f6133e19f9a54b4. Se conservan37/35/34/33/32/31 y demo6;36 nunca publicado. Main conserva manifiesto DEMO: no desplegarlo como producción.

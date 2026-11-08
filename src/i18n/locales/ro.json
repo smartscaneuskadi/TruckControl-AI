@@ -2662,5 +2662,21 @@
   "{0} · {1} l": "{0} · {1} l",
   "https://truckcontrolai.com/gmail-callback": "https://truckcontrolai.com/gmail-callback",
   "mm": "mm",
-  "bar": "bar"
+  "bar": "bar",
+  "Cuenta y acceso": "Cont și acces",
+  "Cuenta": "Cont",
+  "Credenciales comprobadas con Google.": "Date de acces verificate cu Google.",
+  "La configuración guardada todavía no se ha comprobado con Google en esta sesión.": "Configurația salvată nu a fost încă verificată cu Google în această sesiune.",
+  "Comprobar credenciales con Google": "Verifică datele de acces cu Google",
+  "Credenciales guardadas en el almacén cifrado y aceptadas por Google. Cada empresa debe autorizar su propio buzón; esta comprobación no conecta ni lee correos.": "Datele de acces au fost salvate în depozitul criptat și acceptate de Google. Fiecare companie trebuie să își autorizeze propria căsuță poștală; această verificare nu conectează și nu citește e-mailuri.",
+  "Google acepta las credenciales del servidor. La autorización de cada buzón y la revisión pública de permisos se comprueban por separado.": "Google acceptă datele de acces ale serverului. Autorizarea fiecărei căsuțe poștale și verificarea publică a permisiunilor sunt verificate separat.",
+  "Google rechaza las credenciales de Gmail empresarial. La administración debe corregir el ID y el secreto del cliente antes de volver a conectar.": "Google respinge datele de acces Gmail ale companiei. Administratorul trebuie să corecteze ID-ul și secretul clientului înainte de reconectare.",
+  "No se ha podido comprobar la configuración con Google. No se ha iniciado una nueva autorización. Vuelve a comprobarla cuando haya conexión.": "Configurația nu a putut fi verificată cu Google. Nu a fost inițiată o nouă autorizare. Verifică din nou când există conexiune.",
+  "Falta completar la configuración de Gmail empresarial en Administración → Servicios.": "Finalizează configurarea Gmail pentru companie în Administrare → Servicii.",
+  "Solo la administración global puede comprobar o sustituir estas credenciales.": "Doar administratorul global poate verifica sau înlocui aceste date de acces.",
+  "Usa el ID del proyecto TruckControl y el secreto completo de ese cliente, sin asteriscos.": "Folosește ID-ul clientului din proiectul TruckControl și secretul complet al acestuia, fără asteriscuri.",
+  "No se ha podido verificar la configuración de Google. No se han guardado cambios.": "Configurația Google nu a putut fi verificată. Nu au fost salvate modificări.",
+  "La configuración se ha guardado, pero su comprobación ha fallado. {0}": "Configurația a fost salvată, dar verificarea ei a eșuat. {0}",
+  "No se ha guardado la configuración. {0}": "Configurația nu a fost salvată. {0}",
+  "No se ha podido comprobar Google.": "Google nu a putut fi verificat."
 }

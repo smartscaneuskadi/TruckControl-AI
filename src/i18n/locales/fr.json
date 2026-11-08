@@ -2662,5 +2662,21 @@
   "{0} · {1} l": "{0} · {1} l",
   "https://truckcontrolai.com/gmail-callback": "https://truckcontrolai.com/gmail-callback",
   "mm": "mm",
-  "bar": "bar"
+  "bar": "bar",
+  "Cuenta y acceso": "Compte et accès",
+  "Cuenta": "Compte",
+  "Credenciales comprobadas con Google.": "Identifiants vérifiés auprès de Google.",
+  "La configuración guardada todavía no se ha comprobado con Google en esta sesión.": "La configuration enregistrée n’a pas encore été vérifiée auprès de Google dans cette session.",
+  "Comprobar credenciales con Google": "Vérifier les identifiants auprès de Google",
+  "Credenciales guardadas en el almacén cifrado y aceptadas por Google. Cada empresa debe autorizar su propio buzón; esta comprobación no conecta ni lee correos.": "Identifiants enregistrés dans le stockage chiffré et acceptés par Google. Chaque entreprise doit autoriser sa propre boîte mail ; cette vérification ne connecte ni ne lit les e-mails.",
+  "Google acepta las credenciales del servidor. La autorización de cada buzón y la revisión pública de permisos se comprueban por separado.": "Google accepte les identifiants du serveur. L’autorisation de chaque boîte mail et l’examen public des autorisations sont vérifiés séparément.",
+  "Google rechaza las credenciales de Gmail empresarial. La administración debe corregir el ID y el secreto del cliente antes de volver a conectar.": "Google refuse les identifiants Gmail de l’entreprise. L’administrateur doit corriger l’identifiant et le secret du client avant de reconnecter.",
+  "No se ha podido comprobar la configuración con Google. No se ha iniciado una nueva autorización. Vuelve a comprobarla cuando haya conexión.": "La configuration n’a pas pu être vérifiée auprès de Google. Aucune nouvelle autorisation n’a été lancée. Réessayez une fois connecté.",
+  "Falta completar la configuración de Gmail empresarial en Administración → Servicios.": "Terminez la configuration Gmail de l’entreprise dans Administration → Services.",
+  "Solo la administración global puede comprobar o sustituir estas credenciales.": "Seul l’administrateur global peut vérifier ou remplacer ces identifiants.",
+  "Usa el ID del proyecto TruckControl y el secreto completo de ese cliente, sin asteriscos.": "Utilisez l’identifiant du client du projet TruckControl et son secret complet, sans astérisques.",
+  "No se ha podido verificar la configuración de Google. No se han guardado cambios.": "La configuration Google n’a pas pu être vérifiée. Aucune modification n’a été enregistrée.",
+  "La configuración se ha guardado, pero su comprobación ha fallado. {0}": "La configuration a été enregistrée, mais sa vérification a échoué. {0}",
+  "No se ha guardado la configuración. {0}": "La configuration n’a pas été enregistrée. {0}",
+  "No se ha podido comprobar Google.": "Google n’a pas pu être vérifié."
 }

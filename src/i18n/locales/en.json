@@ -2662,5 +2662,21 @@
   "{0} · {1} l": "{0} · {1} l",
   "https://truckcontrolai.com/gmail-callback": "https://truckcontrolai.com/gmail-callback",
   "mm": "mm",
-  "bar": "bar"
+  "bar": "bar",
+  "Cuenta y acceso": "Account and sign-in",
+  "Cuenta": "Account",
+  "Credenciales comprobadas con Google.": "Credentials checked with Google.",
+  "La configuración guardada todavía no se ha comprobado con Google en esta sesión.": "The saved configuration has not yet been checked with Google in this session.",
+  "Comprobar credenciales con Google": "Check credentials with Google",
+  "Credenciales guardadas en el almacén cifrado y aceptadas por Google. Cada empresa debe autorizar su propio buzón; esta comprobación no conecta ni lee correos.": "Credentials saved in encrypted storage and accepted by Google. Each company must authorise its own mailbox; this check does not connect to or read emails.",
+  "Google acepta las credenciales del servidor. La autorización de cada buzón y la revisión pública de permisos se comprueban por separado.": "Google accepts the server credentials. Each mailbox authorisation and the public permissions review are checked separately.",
+  "Google rechaza las credenciales de Gmail empresarial. La administración debe corregir el ID y el secreto del cliente antes de volver a conectar.": "Google rejects the company Gmail credentials. The administrator must correct the client ID and secret before reconnecting.",
+  "No se ha podido comprobar la configuración con Google. No se ha iniciado una nueva autorización. Vuelve a comprobarla cuando haya conexión.": "The configuration could not be checked with Google. No new authorisation was started. Check again when connected.",
+  "Falta completar la configuración de Gmail empresarial en Administración → Servicios.": "Complete the company Gmail configuration in Administration → Services.",
+  "Solo la administración global puede comprobar o sustituir estas credenciales.": "Only the global administrator can check or replace these credentials.",
+  "Usa el ID del proyecto TruckControl y el secreto completo de ese cliente, sin asteriscos.": "Use the TruckControl project client ID and its complete client secret, without asterisks.",
+  "No se ha podido verificar la configuración de Google. No se han guardado cambios.": "The Google configuration could not be verified. No changes were saved.",
+  "La configuración se ha guardado, pero su comprobación ha fallado. {0}": "The configuration was saved, but its verification failed. {0}",
+  "No se ha guardado la configuración. {0}": "The configuration was not saved. {0}",
+  "No se ha podido comprobar Google.": "Google could not be checked."
 }
