@@ -121,6 +121,22 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
     );
     expect(rows.rows[0].n).toBe(1);
   });
+  it("impide asociar un evento a una cuenta Stripe distinta de la tarea aun con escritura privilegiada", async () => {
+    const task = await db.query<{ id: string }>(
+      "select id from private.tc_manual_subscription_invoice_tasks where provider_payment_id='in_SyntheticConfirmed001'",
+    );
+    expect(task.rows).toHaveLength(1);
+    await expect(db.query(
+      `insert into private.tc_manual_subscription_invoice_events
+        (provider_account_id,provider_event_id,task_id)
+        values ('acct_OtherMerchant','evt_SyntheticCrossAccount',$1)`,
+      [task.rows[0].id],
+    )).rejects.toThrow("tc_manual_subscription_event_task_account_fk");
+    const events = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_events",
+    );
+    expect(events.rows[0].n).toBe(2);
+  });
   it("rechaza cruce de empresas, cambios monetarios y pagos no reconciliados", async () => {
     await expect(intake({
       payment: "in_SyntheticConfirmed003", event: "evt_SyntheticConfirmed003",
