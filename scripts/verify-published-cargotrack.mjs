@@ -24,9 +24,23 @@ mkdirSync(artifacts, { recursive: true });
 const temporary = mkdtempSync(join(root, "tests/.published-cargotrack-"));
 let status = 1;
 try {
+  const releaseGuard = `
+// Extra public-run safety guards; the original regression assertions stay intact.
+test.beforeEach(async ({ context, page }) => {
+  // Page-level fictitious fixtures take precedence. Any unmatched Supabase call
+  // is blocked so this runner cannot fall through to native customer services.
+  await context.route("https://*.supabase.co/**", route => route.abort("blockedbyclient"));
+  const response = await page.goto("/release.json");
+  expect(response?.status()).toBe(200);
+  const release = await response!.json();
+  expect(release.sourceCommit).toBe(${JSON.stringify(hosting.published_commit)});
+  expect(release.channel).toBe("production");
+  expect(release.sourceDirty).toBe(false);
+});
+`;
   writeFileSync(join(temporary, "platform.spec.ts"), original
     .replaceAll("http://127.0.0.1:9999", "https://kkkemaycedexymrpaqtp.supabase.co")
-    .replaceAll("http://127.0.0.1:4194", hosting.primary_url));
+    .replaceAll("http://127.0.0.1:4194", hosting.primary_url) + releaseGuard);
   const config = {
     testDir: temporary,
     workers: 2,
@@ -62,6 +76,8 @@ try {
     expected_source_commit: hosting.published_commit,
     browser_sdk: "real pinned Supabase SDK",
     backend_transport: "fictitious intercepted HTTP, no native accounts",
+    unmatched_supabase_calls: "blocked at browser-context level",
+    release_source_asserted_before_each_case: true,
     external_provider: "navigation intercepted, no CargoTrack login",
     devices: "Desktop Chrome / Pixel 7 emulation, not physical devices",
     assertions: "original eight regression cases unchanged; only fixture URL and CORS origin adapted",

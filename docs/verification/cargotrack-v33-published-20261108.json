@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-11-08T16:55:02.224334+00:00",
+  "checked_at": "2026-11-08T17:02:25.668621+00:00",
   "issue": 84,
   "implementation_pr": 85,
   "merge_commit": "1d3e88e1c4306c34803737e16fb2fc6fbe0f34f2",
@@ -195,7 +195,15 @@
     "scope": "Published UI and real pinned Supabase SDK, with intercepted fictitious HTTP for identity/company data. CargoTrack destination intercepted to verify tab security, no external account login. Six public profiles additionally test native non-mutating public configuration. No native customer account used.",
     "https_transport_note": "urllib default client returned Cloudflare1010/403; not counted as application pass; original failed report retained separately",
     "profile_receipt": "cargotrack-v33-public-profiles-20261108.json",
-    "https_receipt": "cargotrack-v33-https-20261108.json"
+    "https_receipt": "cargotrack-v33-https-20261108.json",
+    "unmatched_supabase_calls_blocked": true,
+    "release_source_asserted_before_each_case": true,
+    "guarded_test_stats": {
+      "expected": 16,
+      "unexpected": 0,
+      "flaky": 0,
+      "skipped": 0
+    }
   },
   "preserved": {
     "rollback_versions": [
