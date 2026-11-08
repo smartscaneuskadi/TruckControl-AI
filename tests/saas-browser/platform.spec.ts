@@ -1312,10 +1312,11 @@ test("Gmail: comprueba credenciales antes de guardar y conserva la configuració
 
 test("Gmail: comprueba la configuración guardada y rellena el ID público sin pedir copiarlo otra vez", async ({ page }) => {
   const f = await fixtures(page);
-  f.controls.providerStatus.google = { client_id: "468881730124-synthetic-browser.apps.googleusercontent.com", id_valid: true, secret_valid: true, configured: true, vault_available: true, connections: 0 };
+  f.controls.providerStatus.google = { client_id: "468881730124-synthetic-browser.apps.googleusercontent.com", id_valid: true, secret_valid: false, configured: false, vault_available: true, connections: 0 };
   f.controls.googleRuntimeCredentialResult = "rejected";
   await openProviders(page);
   await expect(page.getByLabel("ID del cliente web de TruckControl")).toHaveValue(f.controls.providerStatus.google.client_id!);
+  await expect(page.getByRole("button", { name: "Comprobar credenciales con Google", exact: true })).toBeEnabled();
   await page.getByRole("button", { name: "Comprobar credenciales con Google", exact: true }).click();
   await expect(page.locator(".provider-setup [role=alert]")).toContainText("Google rechaza las credenciales");
   expect(f.calls.some((c) => c.body?.p_action === "set_google")).toBe(false);
