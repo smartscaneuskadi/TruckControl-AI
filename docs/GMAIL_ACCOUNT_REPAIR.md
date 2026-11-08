@@ -29,7 +29,7 @@ Esta comprobación **no acredita consentimiento, scopes, identidad de un buzón,
 
 - `npm ci`, comprobación de tipos, `npm run check`:1248unitarias/SQL correctas;64originales/11hashes conservados.
 -45pruebas Python y comprobación de tipos Deno2.9.6 del backend Gmail correctas.
--18recorridos focalizados correctos en Android/Windows emulados, con SDK real y transporte de proveedores ficticio. La regresión completa y el arreglo de anchuras siguen en ejecución al crear este documento; no se presentan como verdes todavía.
+-24recorridos focalizados correctos en Android/Windows emulados, con SDK real y transporte de proveedores ficticio; incluyen320–1440px y los cuatro idiomas. El CI de a65bcb4 completó1249unitarias/SQL,82demo,50empresa y192SaaS, pero falló dos comprobaciones Android de la candidata porque ocultaban el distintivo de datos ficticios. Se conserva el distintivo y se distribuye la barra en filas: no se modifica ninguna aserción. La revalidación completa del nuevo head queda pendiente; un CI parcial no se presenta como verde.
 - No se han contratado servicios ni activado cobros, IA o lecturas reales. Los dispositivos físicos y la revisión pública de Google siguen sin aceptación nueva.
 
 Publicar backend antes de la interfaz, verificando sus fuentes y respuestas401/403 sin credenciales. Conservar company-gmailv14 como fuente de recuperación y Sites38 como versión anterior. Tras CI y revisión verdes, preparar un checkout de producción con la identidad existente; nunca desplegar el manifiesto de demo de main. Registrar los identificadores y la aceptación publicados al terminar.

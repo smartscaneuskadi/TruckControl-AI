@@ -38,7 +38,7 @@
 .settings-account {
   margin-bottom: 24px;
 }
-@media (min-width: 761px) and (max-width: 1100px) {
+@media (max-width: 1100px) {
   .app-main > header.topbar {
     height: auto;
     min-height: 72px;
@@ -59,9 +59,6 @@
   }
 }
 @media (max-width: 760px) {
-  .topbar-right .demo-pill {
-    display: none;
-  }
   .account-launcher {
     font-size: 12px;
     padding-inline: 8px;
