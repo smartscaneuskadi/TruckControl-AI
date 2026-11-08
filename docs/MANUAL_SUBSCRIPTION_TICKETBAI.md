@@ -59,3 +59,8 @@ El PR de ingesta durable añade `supabase/migrations/20261108013000_manual_subsc
 ### Revisión de seguridad — compra única frente a renovación (08/11)
 
 La restricción `tc_manual_subscription_request_unique` impide que dos referencias Stripe diferentes creen dos tareas fiscales para el **mismo** pedido inicial `tc_payment_requests.id`; el test sintético verifica que la transacción no deja evento parcial. **Limitación intencionada:** una suscripción recurrente puede generar varias facturas `tc_subscription_invoices.invoice_id` asociadas a un único pedido original. La función de ingesta candidata NO sirve para esas renovaciones: **prohibido conectarla a eventos de renovación** hasta diseñar y probar una ingesta separada, vinculada de modo único a `invoice_id`, `period_start/end`, cuenta, importe y usuario en webhook firmado y conciliación nativa. No relajar la unicidad del pedido ni habilitar pagos para sortear este bloqueo. Todo permanece en PR, sin DDL remoto ni activación.
+
+
+### Integridad adicional del registro privado de eventos (08/11)
+
+La cola candidata ahora obliga a que **cada evento de proveedor pertenezca a la misma cuenta Stripe que su tarea** mediante clave foránea compuesta `(task_id, provider_account_id) → (id, provider_account_id)`. Esto impide vincular eventos de una cuenta a tareas de otra incluso si un proceso privilegiado intentase insertar directamente en la tabla, y no depende únicamente del control de la función de ingesta. Se añadió prueba sintética de rechazo y ausencia de fila parcial en `tests/manual-subscription-intake-security.test.ts`. **No** autentica Stripe, no autoriza cobros y no concede acceso cliente. Todo sigue como migración local pendiente de verificación CI y auditoría, sin despliegue remoto.
