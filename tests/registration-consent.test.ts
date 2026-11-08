@@ -71,7 +71,9 @@ beforeAll(async () => {
   // feature, and their durability is exercised in a separate security suite.
   // Drop only these candidate tables in this disposable in-memory database;
   // NEVER disable their production triggers or weaken the security migration.
-  await db.exec(`drop table if exists private.tc_manual_subscription_invoice_events;
+  await db.exec(`drop table if exists private.tc_manual_subscription_invoice_documents;
+    drop table if exists private.tc_manual_subscription_invoice_actions;
+    drop table if exists private.tc_manual_subscription_invoice_events;
     drop table if exists private.tc_manual_subscription_invoice_tasks;`);
   await db.exec(
     `create schema if not exists extensions;create schema vault;create table vault.secrets(name text,secret text);insert into vault.secrets values('truckcontrol_auth_mail_signing_key','fictitious-secret');create view vault.decrypted_secrets as select name,secret decrypted_secret from vault.secrets;create function extensions.hmac(value text,key text,algorithm text) returns bytea language sql immutable as $mock$select decode(md5(value)||md5(value),'hex')$mock$;`,
