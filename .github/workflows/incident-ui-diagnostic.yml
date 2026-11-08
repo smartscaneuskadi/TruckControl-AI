@@ -1,0 +1,33 @@
+name: Isolated subscription incident UI diagnostic
+on:
+  push:
+    paths:
+      - ".github/workflows/incident-ui-diagnostic.yml"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/debug/incident-ui-artifact-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Read one synthetic Playwright failure context
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: smartscaneuskadi/TruckControl-AI
+        run: |
+          set -euo pipefail
+          incident_artifact_dir="$(mktemp -d)"
+          gh api repos/smartscaneuskadi/TruckControl-AI/actions/artifacts/13621112439/zip > "$incident_artifact_dir/failures.zip"
+          python3 - "$incident_artifact_dir/failures.zip" <<'PY'
+          import sys, zipfile
+          with zipfile.ZipFile(sys.argv[1]) as archive:
+              candidates = sorted(name for name in archive.namelist()
+                  if 'subscription-incidents-rev-' in name and name.endswith('/error-context.md'))
+              if not candidates:
+                  raise RuntimeError('Synthetic incident error context not found')
+              chosen = next((name for name in candidates if 'saas-windows' in name), candidates[0])
+              print('SYNTHETIC INCIDENT CONTEXT:', chosen)
+              print(archive.read(chosen).decode('utf-8')[:14000])
+          PY
