@@ -45,7 +45,7 @@ def result(statement,database=pg.SOURCE):
 def create_payment(n, monthly=False):
  registration={"truckcontrol_registration":{"contact_name":"Synthetic operator","company_name":"Synthetic PG company "+str(n),
   "tax_id":"SYNTHETIC-PG-INCIDENT-"+str(n),"address":"Synthetic isolated address 123",
-  "phone":"+1202555"+str(1000+n),"requested_plan":"limited"}}
+  "phone":"+12025557"+str(100+n),"requested_plan":"limited"}}
  sql("insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values("
   +q(uid(n))+","+q("incident-pg-"+str(n)+"@example.invalid")+",now(),"+js(registration)+");")
  company=value("select jsonb_build_object('id',id) from public.organizations where owner_id="+q(uid(n)))["id"]
