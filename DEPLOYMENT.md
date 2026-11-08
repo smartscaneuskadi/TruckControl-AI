@@ -1,11 +1,14 @@
 # Despliegue y recuperación
 
-## Revisión CargoTrack integrado · 08/11/2026
+## CargoTrack integrado publicado · Sites34 · 08/11/2026
 
-La nueva petición del titular sustituye el acceso en pestaña por una vista dentro de TruckControl. Implementación en feature/cargotrack-embedded-session, sin publicar todavía: iframe oficial por acción explícita, conservado fuera de Routes; reinicio al salir/cambiar empresa y sin capturar contraseñas. La sesión/caducidad pertenecen al proveedor; no se afirma autenticación por cargar la vista.
+**Estado vigente: https://truckcontrolai.com, Sites34/app0.5.21-rc.1**, fuente72526b86a74f2539f073e888015e477e4dbee401. PR92 fusionado en7bd8de6c1bc9dbb67e8d2761f8620838114a0c76. Deploymentappgdep_6af0b9aa501c819195e5bb1a8898895d SUCCEEDED. Se conservan33/32/31 y demo6; no publicar main con su manifiesto de demo.
 
-Preview real Android/Windows: formulario oficial visible y mismo documento al volver desde Resumen, sin introducir credenciales. La prueba restablece únicamente el almacenamiento particionado de Chrome que Playwright desactiva. Ver docs/CARGOTRACK_EMBEDDED.md y docs/verification/cargotrack-embedded-preview-20261108.json. Producción continúa33 hasta CI/promoción/aceptación HTTPS. Conservar33/32/31 y demo6; no migrar ni repetirNative63/#37; gastos/IA nuevos0, cobrosOFF. Las notas inferiores de «sólo enlace externo» describen la versión anterior, no esta nueva petición.
+CargoTrack abre ahora dentro de TruckControl por acción explícita y conserva el mismo iframe/documento al cambiar de sección. Salir o cambiar empresa/usuario retira la vista. El proveedor mantiene sus propias credenciales/cookies/caducidad; no se captura contraseña, no se promete autenticación por cargar la página y no se cierra automáticamente su sesión. Sin API ni importación. La petición del titular sustituye el acceso principal en otra pestaña de33; los checkpoints anteriores son históricos.
 
+CI42506902906/42506892118 y fuente exacta42507142648 SUCCESS:1564 controles por ejecución,64originales/11hashes. Después de publicar:75/75 hashes HTTPS,6/6 perfiles públicos,20/20 regresiones de CargoTrack/sesión y2/2 pruebas del formulario REAL público del proveedor, conservado al navegar con0pestañas nuevas. En estas últimas no se introdujeron credenciales ni se envió login: no se certifica sesión autenticada del titular. Android/Windows emulados, sin hardware físico. El probe restablece sólo la protección de almacenamiento particionado de Chrome desactivada por Playwright; sin rebajar TLS/SOP/cookies ni controles del proveedor. Hay alternativa voluntaria en la misma pestaña para navegadores restrictivos.
+
+Recibo: docs/verification/cargotrack-embedded-published-20261108.json; detalles y procedimiento: docs/CARGOTRACK_EMBEDDED.md. Fuente enviada por Git oficial y archivo Actions42507142653/artifact13627389701, tarSHA25621577cfdab95e445c1146cd7432f21e286b3a5f0e3170194f60258b7132d4413. Sin DDL/Edge/compras/IA nuevas; Native63/#37 y cuotas intactos, cobrosOFF. Gates comerciales generales y PR82/83/87/88 siguen separados. Automatización existente pausada, no prometer ejecución continua.
 
 ## Publicación CargoTrack y Cerrar sesión verificada · 08/11/2026
 
