@@ -39,6 +39,9 @@ create table private.tc_manual_subscription_invoice_events (
   task_id uuid not null,
   recorded_at timestamptz not null default now(),
   primary key (provider_account_id,provider_event_id),
+  -- Stripe event IDs identify one provider event globally, independent of the
+  -- merchant account. A replay across accounts must not create another event.
+  constraint tc_manual_subscription_event_global_unique unique (provider_event_id),
   constraint tc_manual_subscription_event_task_account_fk
     foreign key (task_id,provider_account_id)
     references private.tc_manual_subscription_invoice_tasks(id,provider_account_id)
