@@ -30,13 +30,17 @@ interface PaymentCorrelation {
   currency: "EUR";
   paid_at: string;
   livemode: boolean;
+  provider_event_type: string;
+  provider_event_created: number;
+  customer_id: string | null;
 }
 export type ReconciledStripePayment =
   | ({ kind: "initial_payment"; checkout_id: string } & PaymentCorrelation)
   | ({ kind: "subscription_invoice"; invoice_id: string; subscription_id: string;
        invoice_period_start: number; invoice_period_end: number;
        billing_reason: "subscription_create" | "subscription_cycle";
-       subscription_state: string } & PaymentCorrelation)
+       subscription_state: string; cancel_at_period_end: boolean;
+       subscription_current_period_end: number; unit_amount: number } & PaymentCorrelation)
   | { kind: "ignored"; provider_event_id: string };
 
 const obj = (v: unknown): Obj =>
@@ -159,6 +163,7 @@ export async function reconcileStripeManualInvoicePayment(
     const common = {
       provider_account_id: config.expectedAccountId, provider_event_id: event.id,
       currency: "EUR" as const, livemode: event.livemode,
+      provider_event_type: event.type, provider_event_created: event.created,
     };
     if (event.type !== "invoice.paid") {
       const session = await get("checkout/sessions/" + resource.id);
@@ -171,6 +176,7 @@ export async function reconcileStripeManualInvoicePayment(
       const funding = await funded(ref(session.payment_intent), session.amount_total, session.customer);
       return { ...common, ...correlation, kind: "initial_payment", checkout_id: String(session.id),
         provider_payment_id: String(funding.intent.id), amount_cents: session.amount_total,
+        customer_id: typeof ref(session.customer) === "string" ? String(ref(session.customer)) : null,
         // Stable automatic Charge creation time, not event delivery, bank settlement or fiscal devengo.
         paid_at: new Date(Number(funding.charge.created) * 1000).toISOString() };
     }
@@ -204,9 +210,11 @@ export async function reconcileStripeManualInvoicePayment(
     const line = obj(Array.isArray(lines.data) && lines.data.length === 1 ? lines.data[0] : null);
     const linePrice = ref(obj(obj(line.pricing).price_details).price ?? line.price);
     const period = obj(line.period);
+    const currentPeriodEnd = item.current_period_end ?? subscription.current_period_end;
     if (subscription.id !== subRef || !id(ref(subscription.customer), "cus") ||
         ref(invoice.customer) !== ref(subscription.customer) || !states.has(String(subscription.status)) ||
         items.has_more === true || item.quantity !== 1 || !id(price.id, "price") ||
+        !seconds(currentPeriodEnd, now + 62 * 86400000) ||
         price.unit_amount !== invoice.amount_paid || price.currency !== "eur" ||
         recurring.interval !== "month" || recurring.interval_count !== 1 || recurring.usage_type === "metered" ||
         lines.has_more === true || line.quantity !== 1 || linePrice !== price.id ||
@@ -229,7 +237,9 @@ export async function reconcileStripeManualInvoicePayment(
       amount_cents: invoice.amount_paid, paid_at: new Date(paidAt * 1000).toISOString(),
       invoice_period_start: period.start, invoice_period_end: period.end,
       billing_reason: invoice.billing_reason as "subscription_create" | "subscription_cycle",
-      subscription_state: String(subscription.status) };
+      subscription_state: String(subscription.status), customer_id: String(ref(subscription.customer)),
+      cancel_at_period_end: subscription.cancel_at_period_end === true,
+      subscription_current_period_end: currentPeriodEnd, unit_amount: Number(price.unit_amount) };
   } catch (error) {
     if (error instanceof StripeReconciliationError) throw error;
     return fail("provider_unavailable");

@@ -54,7 +54,8 @@ function fixture(recurring = false, renewal = false) {
       lines: { has_more: false, data: [{ quantity: 1, price: { id: "price_Synthetic" },
         period: { start: periodStart, end: periodStart + 30 * 86400 } }] } },
     "subscriptions/sub_Synthetic": { id: "sub_Synthetic", livemode: false,
-      customer: "cus_Synthetic", status: "active", metadata: { ...metadata },
+      customer: "cus_Synthetic", status: "active", current_period_end: periodStart + 30 * 86400,
+      cancel_at_period_end: false, metadata: { ...metadata },
       items: { has_more: false, data: [{ quantity: 1, price: { id: "price_Synthetic",
         unit_amount: amount, currency: "eur",
         recurring: { interval: "month", interval_count: 1, usage_type: "licensed" } } }] } },
@@ -88,7 +89,8 @@ describe("Stripe fiscal reconciliation: signed canonical reads only", () => {
     expect(result).toEqual({ kind: "initial_payment", provider_account_id: config.expectedAccountId,
       provider_event_id: f.event.id, provider_payment_id: "pi_Synthetic",
       checkout_id: "cs_test_Synthetic", request_id: request, user_id: user, company_id: company,
-      amount_cents: amount, currency: "EUR", paid_at: new Date(now - 20000).toISOString(), livemode: false });
+      amount_cents: amount, currency: "EUR", paid_at: new Date(now - 20000).toISOString(), livemode: false,
+      provider_event_type: f.event.type, provider_event_created: stamp, customer_id: "cus_Synthetic" });
     expect(f.fetcher).toHaveBeenCalledTimes(5);
     expect(JSON.stringify(result)).not.toContain("syntheticPrivateKey");
   });
