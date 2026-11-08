@@ -125,6 +125,7 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     companyRole: "owner" as "owner" | "admin" | "operator" | "viewer",
     companyPlan: "full" as "full" | "limited",
     backupDocuments: [] as CompanyDocument[],
+    commercialBackupFailure: false,
     invoiceRows: [] as CompanyInvoice[],
     tyreRows: [] as TyreRecord[],
     tyreHistory: [] as TyreHistory[],
@@ -585,6 +586,29 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
     } else if (url.pathname === "/rest/v1/rpc/tc_document_page") data = [];
     else if (url.pathname === "/rest/v1/rpc/tc_backup_page_v2")
       data = body?.p_kind === "documents" ? controls.backupDocuments : [];
+    else if (url.pathname === "/rest/v1/rpc/tc_commercial_backup_page") {
+      const a = access(identity!);
+      const kind = body?.p_kind;
+      if (controls.commercialBackupFailure) {
+        status = 503;
+        data = { code: "PGRST202" };
+      } else if (
+        !a.active ||
+        !a.can_manage ||
+        body?.p_org !== org ||
+        (kind === "suppliers" ? !a.features.expenses :
+          !a.features.trips || !a.features.profitability ||
+          !a.features.income || !a.features.expenses)
+      ) {
+        status = 403;
+        data = { code: "42501" };
+      } else if (!["suppliers", "trip_links", "trip_reviews"].includes(String(kind))) {
+        status = 400;
+        data = { code: "23514" };
+      } else data = {
+        schema_version: 1, organization_id: org, kind, rows: [],
+      };
+    }
     else if (
       /^\/storage\/v1\/object\/(?:authenticated\/)?truckcontrol-documents\//.test(
         url.pathname,
@@ -1976,6 +2000,12 @@ test("recupera un original cifrado y verifica ambos temas sin escribir datos ni 
   await openRecovery(page);
   const { text, phrase } = await downloadRecovery(page);
   expect(text).not.toContain("Empresa ficticia");
+  const exported = await decryptCompanyBackup(text, phrase, org);
+  expect(exported.version).toBe(4);
+  expect(exported.coverage.suppliers).toBe(true);
+  expect(exported.suppliers).toEqual([]);
+  expect(exported.tripFinanceLinks).toEqual([]);
+  expect(exported.tripFinanceReviews).toEqual([]);
   expect(text).not.toContain(phrase);
   await reviewRecovery(page, text, phrase);
   const modal = page.getByRole("dialog", {
@@ -2042,6 +2072,19 @@ test("recupera un original cifrado y verifica ambos temas sin escribir datos ni 
       ),
     ),
   ).toEqual([]);
+});
+
+
+test("la copia rechaza un backend comercial ausente antes de descargar originales", async ({ page }) => {
+  const f = await fixtures(page);
+  await openRecovery(page);
+  f.controls.commercialBackupFailure = true;
+  await page.getByLabel("Frase para cifrar la copia", { exact: true }).fill("Frase-ficticia-copia-2026");
+  await page.getByLabel("Repite la frase de la copia", { exact: true }).fill("Frase-ficticia-copia-2026");
+  await page.getByRole("button", { name: "Descargar copia cifrada", exact: true }).click();
+  await expect(page.locator(".company-backup-card [role=alert]")).toContainText("No se ha generado una copia parcial");
+  expect(f.calls.some((c) => c.path.startsWith("/storage/v1/object/"))).toBe(false);
+  expect(f.calls.some((c) => /functions\/v1/.test(c.path))).toBe(false);
 });
 
 test("rechaza frases y empresas distintas sin restaurar sobre la cuenta actual", async ({

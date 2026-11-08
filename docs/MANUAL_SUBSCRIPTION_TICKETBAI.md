@@ -1,5 +1,21 @@
 # Release 1.0 — Facturación manual asistida de suscripciones (decisión 07/11/2026)
 
+## Candidato fiscal integrado · 08/11/2026
+
+Esta sección prevalece sobre los avances históricos inferiores. La migración de PR60 sigue SIN APLICAR. El proyecto remoto tiene61 migraciones; la ampliación de proveedores/viajes de PR42 está aplicada y no debe repetirse.
+
+El candidato añade validación y corrección fiscal explícita por administrador global con referencia de evidencia. El snapshot original de perfil permanece inmutable; no se presenta como consentimiento fiscal del checkout. No se permite registrar emisión sin validación del comprador y evidencia de PDF verificada por servidor.
+
+Las transiciones son filas anexadas con bloqueo de tarea, versión esperada, UUID de operación, actor actual y auditoría inmutable. La autorización toma bloqueos compartidos de usuario/rol/sesión y se revalida tras esperar la tarea. Un replay exacto no duplica efectos; cambiar actor, datos, versión o tarea lo rechaza. Una incidencia posterior al envío puede pasar a needs_review conservando factura y declaración anteriores; no implica anular o rectificar el documento fiscal.
+
+Cada factura de suscripción, incluida la primera mensualidad, tiene identidad canónica in_ y período propio. La unicidad por pedido se limita al pago único; no se mezclan identidades de pago único y suscripción. La tabla nativa de facturas, pedido, usuario, empresa, plan, importe, moneda y períodos deben concordar. Dos mensualidades del mismo pedido son tareas independientes; reenvíos de la misma factura no lo son.
+
+El panel Facturas del servicio permite consultar, validar/corregir comprador y registrar incidencias. Las subidas y emisión permanecen bloqueadas con document_upload_ready=false: el candidato aún no trae worker de documentos ni envío de correo. sent_reported es declaración humana, no entrega confirmada.
+
+Se incorpora el conciliador Stripe de solo lectura, firmado y contrastado con objetos canónicos, cuenta, modo, metadatos e identidad mensual; sus34 pruebas específicas pasan en su rama. Todavía no está conectado al webhook/DB/outbox de producción. Se conserva el guard fiscal false, cobros apagados y aceptación real pendiente.
+
+El contrato docs/verification/manual-fiscal-rollback.sql se ensaya exactamente desde PGlite con todas las migraciones antes de cualquier aplicación nativa. Los checks del head compuesto del PR60 son la fuente de su resultado; no reutilizar el verde de una revisión anterior. Ni ese ensayo ni una compilación equivalen a Stripe real, TicketBAI emitido, recuperación gestionada o hardware físico. Sin nuevos consumos IA, correos reales, compras ni cambios a FIXPilot.
+
 **Emisor:** ELEVADANCOR S.L., B02993426, Polígono Arzabalza n.º 50, 20400 Tolosa. **Buzón operativo:** pedidos@smartscaneuskadi.com.
 
 ## Decisión y límites

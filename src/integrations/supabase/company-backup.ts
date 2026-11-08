@@ -1,5 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "./database.types";
+import { z } from "zod";
+import {
+  supplierSchema,
+  tripFinanceLinkSchema,
+  tripFinanceReviewSchema,
+} from "../../domain/commercial-records";
 import type { SubscriptionAccess } from "../../domain/subscriptions";
 import { SupabaseFleetRepository } from "./repository";
 import { CloudOperationRepository } from "../../data/operations";
@@ -41,6 +47,13 @@ export class SupabaseCompanyBackup implements CompanyBackupGateway {
           : "none",
       invoices: access.features?.gmail === true,
       ...(access.features?.maintenance === true ? { tyres: true } : {}),
+      ...(access.features?.expenses === true ? { suppliers: true } : {}),
+      ...(access.features?.trips === true &&
+      access.features?.profitability === true &&
+      access.features?.income === true &&
+      access.features?.expenses === true
+        ? { tripFinance: true }
+        : {}),
     };
     return {
       active: access.active === true,
@@ -115,13 +128,87 @@ export class SupabaseCompanyBackup implements CompanyBackupGateway {
           ),
         }
       : {};
+    const suppliers = this.coverage.suppliers
+      ? await this.commercialPage(
+          "suppliers",
+          supplierSchema,
+          (r) => r.id,
+          10000,
+        )
+      : undefined;
+    const tripFinanceLinks = this.coverage.tripFinance
+      ? await this.commercialPage(
+          "trip_links",
+          tripFinanceLinkSchema,
+          (r) => r.entry_id,
+          100000,
+        )
+      : undefined;
+    const tripFinanceReviews = this.coverage.tripFinance
+      ? await this.commercialPage(
+          "trip_reviews",
+          tripFinanceReviewSchema,
+          (r) => r.trip_id,
+          50000,
+        )
+      : undefined;
     return {
       fleet,
       operations,
       documents: documents.map((d) => backupDocumentSchema.parse(d)),
       invoices: invoices.map((i) => backupInvoiceSchema.parse(i)),
       ...tyreRecords,
+      ...(suppliers !== undefined ? { suppliers } : {}),
+      ...(tripFinanceLinks !== undefined
+        ? { tripFinanceLinks, tripFinanceReviews }
+        : {}),
     };
+  }
+  private async commercialPage<
+    S extends z.ZodType<{ organization_id: string }>,
+  >(
+    kind: "suppliers" | "trip_links" | "trip_reviews",
+    schema: S,
+    id: (r: z.output<S>) => string,
+    maximum: number,
+  ): Promise<z.output<S>[]> {
+    const result: z.output<S>[] = [];
+    let after: string | null = null;
+    const pageSchema = z.strictObject({
+      schema_version: z.literal(1),
+      organization_id: z.uuid(),
+      kind: z.literal(kind),
+      rows: z.array(schema).max(200),
+    });
+    for (let n = 0; n <= maximum / 200; n++) {
+      const { data, error } = await this.client.rpc(
+        "tc_commercial_backup_page",
+        { p_org: this.organization.id, p_kind: kind, p_after: after },
+      );
+      if (error)
+        throw Error(
+          "No se puede completar el archivo de proveedores y viajes. No se ha generado una copia parcial.",
+        );
+      const page = pageSchema.parse(data);
+      if (
+        page.organization_id !== this.organization.id ||
+        page.rows.some((r) => r.organization_id !== this.organization.id)
+      )
+        throw Error("El archivo comercial mezcla empresas.");
+      for (const row of page.rows) {
+        const next = id(row);
+        if (after !== null && next <= after)
+          throw Error("La paginación del archivo comercial no es válida.");
+        after = next;
+        result.push(row);
+      }
+      if (result.length > maximum)
+        throw Error(
+          "El archivo comercial supera el límite de la copia. No se ha truncado.",
+        );
+      if (page.rows.length < 200) return result;
+    }
+    throw Error("No se puede confirmar el archivo comercial completo.");
   }
   async download(document: BackupDocument): Promise<Uint8Array> {
     const doc = backupDocumentSchema.parse(document);

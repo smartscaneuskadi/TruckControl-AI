@@ -29,6 +29,7 @@ function fixture() {
     canManage: true,
     repeat: false,
     foreign: false,
+    commercialMissing: false,
   };
   const rpc = vi.fn(
     async (
@@ -53,6 +54,18 @@ function fixture() {
         };
       if (name === "tc_list_records") return { data: [], error: null };
       if (name === "tc_tyre_page") return { data: [], error: null };
+      if (name === "tc_commercial_backup_page")
+        return controls.commercialMissing
+          ? { data: null, error: { code: "PGRST202" } }
+          : {
+              data: {
+                schema_version: 1,
+                organization_id: org,
+                kind: args.p_kind,
+                rows: [],
+              },
+              error: null,
+            };
       if (name === "tc_backup_page_v2") {
         let rows =
           args.p_kind === "documents"
@@ -106,7 +119,9 @@ describe("lectura autorizada para copias", () => {
       backup = await collectCompanyBackup(f.gateway, org);
     expect(backup.documents).toHaveLength(201);
     expect(backup.files).toHaveLength(201);
-    expect(backup.version).toBe(3);
+    expect(backup.version).toBe(4);
+    expect(backup.suppliers).toEqual([]);
+    expect(backup.coverage.suppliers).toBe(true);
     expect(backup.tyres).toEqual([]);
     expect(backup.tyreHistory).toEqual([]);
     expect(f.download).toHaveBeenCalledTimes(201);
@@ -117,6 +132,14 @@ describe("lectura autorizada para copias", () => {
           args.p_after === "50000000-0000-4000-8000-000000000200",
       ),
     ).toBe(true);
+  });
+  it("no genera una copia antigua incompleta si falta el endpoint comercial", async () => {
+    const f = fixture();
+    f.controls.commercialMissing = true;
+    await expect(collectCompanyBackup(f.gateway, org)).rejects.toThrow(
+      /copia parcial/,
+    );
+    expect(f.download).not.toHaveBeenCalled();
   });
   it("una página repetida detiene la copia en vez de perder datos o entrar en bucle", async () => {
     const f = fixture();

@@ -448,3 +448,12 @@ p.form-error {
     max-width: 100%;
   }
 }
+
+.trip-finance-actions {
+  flex-wrap: wrap;
+  white-space: normal;
+  margin: 12px 0;
+}
+.trip-finance-actions .button {
+  white-space: normal;
+}

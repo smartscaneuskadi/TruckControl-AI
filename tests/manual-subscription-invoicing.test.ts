@@ -178,10 +178,52 @@ describe("TicketBAI manual: contrato puro, sin emisión ni pagos", () => {
     expect(issueBlocked.invoice?.invoiceNumber).toBe("A-2026/123");
     expect(() => recordManualInvoiceSent(issueBlocked, sent()))
       .toThrow("invalid_manual_invoice_transition");
-    expect(() => requireManualInvoiceReview(recordManualInvoiceSent(issued(), sent()), "dispatch_failure"))
-      .toThrow("invalid_manual_invoice_transition");
     expect(() => requireManualInvoiceReview(task(), "paid" as never))
       .toThrow("invalid_manual_invoice_review_reason");
+  });
+
+
+  it("registra una incidencia posterior al envío declarado y conserva toda la evidencia original", () => {
+    const reported = recordManualInvoiceSent(issued(), sent());
+    const before = structuredClone(reported);
+    const review = requireManualInvoiceReview(reported, "dispatch_failure");
+    expect(review).toEqual({
+      ...before,
+      status: "needs_review",
+      reviewReason: "dispatch_failure",
+    });
+    expect(review.invoice).toEqual(before.invoice);
+    expect(review.dispatch).toEqual(before.dispatch);
+    expect(review.providerPaymentId).toBe(before.providerPaymentId);
+    expect(reported).toEqual(before);
+    // A human send report is still a report: no delivery status is invented.
+    expect("deliveredAt" in review).toBe(false);
+  });
+
+  it("una incidencia después del envío es terminal e idempotente y no crea un reenvío o factura", () => {
+    const reported = recordManualInvoiceSent(issued(), sent());
+    const review = requireManualInvoiceReview(reported, "fiscal_issue_uncertain");
+    const evidence = structuredClone(review);
+    expect(requireManualInvoiceReview(review, "fiscal_issue_uncertain")).toBe(review);
+    expect(() => requireManualInvoiceReview(review, "amount_mismatch"))
+      .toThrow("conflicting_manual_invoice_review");
+    expect(() => recordManualInvoiceIssued(review, issue()))
+      .toThrow("invalid_manual_invoice_transition");
+    expect(() => recordManualInvoiceSent(review, sent()))
+      .toThrow("invalid_manual_invoice_transition");
+    expect(review).toEqual(evidence);
+  });
+
+  it("repetir el pago después de registrar una incidencia no reabre ni borra factura o envío", () => {
+    const review = requireManualInvoiceReview(recordManualInvoiceSent(issued(), sent()), "amount_mismatch");
+    const before = structuredClone(review);
+    expect(recordConfirmedManualPayment(review, payment({
+      providerEventId: "evt_SyntheticPaidAfterManualIncident",
+    }))).toBe(review);
+    expect(review).toEqual(before);
+    expect(review.status).toBe("needs_review");
+    expect(review.invoice?.invoiceNumber).toBe(issue().invoiceNumber);
+    expect(review.dispatch?.dispatchRecordId).toBe(sent().dispatchRecordId);
   });
 
   it("alerta solo por plazo operativo, no crea facturas ni fija un plazo legal", () => {

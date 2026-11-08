@@ -32,12 +32,15 @@ import { parseMoney } from "../domain/finance";
 import { useAppearance } from "../app/AppearanceContext";
 import { ProviderSetup } from "../components/ProviderSetup";
 import { FiscalAdminSettings } from "../components/FiscalAdminSettings";
+import { ManualSubscriptionInvoices } from "../components/ManualSubscriptionInvoices";
 
 export function AdminConsole({
+  userId,
   email,
   onSignOut,
   onDemo,
 }: {
+  userId: string;
   email: string;
   onSignOut(): Promise<void>;
   onDemo(): void;
@@ -143,6 +146,7 @@ export function AdminConsole({
     { id: "activity", label: "Actividad", icon: Activity },
     { id: "providers", label: "Servicios", icon: ShieldCheck },
     { id: "fiscal", label: "Facturación de empresas", icon: Landmark },
+    { id: "subscription_invoices", label: "Facturas del servicio", icon: CreditCard },
   ];
   return (
     <main className="admin-page">
@@ -275,6 +279,7 @@ export function AdminConsole({
             ))}
           </nav>
           {tab === "providers" && <ProviderSetup />}
+          {tab === "subscription_invoices" && <ManualSubscriptionInvoices key={userId} userId={userId} />}
           {tab === "fiscal" && (
             <FiscalAdminSettings onSaved={() => setRevision((n) => n + 1)} />
           )}

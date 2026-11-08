@@ -1,5 +1,29 @@
 # Gmail empresarial: preparación y prueba de facturas
 
+## Aceptación actual de lanzamiento · 08/11/2026
+
+Se conserva el código y la configuración existentes. La consulta nativa agregada de **09:28:46 UTC** confirma **0 vínculos Gmail empresariales, 0 estados OAuth y 0 autorizaciones pendientes**, en el proyecto exclusivo `kkkemaycedexymrpaqtp`, con **61 migraciones**. No se leen tokens, documentos, direcciones de buzones ni secretos.
+
+Las lecturas HTTPS de `company-gmail/health` y `company-gmail/browser-config` responden `configured=true`; la segunda devuelve el ID público ya conocido y `personal_browser`. Estos valores **no equivalen a consentimiento ni a un buzón empresarial conectado**. Mi correo fue probado por el titular; no repetir su envío ni trasladar sus tokens al importador.
+
+La revisión pública y el último estado real de Google **no han podido actualizarse** sin acceso administrativo oficial; la última observación en Google del 05/11 era Pruebas. No se recrean marca, proyecto, cliente o claves. El [expediente actualizado](GOOGLE_PUBLIC_VERIFICATION.md) identifica vídeo real, declaración, propiedad de dominio, revisión de alcances restringidos y CASA/LOA aplicable. Los tests anteriores siguen siendo integración simulada, sin aceptación del proveedor.
+
+### Recibo mínimo de aceptación real que falta
+
+Usar exclusivamente un buzón y empresas de prueba autorizados, sin reactivar fixtures suspendidos ni dar Full a clientes para probar. Registrar evidencia privada sin contenidos, tokens o enlaces de acceso personales:
+
+- Fecha UTC, versión/fuente publicada y empresa/actor de prueba seudonimizados.
+- Consentimiento Google de solo lectura, retorno al mismo usuario y empresa y vínculo confirmado por servidor.
+- Una factura ficticia recibida dentro del período; treinta días por defecto y rechazo de períodos superiores a doce meses antes de contenido/adjuntos/IA.
+- Original privado accesible únicamente a la empresa autorizada; otra empresa y usuario sin rol reciben denegación.
+- Reimportación idempotente; revisión humana y un único gasto de la base correcta, sin contabilización automática.
+- Retirada de consentimiento y desconexión comprobadas sin presentar una respuesta incierta como operación completada.
+- IA **solo** si hace falta una nueva prueba autorizada y con reserva de presupuesto. La tarea #37 y sus ocho llamadas reales están completadas y no se repiten.
+
+No se ha ejecutado ese recorrido ni se ha leído/enviado correo en esta revisión. La función básica de la plataforma permanece independiente de Gmail. No abrir importación para todos los clientes basándose únicamente en `configured=true`.
+
+## Historial conservado · entrega y pruebas del 05/11/2026
+
 Continuación del 05/11/2026, versión de código **0.5.15-rc.1**. Publicada como versión alojada **27** en https://truckcontrolai.com, conservando v26 y demo6 para recuperación. Código y fuente exacta superan 863 controles; 75 hashes HTTPS coinciden. Los seis perfiles públicos previos comprobaron v26; la aceptación posterior de v27 queda en los checks del [PR #31](https://github.com/smartscaneuskadi/TruckControl-AI/pull/31/checks). [Recibo](verification/gmail-acceptance-publication-20261105.json). [Expediente Google](GOOGLE_PUBLIC_VERIFICATION.md).
 
 ## Configuración real observada

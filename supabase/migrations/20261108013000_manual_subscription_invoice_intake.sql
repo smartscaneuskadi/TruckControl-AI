@@ -284,22 +284,27 @@ create trigger tc_manual_subscription_documents_immutable
   for each statement execute function private.tc_manual_subscription_intake_reject_mutation();
 
 create function private.tc_manual_subscription_operator()
-returns uuid language plpgsql stable security definer set search_path='' as $operator$
+returns uuid language plpgsql volatile security definer set search_path='' as $operator$
 declare actor uuid:=(select auth.uid()); sid text;
 begin
-  if actor is null or not private.tc_is_admin() or not exists(
-    select 1 from auth.users u where u.id=actor
-      and u.email_confirmed_at is not null and u.deleted_at is null
-      and coalesce(u.banned_until,'-infinity'::timestamptz)<=now()
-  ) then raise exception 'manual_invoice_operator_forbidden' using errcode='42501'; end if;
+  if actor is null then
+    raise exception 'manual_invoice_operator_forbidden' using errcode='42501';
+  end if;
+  -- Hold live user/admin/session rows through the short transaction. Concurrent
+  -- revocation cannot silently pass a check made before waiting for a task lock.
+  perform 1 from auth.users u where u.id=actor and u.email_confirmed_at is not null
+    and u.deleted_at is null and coalesce(u.banned_until,'-infinity'::timestamptz)<=now()
+    for share;
+  if not found then raise exception 'manual_invoice_operator_forbidden' using errcode='42501'; end if;
+  perform 1 from private.tc_admins where user_id=actor for share;
+  if not found then raise exception 'manual_invoice_operator_forbidden' using errcode='42501'; end if;
   sid:=nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'session_id';
   if sid is not null then
     if to_regclass('auth.sessions') is null then
       raise exception 'manual_invoice_session_revoked' using errcode='42501';
     end if;
-    if not exists(select 1 from auth.sessions a where a.id::text=sid and a.user_id=actor) then
-      raise exception 'manual_invoice_session_revoked' using errcode='42501';
-    end if;
+    perform 1 from auth.sessions a where a.id::text=sid and a.user_id=actor for share;
+    if not found then raise exception 'manual_invoice_session_revoked' using errcode='42501'; end if;
   end if;
   return actor;
 end;$operator$;
@@ -379,6 +384,7 @@ begin
   select * into t from private.tc_manual_subscription_invoice_tasks
     where id=p_task_id for update;
   if not found then raise exception 'manual_invoice_not_found' using errcode='42501'; end if;
+  actor:=private.tc_manual_subscription_operator();
   select * into repeated from private.tc_manual_subscription_invoice_actions
     where operation_id=p_request_id;
   if found then
@@ -523,6 +529,8 @@ begin
   select * into r from private.tc_payment_requests where id=b.request_id for update;
   if b.user_id is distinct from i.user_id or r.user_id is distinct from i.user_id
     or r.status<>'paid' or r.currency<>'EUR' or r.quoted_cents<>p_amount
+    or b.plan_id is distinct from r.plan_id or b.currency is distinct from r.currency
+    or b.monthly_cents is distinct from r.quoted_cents
     or r.net_cents is null or r.vat_rate_bps is null or r.vat_cents is null then
     raise exception 'manual_invoice_unreconciled_period' using errcode='23514';
   end if;
@@ -578,6 +586,17 @@ revoke all on function private.tc_manual_subscription_invoice_renewal_intake(tex
 create function private.tc_manual_subscription_guard_task_insert()
 returns trigger language plpgsql security invoker set search_path='' as $guard$
 begin
+  -- Serialize direct server inserts too; this prevents mixed one-off/recurring
+  -- identities from racing through the table boundary.
+  perform 1 from private.tc_payment_requests where id=new.request_id for update;
+  if new.provider_invoice_id is null and exists(
+    select 1 from private.tc_billing_subscriptions b where b.request_id=new.request_id
+  ) then raise exception 'manual_invoice_recurring_requires_invoice_identity' using errcode='23514'; end if;
+  if new.provider_invoice_id is not null and exists(
+    select 1 from private.tc_manual_subscription_invoice_tasks t
+      where t.request_id=new.request_id and t.provider_invoice_id is null
+  ) then raise exception 'manual_invoice_conflicting_identity' using errcode='23514'; end if;
+
   if not isfinite(new.paid_at) or new.paid_at>now()+interval '5 minutes' then
     raise exception 'manual_invoice_intake_invalid' using errcode='22023';
   end if;
@@ -587,6 +606,7 @@ begin
     where i.invoice_id=new.provider_invoice_id and i.invoice_id=new.provider_payment_id
       and i.subscription_id=new.subscription_id and b.request_id=new.request_id
       and i.user_id=new.buyer_user_id and b.user_id=new.buyer_user_id
+      and b.plan_id=new.plan_id and b.monthly_cents=new.amount_cents and b.currency=new.currency
       and i.amount_cents=new.amount_cents and i.currency=new.currency
       and i.period_start=new.period_start and i.period_end=new.period_end
   ) then raise exception 'manual_invoice_unreconciled_period' using errcode='23514'; end if;

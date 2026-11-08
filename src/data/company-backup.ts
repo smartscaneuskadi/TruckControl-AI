@@ -10,6 +10,12 @@ import {
   validateTyreArchive,
 } from "../domain/tyres";
 import type { TyreRecord, TyreHistory } from "../domain/tyres";
+import {
+  supplierSchema,
+  tripFinanceLinkSchema,
+  tripFinanceReviewSchema,
+} from "../domain/commercial-records";
+import type { Supplier } from "../domain/commercial-records";
 import { deriveVaultKey, newVaultSalt } from "./offline-vault";
 import { detectDocumentType } from "../../supabase/functions/_shared/invoice";
 
@@ -119,18 +125,23 @@ export interface BackupRecords {
   invoices: BackupInvoice[];
   tyres?: TyreRecord[];
   tyreHistory?: TyreHistory[];
+  suppliers?: Supplier[];
+  tripFinanceLinks?: z.infer<typeof tripFinanceLinkSchema>[];
+  tripFinanceReviews?: z.infer<typeof tripFinanceReviewSchema>[];
 }
 const coverageSchema = z
   .object({
     documents: z.enum(["library", "invoice-attachments", "none"]),
     invoices: z.boolean(),
     tyres: z.boolean().optional(),
+    suppliers: z.boolean().optional(),
+    tripFinance: z.boolean().optional(),
   })
   .strict();
 export type BackupCoverage = z.infer<typeof coverageSchema>;
 export interface CompanyBackup extends BackupRecords {
   format: "truckcontrol-company-records";
-  version: 1 | 2 | 3;
+  version: 1 | 2 | 3 | 4;
   project: typeof backupProject;
   exportedAt: string;
   coverage: BackupCoverage;
@@ -139,7 +150,7 @@ export interface CompanyBackup extends BackupRecords {
 const packageSchema = z
   .object({
     format: z.literal("truckcontrol-company-records"),
-    version: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+    version: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
     project: z.literal(backupProject),
     exportedAt: timestamp,
     coverage: coverageSchema,
@@ -148,6 +159,9 @@ const packageSchema = z
     documents: z.array(backupDocumentSchema).max(2000),
     invoices: z.array(backupInvoiceSchema).max(2000),
     tyres: z.array(tyreRecordSchema).max(5000).optional(),
+    suppliers: z.array(supplierSchema).max(10000).optional(),
+    tripFinanceLinks: z.array(tripFinanceLinkSchema).max(100000).optional(),
+    tripFinanceReviews: z.array(tripFinanceReviewSchema).max(50000).optional(),
     tyreHistory: z.array(tyreHistorySchema).max(50_000).optional(),
     files: z
       .array(
@@ -225,6 +239,64 @@ export function validateBackupRecords(
       booked.add(entry.id);
     }
   }
+  const commercial: Pick<
+    BackupRecords,
+    "suppliers" | "tripFinanceLinks" | "tripFinanceReviews"
+  > = {};
+  if (raw.suppliers !== undefined) {
+    const suppliers = z.array(supplierSchema).max(10000).parse(raw.suppliers);
+    if (
+      suppliers.some((s) => s.organization_id !== organizationId) ||
+      new Set(suppliers.map((s) => s.id)).size !== suppliers.length ||
+      new Set(suppliers.map((s) => s.tax_id.toUpperCase())).size !==
+        suppliers.length
+    )
+      throw Error(
+        "Los proveedores mezclan empresas o contienen fichas duplicadas.",
+      );
+    commercial.suppliers = suppliers;
+  }
+  if (
+    raw.tripFinanceLinks !== undefined ||
+    raw.tripFinanceReviews !== undefined
+  ) {
+    if (!raw.tripFinanceLinks || !raw.tripFinanceReviews)
+      throw Error("Faltan vínculos o revisiones de viajes en la copia.");
+    const links = z
+        .array(tripFinanceLinkSchema)
+        .max(100000)
+        .parse(raw.tripFinanceLinks),
+      reviews = z
+        .array(tripFinanceReviewSchema)
+        .max(50000)
+        .parse(raw.tripFinanceReviews);
+    const trips = new Map(
+      operations.filter((r) => r.kind === "trips").map((r) => [r.id, r]),
+    );
+    if (
+      new Set(links.map((l) => l.entry_id)).size !== links.length ||
+      new Set(reviews.map((r) => r.trip_id)).size !== reviews.length ||
+      links.some(
+        (l) =>
+          l.organization_id !== organizationId ||
+          !trips.has(l.trip_id) ||
+          !entries.has(l.entry_id) ||
+          trips.get(l.trip_id)!.data.truckId !==
+            entries.get(l.entry_id)!.truckId ||
+          operations.some(
+            (r) => r.kind === "trips" && r.financeEntryId === l.entry_id,
+          ),
+      ) ||
+      reviews.some(
+        (r) => r.organization_id !== organizationId || !trips.has(r.trip_id),
+      )
+    )
+      throw Error(
+        "Los vínculos o revisiones de viajes no pertenecen a las fichas de esta empresa.",
+      );
+    commercial.tripFinanceLinks = links;
+    commercial.tripFinanceReviews = reviews;
+  }
   if (raw.tyres !== undefined || raw.tyreHistory !== undefined) {
     if (!raw.tyres || !raw.tyreHistory)
       throw Error("Faltan fichas o historial de neumáticos en la copia.");
@@ -235,9 +307,17 @@ export function validateBackupRecords(
     );
     const tyres = archive.rows,
       tyreHistory = archive.history;
-    return { fleet, operations, documents, invoices, tyres, tyreHistory };
+    return {
+      fleet,
+      operations,
+      documents,
+      invoices,
+      tyres,
+      tyreHistory,
+      ...commercial,
+    };
   }
-  return { fleet, operations, documents, invoices };
+  return { fleet, operations, documents, invoices, ...commercial };
 }
 export async function validateCompanyBackup(
   raw: unknown,
@@ -255,11 +335,33 @@ export async function validateCompanyBackup(
   if (p.version === 1 && p.documents.some((d) => d.tracking))
     throw Error("Los metadatos documentales requieren una copia de versión 2.");
   if (
-    p.version !== 3 &&
+    p.version < 3 &&
     (p.tyres !== undefined || p.tyreHistory !== undefined || p.coverage.tyres)
   )
     throw Error(
       "Los neumáticos y su historial requieren una copia de versión 3.",
+    );
+  if (
+    p.version < 4 &&
+    (p.suppliers !== undefined ||
+      p.tripFinanceLinks !== undefined ||
+      p.tripFinanceReviews !== undefined ||
+      p.coverage.suppliers !== undefined ||
+      p.coverage.tripFinance !== undefined)
+  )
+    throw Error(
+      "Los proveedores y vínculos económicos requieren una copia de versión 4.",
+    );
+  if (
+    (p.coverage.suppliers
+      ? p.suppliers === undefined
+      : p.suppliers !== undefined) ||
+    (p.coverage.tripFinance
+      ? p.tripFinanceLinks === undefined || p.tripFinanceReviews === undefined
+      : p.tripFinanceLinks !== undefined || p.tripFinanceReviews !== undefined)
+  )
+    throw Error(
+      "El alcance comercial no corresponde al contenido de la copia.",
     );
   if (
     p.coverage.tyres
@@ -477,11 +579,14 @@ export async function collectCompanyBackup(
       ...records,
       format: "truckcontrol-company-records",
       version:
-        records.tyres !== undefined
-          ? 3
-          : records.documents.some((d) => d.tracking)
-            ? 2
-            : 1,
+        records.suppliers !== undefined ||
+        records.tripFinanceLinks !== undefined
+          ? 4
+          : records.tyres !== undefined
+            ? 3
+            : records.documents.some((d) => d.tracking)
+              ? 2
+              : 1,
       project: backupProject,
       exportedAt: new Date().toISOString(),
       coverage: auth.coverage,

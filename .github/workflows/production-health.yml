@@ -1,0 +1,48 @@
+name: Production availability
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/production-health.yml
+      - scripts/production-health.mjs
+      - scripts/report-production-incident.mjs
+      - docs/deployment/candidate-hosting.json
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: truckcontrol-production-health
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 24
+      - name: Observe public production without credentials or paid calls
+        id: health
+        continue-on-error: true
+        run: node scripts/production-health.mjs
+      - name: Record or resolve the monitor incident
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/report-production-incident.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: production-health
+          path: production-health-results/health.json
+          retention-days: 3
+      - name: Preserve failed availability status
+        if: steps.health.outcome != 'success'
+        run: exit 1
