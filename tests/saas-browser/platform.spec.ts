@@ -529,7 +529,7 @@ test("muestra los planes antes del registro y solicita la prueba Full sin cobrar
       exact: true,
     })
     .click();
-  await expect(page.getByRole("status")).toContainText("Confirma tu correo");
+  await expect(page.getByRole("status")).toContainText("Solicitud recibida");
   const signup = f.calls.find((c) => c.path === "/auth/v1/signup")!;
   expect(signup.body?.data).toMatchObject({
     truckcontrol_registration: {
