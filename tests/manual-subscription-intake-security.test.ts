@@ -189,6 +189,26 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
     );
     expect(events.rows[0].n).toBe(2);
   });
+  it("rechaza TRUNCATE CASCADE desde auth.users y conserva la evidencia fiscal", async () => {
+    // An administrative fixture reset / cleanup must not silently remove
+    // append-only invoice evidence through foreign-key cascades.
+    const beforeTasks = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_tasks",
+    );
+    const beforeEvents = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_events",
+    );
+    await expect(db.exec("truncate table auth.users cascade"))
+      .rejects.toThrow("manual_invoice_intake_immutable");
+    const afterTasks = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_tasks",
+    );
+    const afterEvents = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_events",
+    );
+    expect(afterTasks.rows).toEqual(beforeTasks.rows);
+    expect(afterEvents.rows).toEqual(beforeEvents.rows);
+  });
   it("bloquea tablas y función para anon y authenticated, incluida escritura directa", async () => {
     for (const role of ["anon", "authenticated"]) {
       await db.exec(`set role ${role}`);
