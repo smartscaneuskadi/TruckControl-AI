@@ -1,5 +1,4 @@
 import { ArrowLeft, ExternalLink, MapPinned, ShieldCheck, Truck } from "lucide-react";
-import "../styles/cargotrack.css";
 
 export const CARGOTRACK_LOGIN_URL = "https://on7.cargotrack.ro/signin";
 

@@ -2252,6 +2252,44 @@ test.describe("copia cifrada y sincronización", () => {
     await page.getByRole("button", { name: "Bloquear", exact: true }).click();
     await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
   });
+  test("cerrar sesión bloquea la clave offline y conserva únicamente la copia cifrada", async ({ page, context }) => {
+    await prepare(page);
+    const encryptedBefore = await page.evaluate(() => new Promise<string>((resolve, reject) => {
+      const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
+      r.onsuccess = () => {
+        const tx = r.result.transaction("vaults", "readonly");
+        const q = tx.objectStore("vaults").getAll();
+        tx.oncomplete = () => { resolve(JSON.stringify(q.result)); r.result.close(); };
+      };
+      r.onerror = () => reject(r.error);
+    }));
+    const open = page.getByRole("button", { name: "Abrir menú", exact: true });
+    if (await open.isVisible()) await open.click();
+    await page.getByRole("complementary", { name: "Navegación principal" })
+      .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+    await context.setOffline(true);
+    await page.evaluate(() => { location.hash = "/trucks"; });
+    await expect(page.locator("body")).not.toContainText("8888 TST");
+    await page.getByRole("button", { name: "Abrir copia sin conexión", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Acceso sin conexión" });
+    await expect(dialog.getByLabel("Frase de desbloqueo", { exact: true })).toHaveValue("");
+    await expect(dialog.getByLabel("Copia guardada")).toHaveCount(1);
+    await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+    const encryptedAfter = await page.evaluate(() => new Promise<string>((resolve, reject) => {
+      const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
+      r.onsuccess = () => {
+        const tx = r.result.transaction("vaults", "readonly");
+        const q = tx.objectStore("vaults").getAll();
+        tx.oncomplete = () => { resolve(JSON.stringify(q.result)); r.result.close(); };
+      };
+      r.onerror = () => reject(r.error);
+    }));
+    expect(encryptedAfter).toBe(encryptedBefore);
+    expect(encryptedAfter).not.toContain("customer@example.com");
+    expect(encryptedAfter).not.toContain("8888 TST");
+  });
   test("revocar la cuenta bloquea la copia y evita publicar cambios pendientes", async ({
     page,
     context,
@@ -4914,4 +4952,30 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
     await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
   });
+});
+
+
+test("una página restaurada de la caché exige verificar la sesión antes de mostrar la empresa", async ({ page }) => {
+  const f = await fixtures(page);
+  await login(page, "customer@example.com");
+  await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+  await page.evaluate(() => { location.hash = "/trucks"; });
+  await expect(page.locator("main")).toContainText("8888 TST");
+  const reads = f.calls.filter((c) => c.path === "/auth/v1/user").length;
+  // Page lifecycle events exercise the BFCache guard; these are not physical-device tests.
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true })));
+  await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+  await expect(page.locator(".sidebar")).toHaveCount(0);
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
+  await expect(page.locator("main")).toContainText("8888 TST");
+  expect(f.calls.filter((c) => c.path === "/auth/v1/user").length).toBeGreaterThan(reads);
+  const open = page.getByRole("button", { name: "Abrir menú", exact: true });
+  if (await open.isVisible()) await open.click();
+  await page.getByRole("complementary", { name: "Navegación principal" })
+    .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+  await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
+  await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("8888 TST");
+  await expect(page.locator(".sidebar")).toHaveCount(0);
 });

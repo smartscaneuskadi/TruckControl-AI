@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { ReactNode, FormEvent } from "react";
 import type { User } from "@supabase/supabase-js";
+import { flushSync } from "react-dom";
 import { Building2, LogIn, ShieldCheck, Truck } from "lucide-react";
 import { getSupabaseClient } from "../integrations/supabase/client";
 import { SupabaseFleetRepository } from "../integrations/supabase/repository";
@@ -182,8 +183,9 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     }
     let active = true;
     let authRevision = 0;
+    let suspended = false;
     function receive(user: User | null) {
-      if (!active) return;
+      if (!active || suspended) return;
       const nextUserId = user?.id ?? null;
       if (observedUserId.current !== nextUserId) endPrivateSessions();
       observedUserId.current = nextUserId;
@@ -209,27 +211,52 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
       }
       receive(session?.user ?? null);
     });
-    const requestRevision = authRevision;
-    // Validate a persisted session with the server; never authorize from user_metadata.
-    void client.auth
-      .getUser()
-      .then(({ data, error }) => {
-        if (!active || authRevision !== requestRevision) return;
-        if (error && error.name !== "AuthSessionMissingError")
-          setError(
-            "No se ha podido verificar la sesión. Vuelve a iniciar sesión.",
-          );
-        receive(data.user);
-      })
-      .catch(() => {
-        if (active) {
+    function verifyCurrentUser() {
+      const requestRevision = authRevision;
+      // Validate persisted identity with the server, including after BFCache restore.
+      void client!.auth
+        .getUser()
+        .then(({ data, error }) => {
+          if (!active || suspended || authRevision !== requestRevision) return;
+          if (error && error.name !== "AuthSessionMissingError")
+            setError(
+              "No se ha podido verificar la sesión. Vuelve a iniciar sesión.",
+            );
+          receive(error ? null : data.user);
+        })
+        .catch(() => {
+          if (!active || suspended || authRevision !== requestRevision) return;
           setError("No se puede conectar con el acceso de empresas.");
-          setLoading(false);
-        }
+          receive(null);
+        });
+    }
+    function suspendPrivateView() {
+      suspended = true;
+      authRevision++;
+      // Flush before the browser captures a page for its Back/Forward cache.
+      flushSync(() => {
+        endPrivateSessions();
+        observedUserId.current = null;
+        setAccount({ user: null, organizations: [], loaded: false });
+        setSelected(null);
+        setRecovery(false);
+        setLoading(true);
       });
+    }
+    function resumePrivateView(event: PageTransitionEvent) {
+      if (!active || (!suspended && !event.persisted)) return;
+      suspended = false;
+      authRevision++;
+      verifyCurrentUser();
+    }
+    window.addEventListener("pagehide", suspendPrivateView);
+    window.addEventListener("pageshow", resumePrivateView);
+    verifyCurrentUser();
     return () => {
       active = false;
       subscription.unsubscribe();
+      window.removeEventListener("pagehide", suspendPrivateView);
+      window.removeEventListener("pageshow", resumePrivateView);
     };
   }, [client]);
   const userId = account.user?.id;
