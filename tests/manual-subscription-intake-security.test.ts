@@ -7,6 +7,7 @@ const buyerB = "cc100000-0000-4000-8000-000000000002";
 const requestA = "cc200000-0000-4000-8000-000000000001";
 const requestA2 = "cc200000-0000-4000-8000-000000000002";
 const requestB = "cc200000-0000-4000-8000-000000000003";
+const requestB2 = "cc200000-0000-4000-8000-000000000004";
 const paidAt = "2026-11-07T20:00:00Z";
 let db: PGlite;
 let orgA = "", orgB = "";
@@ -75,7 +76,7 @@ beforeAll(async () => {
   orgB = (await db.query<{ id: string }>(
     "select id from public.organizations where owner_id=$1", [buyerB],
   )).rows[0].id;
-  for (const [id, user] of [[requestA, buyerA], [requestA2, buyerA], [requestB, buyerB]]) {
+  for (const [id, user] of [[requestA, buyerA], [requestA2, buyerA], [requestB, buyerB], [requestB2, buyerB]]) {
     await db.query(
       `insert into private.tc_payment_requests(
          id,user_id,plan_id,quoted_cents,plan_revision,status,net_cents,vat_rate_bps,vat_cents
@@ -307,6 +308,53 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
       "select count(*)::int n from private.tc_manual_subscription_invoice_tasks",
     );
     expect(after.rows).toEqual(before.rows);
+  });
+  it("marca como no verificados al checkout los datos de perfil modificados después del pedido", async () => {
+    // Isolated historic order: no real charge, Stripe or TicketBAI involved.
+    await db.query(
+      "update private.tc_payment_requests set created_at=now()-interval '3 days' where id=$1",
+      [requestB2],
+    );
+    await db.query(
+      `update private.tc_customers
+         set company_name='Empresa posterior al pedido',
+             tax_id='SIMULADO-POSTERIOR',
+             updated_at=now()-interval '2 days'
+         where user_id=$1`,
+      [buyerB],
+    );
+    await intake({
+      account: "acct_SyntheticLateProfile",
+      payment: "in_SyntheticLateProfile",
+      event: "evt_SyntheticLateProfile",
+      request: requestB2,
+      company: orgB,
+    });
+    const result = await db.query<{
+      buyer_company_name: string;
+      buyer_snapshot_origin: string;
+      buyer_profile_changed_after_request: boolean;
+      status: string;
+      request_before_profile: boolean;
+    }>(`select buyer_company_name,buyer_snapshot_origin,
+       buyer_profile_changed_after_request,status,
+       buyer_request_created_at<buyer_profile_updated_at as request_before_profile
+       from private.tc_manual_subscription_invoice_tasks where request_id=$1`,
+      [requestB2],
+    );
+    expect(result.rows).toEqual([{
+      buyer_company_name: "Empresa posterior al pedido",
+      buyer_snapshot_origin: "profile_at_intake",
+      buyer_profile_changed_after_request: true,
+      status: "awaiting_issue",
+      request_before_profile: true,
+    }]);
+    // Evidence is append-only, including provenance fields, even for an
+    // elevated caller. A future operator must validate the original buyer.
+    await expect(db.query(
+      "update private.tc_manual_subscription_invoice_tasks set buyer_profile_changed_after_request=false where request_id=$1",
+      [requestB2],
+    )).rejects.toThrow("manual_invoice_intake_immutable");
   });
 
 });
