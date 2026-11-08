@@ -73,6 +73,26 @@ create trigger tc_manual_document_access_immutable
  before update or delete or truncate on private.tc_manual_subscription_document_access
  for each statement execute function private.tc_manual_subscription_intake_reject_mutation();
 
+-- Lock the authorization rows in the same order as the operator RPC. A revoke
+-- that started first must finish before this lock can be granted; a later revoke
+-- waits until this short database transaction has completed.
+create function private.tc_manual_fiscal_document_actor(p_actor uuid,p_session uuid)
+returns void language plpgsql security invoker set search_path='' as $actor$
+begin
+  if p_actor is null or p_session is null then
+    raise exception 'manual_document_operator_required' using errcode='42501';
+  end if;
+  perform 1 from auth.users u where u.id=p_actor and u.email_confirmed_at is not null
+    and u.deleted_at is null and coalesce(u.banned_until,'-infinity'::timestamptz)<=now() for share;
+  if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
+  perform 1 from private.tc_admins a where a.user_id=p_actor for share;
+  if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
+  perform 1 from auth.sessions s where s.id=p_session and s.user_id=p_actor for share;
+  if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
+end;$actor$;
+revoke all on function private.tc_manual_fiscal_document_actor(uuid,uuid)
+  from public,anon,authenticated,service_role;
+
 -- Privileged backend adapter only. Each request ALSO verifies the caller JWT
 -- via Auth getUser and the existing admin RPC before entering this function.
 -- Recheck live membership/user/session here, not caller-supplied role metadata.
@@ -92,16 +112,14 @@ begin
  actor:=(p_data->>'actor_id')::uuid; sid:=(p_data->>'session_id')::uuid;
  task_id:=(p_data->>'task_id')::uuid; operation:=(p_data->>'operation_id')::uuid;
  expected:=(p_data->>'expected_version')::bigint;
- if actor is null or sid is null or operation is null or task_id is null
-   or expected is null or expected not between 1 and 9007199254740990
-   or not exists(select 1 from private.tc_admins a join auth.users u on u.id=a.user_id
-     where a.user_id=actor and u.email_confirmed_at is not null and u.deleted_at is null
-       and coalesce(u.banned_until,'-infinity'::timestamptz)<=now())
-   or not exists(select 1 from auth.sessions s where s.id=sid and s.user_id=actor) then
-   raise exception 'manual_document_operator_required' using errcode='42501';
+ if operation is null or task_id is null or expected is null or expected not between 1 and 9007199254740990 then
+   raise exception 'manual_document_invalid' using errcode='22023';
  end if;
+ perform private.tc_manual_fiscal_document_actor(actor,sid);
  select * into task from private.tc_manual_subscription_invoice_tasks where id=task_id for update;
  if not found then raise exception 'manual_document_task_denied' using errcode='42501'; end if;
+ -- Re-evaluate after any task-lock wait without changing JWT/session claims.
+ perform private.tc_manual_fiscal_document_actor(actor,sid);
  snapshot:=private.tc_manual_subscription_invoice_dto(task_id);
  if (snapshot->>'row_version')::bigint<>expected then
    raise exception 'manual_document_version_conflict' using errcode='40001';
