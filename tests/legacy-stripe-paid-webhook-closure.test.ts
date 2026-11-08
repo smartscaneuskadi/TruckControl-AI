@@ -226,7 +226,7 @@ describe("production legacy paid-webhook closure", () => {
   it("verifies a one-off HMAC then rejects the legacy paid write without a success acknowledgement", async () => {
     const rpc=vi.fn(async () => ({}));
     const authenticate=vi.fn(async () => ({id:user}));
-    const raw=JSON.stringify({id:"evt_paid_oneoff",type:"checkout.session.completed",
+    const raw=JSON.stringify({id:"evt_PaidOneoff",type:"checkout.session.completed",
       data:{object:{mode:"payment",payment_status:"paid",amount_total:36300,currency:"eur",
         metadata:{tc_user_id:user,tc_request_id:requestId}}}});
     const handler=createBillingHandler({authenticate,server:createLegacyStripeServer("one_time",rpc)},{
