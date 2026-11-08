@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createHmac } from "node:crypto";
 import { createBillingHandler } from "../supabase/functions/truckcontrol-billing/handler.ts";
+import { createClient } from "@supabase/supabase-js";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSessionVerifiedUser } from "../supabase/functions/_shared/auth-session.ts";
 import type { SessionVerificationClient } from "../supabase/functions/_shared/auth-session.ts";
@@ -135,6 +136,35 @@ describe("fábrica real de correo: sesión obsoleta cierra antes de server/stora
     expect(storage).not.toHaveBeenCalled();
     expect(model).not.toHaveBeenCalled();
     expect(await response.text()).not.toContain("PGRST202");
+  });
+});
+
+
+describe("transporte real supabase-js con credenciales sintéticas", () => {
+  for (const alive of [true, false]) it("fija el JWT usuario en PostgREST aun usando apikey de servidor; sesión " + (alive ? "viva" : "revocada"), async () => {
+    const token = jwt(), requests: { path: string; authorization: string | null; apikey: string | null; body: string }[] = [];
+    const transport = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const request = new Request(input, init), url = new URL(request.url);
+      requests.push({
+        path: url.pathname, authorization: request.headers.get("Authorization"),
+        apikey: request.headers.get("apikey"), body: request.method === "GET" ? "" : await request.text(),
+      });
+      if (url.pathname === "/auth/v1/user") return new Response(JSON.stringify({
+        id: uid, aud: "authenticated", role: "authenticated", email_confirmed_at: "2026-11-08T08:00:00Z", app_metadata: {}, user_metadata: {},
+      }), { headers: { "Content-Type": "application/json" } });
+      if (url.pathname === "/rest/v1/rpc/tc_verified_session") return new Response(JSON.stringify(alive), { headers: { "Content-Type": "application/json" } });
+      throw Error("Unexpected synthetic transport request");
+    });
+    const client = createClient("https://supabase.synthetic.invalid", "synthetic-server-apikey-no-secret", {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }, global: { fetch: transport },
+    });
+    const result = await getSessionVerifiedUser(client, token);
+    expect(result?.id ?? null).toBe(alive ? uid : null);
+    expect(requests).toEqual([
+      { path: "/auth/v1/user", authorization: "Bearer " + token, apikey: "synthetic-server-apikey-no-secret", body: "" },
+      { path: "/rest/v1/rpc/tc_verified_session", authorization: "Bearer " + token, apikey: "synthetic-server-apikey-no-secret", body: "{}" },
+    ]);
+    expect(transport).toHaveBeenCalledTimes(2);
   });
 });
 
