@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createDemo } from "./demo";
 import { demoOperations } from "./operations";
 import {
@@ -9,8 +9,10 @@ import {
   sealVault,
   validateVaultPayload,
   vaultScope,
+  VaultSession,
 } from "./offline-vault";
 import { demoFeatures } from "../domain/subscriptions";
+import type { VaultEnvelope } from "./offline-vault";
 import type { SubscriptionAccess } from "../domain/subscriptions";
 const fleet = createDemo(),
   user = "e0000000-0000-4000-8000-000000000001";
@@ -190,5 +192,151 @@ describe("almacenamiento offline cifrado", () => {
         scope,
       ),
     ).toThrow("duplicados");
+  });
+});
+
+function deferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  const promise = new Promise<T>((yes) => { resolve = yes; });
+  return { promise, resolve };
+}
+/** Small asynchronous IndexedDB transport for lifecycle races, not a crypto
+ * substitute. Every encrypt/decrypt below uses the real WebCrypto engine. */
+function vaultStorage(
+  values: Map<string, VaultEnvelope>,
+  pause: { readAt?: number; entered?(): void; release?: Promise<void> } = {},
+) {
+  const metrics = { reads: 0, writes: 0 };
+  vi.stubGlobal("indexedDB", {
+    open() {
+      const request: { result: unknown; onsuccess?: () => void } = {
+        result: {
+          close() {},
+          createObjectStore() {},
+          transaction() {
+            const tx: { oncomplete?: () => void; objectStore(): unknown } = {
+              objectStore() {
+                return {
+                  get(scope: string) {
+                    const read: { result?: VaultEnvelope; onsuccess?: () => void } = {};
+                    const ordinal = ++metrics.reads;
+                    queueMicrotask(() => void (async () => {
+                      if (pause.readAt === ordinal) { pause.entered?.(); await pause.release; }
+                      read.result = structuredClone(values.get(scope));
+                      read.onsuccess?.();
+                      queueMicrotask(() => tx.oncomplete?.());
+                    })());
+                    return read;
+                  },
+                  put(value: VaultEnvelope) { metrics.writes++; values.set(value.scope, structuredClone(value)); },
+                };
+              },
+            };
+            return tx;
+          },
+        },
+      };
+      queueMicrotask(() => request.onsuccess?.());
+      return request;
+    },
+  });
+  return metrics;
+}
+async function lifecycleFixture() {
+  const salt = newVaultSalt(), key = await deriveVaultKey(passphrase, salt);
+  const payload = offlinePayload(fleet, demoOperations(fleet), access);
+  const customer = demoOperations(fleet).find((row) => row.kind === "customers")!;
+  payload.outbox = [{
+    id: "e0000000-0000-4000-8000-000000000901", createdAt: now,
+    command: { type: "save", value: customer, expected: 1 },
+  }];
+  const envelope = await sealVault(payload, scope, key, salt, 1);
+  return { envelope, payload, session: new VaultSession(scope, key, salt) };
+}
+describe("cerrar la capacidad offline durante operaciones asíncronas", () => {
+  afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
+  it("no entrega texto descifrado si se bloquea mientras WebCrypto termina", async () => {
+    const f = await lifecycleFixture(), stored = new Map([[scope, f.envelope]]);
+    vaultStorage(stored);
+    const entered = deferred<void>(), resume = deferred<void>();
+    const decrypt = crypto.subtle.decrypt.bind(crypto.subtle);
+    vi.spyOn(crypto.subtle, "decrypt").mockImplementation(async (...args) => {
+      const plain = await decrypt(...args);
+      entered.resolve(undefined); await resume.promise; return plain;
+    });
+    const result = f.session.read(true);
+    await entered.promise;
+    f.session.lock();
+    const rejected = expect(result).rejects.toThrow("bloqueada");
+    resume.resolve(undefined); await rejected;
+    expect(stored.get(scope)).toEqual(f.envelope);
+    expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
+  });
+  it("no inicia decrypt después de bloquearse durante la lectura IndexedDB", async () => {
+    const f = await lifecycleFixture(), entered = deferred<void>(), resume = deferred<void>();
+    const stored = new Map([[scope, f.envelope]]);
+    vaultStorage(stored, { readAt: 1, entered: () => entered.resolve(undefined), release: resume.promise });
+    const decrypt = vi.spyOn(crypto.subtle, "decrypt");
+    const result = f.session.read(true);
+    await entered.promise; f.session.lock();
+    const rejected = expect(result).rejects.toThrow("bloqueada");
+    resume.resolve(undefined); await rejected;
+    expect(decrypt).not.toHaveBeenCalled();
+    expect(stored.get(scope)).toEqual(f.envelope);
+  });
+  it("preserva el ciphertext y la cola si se cierra durante el cifrado de una actualización", async () => {
+    const f = await lifecycleFixture(), stored = new Map([[scope, f.envelope]]);
+    const metrics = vaultStorage(stored), entered = deferred<void>(), resume = deferred<void>();
+    const encrypt = crypto.subtle.encrypt.bind(crypto.subtle);
+    vi.spyOn(crypto.subtle, "encrypt").mockImplementation(async (...args) => {
+      const cipher = await encrypt(...args);
+      entered.resolve(undefined); await resume.promise; return cipher;
+    });
+    const result = f.session.update((value) => ({ ...value, outbox: [] }));
+    await entered.promise; f.session.lock();
+    const rejected = expect(result).rejects.toThrow("bloqueada");
+    resume.resolve(undefined); await rejected;
+    expect(metrics.writes).toBe(0);
+    expect(stored.get(scope)).toEqual(f.envelope);
+  });
+  it("no ejecuta put si el bloqueo ocurre esperando la lectura CAS del almacén", async () => {
+    const f = await lifecycleFixture(), stored = new Map([[scope, f.envelope]]);
+    const entered = deferred<void>(), resume = deferred<void>();
+    const metrics = vaultStorage(stored, { readAt: 2, entered: () => entered.resolve(undefined), release: resume.promise });
+    const result = f.session.update((value) => ({ ...value, outbox: [] }));
+    await entered.promise; f.session.lock();
+    const rejected = expect(result).rejects.toThrow("bloqueada");
+    resume.resolve(undefined); await rejected;
+    expect(metrics.writes).toBe(0);
+    expect(stored.get(scope)).toEqual(f.envelope);
+  });
+  it("una creación cancelada durante PBKDF2 no publica una copia tardía", async () => {
+    const stored = new Map<string, VaultEnvelope>(), metrics = vaultStorage(stored);
+    const entered = deferred<void>(), resume = deferred<void>(), controller = new AbortController();
+    const derive = crypto.subtle.deriveKey.bind(crypto.subtle);
+    vi.spyOn(crypto.subtle, "deriveKey").mockImplementation(async (...args) => {
+      const key = await derive(...args);
+      entered.resolve(undefined); await resume.promise; return key;
+    });
+    const result = VaultSession.create(scope, passphrase, offlinePayload(fleet, [], access), controller.signal);
+    await entered.promise; controller.abort();
+    const rejected = expect(result).rejects.toMatchObject({ name: "AbortError" });
+    resume.resolve(undefined); await rejected;
+    expect(metrics.writes).toBe(0); expect(stored.size).toBe(0);
+  });
+  it("un desbloqueo cancelado durante decrypt no devuelve una capacidad utilizable", async () => {
+    const f = await lifecycleFixture(), stored = new Map([[scope, f.envelope]]);
+    vaultStorage(stored);
+    const entered = deferred<void>(), resume = deferred<void>(), controller = new AbortController();
+    const decrypt = crypto.subtle.decrypt.bind(crypto.subtle);
+    vi.spyOn(crypto.subtle, "decrypt").mockImplementation(async (...args) => {
+      const plain = await decrypt(...args);
+      entered.resolve(undefined); await resume.promise; return plain;
+    });
+    const result = VaultSession.unlock(scope, passphrase, true, controller.signal);
+    await entered.promise; controller.abort();
+    const rejected = expect(result).rejects.toMatchObject({ name: "AbortError" });
+    resume.resolve(undefined); await rejected;
+    expect(stored.get(scope)).toEqual(f.envelope);
   });
 });

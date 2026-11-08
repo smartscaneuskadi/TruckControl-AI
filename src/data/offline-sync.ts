@@ -11,17 +11,26 @@ import type { VaultSession } from "./offline-vault";
 export async function synchronizeVault(
   session: VaultSession,
   client: SupabaseClient<Database>,
+  signal?: AbortSignal,
 ) {
+  const active = () => { session.assertUnlocked(); signal?.throwIfAborted(); };
+  const uncertain = () => Error(
+    "Se cerró la copia después de iniciar un guardado. El resultado puede haberse registrado; compruébalo al volver a entrar. Los datos cifrados se conservan.",
+  );
+  active();
   const [, userId, orgId] = session.scope.split("|");
   const { data: identity, error: identityError } = await client.auth.getUser();
+  active();
   if (identityError || identity.user?.id !== userId)
     throw Error(
       "Inicia sesión con la cuenta que creó esta copia antes de sincronizar.",
     );
   const authorize = async () => {
+    active();
     const { data, error } = await client.rpc("tc_organization_access", {
       p_org: orgId,
     });
+    active();
     const access = data as unknown as SubscriptionAccess;
     if (error)
       throw Error(
@@ -31,11 +40,14 @@ export async function synchronizeVault(
       await session.update((v) => ({
         ...v,
         expiresAt: new Date().toISOString(),
-      }));
+      }), signal);
+      active();
       throw Error(
         "Esta empresa ya no permite el acceso. La copia queda bloqueada hasta verificar los permisos de nuevo.",
       );
     }
+    if (access.profile?.user_id !== userId)
+      throw Error("La cuenta de la copia ha cambiado. Verifica de nuevo el acceso antes de sincronizar.");
     return access;
   };
   let access = await authorize();
@@ -44,32 +56,59 @@ export async function synchronizeVault(
       name: access.profile?.company_name ?? "Empresa",
     }),
     cloud = new CloudOperationRepository(client, orgId);
+  active();
   const snapshot = await fleet.load();
-  let pending = await session.read(true),
+  active();
+  let pending = await session.read(true, signal),
     sent = 0;
+  active();
   for (const item of pending.outbox) {
+    active();
     access = await authorize();
+    active();
     const kind =
       item.command.type === "save"
         ? item.command.value.kind
         : item.command.kind;
     if (access.can_write === false || !access.features[kind]) {
-      await session.update((v) => ({ ...v, access }));
+      await session.update((v) => ({ ...v, access }), signal);
+      active();
       throw Error(
         "Tus permisos actuales no permiten publicar uno de los cambios. Se conserva pendiente para su revisión.",
       );
     }
-    await cloud.execute(item.command, snapshot);
-    pending = await session.update((value) => ({
-      ...value,
-      outbox: value.outbox.filter((row) => row.id !== item.id),
-    }));
+    active();
+    try {
+      // A write already sent may commit. Do not abort it and then pretend that
+      // nothing happened; keep its UUID/version until a verified acknowledgment.
+      await cloud.execute(item.command, snapshot);
+    } catch (error) {
+      try { active(); } catch { throw uncertain(); }
+      throw error;
+    }
+    try {
+      active();
+      pending = await session.update((value) => ({
+        ...value,
+        outbox: value.outbox.filter((row) => row.id !== item.id),
+      }), signal);
+      active();
+    } catch (error) {
+      try { active(); } catch { throw uncertain(); }
+      throw error;
+    }
     sent++;
   }
   access = await authorize();
+  active();
   const operations = await cloud.load(snapshot);
+  active();
   await session.update((value) =>
     value.outbox.length ? value : offlinePayload(snapshot, operations, access),
+    signal,
   );
-  return { sent, payload: await session.read() };
+  active();
+  const payload = await session.read(false, signal);
+  active();
+  return { sent, payload };
 }
