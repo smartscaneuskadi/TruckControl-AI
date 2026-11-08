@@ -132,3 +132,28 @@ revoke all on function private.tc_manual_subscription_invoice_intake(
 -- Deliberately absent: issuing/dispatch CAS, storage access, outbox, payment
 -- activation, external invocation grant and any scheduled worker. These require
 -- authorization/auditing and independent fiscal acceptance before deployment.
+
+
+-- Until an independently reviewed operator CAS, immutable fiscal document and
+-- outbound-delivery workflow exists, these private intake ledgers are
+-- append-only. RLS/revokes do not restrict a service-role or table owner.
+-- Statement-level guards also reject TRUNCATE and protect empty tables.
+-- A future state-machine migration must explicitly replace this freeze with
+-- permissioned transitions + immutable audit trail, never simply disable it.
+create function private.tc_manual_subscription_intake_reject_mutation()
+returns trigger language plpgsql set search_path='' as $$
+begin
+  raise exception 'manual_invoice_intake_immutable' using errcode='23514';
+end;$$;
+revoke all on function private.tc_manual_subscription_intake_reject_mutation()
+  from public,anon,authenticated;
+create trigger tc_manual_subscription_tasks_immutable
+  before update or delete or truncate
+  on private.tc_manual_subscription_invoice_tasks
+  for each statement
+  execute function private.tc_manual_subscription_intake_reject_mutation();
+create trigger tc_manual_subscription_events_immutable
+  before update or delete or truncate
+  on private.tc_manual_subscription_invoice_events
+  for each statement
+  execute function private.tc_manual_subscription_intake_reject_mutation();
