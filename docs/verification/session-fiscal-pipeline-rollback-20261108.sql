@@ -180,16 +180,16 @@ begin
  perform set_config('request.jwt.claim.sub','fca10000-0000-4000-8000-000000000001',true);
  perform set_config('request.jwt.claims','{"sub":"fca10000-0000-4000-8000-000000000001","role":"authenticated","session_id":"fca11000-0000-4000-8000-000000000001"}',true);
  execute 'set local role authenticated';
- if not private.tc_is_admin() then raise exception 'session_fiscal_valid_admin_denied';end if;
+ if private.tc_is_admin() is distinct from true then raise exception 'session_fiscal_valid_admin_denied';end if;
  first_reply:=public.tc_admin_manual_subscription_invoices('validate_buyer',task,1,
   'fca40000-0000-4000-8000-000000000001',buyer);
- if first_reply->>'replayed'<>'false' or (first_reply->'task'->>'row_version')::bigint<>2
-  or first_reply->'task'->>'buyer_validated'<>'true' then
+ if first_reply->>'replayed' is distinct from 'false' or (first_reply->'task'->>'row_version')::bigint is distinct from 2
+  or first_reply->'task'->>'buyer_validated' is distinct from 'true' then
   raise exception 'session_fiscal_validation_not_audited';
  end if;
  reply:=public.tc_admin_manual_subscription_invoices('validate_buyer',task,1,
   'fca40000-0000-4000-8000-000000000001',buyer);
- if reply->>'replayed'<>'true' or reply->'task' is distinct from first_reply->'task' then
+ if reply->>'replayed' is distinct from 'true' or reply->'task' is distinct from first_reply->'task' then
   raise exception 'session_fiscal_replay_changed_result';
  end if;
  denied:=false;
@@ -224,8 +224,8 @@ begin
  if not denied then raise exception 'session_fiscal_disabled_bridge_accepted';end if;
  reply:=public.tc_manual_subscription_document_server('status',
   '{"actor_id":"fca10000-0000-4000-8000-000000000001","session_id":"fca11000-0000-4000-8000-000000000001"}');
- if reply->>'available'<>'true' or reply->>'document_upload_ready'<>'false'
-  or reply->>'downloads_ready'<>'false' then raise exception 'session_fiscal_document_false_readiness';end if;
+ if reply->>'available' is distinct from 'true' or reply->>'document_upload_ready' is distinct from 'false'
+  or reply->>'downloads_ready' is distinct from 'false' then raise exception 'session_fiscal_document_false_readiness';end if;
  denied:=false;
  begin
   perform public.tc_manual_subscription_document_server('reserve',jsonb_build_object(
