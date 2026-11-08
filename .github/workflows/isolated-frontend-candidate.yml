@@ -1,0 +1,56 @@
+name: TruckControl isolated frontend candidate archive
+
+# Build-and-archive only. Never deploy to Sites, Netlify or production.
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/isolated-frontend-candidate.yml"
+      - "scripts/verify-isolated-candidate.mjs"
+      - "tests/isolated-candidate.test.mjs"
+      - "src/**"
+      - "public/**"
+      - "index.html"
+      - "vite.config.ts"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate-archive-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-isolated:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VITE_SUPABASE_URL: ""
+      VITE_SUPABASE_PUBLISHABLE_KEY: ""
+      VITE_AUTH_MAIL_PROVIDER: ""
+      VITE_COMMERCIAL_MODE: "false"
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check archive isolation test fixtures
+        run: node --test tests/isolated-candidate.test.mjs
+      - name: Build disconnected and registration-closed PWA
+        run: npm run build:candidate
+      - name: Verify exact commit, PWA safeguards and SHA256 inventory
+        run: node scripts/verify-isolated-candidate.mjs dist > isolated-candidate-inventory.json
+      - name: Save review-only build artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: isolated-frontend-candidate-${{ github.sha }}
+          path: |
+            dist/
+            isolated-candidate-inventory.json
+          if-no-files-found: error
+          retention-days: 7
