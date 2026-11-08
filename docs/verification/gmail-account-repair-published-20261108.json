@@ -1,0 +1,204 @@
+{
+  "checked_at": "2026-11-08T23:24:55.833150+00:00",
+  "scope": "Account access/logout and enterprise Gmail credential validation; not a commercial-launch approval",
+  "issue": 97,
+  "pull_request": 98,
+  "code_commit": "d9e6fc8b52171a61d6747cd9e4109d3dcec3aa8d",
+  "merge_commit": "89ef16115c2a52492c270922370c9f43eb09d592",
+  "production": {
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version": 39,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ecce634ca1e4819188b5ad9f888ab541",
+    "deployment_id": "appgdep_6af1039c6574819182741d8ae52e14a5",
+    "status": "succeeded",
+    "access": "public",
+    "primary_url": "https://truckcontrolai.com",
+    "source_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
+    "app_version": "0.5.21-rc.1",
+    "source_dirty": false,
+    "previous_version_preserved": 38,
+    "previous_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_1158214ceae48191aac244710231626b",
+    "demo_version_preserved": 6
+  },
+  "source_transport": {
+    "official_ephemeral_credential": true,
+    "auth_mode": "http_extra_header",
+    "force_push": false,
+    "before": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+    "after_verified": "f861e42ece8ba7c83b42f493be611814113058c3",
+    "credential_persisted": false
+  },
+  "artifact": {
+    "sha256": "c35fb0be6045f4af12f0587b995056c0af5db12783ae8808eeedc7b01340dcd0",
+    "bytes": 1478103,
+    "static_file_count": 25,
+    "scope": "Local exact-source production package; Sites normalizes its stored tar container"
+  },
+  "ci": {
+    "pr_run": 42533025198,
+    "branch_run": 42533020536,
+    "exact_source_run": 42533027609,
+    "package_run": 42533027657,
+    "conclusion": "success",
+    "checks_per_full_execution": 1664,
+    "unit_sql": 1249,
+    "python": 45,
+    "demo_browser": 82,
+    "company_browser": 50,
+    "saas_browser": 192,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "published_profiles": 6,
+    "published_profiles_baseline_version": 38,
+    "retained_original_tests": 64,
+    "retained_file_hashes": 11,
+    "sum_excludes_duplicate_runs": true
+  },
+  "postpublication": {
+    "https_file_hashes_passed": 75,
+    "https_file_hashes_total": 75,
+    "origins": [
+      "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "https://truckcontrolai.com",
+      "https://www.truckcontrolai.com"
+    ],
+    "browser": {
+      "passed": 42,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "sdk": "Real pinned Supabase SDK; backend HTTP intercepted with fictitious fixtures",
+      "private_http_and_websocket_fallthrough_blocked": true,
+      "source_asserted_before_each_case": "f861e42ece8ba7c83b42f493be611814113058c3",
+      "coverage": [
+        "account visible 320-1440px and four languages",
+        "logout and history/back/refresh/cache",
+        "admin return from demo without signing out",
+        "reject credentials before save",
+        "saved credential check available when configured=false",
+        "no false success after save",
+        "no late save after leaving settings",
+        "global-admin role loss and customer denial",
+        "offline encrypted copy and cross-tab logout",
+        "CargoTrack persistence and identity changes"
+      ],
+      "details": "docs/verification/gmail-account-browser-published-20261108.json"
+    },
+    "public_pwa_profiles": {
+      "status": "passed",
+      "passed": 6,
+      "total": 6,
+      "details": "docs/verification/gmail-account-pwa-published-20261108.json",
+      "scope": "Public PWA, HTTPS, source, demo offline and non-mutating auth/CORS checks; no real user login"
+    }
+  },
+  "native": {
+    "project_ref": "kkkemaycedexymrpaqtp",
+    "function": "company-gmail",
+    "previous_version": 14,
+    "version": 15,
+    "active": true,
+    "verify_jwt": false,
+    "verified_session_in_handler": true,
+    "runtime_sources_matched": 9,
+    "runtime_sources_total": 9,
+    "http_checks": [
+      {
+        "check": "health",
+        "status": 200,
+        "expected": 200,
+        "origin_matched": true,
+        "error_code": null
+      },
+      {
+        "check": "browser-config",
+        "status": 200,
+        "expected": 200,
+        "origin_matched": true,
+        "error_code": null
+      },
+      {
+        "check": "unauthenticated-admin-check",
+        "status": 401,
+        "expected": 401,
+        "origin_matched": true,
+        "error_code": "authentication_required"
+      },
+      {
+        "check": "invalid-session-admin-check",
+        "status": 401,
+        "expected": 401,
+        "origin_matched": true,
+        "error_code": "authentication_required"
+      },
+      {
+        "check": "foreign-origin",
+        "status": 403,
+        "expected": 403,
+        "origin_matched": null,
+        "error_code": "origin_not_allowed"
+      },
+      {
+        "check": "invalid-callback",
+        "status": 400,
+        "expected": 400,
+        "origin_matched": true,
+        "error_code": "invalid_state"
+      },
+      {
+        "check": "preflight",
+        "status": 204,
+        "expected": 204,
+        "origin_matched": true,
+        "error_code": null
+      }
+    ],
+    "other_function_versions_changed": 0,
+    "migrations_observed_before_release": 63,
+    "new_migrations": 0,
+    "migrations_observed_after_release": 63
+  },
+  "gmail": {
+    "personal_owner_acceptance_preserved": true,
+    "enterprise_account_verified": false,
+    "known_real_credential_result": {
+      "http_status": 401,
+      "error": "invalid_client"
+    },
+    "credential_or_provider_response_values_recorded": false,
+    "diagnostic_success_scope": "client_authentication_only; never proves mailbox consent",
+    "google_public_data_access_review_verified": false,
+    "valid_existing_client_secret_requires_owner_google_access": true,
+    "default_received_days": 30,
+    "max_received_months": 12,
+    "postpublication_metadata_check": {
+      "secret_changed_since_predeployment_check": false,
+      "secret_has_supported_format": false,
+      "values_returned": false
+    }
+  },
+  "safety_and_cost": {
+    "new_purchases_eur": 0,
+    "new_paid_automation_runs": 0,
+    "new_model_calls": 0,
+    "native_mail_reads": 0,
+    "native_mail_sends": 0,
+    "ai_budget_usd_month_unchanged": 10,
+    "ai_company_call_quota_unchanged": 100,
+    "real_payments_enabled": false,
+    "historical_total_budget_reconciliation": "pending; do not assume remaining EUR 200"
+  },
+  "devices": {
+    "automated": [
+      "Desktop Chrome Windows emulation",
+      "Pixel 7 Android emulation"
+    ],
+    "physical_devices_available": false
+  },
+  "limits": [
+    "No real native user logout or enterprise consent performed by these synthetic browser tests",
+    "No physical Android/Windows acceptance",
+    "Google still rejects the stored enterprise client secret",
+    "No new paid Gmail/CASA review or commercial payment activation"
+  ]
+}
