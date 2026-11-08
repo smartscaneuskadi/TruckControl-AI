@@ -23,7 +23,7 @@ language plpgsql security invoker set search_path='' as $$
 declare
   team uuid[] := array_remove(array[new.driver_id,new.co_driver_id],null);
   selected_driver record;
-  found_count integer := 0;
+  co_driver_found boolean := new.co_driver_id is null;
 begin
   if new.co_driver_id is not null and new.co_driver_id = new.driver_id then
     raise exception 'El conductor principal y el segundo conductor deben ser distintos'
@@ -35,20 +35,26 @@ begin
     where d.organization_id=new.organization_id and d.id=any(team)
     order by d.id for update of d
   loop
-    found_count := found_count+1;
-    if selected_driver.status<>'active' then
-      raise exception 'Desasigna al conductor antes de ponerlo de permiso'
-        using errcode='23514';
+    if selected_driver.id=new.co_driver_id then
+      co_driver_found := true;
+      if selected_driver.status<>'active' then
+        raise exception 'Desasigna al conductor antes de ponerlo de permiso'
+          using errcode='23514';
+      end if;
     end if;
   end loop;
-  if found_count<>cardinality(team) then
+  -- The original check_truck_driver still owns principal validation and its
+  -- existing error contract; this trigger adds the second seat without replacing it.
+  if not co_driver_found then
     raise exception 'El conductor asignado debe pertenecer a esta empresa'
       using errcode='23503';
   end if;
   if exists (
     select 1 from public.trucks t
     where t.organization_id=new.organization_id and t.id<>new.id
-      and (t.driver_id=any(team) or t.co_driver_id=any(team))
+      and ((new.co_driver_id is not null and
+            (t.driver_id=new.co_driver_id or t.co_driver_id=new.co_driver_id))
+           or (new.driver_id is not null and t.co_driver_id=new.driver_id))
   ) then
     raise exception 'El conductor ya está asignado a otro camión'
       using errcode='23505';
