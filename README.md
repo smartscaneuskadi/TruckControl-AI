@@ -25,17 +25,21 @@ La entrega actual es una PWA. Android firmado/Google Play aún no están acredit
 
 ## Lanzamiento comercial en curso
 
-Supabase62 y el registro fiscal están aceptados con rollback; proveedores, margen por viaje, copiasv4 y panel fiscal están integrados en main pero todavía sin nueva publicación del frontend. CI del candidato:1.292 controles, originales64/11hashes conservados. [Aceptación nativa](docs/verification/manual-fiscal-native-20261108.json).
+PR75 está integrado en main71c72 tras **1.526 controles por ejecución**. Supabase tiene **63 migraciones**, con la última aplicada una vez, fuente/ACL verificadas y contrato nativo completo con rollback. Los7Edge existentes y3workers de pagos/PDF/avisos se han desplegado con fuentes verificadas; las funciones comerciales de los workers permanecen OFF y sin scheduler de avisos. La web pública continúa en **v32**, sin una nueva promoción del frontend. [Estado y pruebas](TEST_RESULTS.md), [despliegue](DEPLOYMENT.md) y [recibo nativo63](https://github.com/smartscaneuskadi/TruckControl-AI/blob/9a2c0227bf4c2b2a5fe836c9b812a723d37d475d/docs/verification/session-fiscal-pipeline-native-20261108.json).
 
-Proveedores y margen por viaje con costes vinculados ya pasan aceptación nativa Supabase; sus pantallas y copias cifradas v4 están en PR42, pendientes de promover al frontend público. El candidato Android pasa compilación, lint, cinco pruebas JVM y revisión de su manifiesto; aún no tiene firma comercial, aceptación física ni publicación Play. Faltan completar emisión/entrega fiscal manual, cobros, revisión pública Google y recuperación integral alojada. Gmail personal y recepción empresarial son flujos diferentes; un consentimiento individual no sustituye la aprobación pública de Google.
+El ensayo PostgreSQL17 de PR77, integrado mediante PR78, tiene69controles y recuperación lógica aislada correctos; no acredita recuperación gestionada de Supabase/Auth/Storage ni dispositivos físicos. Cobros, emisión/entrega fiscal, Google público y revisión comercial siguen pendientes.
+
+Proveedores y margen por viaje con costes vinculados ya pasan aceptación nativa Supabase; sus pantallas y copias cifradas v4 están integradas, pendientes de promover al frontend público. El candidato Android pasa compilación, lint, cinco pruebas JVM y revisión de su manifiesto; aún no tiene firma comercial, aceptación física ni publicación Play. Faltan completar emisión/entrega fiscal manual, cobros, revisión pública Google y recuperación integral alojada. Gmail personal y recepción empresarial son flujos diferentes; un consentimiento individual no sustituye la aprobación pública de Google.
 
 [Avance](PROGRESS.md) · [Plan](TODO.md) · [Dependencias](BLOCKERS.md) · [Pruebas](TEST_RESULTS.md) · [Despliegue](DEPLOYMENT.md).
 
+El conector Stripe está disponible en sandbox ELEVADANCOR; las credenciales backend y la aceptación real siguen pendientes. Gmail está configurado, con0buzones empresariales vinculados en la última comprobación. La organización Supabase ya era Pro; no hubo upgrade. La protección de contraseñas filtradas sigue pendiente de configurar/verificar.
+
 ## Seguridad y mantenimiento
 
-Supabase exclusivo: truckcontrol-ai / kkkemaycedexymrpaqtp, organización fixpilot-dev. FIXPilot separado. Hay 61 migraciones conciliadas; no ejecutar db push sin revisar versiones/nombres/hashes. Secretos solo en backend, originales privados y RLS. Ni chat ni Gmail personal se copian automáticamente offline.
+Supabase exclusivo: truckcontrol-ai / kkkemaycedexymrpaqtp, organización fixpilot-dev. FIXPilot separado. Hay 63 migraciones conciliadas; no ejecutar db push sin revisar versiones/nombres/hashes. Secretos solo en backend, originales privados y RLS. Ni chat ni Gmail personal se copian automáticamente offline.
 
-El head1866f8d de PR42 supera1.194 controles y5 JVM adicionales; [recibos](docs/verification/commercial-completion-20261108.json). Todavía no se ha desplegado ese frontend. V32 supera 1.107 controles, conserva las 64 pruebas originales mediante 11 hashes y acredita 8 conexiones IA y 75 hashes HTTPS. Las 8 llamadas se estiman en 0,019465 USD sin factura del proveedor; no es un saldo de caja. [Evidencia](docs/verification/ai-specialists-20261107.json).
+Como referencia histórica, el head1866f8d de PR42 superó1.194 controles y5 JVM adicionales; [recibos](docs/verification/commercial-completion-20261108.json). Todavía no se ha desplegado ese frontend. V32 supera 1.107 controles, conserva las 64 pruebas originales mediante 11 hashes y acredita 8 conexiones IA y 75 hashes HTTPS. Las 8 llamadas se estiman en 0,019465 USD sin factura del proveedor; no es un saldo de caja. [Evidencia](docs/verification/ai-specialists-20261107.json).
 
 El máximo 200 EUR es acumulado, no por servicio ni una orden de gasto. Se concilian costes previos y se verifican precio, impuestos y recurrencia antes de contratar. IA mantiene su límite global de 10 USD/mes y cuota compartida de 100 consultas por empresa.
 
