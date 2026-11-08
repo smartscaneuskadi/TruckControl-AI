@@ -139,6 +139,7 @@ export function MailWorkspace({
       const connected = mailbox;
       add(email, connected, () => connected.dispose());
       setConsent(false);
+      setForm({ ...empty, ...presets[provider] });
     } catch (reason) {
       mailbox?.dispose();
       if (generation.current === version && !controller.signal.aborted)
