@@ -136,12 +136,13 @@ export async function reconcileStripeManualInvoicePayment(
       return { request_id: m.tc_request_id, user_id: m.tc_user_id,
         company_id: typeof m.tc_company_id === "string" ? m.tc_company_id : null };
     };
-    const funded = async (paymentId: unknown, amount: number, customer: unknown): Promise<Obj> => {
+    const funded = async (paymentId: unknown, amount: number, customer: unknown): Promise<{ intent: Obj; charge: Obj }> => {
       if (!id(paymentId, "pi")) return fail("unsupported_payment");
       const intent = await get("payment_intents/" + paymentId);
       live(intent);
       if (intent.id !== paymentId || intent.status !== "succeeded" || intent.currency !== "eur" ||
           intent.amount !== amount || intent.amount_received !== amount || intent.amount_capturable !== 0 ||
+          !["automatic", "automatic_async"].includes(String(intent.capture_method)) ||
           ref(intent.customer) !== ref(customer) || intent.on_behalf_of != null || intent.transfer_data != null ||
           !id(ref(intent.latest_charge), "ch"))
         return fail("payment_not_confirmed");
@@ -151,9 +152,9 @@ export async function reconcileStripeManualInvoicePayment(
           ref(charge.customer) !== ref(customer) || charge.status !== "succeeded" ||
           charge.paid !== true || charge.captured !== true || charge.refunded !== false ||
           charge.disputed !== false || charge.amount !== amount || charge.amount_captured !== amount ||
-          charge.amount_refunded !== 0 || charge.currency !== "eur" || charge.on_behalf_of != null ||
+          charge.amount_refunded !== 0 || charge.currency !== "eur" || !seconds(charge.created, now) || charge.on_behalf_of != null ||
           charge.transfer_data != null) return fail("payment_not_confirmed");
-      return intent;
+      return { intent, charge };
     };
     const common = {
       provider_account_id: config.expectedAccountId, provider_event_id: event.id,
@@ -167,10 +168,11 @@ export async function reconcileStripeManualInvoicePayment(
           !money(session.amount_total) || session.subscription != null)
         return fail("payment_not_confirmed");
       const correlation = correlate(session.metadata);
-      const intent = await funded(ref(session.payment_intent), session.amount_total, session.customer);
+      const funding = await funded(ref(session.payment_intent), session.amount_total, session.customer);
       return { ...common, ...correlation, kind: "initial_payment", checkout_id: String(session.id),
-        provider_payment_id: String(intent.id), amount_cents: session.amount_total,
-        paid_at: new Date(Number(canonicalEvent.created) * 1000).toISOString() };
+        provider_payment_id: String(funding.intent.id), amount_cents: session.amount_total,
+        // Stable automatic Charge creation time, not event delivery, bank settlement or fiscal devengo.
+        paid_at: new Date(Number(funding.charge.created) * 1000).toISOString() };
     }
 
     const invoice = await get("invoices/" + resource.id);

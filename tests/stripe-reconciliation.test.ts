@@ -39,11 +39,11 @@ function fixture(recurring = false, renewal = false) {
       subscription: null, metadata: { ...metadata } },
     "payment_intents/pi_Synthetic": { id: "pi_Synthetic", livemode: false,
       status: "succeeded", currency: "eur", amount, amount_received: amount,
-      amount_capturable: 0, customer: "cus_Synthetic", latest_charge: "ch_Synthetic",
+      amount_capturable: 0, capture_method: "automatic_async", customer: "cus_Synthetic", latest_charge: "ch_Synthetic",
       on_behalf_of: null, transfer_data: null },
     "charges/ch_Synthetic": { id: "ch_Synthetic", livemode: false,
       payment_intent: "pi_Synthetic", customer: "cus_Synthetic", status: "succeeded",
-      paid: true, captured: true, refunded: false, disputed: false, amount,
+      paid: true, captured: true, refunded: false, disputed: false, created: stamp - 20, amount,
       amount_captured: amount, amount_refunded: 0, currency: "eur",
       on_behalf_of: null, transfer_data: null },
     ["invoices/" + invoiceId]: { id: invoiceId, livemode: false, status: "paid",
@@ -88,7 +88,7 @@ describe("Stripe fiscal reconciliation: signed canonical reads only", () => {
     expect(result).toEqual({ kind: "initial_payment", provider_account_id: config.expectedAccountId,
       provider_event_id: f.event.id, provider_payment_id: "pi_Synthetic",
       checkout_id: "cs_test_Synthetic", request_id: request, user_id: user, company_id: company,
-      amount_cents: amount, currency: "EUR", paid_at: new Date(now).toISOString(), livemode: false });
+      amount_cents: amount, currency: "EUR", paid_at: new Date(now - 20000).toISOString(), livemode: false });
     expect(f.fetcher).toHaveBeenCalledTimes(5);
     expect(JSON.stringify(result)).not.toContain("syntheticPrivateKey");
   });
@@ -104,6 +104,21 @@ describe("Stripe fiscal reconciliation: signed canonical reads only", () => {
     expect(second.invoice_period_start).toBe(first.invoice_period_end);
     expect(first.billing_reason).toBe("subscription_create");
     expect(second.billing_reason).toBe("subscription_cycle");
+  });
+  it("keeps the canonical one-off timestamp stable across distinct successful event deliveries", async () => {
+    const first = fixture();
+    const second = fixture();
+    second.event.id = "evt_AsyncSuccess";
+    second.event.type = "checkout.session.async_payment_succeeded";
+    second.event.created = stamp - 5;
+    delete second.records["events/evt_FirstMonth"];
+    second.records["events/evt_AsyncSuccess"] = structuredClone(second.event);
+    const a = await run(first);
+    const b = await run(second);
+    if (a.kind !== "initial_payment" || b.kind !== "initial_payment") throw Error("type");
+    expect(a.provider_payment_id).toBe(b.provider_payment_id);
+    expect(a.paid_at).toBe(b.paid_at);
+    expect(a.provider_event_id).not.toBe(b.provider_event_id);
   });
   it("does not silently map subscription Checkout to a second one-off invoice", async () => {
     const f = fixture();
@@ -135,7 +150,7 @@ describe("Stripe fiscal reconciliation: signed canonical reads only", () => {
       if (attack === "canonical") f.records["events/" + f.event.id].type = "invoice.paid";
       await expect(run(f)).rejects.toMatchObject({ code: "provider_identity_mismatch" });
     });
-  it.each(["refunded", "disputed", "uncaptured", "partial", "other_customer", "other_intent"])(
+  it.each(["refunded", "disputed", "uncaptured", "partial", "other_customer", "other_intent", "manual_capture"])(
     "rejects an unconfirmed or financially changed charge (%s)", async attack => {
       const f = fixture(true);
       const c = f.records["charges/ch_Synthetic"];
@@ -145,6 +160,7 @@ describe("Stripe fiscal reconciliation: signed canonical reads only", () => {
       if (attack === "partial") c.amount_captured = amount - 1;
       if (attack === "other_customer") c.customer = "cus_OtherCustomer";
       if (attack === "other_intent") c.payment_intent = "pi_OtherIntent";
+      if (attack === "manual_capture") f.records["payment_intents/pi_Synthetic"].capture_method = "manual";
       await expect(run(f)).rejects.toMatchObject({ code: "payment_not_confirmed" });
     });
   it("rejects invoice paid outside Stripe without creating fiscal work", async () => {
