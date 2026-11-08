@@ -1,5 +1,21 @@
 # Despliegue y recuperación
 
+## Publicación CargoTrack y Cerrar sesión verificada · 08/11/2026
+
+**Este bloque sustituye el estado de publicación y ejecutor de las notas históricas inferiores.** Producción **Sites33 / app0.5.21-rc.1**, https://truckcontrolai.com; source **89100d92c0b44d2b86c1495faffcab2944abacbb**, deploy **appgdep_6af0a4fe4ec881919f08b7ac80cda8d9 SUCCEEDED**. PR85 integrado en main1d3e88e; no volver a fusionarlo ni reconstruir CargoTrack/logout. Se conservan32/31 y demo6. Main mantiene el manifiesto de demo: no desplegarlo como producción.
+
+Ejecutor recuperado: shell, Git, descarga y Chromium funcionan. La red del sandbox no alcanza el proxy; el mismo comando por la escalada oficial funciona con proxy/CA heredados y TLS activo. No pedir al titular otra reconexión ni exportar credenciales a Actions. Copia Git de todos los refs locales verificada antes del fetch; sin reset ni sobrescritura. Fuente exacta enviada por Git de Sites y leída de vuelta, después save/deploy del archivo de Actions42496353868, artifact13623149793.
+
+**Pruebas:** CI completo de release42496353761 y PR42497386164/42497390339 SUCCESS,1.558 comprobaciones por ejecución; postmerge42498406754 SUCCESS;64 originales/11hashes conservados. Después de publicar: **75/75 hashes HTTPS**, **6/6 perfiles públicos** en3orígenes y **16/16 casos CargoTrack/logout** sobre el bundle publicado,0fallos/omisiones/flaky. Las16 pruebas usan SDK real y transporte HTTP ficticio; comprueban doble pulsación, rechazo remoto honesto, Atrás/recarga/BFCache, copia cifrada y logout entre pestañas. No certifican una sesión nativa de un cliente. Android/Windows emulados, sin hardware físico ni login CargoTrack real.
+
+Sin DDL, cambios Edge, compras ni llamadas IA nuevas; Native63/#37, aislamiento y cuotas10USD/mes–100llamadas/empresa intactos. Cobros reales y lanzamiento comercial global siguen cerrados/pendientes. Presupuesto histórico y saldo200EUR sin conciliar. PR82/83/87/88 permanecen separados. La automatización existente se observó pausada; no prometer ejecución continua.
+
+Evidencia durable: [recibo v33](docs/verification/cargotrack-v33-published-20261108.json); hashes y perfiles detallados enlazados dentro. Antes de una nueva entrega, volver a consultar main, PR y versión pública actuales; no promover891 ni32 si hay avances posteriores.
+
+Recuperación: si una regresión nueva lo justifica, volver a desplegar la versión guardada32 `appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_3b00f4822e408191b957e7b7189bddcc` mediante Sites y verificar HTTPS. No se ha ejecutado rollback por rutina.31 permanece de reserva. No cambiar Netlify/DNS. El tar original SHA25670275a8304501c81432dbfeae66e6c6ac5508772e424d97cdae9525e62cbb70c y el tar normalizado por Sites tienen hashes distintos documentados; la prueba75/75 acredita los bytes dist servidos.
+
+## Checkpoints anteriores — históricos, no sustituyen el bloque superior
+
 ## CargoTrack y salida segura · paquete preparado, sin desplegar · 08/11/2026
 
 Producción verificada en Sites32/0.5.20-rc.1, https://truckcontrolai.com; fuente30b39be58e5ec19e417f819e00f2e579ec2abe7d. Respaldo31 y demo6 conservados. No existe sitio TruckControl en la conexión Netlify.

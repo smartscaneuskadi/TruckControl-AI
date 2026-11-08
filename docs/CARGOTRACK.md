@@ -1,5 +1,23 @@
 # CargoTrack y cierre de sesión
 
+## Publicación CargoTrack y Cerrar sesión verificada · 08/11/2026
+
+**Este bloque sustituye el estado de publicación y ejecutor de las notas históricas inferiores.** Producción **Sites33 / app0.5.21-rc.1**, https://truckcontrolai.com; source **89100d92c0b44d2b86c1495faffcab2944abacbb**, deploy **appgdep_6af0a4fe4ec881919f08b7ac80cda8d9 SUCCEEDED**. PR85 integrado en main1d3e88e; no volver a fusionarlo ni reconstruir CargoTrack/logout. Se conservan32/31 y demo6. Main mantiene el manifiesto de demo: no desplegarlo como producción.
+
+Ejecutor recuperado: shell, Git, descarga y Chromium funcionan. La red del sandbox no alcanza el proxy; el mismo comando por la escalada oficial funciona con proxy/CA heredados y TLS activo. No pedir al titular otra reconexión ni exportar credenciales a Actions. Copia Git de todos los refs locales verificada antes del fetch; sin reset ni sobrescritura. Fuente exacta enviada por Git de Sites y leída de vuelta, después save/deploy del archivo de Actions42496353868, artifact13623149793.
+
+**Pruebas:** CI completo de release42496353761 y PR42497386164/42497390339 SUCCESS,1.558 comprobaciones por ejecución; postmerge42498406754 SUCCESS;64 originales/11hashes conservados. Después de publicar: **75/75 hashes HTTPS**, **6/6 perfiles públicos** en3orígenes y **16/16 casos CargoTrack/logout** sobre el bundle publicado,0fallos/omisiones/flaky. Las16 pruebas usan SDK real y transporte HTTP ficticio; comprueban doble pulsación, rechazo remoto honesto, Atrás/recarga/BFCache, copia cifrada y logout entre pestañas. No certifican una sesión nativa de un cliente. Android/Windows emulados, sin hardware físico ni login CargoTrack real.
+
+Sin DDL, cambios Edge, compras ni llamadas IA nuevas; Native63/#37, aislamiento y cuotas10USD/mes–100llamadas/empresa intactos. Cobros reales y lanzamiento comercial global siguen cerrados/pendientes. Presupuesto histórico y saldo200EUR sin conciliar. PR82/83/87/88 permanecen separados. La automatización existente se observó pausada; no prometer ejecución continua.
+
+Evidencia durable: [recibo v33](verification/cargotrack-v33-published-20261108.json); hashes y perfiles detallados enlazados dentro. Antes de una nueva entrega, volver a consultar main, PR y versión pública actuales; no promover891 ni32 si hay avances posteriores.
+
+Verificación reproducible (la ejecuta Codex, no requiere comandos del cliente): `npm run verify:published` comprueba seis perfiles públicos; `node scripts/verify-published-cargotrack.mjs` reutiliza las ocho regresiones originales para dos perfiles sobre HTTPS. Sólo cambia las URLs/CORS de fixtures; no elimina aserciones, no llama a proveedores de pago y limpia únicamente su carpeta temporal exclusiva. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` puede indicar el navegador de sistema. Los resultados se guardan en `TRUCKCONTROL_PUBLIC_CARGOTRACK_ARTIFACTS` o `public-cargotrack-results`.
+
+Para probar: abre https://truckcontrolai.com, aplica el aviso «Actualizar» si tienes una PWA anterior y entra. CargoTrack aparece en el menú; «Entrar en CargoTrack» abre el proveedor en una pestaña independiente. En una cuenta de empresa en línea, «Cerrar sesión» está debajo de Configuración y vuelve al acceso. La demo no muestra ese botón. La sesión CargoTrack permanece independiente.
+
+## Descripción técnica y checkpoints anteriores
+
 Entrega vinculada a [issue84](https://github.com/smartscaneuskadi/TruckControl-AI/issues/84) y [PR85](https://github.com/smartscaneuskadi/TruckControl-AI/pull/85), en la rama existente `feature/cargotrack-access-84`. Conservar el commit de corrección3057a37 y todos los cambios posteriores.
 
 ## Acceso al proveedor
