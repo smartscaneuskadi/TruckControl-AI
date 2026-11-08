@@ -357,4 +357,40 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
     )).rejects.toThrow("manual_invoice_intake_immutable");
   });
 
+
+  it("impide crear tareas de otra empresa o con otro IVA mediante INSERT privilegiado", async () => {
+    // A future service-role adapter might accidentally bypass the intake RPC.
+    // The table itself must fail closed, not merely the function's happy path.
+    const insertDirect = (company: string, net: number, vat: number, total: number) =>
+      db.query(`insert into private.tc_manual_subscription_invoice_tasks (
+        provider_account_id,provider_payment_id,request_id,buyer_user_id,
+        buyer_company_id,buyer_company_name,buyer_tax_id,buyer_address,buyer_email,
+        buyer_request_created_at,buyer_profile_updated_at,
+        buyer_profile_changed_after_request,plan_id,plan_revision,
+        net_cents,vat_rate_bps,vat_cents,amount_cents,currency,paid_at
+      )
+      select 'acct_PrivilegedSimulation','in_PrivilegedSimulation',
+        r.id,r.user_id,$2::uuid,c.company_name,c.tax_id,c.address,c.email,
+        r.created_at,c.updated_at,c.updated_at>r.created_at,r.plan_id,r.plan_revision,
+        $3::integer,r.vat_rate_bps,$4::integer,$5::integer,r.currency,now()
+      from private.tc_payment_requests r
+        join private.tc_customers c on c.user_id=r.user_id
+      where r.id=$1`, [requestA, company, net, vat, total]);
+
+    const count = async () => (await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_tasks",
+    )).rows[0].n;
+    const before = await count();
+    await expect(insertDirect(orgB, 30000, 6300, 36300))
+      .rejects.toThrow("manual_invoice_direct_insert_unreconciled");
+    await expect(insertDirect(orgA, 31000, 6510, 37510))
+      .rejects.toThrow("manual_invoice_direct_insert_unreconciled");
+    expect(await count()).toBe(before);
+    // Existing legitimate records and the original event are unchanged.
+    const events = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_events where provider_event_id='evt_SyntheticConfirmed001'",
+    );
+    expect(events.rows[0].n).toBe(1);
+  });
+
 });
