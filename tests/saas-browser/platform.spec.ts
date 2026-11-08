@@ -2298,9 +2298,10 @@ test.describe("copia cifrada y sincronización", () => {
     await context.setOffline(false);
     const other = await context.newPage();
     await fixtures(other);
-    await login(other, "customer@example.com");
+    await other.goto("/");
+    await other.getByRole("button", { name: "Entrar", exact: true }).click();
     await expect(other.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
-    // A fresh login by the same user must not lock an explicitly unlocked copy.
+    // Restoring the same user's shared session must not lock an explicitly unlocked copy.
     await expect(page.locator(".offline-workspace-banner")).toBeVisible();
     const open = other.getByRole("button", { name: "Abrir menú", exact: true });
     if (await open.isVisible()) await open.click();
