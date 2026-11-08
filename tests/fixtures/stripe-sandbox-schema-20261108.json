@@ -13,7 +13,9 @@
     "real_money": 0,
     "emails_omitted": true,
     "api_keys_or_client_secrets_included": false,
-    "account_object_note": "Only the authenticated connector context ID is supplied for the unit fixture; no account API or credential exchange is attested."
+    "account_object_note": "Only the authenticated connector context ID is supplied for the unit fixture; no account API or credential exchange is attested.",
+    "capture_whitelist_revision": 2,
+    "capture_correction": "Included authoritative capture_method, transfer routing and InvoicePayment status_transitions omitted by the first collector; values refetched from sandbox, never synthesized."
   },
   "account": {
     "id": "acct_1UWYX5ECykZtDl5d",
@@ -221,7 +223,11 @@
             "payment_intent": "pi_3UZWAsECykZtDl5d0MOQSq4N",
             "type": "payment_intent"
           },
-          "livemode": false
+          "livemode": false,
+          "status_transitions": {
+            "canceled_at": null,
+            "paid_at": 1794143919
+          }
         }
       ]
     },
@@ -238,7 +244,10 @@
       "latest_charge": "ch_3UZWAsECykZtDl5d0YwyryQ2",
       "created": 1794144622,
       "metadata": {},
-      "canceled_at": null
+      "canceled_at": null,
+      "capture_method": "automatic",
+      "on_behalf_of": null,
+      "transfer_data": null
     },
     "charge": {
       "id": "ch_3UZWAsECykZtDl5d0YwyryQ2",
@@ -256,7 +265,9 @@
       "customer": "cus_VahWMmxZhSPcK7",
       "payment_intent": "pi_3UZWAsECykZtDl5d0MOQSq4N",
       "created": 1794144623,
-      "metadata": {}
+      "metadata": {},
+      "on_behalf_of": null,
+      "transfer_data": null
     }
   },
   "zero_trial": {
