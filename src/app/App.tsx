@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowRight,
@@ -10,6 +10,7 @@ import {
   CircleDot,
   Download,
   LayoutDashboard,
+  LogOut,
   Menu,
   Search,
   Settings as SettingsIcon,
@@ -17,6 +18,7 @@ import {
   ShieldCheck,
   Sparkles,
   Truck,
+  MapPinned,
   UsersRound,
   Wallet,
   X,
@@ -48,6 +50,7 @@ import { useInstall } from "../components/PwaTools";
 import { Badge, Button, Modal } from "../components/ui";
 import { LocalInsightProvider } from "../domain/insights";
 import { Dashboard } from "../pages/Dashboard";
+import { CargoTrack } from "../pages/CargoTrack";
 import { Trucks } from "../pages/Trucks";
 import { Drivers } from "../pages/Drivers";
 import { Finance } from "../pages/Finance";
@@ -85,6 +88,7 @@ const navigation = [
     feature: "dashboard",
   },
   { to: "/trucks", label: "Camiones", icon: Truck, feature: "trucks" },
+  { to: "/cargotrack", label: "CargoTrack", icon: MapPinned, feature: null },
   {
     to: "/drivers",
     label: "Conductores",
@@ -188,6 +192,8 @@ function Workspace() {
   const [notifications, setNotifications] = useState(false);
   const [menu, setMenu] = useState(false);
   const [help, setHelp] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const signOutPending = useRef(false);
   const truck = snapshot.trucks.find((truck) => truck.id === truckId);
   const operationsReady =
     !operations.loading &&
@@ -347,7 +353,14 @@ function Workspace() {
                   `nav-link ${isActive ? "active" : ""}`
                 }
               >
-                <item.icon size={18} />
+                {item.to === "/cargotrack" ? (
+                  <span className="cargotrack-nav-icon" aria-hidden="true">
+                    <Truck size={18} />
+                    <MapPinned size={12} />
+                  </span>
+                ) : (
+                  <item.icon size={18} aria-hidden="true" />
+                )}
                 <span>{item.label}</span>
                 {item.to === "/trucks" && (
                   <span className="nav-count">{snapshot.trucks.length}</span>
@@ -403,6 +416,34 @@ function Workspace() {
             <SettingsIcon size={18} />
             <span>Configuración</span>
           </NavLink>
+          {cloud && access.user && !offline.offline && (
+            <button
+              className="nav-link"
+              type="button"
+              disabled={signingOut}
+              aria-busy={signingOut}
+              onClick={async () => {
+                if (signOutPending.current) return;
+                signOutPending.current = true;
+                setSigningOut(true);
+                try {
+                  await access.signOut();
+                } catch (error) {
+                  notify(
+                    error instanceof Error
+                      ? error.message
+                      : "No se ha podido cerrar la sesión. Reinténtalo.",
+                  );
+                } finally {
+                  signOutPending.current = false;
+                  setSigningOut(false);
+                }
+              }}
+            >
+              <LogOut size={18} />
+              <span>{signingOut ? "Cerrando sesión…" : "Cerrar sesión"}</span>
+            </button>
+          )}
           <button className="nav-link" onClick={() => setHelp(true)}>
             <CircleHelp size={18} />
             <span>Guía de la demo</span>
@@ -600,6 +641,7 @@ function Workspace() {
                 </FeatureGate>
               }
             />
+            <Route path="/cargotrack" element={<CargoTrack />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/mailbox" element={<PersonalMail />} />
             <Route

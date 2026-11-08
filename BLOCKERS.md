@@ -1,5 +1,16 @@
 # Dependencias comerciales pendientes
 
+## Bloqueo de publicación CargoTrack/PR85 · 08/11/2026
+
+Código821ba13 y pruebas completos(1.558 por ejecución); paquete conectado89100d9 preparado/artifact13623149793. El bloqueo restante para enviar esta actualización es **infraestructura de ejecución de Codex**, no permisos de escritura GitHub ni una migración Supabase: incluso pwd devuelve `No usable execution environment`. El titular comunicó reconexión y el intento posterior devolvió el mismo error. El estado de entorno declara connected/capabilities[] y no hay capturas diagnósticas retenidas.
+
+La web real sigue Sites32 en https://truckcontrolai.com. Netlify no contiene un sitio TruckControl; no cambiar proyectos ajenos, crear duplicados o mover DNS para forzarlo. El protocolo de Sites exige fuente exacta enviada por su Git autorizado antes de guardar/desplegar una versión. No trasladar su token a Actions ni usar un SHA/archive ajeno. Se ha preparado todo lo posible mediante GitHub/CI sin esa transmisión.
+
+Acción imprescindible de infraestructura: un entorno que admita realmente ejecutar Git y el helper oficial. No volver a pedir los permisos GitHub/Supabase ya concedidos ni claves que no se necesitan. La reconexión indicada ya se intentó y no debe tratarse como autorización pendiente del propietario.
+
+Limitaciones de verificación: perfiles Android/Windows emulados, sin hardware físico; la navegación CargoTrack se intercepta en pruebas y su sondeo público devuelve bot_blocked. No se eluden controles ni se certifica un login de proveedor. No son nuevos requisitos de contratación. Ver [recibo](docs/verification/cargotrack-logout-20261108.json).
+
+
 ## Estado vigente · 8 de noviembre de 2026
 
 Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 quedó integrado en71c72; PR78 incorporó también los ensayos PostgreSQL en main `1c4c44d32067fb0d2e885a0cec5020b25d361323`, tras los CI completos de los heads7d411 y f3205. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.

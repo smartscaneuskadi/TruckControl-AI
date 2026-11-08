@@ -1,5 +1,18 @@
 # Despliegue y recuperación
 
+## CargoTrack y salida segura · paquete preparado, sin desplegar · 08/11/2026
+
+Producción verificada en Sites32/0.5.20-rc.1, https://truckcontrolai.com; fuente30b39be58e5ec19e417f819e00f2e579ec2abe7d. Respaldo31 y demo6 conservados. No existe sitio TruckControl en la conexión Netlify.
+
+Fuente funcional821ba13 del PR85 pasa ambos CI(1.558 por ejecución). Release `deploy/cargotrack-production-20261108` / `89100d92c0b44d2b86c1495faffcab2944abacbb` sólo añade preparación del paquete/manifiesto correcto/documentación. Conserva821 y32 como padres, sin duplicar funcionalidades ni sustituir el manifiesto de demo en main.
+
+[Archivo de producción todavía NO PUBLICADO](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42496353868/artifacts/13623149793),25archivos dist,tar1.233.512bytes. SHA256 tar: `70275a8304501c81432dbfeae66e6c6ac5508772e424d97cdae9525e62cbb70c`; ZIP de Actions: `20e1bd0be9efaa0733a7b63269b784e007af4be81082a55a30a8acd316c3825f`. Retención hasta15/11/2026; si caduca, reconstruir desde la fuente verificada. El build es production/conectado/working tree limpio; usa exclusivamente configuración ya pública de32, mantiene cobrosOFF y no recibe secretos de conectores.
+
+Falta transporte de fuente y publicación porque el ejecutor devuelve No usable execution environment, aun tras reconexión del titular. Cuando funcione, inspeccionar checkouts y estado Git sin resetear trabajo, utilizar el acceso efímero de Sites sólo mediante su helper/entrada privada, respetar cualquier fuente aún no publicada y enviar el commit exacto correspondiente al archivo. No forzar historia ni atribuir el archivo891 a otro SHA. Guardar y desplegar en appgprj_6ae655e56db481918fe18adfe9df8b66 sólo tras checks verdes/PR integrado; comprobar estado, HTTPS, headers/PWA y recorridos nuevos después. Mantener32/31 y demo6. El paquete aislado candidato no sirve para este paso.
+
+[Procedimiento detallado](docs/CARGOTRACK.md) · [evidencia](docs/verification/cargotrack-logout-20261108.json). No se ha publicado una33 ni abierto cobros por crear el archivo.
+
+
 ## Estado vigente · 8 de noviembre de 2026
 
 Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 quedó integrado en71c72; PR78 incorporó también los ensayos PostgreSQL en main `1c4c44d32067fb0d2e885a0cec5020b25d361323`, tras los CI completos de los heads7d411 y f3205. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.
