@@ -99,6 +99,19 @@ describe("cola privada de facturas GDTaller/TicketBAI: candidato sin desplegar",
     expect(tasks.rows[0].n).toBe(1);
     expect(events.rows[0].n).toBe(2);
   });
+  it("rechaza crear otra factura para el mismo pedido con otro pago y evento", async () => {
+    await expect(intake({
+      event: "evt_SyntheticConfirmed004", payment: "in_SyntheticConfirmed004",
+    })).rejects.toThrow("tc_manual_subscription_request_unique");
+    const tasks = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_tasks",
+    );
+    const events = await db.query<{ n: number }>(
+      "select count(*)::int n from private.tc_manual_subscription_invoice_events",
+    );
+    expect(tasks.rows[0].n).toBe(1);
+    expect(events.rows[0].n).toBe(2);
+  });
   it("no admite el mismo evento para dos pagos distintos ni conserva una tarea parcial", async () => {
     await expect(intake({
       payment: "in_SyntheticConfirmed002", request: requestA2,
