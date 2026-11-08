@@ -182,6 +182,21 @@ describe("manual Stripe webhook adapter: durable acknowledgement and closed swit
     expect(applyPayment).not.toHaveBeenCalled();
     expect(f.fetcher).not.toHaveBeenCalled();
   });
+  it("acknowledges a verified zero trial invoice without RPC, licence, task or notice", async () => {
+    const f = fixture(true);
+    const invoice = f.records["invoices/" + f.invoiceId];
+    const start = stamp - 60, end = stamp + 10 * 86400;
+    Object.assign(invoice, { amount_paid: 0, total: 0, amount_remaining: 0, billing_reason: "subscription_create" });
+    Object.assign(f.records["subscriptions/sub_Synthetic"],
+      { status: "trialing", trial_start: start, trial_end: end, current_period_end: end });
+    (invoice.lines as { data: { period: { start: number; end: number } }[] }).data[0].period = { start, end };
+    const applyPayment = vi.fn();
+    const result = await createManualStripeWebhookHandler({ applyPayment }, enabled, f.fetcher)(await requestFor(f));
+    expect(result.status).toBe(200);
+    expect(await result.json()).toEqual({ received: true });
+    expect(applyPayment).not.toHaveBeenCalled();
+    expect(f.fetcher).toHaveBeenCalledTimes(4);
+  });
   it("ignores unrelated signed events without invoking fiscal persistence", async () => {
     const f = fixture(); f.event.type = "customer.created";
     const applyPayment = vi.fn();

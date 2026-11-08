@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import {
   afterAll,
   afterEach,
@@ -26,6 +27,7 @@ beforeAll(async () => {
     create view vault.decrypted_secrets as select name,decrypted_secret from vault.secrets;
     create function vault.create_secret(new_secret text,new_name text default null,new_description text default '',new_key_id uuid default null) returns uuid language plpgsql as $$
       begin insert into vault.secrets values(new_name,new_secret);return gen_random_uuid();end $$;`);
+  await installAuthSessionFixture(db);
   for (const name of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql") && f < migrationName)
     .sort())
@@ -33,11 +35,12 @@ beforeAll(async () => {
   // Deterministic bytes are used only by this local provisioning test; production uses pgcrypto.
   await db.exec(`create schema if not exists extensions;
     create function extensions.gen_random_bytes(size integer) returns bytea language sql as $$ select decode(repeat('11',size),'hex') $$;`);
-  await db.query("insert into auth.users values($1)", [user]);
+  await db.query("insert into auth.users(id,email_confirmed_at) values($1,now())", [user]);
   await db.query(
     "insert into public.organizations(id,owner_id,name) values($1,$2,'Empresa ficticia Vault')",
     [org, user],
   );
+  await seedFixtureSessions(db);
 }, 30000);
 beforeEach(async () => {
   await db.exec("begin");

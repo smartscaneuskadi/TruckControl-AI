@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -13,7 +14,7 @@ const personal = documentId(10),
   foreign = documentId(12);
 async function as<T>(user: string, fn: () => Promise<T>) {
   await db.exec("set role authenticated");
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)", [user]);
+  await bindFixtureActor(db, user);
   try {
     return await fn();
   } finally {
@@ -47,6 +48,7 @@ beforeAll(async () => {
     create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text references storage.buckets(id),name text,unique(bucket_id,name));
     alter table storage.objects enable row level security;
     grant usage on schema storage to anon,authenticated; grant select,insert,update,delete on storage.objects to anon,authenticated;`);
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -107,6 +109,7 @@ beforeAll(async () => {
     "insert into storage.objects(bucket_id,name) values('truckcontrol-documents',$1)",
     [`${org}/${documentId(13)}/orphan.pdf`],
   );
+  await seedFixtureSessions(db);
 }, 30000);
 afterAll(async () => {
   await db?.close();

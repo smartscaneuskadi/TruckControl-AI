@@ -1,4 +1,4 @@
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { readFileSync } from "node:fs";
@@ -158,5 +158,27 @@ export default defineConfig({
   test: {
     include: ["src/**/*.test.ts", "tests/*.test.ts"],
     environment: "node",
+    projects: [
+      {
+        test: {
+          name: "core",
+          exclude: [
+            ...configDefaults.exclude,
+            "tests/database.test.ts",
+            "tests/company-security.test.ts",
+          ],
+        },
+      },
+      {
+        test: {
+          name: "retained-auth",
+          include: [
+            "tests/database.test.ts",
+            "tests/company-security.test.ts",
+          ],
+          setupFiles: ["tests/helpers/retained-auth-fixture.ts"],
+        },
+      },
+    ],
   },
 });

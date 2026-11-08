@@ -1,3 +1,4 @@
+import { getSessionVerifiedUser } from "../_shared/auth-session.ts";
 import { createLegacyStripeServer } from "../_shared/subscription-legacy-payment-gate.ts";
 import { subscriptionFiscalCheckoutAllowed } from "../_shared/subscription-fiscal-gate.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
@@ -17,8 +18,7 @@ Deno.serve(
   createRecurringHandler(
     {
       async authenticate(token) {
-        const { data, error } = await client.auth.getUser(token);
-        return error ? null : data.user;
+        return getSessionVerifiedUser(client, token);
       },
       server: createLegacyStripeServer("recurring", async (action, data) => {
         const result = await client.rpc("tc_recurring_billing", {

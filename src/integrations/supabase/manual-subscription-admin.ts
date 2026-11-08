@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { ManualDocumentError, manualInvoiceCredentials } from "./manual-fiscal-documents";
 import type { Database, Json } from "./database.types";
 import {
   manualInvoiceCapabilitiesSchema,
@@ -9,8 +10,11 @@ import {
 } from "../../domain/manual-subscription-admin";
 import type { ManualInvoiceAction, ManualSubscriptionTask, RegisterManualInvoiceInput, ReportManualSentInput, ManualReviewInput } from "../../domain/manual-subscription-admin";
 
+export class ManualInvoiceAdminError extends Error {
+  constructor(readonly permissionDenied: boolean, message: string) { super(message); this.name = "ManualInvoiceAdminError"; }
+}
 function failure(error: { code?: string } | null) {
-  return Error(
+  return new ManualInvoiceAdminError(error?.code === "42501",
     error?.code === "40001"
       ? "La solicitud ha cambiado en otro dispositivo. Actualiza y comprueba los datos antes de continuar."
       : error?.code === "42501"
@@ -24,22 +28,28 @@ async function request(
   client: SupabaseClient<Database>, action: string,
   taskId: string | null = null, expected: number | null = null,
   operationId: string | null = null, input: Json = {},
-  after: string | null = null, signal?: AbortSignal,
+  after: string | null = null, signal?: AbortSignal, userId?: string,
 ) {
+  let authorization: string | null = null;
+  if (userId) {
+    try { authorization = (await manualInvoiceCredentials(client, userId, signal)).Authorization; }
+    catch (failure) { throw new ManualInvoiceAdminError(failure instanceof ManualDocumentError && failure.kind === "denied", "No se puede comprobar la sesión de esta actuación. Actualiza el acceso."); }
+  }
   const pending = client.rpc("tc_admin_manual_subscription_invoices", {
     p_action: action, p_task_id: taskId, p_expected: expected,
     p_request_id: operationId, p_data: input, p_after: after,
   });
+  if (authorization) pending.setHeader("Authorization", authorization);
   const { data, error } = await (signal ? pending.abortSignal(signal) : pending);
   if (error || data === null) throw failure(error);
   return data;
 }
-export async function loadManualInvoiceCapabilities(client: SupabaseClient<Database>, signal?: AbortSignal) {
-  return manualInvoiceCapabilitiesSchema.parse(await request(client, "capabilities", null, null, null, {}, null, signal));
+export async function loadManualInvoiceCapabilities(client: SupabaseClient<Database>, signal?: AbortSignal, userId?: string) {
+  return manualInvoiceCapabilitiesSchema.parse(await request(client, "capabilities", null, null, null, {}, null, signal, userId));
 }
-export async function loadManualSubscriptionInvoices(client: SupabaseClient<Database>, after: string | null = null, signal?: AbortSignal) {
+export async function loadManualSubscriptionInvoices(client: SupabaseClient<Database>, after: string | null = null, signal?: AbortSignal, userId?: string) {
   if (after !== null) z.uuid().parse(after);
-  const page = manualSubscriptionPageSchema.parse(await request(client, "list", null, null, null, {}, after, signal));
+  const page = manualSubscriptionPageSchema.parse(await request(client, "list", null, null, null, {}, after, signal, userId));
   const ids = page.items.map((row) => row.id);
   if (new Set(ids).size !== ids.length ||
       ids.some((id, i) => i ? id <= ids[i - 1] : after !== null && id <= after) ||
@@ -50,13 +60,13 @@ export async function loadManualSubscriptionInvoices(client: SupabaseClient<Data
 }
 export async function mutateManualSubscriptionInvoice(
   client: SupabaseClient<Database>, task: ManualSubscriptionTask,
-  action: ManualInvoiceAction, value: unknown, operationId: string,
+  action: ManualInvoiceAction, value: unknown, operationId: string, userId?: string,
 ) {
   z.uuid().parse(operationId);
   task = manualSubscriptionTaskSchema.parse(task);
   const input = validateManualInvoiceCommand(task, action, value);
   const result = z.object({ task: manualSubscriptionTaskSchema, replayed: z.boolean() }).parse(
-    await request(client, action, task.id, task.row_version, operationId, input),
+    await request(client, action, task.id, task.row_version, operationId, input, null, undefined, userId),
   );
   const next = result.task;
   const target = action === "validate_buyer" ? "awaiting_issue" :
@@ -97,4 +107,15 @@ export async function mutateManualSubscriptionInvoice(
     throw Error("No se ha confirmado la incidencia indicada. Actualiza la solicitud.");
   }
   return next;
+}
+
+
+/** Fresh operator-scoped read used to resolve an uncertain invoice registration. */
+export async function loadManualSubscriptionTask(client: SupabaseClient<Database>, taskId: string, signal?: AbortSignal, userId?: string) {
+  z.uuid().parse(taskId);
+  const page = manualSubscriptionPageSchema.parse(await request(client, "detail", taskId, null, null, {}, null, signal, userId));
+  if (page.items.length !== 1 || page.next_cursor !== null || page.items[0].id !== taskId) {
+    throw Error("No se puede comprobar esta solicitud de factura.");
+  }
+  return page.items[0];
 }

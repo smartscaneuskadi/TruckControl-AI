@@ -18,12 +18,12 @@ async function call(action: string, changes: Record<string, unknown> = {}, role 
   return attempt(async () => {
     await db.exec(role === "authenticated" ? "set local role authenticated" : role === "anon" ? "set local role anon" : "set local role service_role");
     const result = await db.query<{ result: Stored }>("select public.tc_manual_subscription_document_server($1,$2::jsonb) result",
-      [action, JSON.stringify({ actor_id: admin, session_id: session, task_id: task, expected_version: 2, operation_id: operation(20), ...changes })]);
+      [action, JSON.stringify({ actor_id: admin, session_id: session, ...(action === "status" ? {} : { task_id: task, expected_version: 2, operation_id: operation(20) }), ...changes })]);
     await db.exec("reset role");
     return result.rows[0].result;
   });
 }
-async function enable() { await db.exec("update private.tc_manual_subscription_document_runtime set uploads_enabled=true where id"); }
+async function enable() { await db.exec("update private.tc_manual_subscription_document_runtime set uploads_enabled=true,downloads_enabled=true where id"); }
 async function reserve(n = 20) { return call("reserve", { operation_id: operation(n), sha256: hash, size_bytes: 99 }); }
 async function object(key: string, size = 99) {
   await db.query("insert into storage.objects(bucket_id,name,metadata) values('tc-subscription-fiscal',$1,$2::jsonb)",
@@ -93,6 +93,15 @@ afterEach(async () => { await db.exec("reset role; rollback"); });
 afterAll(async () => { await db?.close(); });
 
 describe("propuesta PDF en PostgreSQL efímero: rol, nonce, CAS y storage privado", () => {
+  it("readiness exige ambas autorizaciones y el bucket privado sin acceso a clientes", async () => {
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: false, downloads_ready: false });
+    await db.exec("update private.tc_manual_subscription_document_runtime set uploads_enabled=true where id");
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: false, downloads_ready: false });
+    await enable();
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: true, downloads_ready: true });
+    await db.exec("update storage.buckets set public=true where id='tc-subscription-fiscal'");
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: false, downloads_ready: false });
+  });
   it("parte deshabilitada y ningún cliente invoca la función del servidor", async () => {
     await expect(reserve()).rejects.toThrow("manual_document_upload_unavailable");
     for (const role of ["authenticated", "anon"]) await expect(call("reserve", { sha256: hash, size_bytes: 99 }, role)).rejects.toThrow();

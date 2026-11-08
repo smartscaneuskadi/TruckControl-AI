@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -40,9 +41,7 @@ async function as<T>(
   role = "authenticated",
 ) {
   await db.exec(`set role ${role}`);
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-    actor ?? "",
-  ]);
+  await bindFixtureActor(db, actor);
   try {
     return await fn();
   } finally {
@@ -109,6 +108,7 @@ beforeAll(async () => {
  create schema auth;create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,banned_until timestamptz,deleted_at timestamptz,raw_user_meta_data jsonb not null default '{}');
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
  grant usage on schema public,auth to anon,authenticated,service_role;`);
+  await installAuthSessionFixture(db);
   for (const f of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -157,6 +157,7 @@ beforeAll(async () => {
     "insert into private.tc_memberships(organization_id,user_id,role,status,invited_by) values($1,$2,'admin','active',$3)",
     [org, member, owner],
   );
+  await seedFixtureSessions(db);
 }, 30000);
 beforeEach(async () => {
   await db.exec(

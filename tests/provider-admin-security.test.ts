@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -14,9 +15,7 @@ async function as<T>(
   role = "authenticated",
 ) {
   await db.exec(`set role ${role}`);
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-    actor ?? "",
-  ]);
+  await bindFixtureActor(db, actor);
   try {
     return await fn();
   } finally {
@@ -49,6 +48,7 @@ beforeAll(async () => {
  create view vault.decrypted_secrets as select *,secret as decrypted_secret from vault.secrets;
  create function vault.create_secret(new_secret text,new_name text default null,new_description text default '',new_key_id uuid default null) returns uuid language plpgsql security definer set search_path='' as $$declare result uuid;begin insert into vault.secrets(name,secret,description) values(new_name,new_secret,new_description) returning id into result;return result;end;$$;
  create function vault.update_secret(secret_id uuid,new_secret text default null,new_name text default null,new_description text default null,new_key_id uuid default null) returns void language sql security definer set search_path='' as $$update vault.secrets set secret=coalesce(new_secret,secret),name=coalesce(new_name,name),description=coalesce(new_description,description),updated_at=now() where id=secret_id;$$;`);
+  await installAuthSessionFixture(db);
   for (const f of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -83,6 +83,7 @@ beforeAll(async () => {
    grant insert on private.tc_admin_audit to provider_runtime;
    grant execute on function private.tc_is_admin() to provider_runtime;
    alter function private.tc_provider_control(text,jsonb) owner to provider_runtime;`);
+  await seedFixtureSessions(db);
 }, 30000);
 afterAll(async () => {
   await db?.close();

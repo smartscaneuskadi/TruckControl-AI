@@ -47,6 +47,11 @@ Deno.serve(createManualFiscalDocumentHandler({
       return { id: user.id, session_id: claims.session_id };
     } catch { return null; }
   },
+  async status(actor) {
+    const result = await server("status", { actor_id: actor.id, session_id: actor.session_id });
+    if (result?.document_upload_ready === true || result?.downloads_ready === true) await verifiedBucket();
+    return result;
+  },
   async task(token, taskId) {
     const result = await actorClient(token).rpc("tc_admin_manual_subscription_invoices", {
       p_action: "detail", p_task_id: taskId, p_expected: null, p_request_id: null, p_data: {}, p_after: null,

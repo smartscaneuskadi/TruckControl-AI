@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -14,9 +15,7 @@ async function as<T>(
   role = "authenticated",
 ) {
   await db.exec(`set role ${role}`);
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-    user ?? "",
-  ]);
+  await bindFixtureActor(db, user);
   try {
     return await fn();
   } finally {
@@ -49,6 +48,7 @@ beforeAll(async () => {
     create schema storage;create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
     create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text references storage.buckets(id),name text,unique(bucket_id,name));
     alter table storage.objects enable row level security;grant usage on schema storage to anon,authenticated;grant select,insert,update,delete on storage.objects to anon,authenticated;`);
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -103,6 +103,7 @@ beforeAll(async () => {
     "insert into private.company_documents(id,organization_id,name,object_path,content_type,size_bytes) values($1,$2,'Privado.pdf',$3,'application/pdf',100)",
     [docId(300), otherOrg, `${otherOrg}/${docId(300)}/document.pdf`],
   );
+  await seedFixtureSessions(db);
 }, 30000);
 afterAll(async () => {
   await db?.close();

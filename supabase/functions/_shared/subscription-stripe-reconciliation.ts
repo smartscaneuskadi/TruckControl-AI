@@ -184,8 +184,9 @@ export async function reconcileStripeManualInvoicePayment(
     const invoice = await get("invoices/" + resource.id);
     live(invoice);
     const paidAt = obj(invoice.status_transitions).paid_at;
+    const zeroTrialInvoice = invoice.amount_paid === 0 && invoice.total === 0;
     if (invoice.id !== resource.id || invoice.status !== "paid" || invoice.currency !== "eur" ||
-        invoice.paid_out_of_band === true || !money(invoice.amount_paid) ||
+        invoice.paid_out_of_band === true || (!zeroTrialInvoice && !money(invoice.amount_paid)) ||
         invoice.amount_paid !== invoice.total || invoice.amount_remaining !== 0 ||
         !seconds(paidAt, now) ||
         !["subscription_create", "subscription_cycle"].includes(String(invoice.billing_reason)))
@@ -215,13 +216,27 @@ export async function reconcileStripeManualInvoicePayment(
         ref(invoice.customer) !== ref(subscription.customer) || !states.has(String(subscription.status)) ||
         items.has_more === true || item.quantity !== 1 || !id(price.id, "price") ||
         !seconds(currentPeriodEnd, now + 62 * 86400000) ||
-        price.unit_amount !== invoice.amount_paid || price.currency !== "eur" ||
+        (zeroTrialInvoice ? !money(price.unit_amount) : price.unit_amount !== invoice.amount_paid) || price.currency !== "eur" ||
         recurring.interval !== "month" || recurring.interval_count !== 1 || recurring.usage_type === "metered" ||
         lines.has_more === true || line.quantity !== 1 || linePrice !== price.id ||
         !seconds(period.start, now) || !seconds(period.end, now + 62 * 86400000) ||
-        period.end <= period.start || period.end - period.start < 27 * 86400 ||
-        period.end - period.start > 32 * 86400)
+        period.end <= period.start || (!zeroTrialInvoice && (period.end - period.start < 27 * 86400 ||
+        period.end - period.start > 32 * 86400)))
       return fail("payment_not_confirmed");
+    if (zeroTrialInvoice) {
+      const trialStart = subscription.trial_start;
+      const trialEnd = subscription.trial_end;
+      // A zero Stripe trial invoice creates no payment, licence or fiscal task.
+      // Verify canonical subscription/snapshot/price/period first, then acknowledge
+      // without inventing a PaymentIntent, receipt or charge.
+      if (invoice.billing_reason !== "subscription_create" ||
+          !seconds(trialStart, now) || !seconds(trialEnd, now + 32 * 86400000) ||
+          trialEnd <= trialStart || trialEnd - trialStart > 32 * 86400 ||
+          period.start !== trialStart || period.end !== trialEnd)
+        return fail("unsupported_payment");
+      return { kind: "ignored", provider_event_id: event.id };
+    }
+    if (!money(invoice.amount_paid)) return fail("payment_not_confirmed");
     const payments = await get("invoice_payments?invoice=" + resource.id + "&status=paid&limit=2");
     const payment = obj(Array.isArray(payments.data) && payments.data.length === 1 ? payments.data[0] : null);
     const detail = obj(payment.payment);
