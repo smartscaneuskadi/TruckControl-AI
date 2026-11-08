@@ -1,0 +1,449 @@
+{
+  "schema": "stripe-sandbox-curated-schema-v1",
+  "provenance": {
+    "account_name": "Entorno de prueba de Elevadancor S.L",
+    "account_id": "acct_1UWYX5ECykZtDl5d",
+    "livemode": false,
+    "collector": "official connected Stripe API",
+    "data_kind": "synthetic customers, real sandbox API objects",
+    "captures_raw_wire": false,
+    "verifies_webhook_signature": false,
+    "verifies_backend_secret": false,
+    "verifies_production_persistence": false,
+    "real_money": 0,
+    "emails_omitted": true,
+    "api_keys_or_client_secrets_included": false,
+    "account_object_note": "Only the authenticated connector context ID is supplied for the unit fixture; no account API or credential exchange is attested."
+  },
+  "account": {
+    "id": "acct_1UWYX5ECykZtDl5d",
+    "object": "account"
+  },
+  "paid": {
+    "event": {
+      "id": "evt_1UZWAuECykZtDl5d8R6FzDXF",
+      "object": "event",
+      "livemode": false,
+      "type": "invoice.paid",
+      "created": 1794144624,
+      "api_version": "2026-10-28.endive",
+      "data": {
+        "object": {
+          "id": "in_1UZWAsECykZtDl5dxMRJfsKt",
+          "object": "invoice",
+          "livemode": false,
+          "status": "paid",
+          "currency": "eur",
+          "amount_paid": 36300,
+          "amount_remaining": 0,
+          "total": 36300,
+          "billing_reason": "subscription_create",
+          "customer": "cus_VahWMmxZhSPcK7",
+          "status_transitions": {
+            "finalized_at": 1794143919,
+            "marked_uncollectible_at": null,
+            "paid_at": 1794143919,
+            "voided_at": null
+          },
+          "parent": {
+            "quote_details": null,
+            "subscription_details": {
+              "metadata": {
+                "application": "truckcontrol-ai",
+                "purpose": "sandbox-provider-schema-acceptance",
+                "synthetic": "true",
+                "tc_company_id": "fcb20000-0000-4000-8000-000000000101",
+                "tc_request_id": "fcb30000-0000-4000-8000-000000000101",
+                "tc_user_id": "fcb10000-0000-4000-8000-000000000101"
+              },
+              "subscription": "sub_1UZWAsECykZtDl5dHuVAHq0H"
+            },
+            "type": "subscription_details"
+          },
+          "lines": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "il_1UZVzXECykZtDl5dPNFV2vmB",
+                "object": "line_item",
+                "quantity": 1,
+                "period": {
+                  "end": 1796735919,
+                  "start": 1794143919
+                },
+                "pricing": {
+                  "price_details": {
+                    "price": "price_1UZVzXECykZtDl5d70qBU4vQ",
+                    "product": "prod_truckcontrol_ai_saas_test_v1"
+                  },
+                  "type": "price_details",
+                  "unit_amount_decimal": "36300"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "invoice": {
+      "id": "in_1UZWAsECykZtDl5dxMRJfsKt",
+      "object": "invoice",
+      "livemode": false,
+      "status": "paid",
+      "currency": "eur",
+      "amount_paid": 36300,
+      "amount_remaining": 0,
+      "total": 36300,
+      "billing_reason": "subscription_create",
+      "customer": "cus_VahWMmxZhSPcK7",
+      "status_transitions": {
+        "finalized_at": 1794143919,
+        "marked_uncollectible_at": null,
+        "paid_at": 1794143919,
+        "voided_at": null
+      },
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+            "application": "truckcontrol-ai",
+            "purpose": "sandbox-provider-schema-acceptance",
+            "synthetic": "true",
+            "tc_company_id": "fcb20000-0000-4000-8000-000000000101",
+            "tc_request_id": "fcb30000-0000-4000-8000-000000000101",
+            "tc_user_id": "fcb10000-0000-4000-8000-000000000101"
+          },
+          "subscription": "sub_1UZWAsECykZtDl5dHuVAHq0H"
+        },
+        "type": "subscription_details"
+      },
+      "lines": {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id": "il_1UZVzXECykZtDl5dPNFV2vmB",
+            "object": "line_item",
+            "quantity": 1,
+            "period": {
+              "end": 1796735919,
+              "start": 1794143919
+            },
+            "pricing": {
+              "price_details": {
+                "price": "price_1UZVzXECykZtDl5d70qBU4vQ",
+                "product": "prod_truckcontrol_ai_saas_test_v1"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "36300"
+            }
+          }
+        ]
+      }
+    },
+    "subscription": {
+      "id": "sub_1UZWAsECykZtDl5dHuVAHq0H",
+      "object": "subscription",
+      "livemode": false,
+      "status": "active",
+      "customer": "cus_VahWMmxZhSPcK7",
+      "metadata": {
+        "application": "truckcontrol-ai",
+        "purpose": "sandbox-provider-schema-acceptance",
+        "synthetic": "true",
+        "tc_company_id": "fcb20000-0000-4000-8000-000000000101",
+        "tc_request_id": "fcb30000-0000-4000-8000-000000000101",
+        "tc_user_id": "fcb10000-0000-4000-8000-000000000101"
+      },
+      "trial_start": null,
+      "trial_end": null,
+      "cancel_at_period_end": false,
+      "billing_mode": {
+        "flexible": {
+          "proration_discounts": "included"
+        },
+        "type": "flexible",
+        "updated_at": 1794143919
+      },
+      "items": {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id": "si_VahaWJkscEiyqr",
+            "object": "subscription_item",
+            "current_period_start": 1794143919,
+            "current_period_end": 1796735919,
+            "quantity": 1,
+            "price": {
+              "id": "price_1UZVzXECykZtDl5d70qBU4vQ",
+              "object": "price",
+              "livemode": false,
+              "currency": "eur",
+              "unit_amount": 36300,
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "meter": null,
+                "trial_period_days": null,
+                "usage_type": "licensed"
+              },
+              "product": "prod_truckcontrol_ai_saas_test_v1",
+              "tax_behavior": "inclusive",
+              "metadata": {
+                "amount_representation": "gross-includes-vat",
+                "application": "truckcontrol-ai",
+                "base_cents": "30000",
+                "environment": "sandbox",
+                "plan_id": "limited",
+                "vat_bps": "2100",
+                "vat_cents": "6300"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "invoice_payments": {
+      "object": "list",
+      "has_more": false,
+      "data": [
+        {
+          "id": "inpay_1UZWAuECykZtDl5dLPKR1r5h",
+          "object": "invoice_payment",
+          "invoice": "in_1UZWAsECykZtDl5dxMRJfsKt",
+          "currency": "eur",
+          "status": "paid",
+          "amount_paid": 36300,
+          "amount_requested": 36300,
+          "payment": {
+            "payment_intent": "pi_3UZWAsECykZtDl5d0MOQSq4N",
+            "type": "payment_intent"
+          },
+          "livemode": false
+        }
+      ]
+    },
+    "payment_intent": {
+      "id": "pi_3UZWAsECykZtDl5d0MOQSq4N",
+      "object": "payment_intent",
+      "livemode": false,
+      "status": "succeeded",
+      "currency": "eur",
+      "amount": 36300,
+      "amount_received": 36300,
+      "amount_capturable": 0,
+      "customer": "cus_VahWMmxZhSPcK7",
+      "latest_charge": "ch_3UZWAsECykZtDl5d0YwyryQ2",
+      "created": 1794144622,
+      "metadata": {},
+      "canceled_at": null
+    },
+    "charge": {
+      "id": "ch_3UZWAsECykZtDl5d0YwyryQ2",
+      "object": "charge",
+      "livemode": false,
+      "status": "succeeded",
+      "currency": "eur",
+      "amount": 36300,
+      "amount_captured": 36300,
+      "amount_refunded": 0,
+      "captured": true,
+      "paid": true,
+      "refunded": false,
+      "disputed": false,
+      "customer": "cus_VahWMmxZhSPcK7",
+      "payment_intent": "pi_3UZWAsECykZtDl5d0MOQSq4N",
+      "created": 1794144623,
+      "metadata": {}
+    }
+  },
+  "zero_trial": {
+    "event": {
+      "id": "evt_1UZWRwECykZtDl5d6YgweK6W",
+      "object": "event",
+      "livemode": false,
+      "type": "invoice.paid",
+      "created": 1794145680,
+      "api_version": "2026-10-28.endive",
+      "data": {
+        "object": {
+          "id": "in_1UZWRvECykZtDl5dmSmvuSEu",
+          "object": "invoice",
+          "livemode": false,
+          "status": "paid",
+          "currency": "eur",
+          "amount_paid": 0,
+          "amount_remaining": 0,
+          "total": 0,
+          "billing_reason": "subscription_create",
+          "customer": "cus_VahT0MBTszaD66",
+          "status_transitions": {
+            "finalized_at": 1794143919,
+            "marked_uncollectible_at": null,
+            "paid_at": 1794143919,
+            "voided_at": null
+          },
+          "parent": {
+            "quote_details": null,
+            "subscription_details": {
+              "metadata": {
+                "application": "truckcontrol-ai",
+                "purpose": "zero-trial-invoice-parser-acceptance",
+                "synthetic": "true",
+                "tc_company_id": "fcb20000-0000-4000-8000-000000000102",
+                "tc_request_id": "fcb30000-0000-4000-8000-000000000102",
+                "tc_user_id": "fcb10000-0000-4000-8000-000000000102"
+              },
+              "subscription": "sub_1UZWRvECykZtDl5dEm8blOor"
+            },
+            "type": "subscription_details"
+          },
+          "lines": {
+            "object": "list",
+            "has_more": false,
+            "data": [
+              {
+                "id": "il_1UZVzXECykZtDl5d6XE04Uzr",
+                "object": "line_item",
+                "quantity": 1,
+                "period": {
+                  "end": 1795007919,
+                  "start": 1794143919
+                },
+                "pricing": {
+                  "price_details": {
+                    "price": "price_1UZVzXECykZtDl5d70qBU4vQ",
+                    "product": "prod_truckcontrol_ai_saas_test_v1"
+                  },
+                  "type": "price_details",
+                  "unit_amount_decimal": "0"
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "invoice": {
+      "id": "in_1UZWRvECykZtDl5dmSmvuSEu",
+      "object": "invoice",
+      "livemode": false,
+      "status": "paid",
+      "currency": "eur",
+      "amount_paid": 0,
+      "amount_remaining": 0,
+      "total": 0,
+      "billing_reason": "subscription_create",
+      "customer": "cus_VahT0MBTszaD66",
+      "status_transitions": {
+        "finalized_at": 1794143919,
+        "marked_uncollectible_at": null,
+        "paid_at": 1794143919,
+        "voided_at": null
+      },
+      "parent": {
+        "quote_details": null,
+        "subscription_details": {
+          "metadata": {
+            "application": "truckcontrol-ai",
+            "purpose": "zero-trial-invoice-parser-acceptance",
+            "synthetic": "true",
+            "tc_company_id": "fcb20000-0000-4000-8000-000000000102",
+            "tc_request_id": "fcb30000-0000-4000-8000-000000000102",
+            "tc_user_id": "fcb10000-0000-4000-8000-000000000102"
+          },
+          "subscription": "sub_1UZWRvECykZtDl5dEm8blOor"
+        },
+        "type": "subscription_details"
+      },
+      "lines": {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id": "il_1UZVzXECykZtDl5d6XE04Uzr",
+            "object": "line_item",
+            "quantity": 1,
+            "period": {
+              "end": 1795007919,
+              "start": 1794143919
+            },
+            "pricing": {
+              "price_details": {
+                "price": "price_1UZVzXECykZtDl5d70qBU4vQ",
+                "product": "prod_truckcontrol_ai_saas_test_v1"
+              },
+              "type": "price_details",
+              "unit_amount_decimal": "0"
+            }
+          }
+        ]
+      }
+    },
+    "subscription": {
+      "id": "sub_1UZWRvECykZtDl5dEm8blOor",
+      "object": "subscription",
+      "livemode": false,
+      "status": "trialing",
+      "customer": "cus_VahT0MBTszaD66",
+      "metadata": {
+        "application": "truckcontrol-ai",
+        "purpose": "zero-trial-invoice-parser-acceptance",
+        "synthetic": "true",
+        "tc_company_id": "fcb20000-0000-4000-8000-000000000102",
+        "tc_request_id": "fcb30000-0000-4000-8000-000000000102",
+        "tc_user_id": "fcb10000-0000-4000-8000-000000000102"
+      },
+      "trial_start": 1794143919,
+      "trial_end": 1795007919,
+      "cancel_at_period_end": false,
+      "billing_mode": {
+        "flexible": {
+          "proration_discounts": "included"
+        },
+        "type": "flexible",
+        "updated_at": 1794143919
+      },
+      "items": {
+        "object": "list",
+        "has_more": false,
+        "data": [
+          {
+            "id": "si_VahrMq1uQqW3P9",
+            "object": "subscription_item",
+            "current_period_start": 1794143919,
+            "current_period_end": 1795007919,
+            "quantity": 1,
+            "price": {
+              "id": "price_1UZVzXECykZtDl5d70qBU4vQ",
+              "object": "price",
+              "livemode": false,
+              "currency": "eur",
+              "unit_amount": 36300,
+              "recurring": {
+                "interval": "month",
+                "interval_count": 1,
+                "meter": null,
+                "trial_period_days": null,
+                "usage_type": "licensed"
+              },
+              "product": "prod_truckcontrol_ai_saas_test_v1",
+              "tax_behavior": "inclusive",
+              "metadata": {
+                "amount_representation": "gross-includes-vat",
+                "application": "truckcontrol-ai",
+                "base_cents": "30000",
+                "environment": "sandbox",
+                "plan_id": "limited",
+                "vat_bps": "2100",
+                "vat_cents": "6300"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
