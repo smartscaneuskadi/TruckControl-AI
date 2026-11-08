@@ -109,3 +109,24 @@
     width: 100%;
   }
 }
+
+.access-signout-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 24px;
+  color: var(--theme-danger);
+  background: var(--theme-red-bg);
+  border-bottom: 1px solid var(--theme-border);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.access-signout-notice p {
+  flex: 1 1 260px;
+  max-width: 960px;
+}
+.access-signout-notice .button {
+  min-height: 44px;
+}

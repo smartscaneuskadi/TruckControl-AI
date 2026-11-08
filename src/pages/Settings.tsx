@@ -12,6 +12,7 @@ import { useInstall } from "../components/PwaTools";
 import { downloadFile } from "../lib/export";
 import { Badge, Button, Field, Modal, PageHeading } from "../components/ui";
 import { useCompany } from "../app/CompanyAccess";
+import { useOffline } from "../app/OfflineContext";
 import { Link } from "react-router-dom";
 import { OfflineSettings } from "../components/OfflineSettings";
 import { DemoBackupTools } from "../components/DemoBackupTools";
@@ -26,6 +27,7 @@ export function Settings() {
   const operations = useOperations();
   const tyres = useTyres();
   const access = useCompany();
+  const offline = useOffline();
   const cloud = access.mode === "company";
   const { install, installed } = useInstall();
   const [confirm, setConfirm] = useState(false);
@@ -118,13 +120,15 @@ export function Settings() {
                 </Button>
                 <Button
                   variant="ghost"
-                  onClick={() =>
-                    void access
-                      .signOut()
-                      .catch((e) => setError(errorMessage(e)))
-                  }
+                  onClick={() => {
+                    if (offline.offline) {
+                      offline.lock();
+                      return;
+                    }
+                    void access.signOut().catch((e) => setError(errorMessage(e)));
+                  }}
                 >
-                  Cerrar sesión
+                  {offline.offline ? "Bloquear copia" : "Cerrar sesión"}
                 </Button>
               </div>
               <Link to="/invoices" className="button secondary">

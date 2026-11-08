@@ -156,6 +156,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   }>({ user: null, organizations: [], loaded: false });
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [signOutError, setSignOutError] = useState("");
   const [recovery, setRecovery] = useState(false);
   const [revision, setRevision] = useState(0);
   const [loading, setLoading] = useState(Boolean(client));
@@ -187,6 +188,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     function receive(user: User | null) {
       if (!active || suspended) return;
       const nextUserId = user?.id ?? null;
+      if (nextUserId) setSignOutError("");
       if (observedUserId.current !== nextUserId) endPrivateSessions();
       observedUserId.current = nextUserId;
       setAccount((old) =>
@@ -341,12 +343,28 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
         // End RAM-only provider capabilities before awaiting network revocation.
         endPrivateSessions();
         if (client) {
-          const { error } = await client.auth.signOut();
-          if (error)
-            throw new Error(
-              "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.",
-            );
+          try {
+            const { error } = await client.auth.signOut();
+            if (error) throw error;
+          } catch {
+            // auth-js 2.118 clears its local session even on a remote error.
+            // Its SIGNED_OUT callback runs before signOut resolves/rejects.
+            const localClosed = observedUserId.current === null;
+            const message = localClosed
+              ? "Tu sesión en este dispositivo se ha cerrado, pero no hemos podido confirmar el cierre en el servidor. Vuelve a iniciar sesión cuando tengas conexión para revisarlo."
+              : "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.";
+            if (localClosed) {
+              setAccount({ user: null, organizations: [], loaded: false });
+              setSelected(null);
+              setRecovery(false);
+              setEntryView("login");
+              changeMode("company");
+            }
+            setSignOutError(message);
+            throw new Error(message);
+          }
         }
+        setSignOutError("");
         setAccount({ user: null, organizations: [], loaded: false });
         setSelected(null);
         setRecovery(false);
@@ -363,6 +381,14 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   };
   return (
     <Context.Provider value={value}>
+      {signOutError && (
+        <div className="access-signout-notice" role="alert">
+          <p>{signOutError}</p>
+          <Button variant="secondary" onClick={() => setSignOutError("")}>
+            Entendido
+          </Button>
+        </div>
+      )}
       {["notice", "privacy", "terms"].includes(
         new URLSearchParams(window.location.search).get("legal") ?? "",
       ) ? (

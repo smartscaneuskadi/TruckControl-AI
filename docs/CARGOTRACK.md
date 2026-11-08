@@ -10,13 +10,13 @@ El inicio de sesión CargoTrack es independiente. Cerrar TruckControl no cierra 
 
 ## Salida de una cuenta de empresa
 
-El menú de empresa autenticada muestra «Cerrar sesión» debajo de Configuración. Invoca `access.signOut()`, que usa el SDK oficial `client.auth.signOut()`; una única promesa compartida evita solicitudes duplicadas desde varios controles. Mientras responde, el botón se desactiva y anuncia el cierre. Un rechazo conserva el error comprensible y permite reintentar: no se anuncia una salida que no haya terminado.
+El menú de empresa autenticada muestra «Cerrar sesión» debajo de Configuración. Invoca `access.signOut()`, que usa el SDK oficial `client.auth.signOut()`; una única promesa compartida evita solicitudes duplicadas desde varios controles. Mientras responde, el botón se desactiva y anuncia el cierre. Un rechazo muestra un aviso comprensible y persistente. La versión fijada auth-js2.118 elimina la sesión local también cuando el servidor rechaza el cierre; se indica que el dispositivo está cerrado y que falta confirmar el servidor, sin anunciar una revocación remota inexistente. Para reintentar esa revocación debe iniciarse sesión de nuevo: una llamada sin token no sería una prueba de cierre remoto.
 
 Tras la confirmación se eliminan del estado el usuario, empresas seleccionables, empresa activa y recuperación; se vuelve al formulario de acceso. La raíz protege también las rutas históricas: Atrás, recargar o escribir una ruta privada no monta la flota sin identidad. La restauración de una página en BFCache elimina su vista privada antes de guardarse y vuelve a verificar `getUser()` al regresar; no revoca la sesión del servidor por cambiar de pestaña ni por abrir CargoTrack.
 
 Los proveedores privados y claves offline se invalidan al salir. Las promesas de desbloqueo, descifrado, preparación o sincronización que terminan después del bloqueo no deben reinstalar contenido privado ni iniciar nuevas escrituras. Una escritura ya enviada conserva su carácter incierto y la idempotencia al reconciliarse; no se borra una cola para fingir que nunca ocurrió.
 
-La copia cifrada local es un acceso distinto de la sesión en línea. En ella se utiliza «Bloquear»; el nuevo botón del menú sólo se muestra para una cuenta autenticada en línea. Las copias cifradas y cambios pendientes se conservan al bloquear o salir. No se borran documentos ni datos de empresa. El wrapper offline también comprueba la respuesta del SDK antes de afirmar que ha cerrado una sesión.
+La copia cifrada local es un acceso distinto de la sesión en línea. En ella se utiliza «Bloquear» (o «Bloquear copia» desde Configuración); el nuevo botón del menú sólo se muestra para una cuenta autenticada en línea. Las copias cifradas y cambios pendientes se conservan al bloquear o salir. No se borran documentos ni datos de empresa. El wrapper offline también comprueba la respuesta del SDK antes de afirmar que ha cerrado una sesión.
 
 ## Verificación
 

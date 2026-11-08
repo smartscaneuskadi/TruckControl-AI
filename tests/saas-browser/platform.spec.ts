@@ -4915,7 +4915,7 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     expect(privateReads).toEqual([]);
   });
 
-  test("un rechazo de Supabase muestra un error y permite reintentar sin fingir una salida", async ({ page }) => {
+  test("un rechazo remoto cierra localmente, avisa y exige volver a entrar para reintentar", async ({ page }) => {
     await fixtures(page);
     await login(page, "customer@example.com");
     await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
@@ -4932,11 +4932,22 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
       });
     });
     await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
-    await expect(page.locator("body")).toContainText("No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.");
+    const notice = page.getByRole("alert").filter({ hasText: "Tu sesión en este dispositivo se ha cerrado" });
+    await expect(notice).toContainText("no hemos podido confirmar el cierre en el servidor");
     await expect(page.locator("body")).not.toContainText("Private provider diagnostic");
-    await expect(menu.getByRole("button", { name: "Cerrar sesión", exact: true })).toBeEnabled();
-    expect(await page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1"))).not.toBeNull();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator(".sidebar")).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1"))).toBeNull();
+    expect(requests).toBe(1);
+    // A second call without a token would not prove remote revocation.
+    // Reauthenticate before the real SDK is allowed to make another request.
+    await page.getByLabel("Correo electrónico", { exact: true }).fill("customer@example.com");
+    await page.getByLabel("Contraseña", { exact: true }).fill("synthetic-password-123");
+    await page.getByRole("button", { name: "Entrar", exact: true }).click();
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    await expect(notice).toHaveCount(0);
     deny = false;
+    await openMainMenu(page);
     await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
     await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
     expect(requests).toBe(2);
