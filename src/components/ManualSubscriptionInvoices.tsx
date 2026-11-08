@@ -38,11 +38,12 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [editing, setEditing] = useState<Editor | null>(null);
-  const lock = useRef(false), mounted = useRef(true);
+  const lock = useRef(false), mounted = useRef(true), generation = useRef(0);
 
   useEffect(() => {
     mounted.current = true;
     const change = () => {
+      generation.current++;
       setOnline(navigator.onLine);
       setPage(null);
       setCapabilities(null);
@@ -53,12 +54,14 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
     window.addEventListener("offline", change);
     return () => {
       mounted.current = false;
+      generation.current++;
       window.removeEventListener("online", change);
       window.removeEventListener("offline", change);
     };
   }, []);
   useEffect(() => {
     const controller = new AbortController();
+    generation.current++;
     let active = true;
     setPage(null); setCapabilities(null); setEditing(null);
     setError(""); setLoading(true);
@@ -89,6 +92,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
     const form = new FormData(event.currentTarget);
     if (form.get("confirmed") !== "on") return;
     const selected = editing;
+    const currentGeneration = generation.current;
     let input: unknown;
     if (selected.action === "validate_buyer") input = {
       company_name: String(form.get("company_name") ?? ""),
@@ -105,7 +109,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
     lock.current = true; setBusy(true); setError(""); setMessage("");
     try {
       const next = await mutateManualSubscriptionInvoice(client, selected.task, selected.action, input, crypto.randomUUID());
-      if (!mounted.current || !navigator.onLine) return;
+      if (!mounted.current || !navigator.onLine || generation.current !== currentGeneration) return;
       setPage((current) => current ? { ...current, items: current.items.map((row) => row.id === next.id ? next : row) } : null);
       setEditing(null);
       setMessage(selected.action === "validate_buyer"
@@ -114,7 +118,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
           ? "Envío declarado por el operador. La recepción por el destinatario sigue sin acreditarse."
           : "Incidencia registrada para revisión. La solicitud se conserva.");
     } catch (failure) {
-      if (mounted.current) {
+      if (mounted.current && generation.current === currentGeneration) {
         setPage(null); setEditing(null);
         setError(failure instanceof Error && failure.name !== "ZodError"
           ? failure.message : "Revisa los datos. No se ha podido confirmar la operación.");

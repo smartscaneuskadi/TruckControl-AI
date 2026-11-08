@@ -3,6 +3,7 @@ import { z } from "zod";
 const uuid = z.uuid();
 const stamp = z.iso.datetime({ offset: true });
 const reference = z.string().trim().min(3).max(200).regex(/^[^\u0000-\u001f\u007f]+$/);
+const invoiceReference = z.string().trim().min(1).max(200).regex(/^[^\u0000-\u001f\u007f]+$/);
 const integer = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
 const positiveVersion = z.number().int().positive().max(Number.MAX_SAFE_INTEGER);
 export const manualInvoiceStates = {
@@ -23,8 +24,8 @@ export const manualInvoiceCapabilitiesSchema = z.object({
   document_upload_ready: z.boolean(),
 });
 const invoiceSchema = z.object({
-  invoice_number: reference,
-  ticketbai_reference: reference,
+  invoice_number: invoiceReference,
+  ticketbai_reference: invoiceReference,
   issued_at: stamp,
   pdf_object_key: z.string().max(400),
   pdf_sha256: z.string().regex(/^[a-f0-9]{64}$/),
@@ -96,8 +97,8 @@ export const validateBuyerInputSchema = z.strictObject({
   evidence_reference: reference,
 });
 export const registerManualInvoiceInputSchema = z.strictObject({
-  invoice_number: reference,
-  ticketbai_reference: reference,
+  invoice_number: invoiceReference,
+  ticketbai_reference: invoiceReference,
   issued_at: stamp,
   pdf_object_key: z.string().min(1).max(400),
   pdf_sha256: z.string().regex(/^[a-f0-9]{64}$/),
