@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -15,15 +16,17 @@ beforeAll(async () => {
     create schema vault;create table vault.secrets(name text primary key,decrypted_secret text);
     create view vault.decrypted_secrets as select name,decrypted_secret from vault.secrets;
     insert into vault.secrets values ('truckcontrol_google_client_id','synthetic-id'),('truckcontrol_google_client_secret','synthetic-secret'),('truckcontrol_gmail_token_encryption_key','synthetic-aes-key'),('unrelated_provider','must-not-be-returned');`);
+  await installAuthSessionFixture(db);
   for (const name of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
     await db.exec(readFileSync(`supabase/migrations/${name}`, "utf8"));
-  await db.query("insert into auth.users values($1),($2)", [user, other]);
+  await db.query("insert into auth.users(id,email_confirmed_at) values($1,now()),($2,now())", [user, other]);
   await db.query(
     "insert into public.organizations(id,owner_id,name) values($1,$2,'Empresa ficticia OAuth')",
     [org, user],
   );
+  await seedFixtureSessions(db);
 }, 30000);
 afterAll(async () => {
   await db?.close();

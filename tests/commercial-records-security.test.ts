@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import {
   beforeAll,
   beforeEach,
@@ -40,9 +41,7 @@ async function as<T>(
   role = "authenticated",
 ) {
   await db.exec("set role " + role);
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-    actor,
-  ]);
+  await bindFixtureActor(db, actor);
   await db.exec("savepoint call");
   try {
     return await fn();
@@ -90,6 +89,7 @@ beforeAll(async () => {
   await db.exec(
     `create role anon nologin;create role authenticated nologin;create role service_role nologin bypassrls;create schema auth;create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,banned_until timestamptz,deleted_at timestamptz,raw_user_meta_data jsonb not null default '{}');create table auth.sessions(id uuid primary key,user_id uuid);create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema public,auth to anon,authenticated,service_role;`,
   );
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -151,6 +151,7 @@ beforeAll(async () => {
     "update private.fleet_records set finance_entry_id=$1 where organization_id=$2 and id=$3",
     [income, org, trip],
   );
+  await seedFixtureSessions(db);
 }, 30000);
 beforeEach(() =>
   db.exec("begin;select set_config('request.jwt.claims','',false)"),

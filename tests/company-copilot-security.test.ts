@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import {
   afterAll,
   afterEach,
@@ -43,9 +44,7 @@ async function as<T>(
   role = "authenticated",
 ) {
   await db.exec(`set role ${role}`);
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-    actor ?? "",
-  ]);
+  await bindFixtureActor(db, actor);
   await db.exec("savepoint operation");
   try {
     return await fn();
@@ -120,6 +119,7 @@ beforeAll(async () => {
     create table auth.sessions(id uuid primary key,user_id uuid);
     create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
     grant usage on schema public,auth to anon,authenticated,service_role;`);
+  await installAuthSessionFixture(db);
   for (const name of readdirSync("supabase/migrations")
     .filter((x) => x.endsWith(".sql"))
     .sort())
@@ -173,6 +173,7 @@ beforeAll(async () => {
       ),
     );
   await db.exec("commit");
+  await seedFixtureSessions(db);
 }, 30000);
 beforeEach(async () => {
   await db.exec("begin");

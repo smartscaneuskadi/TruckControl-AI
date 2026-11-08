@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { beforeAll, beforeEach, afterAll, describe, it, expect } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -61,6 +62,7 @@ beforeAll(async () => {
   await db.exec(
     `create role anon nologin;create role authenticated nologin;create role service_role nologin bypassrls;create schema auth;create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,raw_user_meta_data jsonb not null default '{}');create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;grant usage on schema public,auth to anon,authenticated,service_role;`,
   );
+  await installAuthSessionFixture(db);
   for (const f of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -78,6 +80,7 @@ beforeAll(async () => {
   await db.exec(
     `create schema if not exists extensions;create schema vault;create table vault.secrets(name text,secret text);insert into vault.secrets values('truckcontrol_auth_mail_signing_key','fictitious-secret');create view vault.decrypted_secrets as select name,secret decrypted_secret from vault.secrets;create function extensions.hmac(value text,key text,algorithm text) returns bytea language sql immutable as $mock$select decode(md5(value)||md5(value),'hex')$mock$;`,
   );
+  await seedFixtureSessions(db);
 }, 30000);
 beforeEach(async () => {
   await db.exec(
