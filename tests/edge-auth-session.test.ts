@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
+import { createHmac } from "node:crypto";
+import { createBillingHandler } from "../supabase/functions/truckcontrol-billing/handler.ts";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSessionVerifiedUser } from "../supabase/functions/_shared/auth-session.ts";
 import type { SessionVerificationClient } from "../supabase/functions/_shared/auth-session.ts";
@@ -42,7 +44,8 @@ describe("compuerta Edge: Auth verificado y sesión nativa viva antes de negocio
   });
   it("no convierte valores truthy, filas o texto en aceptación de sesión", async () => {
     for (const value of ["true", 1, [], { verified: true }, [{ verified: true }], null, undefined]) {
-      expect(await getSessionVerifiedUser(fixture(value).client, jwt())).toBeNull();
+      const f = fixture(); f.setHeader.mockResolvedValue({ data: value, error: null });
+      expect(await getSessionVerifiedUser(f.client, jwt())).toBeNull();
     }
   });
   it("el error Auth impide incluso consultar sesión en SQL", async () => {
@@ -132,5 +135,62 @@ describe("fábrica real de correo: sesión obsoleta cierra antes de server/stora
     expect(storage).not.toHaveBeenCalled();
     expect(model).not.toHaveBeenCalled();
     expect(await response.text()).not.toContain("PGRST202");
+  });
+});
+
+describe("autorizaciones servidor independientes de sesiones humanas", () => {
+  it("un webhook Stripe firmado conserva su autorización propia sin llamar a Auth", async () => {
+    const authenticate = vi.fn(async () => null), server = vi.fn(), provider = vi.fn();
+    const secret = "whsec_synthetic_no_provider_account";
+    const body = JSON.stringify({ id: "evt_syntheticSessionRegression", type: "payment_intent.created", data: { object: {} } });
+    const timestamp = String(Math.floor(Date.now() / 1000));
+    const signature = createHmac("sha256", secret).update(timestamp + "." + body).digest("hex");
+    const handler = createBillingHandler({ authenticate, server }, {
+      appOrigin: "https://truckcontrolai.com", webhookSecret: secret, invoicingVerified: false,
+    }, provider);
+    const response = await handler(new Request("https://edge.invalid/truckcontrol-billing?webhook=stripe", {
+      method: "POST", headers: { "Stripe-Signature": "t=" + timestamp + ",v1=" + signature }, body,
+    }));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true });
+    expect(authenticate).not.toHaveBeenCalled();
+    expect(server).not.toHaveBeenCalled();
+    expect(provider).not.toHaveBeenCalled();
+  });
+  for (const valid of [true, false]) it("correo servidor firmado conserva HMAC; firma " + (valid ? "válida" : "inválida"), async () => {
+    const f = fixture(false);
+    const business = vi.fn(async (_name: string, _input: Record<string, unknown>) => ({ data: { state: "complete", imported: 0 }, error: null }));
+    const storage = vi.fn();
+    const client = {
+      auth: { getUser: f.getUser },
+      rpc: vi.fn((name: string, input: Record<string, unknown>) =>
+        name === "tc_verified_session" ? f.rpc(name, {}) : business(name, input)),
+      storage: { from: storage },
+    } as unknown as SupabaseClient;
+    const secret = "synthetic-mail-signing-key-for-test-only-000000";
+    const timestamp = String(Math.floor(Date.now() / 1000));
+    const body = JSON.stringify({
+      recipient: "r".repeat(32) + "@facturas.example.test",
+      delivery_id: "synthetic-delivery-session-regression", message_base64: "",
+    });
+    const correct = createHmac("sha256", secret).update("truckcontrol-mail-v1:" + timestamp + "." + body).digest("hex");
+    const handler = createMailHandler(createMailGateway(client), {
+      origins: ["https://truckcontrolai.com"],
+      ingress: { enabled: true, domain: "facturas.example.test", signingKey: secret },
+    });
+    const response = await handler(new Request("https://edge.invalid/company-mail/inbound", {
+      method: "POST", headers: { "x-truckcontrol-timestamp": timestamp, "x-truckcontrol-signature": valid ? correct : "0".repeat(64) }, body,
+    }));
+    expect(response.status).toBe(valid ? 200 : 401);
+    expect(f.getUser).not.toHaveBeenCalled();
+    expect(f.rpc).not.toHaveBeenCalled();
+    expect(storage).not.toHaveBeenCalled();
+    if (valid) {
+      expect(business).toHaveBeenCalledOnce();
+      expect(business).toHaveBeenCalledWith("company_mail_server", {
+        p_action: "delivery_begin", p_data: expect.objectContaining({ delivery_id: "synthetic-delivery-session-regression" }),
+      });
+      expect(await response.json()).toEqual({ duplicate: true, imported: 0, ai_used: false });
+    } else expect(business).not.toHaveBeenCalled();
   });
 });
