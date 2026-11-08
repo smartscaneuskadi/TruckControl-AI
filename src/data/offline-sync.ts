@@ -25,27 +25,35 @@ export async function synchronizeVault(
     throw Error(
       "Inicia sesión con la cuenta que creó esta copia antes de sincronizar.",
     );
+  const denyCopy = async (): Promise<never> => {
+    try {
+      await session.update((value) => ({
+        ...value, expiresAt: new Date().toISOString(),
+      }), signal);
+    } catch {
+      // Storage failure must not preserve a usable RAM capability after an
+      // explicit server denial. Keep the existing ciphertext and queued IDs.
+    } finally {
+      session.lock();
+    }
+    throw Error(
+      "Esta empresa ya no permite el acceso. La copia queda bloqueada hasta verificar los permisos de nuevo.",
+    );
+  };
   const authorize = async () => {
     active();
-    const { data, error } = await client.rpc("tc_organization_access", {
+    const { data, error, status } = await client.rpc("tc_organization_access", {
       p_org: orgId,
     });
     active();
     const access = data as unknown as SubscriptionAccess;
+    if (error && (error.code === "42501" || status === 401 || status === 403))
+      return denyCopy();
     if (error)
       throw Error(
         "No se han podido comprobar los permisos actuales. Los cambios siguen cifrados y pendientes.",
       );
-    if (!access?.active) {
-      await session.update((v) => ({
-        ...v,
-        expiresAt: new Date().toISOString(),
-      }), signal);
-      active();
-      throw Error(
-        "Esta empresa ya no permite el acceso. La copia queda bloqueada hasta verificar los permisos de nuevo.",
-      );
-    }
+    if (!access?.active) return denyCopy();
     if (access.profile?.user_id !== userId)
       throw Error("La cuenta de la copia ha cambiado. Verifica de nuevo el acceso antes de sincronizar.");
     return access;

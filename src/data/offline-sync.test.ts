@@ -49,7 +49,10 @@ async function fixture() {
     return structuredClone(payload);
   });
   const getUser = vi.fn(async () => ({ data: { user: { id: user } }, error: null }));
-  const rpc = vi.fn(async (_name: string, _args: unknown) => ({ data: structuredClone(access), error: null }));
+  type AccessReply = { data: SubscriptionAccess | null; error: { code?: string } | null; status?: number };
+  const rpc = vi.fn(async (_name: string, _args: unknown): Promise<AccessReply> => ({
+    data: structuredClone(access), error: null, status: 200,
+  }));
   const client = { auth: { getUser }, rpc } as unknown as SupabaseClient<Database>;
   vi.spyOn(SupabaseFleetRepository.prototype, "load").mockResolvedValue(fleet);
   const execute = vi.spyOn(CloudOperationRepository.prototype, "execute").mockResolvedValue(rows);
@@ -106,6 +109,39 @@ describe("sincronización offline cerrada por cambio de sesión", () => {
     await expect(synchronizeVault(f.session, f.client)).rejects.toThrow("cuenta de la copia ha cambiado");
     expect(f.execute).not.toHaveBeenCalled(); expect(f.update).not.toHaveBeenCalled();
     expect(f.payload().outbox).toEqual(f.original.outbox);
+  });
+  it("una denegación explícita 42501 o HTTP401/403 bloquea RAM y conserva la cola cifrada", async () => {
+    for (const reply of [
+      { data: null, error: { code: "42501" }, status: 403 },
+      { data: null, error: { code: "PGRST301" }, status: 401 },
+      { data: null, error: { code: "AUTH" }, status: 403 },
+    ]) {
+      const f = await fixture();
+      f.rpc.mockResolvedValueOnce(reply);
+      await expect(synchronizeVault(f.session, f.client)).rejects.toThrow("ya no permite el acceso");
+      expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
+      expect(f.execute).not.toHaveBeenCalled();
+      expect(f.payload().outbox).toEqual(f.original.outbox);
+      expect(Date.parse(f.payload().expiresAt)).toBeLessThanOrEqual(Date.now());
+      vi.restoreAllMocks();
+    }
+  });
+  it("aunque falle guardar la caducidad, una denegación del servidor cierra la clave sin borrar datos", async () => {
+    const f = await fixture();
+    f.rpc.mockResolvedValueOnce({ data: null, error: { code: "42501" }, status: 403 });
+    f.update.mockRejectedValueOnce(Error("Synthetic IndexedDB failure"));
+    await expect(synchronizeVault(f.session, f.client)).rejects.toThrow("ya no permite el acceso");
+    expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
+    expect(f.payload()).toEqual(f.original);
+    expect(f.execute).not.toHaveBeenCalled();
+  });
+  it("una indisponibilidad transitoria no se convierte en revocación ni modifica la copia", async () => {
+    const f = await fixture();
+    f.rpc.mockResolvedValueOnce({ data: null, error: { code: "" }, status: 503 });
+    await expect(synchronizeVault(f.session, f.client)).rejects.toThrow("comprobar los permisos actuales");
+    expect(() => f.session.assertUnlocked()).not.toThrow();
+    expect(f.update).not.toHaveBeenCalled(); expect(f.execute).not.toHaveBeenCalled();
+    expect(f.payload()).toEqual(f.original);
   });
   it("con acceso vigente publica una sola vez el comando original y sólo entonces retira su UUID", async () => {
     const f = await fixture();
