@@ -22,7 +22,7 @@ El modo de prueba queda encolado, pero el worker **solo reclama modo live**. Nin
 
 Lease60s, CAS de versión/token y máximo3 intentos. Solo429 `rate_limit_exceeded` o409 `concurrent_idempotent_requests` generan reintento acotado, con la misma plantilla y clave de idempotencia. El backoff incluye jitter. Timeout, caída de red,5xx, respuesta incierta o lease caducada terminan en `uncertain`, sin reenvío automático. Una aceptación cuyo ACK de base se pierde mantiene el lease y requiere conciliación; no se vuelve a enviar a ciegas.
 
-Resend conserva claves de idempotencia24h. La aplicación usa una ventana más corta de23h desde el primer intento; después cierra el reintento. Techo propio20 intentos/día y500/mes, contando reclamaciones antes de llamar al proveedor. El plan Free y sus límites compartidos con Auth siguen vigentes; no hay upgrade/pay-as-you-go ni compra. Configuración apagada impide reclamar o consumir proveedor.
+Resend conserva claves de idempotencia24h. La aplicación usa una ventana más corta de23h desde el primer intento; después cierra el reintento. Techo propio20 intentos/día y500/mes, contando reclamaciones antes de llamar al proveedor. El plan Free mantiene3000 mensajes/mes y100/día compartidos con Auth y los demás flujos; el techo propio de avisos no amplía esos límites. no hay upgrade/pay-as-you-go ni compra. Configuración apagada impide reclamar o consumir proveedor.
 
 ## Aceptación pendiente
 
