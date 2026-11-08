@@ -7,6 +7,7 @@ import {
   loadManualInvoiceCapabilities,
   loadManualSubscriptionInvoices,
   mutateManualSubscriptionInvoice,
+  ManualInvoiceAdminError,
 } from "../integrations/supabase/manual-subscription-admin";
 import {
   manualInvoiceStates,
@@ -86,18 +87,18 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
       return () => controller.abort();
     }
     void (async () => {
-      const available = await loadManualInvoiceCapabilities(client, controller.signal);
+      const available = await loadManualInvoiceCapabilities(client, controller.signal, userId);
       if (!active || !navigator.onLine) return;
       setCapabilities(available);
       if (!available.available) return;
-      const next = await loadManualSubscriptionInvoices(client, cursor, controller.signal);
+      const next = await loadManualSubscriptionInvoices(client, cursor, controller.signal, userId);
       if (active && navigator.onLine) setPage(next);
       try {
         const documents = await loadManualDocumentCapabilities(client, userId, controller.signal);
         if (active && navigator.onLine) setDocumentCapabilities(documents);
       } catch (failure) {
         if (active && navigator.onLine && failure instanceof ManualDocumentError && failure.kind === "denied") {
-          setPage(null); setCapabilities(null);
+          setPage(null); setCapabilities(null); discardDownloads();
           setError(failure.message);
         }
       }
@@ -133,7 +134,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
     } else input = { reason: String(form.get("reason") ?? "") };
     lock.current = true; setBusy(true); setError(""); setMessage("");
     try {
-      const next = await mutateManualSubscriptionInvoice(client, selected.task, selected.action, input, crypto.randomUUID());
+      const next = await mutateManualSubscriptionInvoice(client, selected.task, selected.action, input, crypto.randomUUID(), userId);
       if (!mounted.current || !navigator.onLine || generation.current !== currentGeneration) return;
       setPage((current) => current ? { ...current, items: current.items.map((row) => row.id === next.id ? next : row) } : null);
       setEditing(null);
@@ -145,6 +146,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
     } catch (failure) {
       if (mounted.current && generation.current === currentGeneration) {
         setPage(null); setEditing(null);
+        if (failure instanceof ManualInvoiceAdminError && failure.permissionDenied) { setDocumentCapabilities(null); discardDownloads(); }
         setError(failure instanceof Error && failure.name !== "ZodError"
           ? failure.message : "Revisa los datos. No se ha podido confirmar la operación.");
       }
@@ -246,7 +248,7 @@ export function ManualSubscriptionInvoices({ userId }: { userId: string }) {
       {editing?.action === "register_invoice" && client && <ManualFiscalPdfDialog
         key={userId + ":" + editing.task.id} client={client} task={editing.task} userId={userId}
         onClose={() => setEditing(null)}
-        onDenied={() => { setEditing(null); setPage(null); setDocumentCapabilities(null); setError("Tu sesión ya no permite gestionar estas facturas."); }}
+        onDenied={() => { setEditing(null); setPage(null); setDocumentCapabilities(null); discardDownloads(); setError("Tu sesión ya no permite gestionar estas facturas."); }}
         onSaved={(next) => {
           setPage((current) => current ? { ...current, items: current.items.map((row) => row.id === next.id ? next : row) } : null);
           setEditing(null); setMessage("Estado fiscal actualizado desde el servidor.");

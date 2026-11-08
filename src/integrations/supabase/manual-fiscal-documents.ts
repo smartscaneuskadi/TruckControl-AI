@@ -26,7 +26,7 @@ function transportFailure(result: { error: unknown; response?: Response }, writi
     : status === 409 ? "conflict" : status === 404 ? "unavailable" : status === 503 ? (writing ? "uncertain" : "unavailable")
       : status === 400 || status === 413 || status === 415 ? "invalid" : writing ? "uncertain" : "unavailable");
 }
-async function scopedCredentials(client: SupabaseClient<Database>, expectedUserId: string, signal?: AbortSignal) {
+export async function manualInvoiceCredentials(client: SupabaseClient<Database>, expectedUserId: string, signal?: AbortSignal) {
   z.uuid().parse(expectedUserId);
   try {
   const session = await client.auth.getSession();
@@ -45,7 +45,7 @@ export async function manualPdfHash(blob: Blob) {
   return Array.from(new Uint8Array(digest), (part) => part.toString(16).padStart(2, "0")).join("");
 }
 export async function loadManualDocumentCapabilities(client: SupabaseClient<Database>, userId: string, signal?: AbortSignal) {
-  const headers = await scopedCredentials(client, userId, signal);
+  const headers = await manualInvoiceCredentials(client, userId, signal);
   const result = await client.functions.invoke("company-manual-invoices/capabilities", { body: {}, headers, signal, timeout: 12000 }).catch(() => { throw new ManualDocumentError(signal?.aborted ? "cancelled" : "unavailable"); });
   if (result.error) transportFailure(result, false, signal);
   if (signal?.aborted) throw new ManualDocumentError("cancelled");
@@ -61,7 +61,7 @@ export async function uploadManualFiscalPdf(
   z.uuid().parse(operationId);
   if (task.status !== "awaiting_issue" || !task.buyer_validated || !(file instanceof File) ||
       file.type !== "application/pdf" || file.size < 8 || file.size > MAX_MANUAL_FISCAL_PDF_BYTES) throw new ManualDocumentError("invalid");
-  const headers = await scopedCredentials(client, userId, signal);
+  const headers = await manualInvoiceCredentials(client, userId, signal);
   const expectedHash = await manualPdfHash(file);
   if (signal?.aborted) throw new ManualDocumentError("cancelled");
   const form = new FormData();
@@ -83,7 +83,7 @@ export async function downloadManualFiscalPdf(
   const task = manualSubscriptionTaskSchema.parse(taskInput);
   if (!task.invoice) throw new ManualDocumentError("invalid");
   const documentId = manualInvoiceDocumentId(task);
-  const headers = await scopedCredentials(client, userId, signal);
+  const headers = await manualInvoiceCredentials(client, userId, signal);
   const result = await client.functions.invoke<Blob>("company-manual-invoices", {
     body: { action: "download", task_id: task.id, expected_version: task.row_version,
       operation_id: crypto.randomUUID(), document_id: documentId }, headers, signal, timeout: 30000,

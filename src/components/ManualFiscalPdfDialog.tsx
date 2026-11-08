@@ -50,7 +50,7 @@ export function ManualFiscalPdfDialog({ client, task: initial, userId, onSaved, 
     const epoch = generation.current, controller = new AbortController();
     pending.current = controller;
     try {
-      const next = await loadManualSubscriptionTask(client, task.id, controller.signal);
+      const next = await loadManualSubscriptionTask(client, task.id, controller.signal, userId);
       if (!current(epoch)) return;
       if (next.status !== "awaiting_issue") { onSaved(next); return; }
       if (next.row_version !== task.row_version) {
@@ -84,7 +84,7 @@ export function ManualFiscalPdfDialog({ client, task: initial, userId, onSaved, 
       const ready = await loadManualDocumentCapabilities(client, userId, controller.signal);
       if (!current(epoch)) return;
       if (!ready.available || !ready.document_upload_ready || !ready.downloads_ready) throw new ManualDocumentError("unavailable");
-      const next = await mutateManualSubscriptionInvoice(client, task, "register_invoice", input.data, registration.current.id);
+      const next = await mutateManualSubscriptionInvoice(client, task, "register_invoice", input.data, registration.current.id, userId);
       if (current(epoch)) onSaved(next);
     } catch (failure) {
       if (current(epoch) && ((failure instanceof ManualInvoiceAdminError && failure.permissionDenied) || (failure instanceof ManualDocumentError && failure.kind === "denied"))) { onDenied(); return; }

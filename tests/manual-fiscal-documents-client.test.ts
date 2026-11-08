@@ -7,7 +7,7 @@ import {
   downloadManualFiscalPdf, loadManualDocumentCapabilities, manualPdfHash,
   ManualDocumentError, uploadManualFiscalPdf,
 } from "../src/integrations/supabase/manual-fiscal-documents";
-import { loadManualSubscriptionTask, ManualInvoiceAdminError } from "../src/integrations/supabase/manual-subscription-admin";
+import { loadManualSubscriptionTask, ManualInvoiceAdminError, mutateManualSubscriptionInvoice } from "../src/integrations/supabase/manual-subscription-admin";
 const uid = "fc640000-0000-4000-8000-000000000001";
 const org = "fc640000-0000-4000-8000-000000000002";
 const tid = "fc640000-0000-4000-8000-000000000003";
@@ -154,6 +154,28 @@ describe("cliente de PDF privado: identidad vinculada, ACK scoped y resultados i
     await expect(uploadManualFiscalPdf(f.value, task(), file(), operation, uid)).rejects.not.toThrow("private-provider-key");
     f.invoke.mockRejectedValueOnce(Error("private-provider-thrown"));
     await expect(uploadManualFiscalPdf(f.value, task(), file(), operation, uid)).rejects.not.toThrow("private-provider-thrown");
+  });
+  it("fija el token también en el RPC de registro aunque se instale otra sesión entre awaits", async () => {
+    const f = fixture(null);
+    f.getUser.mockImplementationOnce(async () => {
+      f.getSession.mockResolvedValue({ data: { session: { user: { id: org }, access_token: "new-session-synthetic" } }, error: null });
+      return { data: { user: { id: uid } }, error: null };
+    });
+    const next = { ...task(), row_version: 3, status: "needs_review" as const, review_reason: "amount_mismatch" as const };
+    const pending = Promise.resolve({ data: { task: next, replayed: false }, error: null });
+    const setHeader = vi.fn(() => pending);
+    Object.assign(pending, { setHeader });
+    f.rpc.mockReturnValue(pending);
+    expect(await mutateManualSubscriptionInvoice(f.value, task(), "needs_review", { reason: "amount_mismatch" }, operation, uid)).toEqual(next);
+    expect(setHeader).toHaveBeenCalledWith("Authorization", "Bearer synthetic-user-token");
+    expect(f.rpc.mock.calls[0][1].p_data).toEqual({ reason: "amount_mismatch" });
+    expect(f.rpc.mock.calls[0][1]).not.toHaveProperty("actor_id");
+  });
+  it("un refresh de otra cuenta se detiene antes del RPC y se etiqueta para limpiar el formulario", async () => {
+    const f = fixture(null);
+    f.getSession.mockResolvedValue({ data: { session: { user: { id: org }, access_token: "other-session-synthetic" } }, error: null });
+    await expect(loadManualSubscriptionTask(f.value, tid, undefined, uid)).rejects.toMatchObject({ permissionDenied: true });
+    expect(f.rpc).not.toHaveBeenCalled();
   });
   it("consulta el estado incierto por tarea exacta y preserva denegación tipada", async () => {
     const f = fixture(null);
