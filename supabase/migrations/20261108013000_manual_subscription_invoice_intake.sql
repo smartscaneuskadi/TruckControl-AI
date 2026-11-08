@@ -21,6 +21,9 @@ create table private.tc_manual_subscription_invoice_tasks (
   -- A checkout purchase can yield exactly one fiscal task. Recurring invoice
   -- periods need a separate verified subscription-invoice association; do not
   -- reuse tc_payment_requests.id across renewal tasks without that design.
+  -- Composite key also enforces that every event belongs to the same Stripe
+  -- merchant account as its invoice task, even for privileged direct writes.
+  constraint tc_manual_subscription_task_account_unique unique (id, provider_account_id),
   constraint tc_manual_subscription_request_unique unique (request_id),
   constraint tc_manual_subscription_payment_unique unique (provider_account_id,provider_payment_id),
   constraint tc_manual_subscription_payment_global_unique unique (provider_payment_id)
@@ -33,9 +36,13 @@ create index tc_manual_subscription_pending_idx
 create table private.tc_manual_subscription_invoice_events (
   provider_account_id text not null,
   provider_event_id text not null check (provider_event_id ~ '^evt_[A-Za-z0-9]{1,200}$'),
-  task_id uuid not null references private.tc_manual_subscription_invoice_tasks(id) on delete restrict,
+  task_id uuid not null,
   recorded_at timestamptz not null default now(),
-  primary key (provider_account_id,provider_event_id)
+  primary key (provider_account_id,provider_event_id),
+  constraint tc_manual_subscription_event_task_account_fk
+    foreign key (task_id,provider_account_id)
+    references private.tc_manual_subscription_invoice_tasks(id,provider_account_id)
+    on delete restrict
 );
 
 alter table private.tc_manual_subscription_invoice_tasks enable row level security;
