@@ -21,7 +21,7 @@ jobs:
           incident_artifact_dir="$(mktemp -d)"
           gh api repos/smartscaneuskadi/TruckControl-AI/actions/artifacts/13621112439/zip > "$incident_artifact_dir/failures.zip"
           python3 - "$incident_artifact_dir/failures.zip" <<'PY'
-          import sys, zipfile
+          import sys, zipfile, io, json
           with zipfile.ZipFile(sys.argv[1]) as archive:
               candidates = sorted(name for name in archive.namelist()
                   if 'subscription-incidents-rev-' in name and name.endswith('/error-context.md'))
@@ -29,5 +29,16 @@ jobs:
                   raise RuntimeError('Synthetic incident error context not found')
               chosen = next((name for name in candidates if 'saas-windows' in name), candidates[0])
               print('SYNTHETIC INCIDENT CONTEXT:', chosen)
-              print(archive.read(chosen).decode('utf-8')[:14000])
+              print(archive.read(chosen).decode('utf-8')[:2600])
+              trace_name = chosen.rsplit('/', 1)[0] + '/trace.zip'
+              with zipfile.ZipFile(io.BytesIO(archive.read(trace_name))) as trace:
+                  for name in trace.namelist():
+                      if not name.endswith('.trace'):
+                          continue
+                      for line in trace.read(name).decode('utf-8').splitlines():
+                          event = json.loads(line)
+                          if event.get('type') == 'console' and event.get('messageType') == 'error':
+                              print('SYNTHETIC CONSOLE ERROR:', str(event.get('text'))[:6000])
+                          elif event.get('type') == 'event' and event.get('method') == 'pageError':
+                              print('SYNTHETIC PAGE ERROR:', json.dumps(event.get('params', {}).get('error', {}))[:6000])
           PY
