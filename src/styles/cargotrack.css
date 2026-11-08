@@ -3,13 +3,75 @@
   max-width: 960px;
   margin-inline: auto;
 }
+.cargotrack-page[data-open="true"] {
+  max-width: none;
+}
+.cargotrack-page[hidden] {
+  display: none;
+}
+.cargotrack-workspace {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.cargotrack-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 20px;
+}
+.cargotrack-toolbar .muted {
+  max-width: 650px;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+.cargotrack-view-status {
+  color: var(--theme-green);
+  font-weight: 700;
+}
+.cargotrack-frame {
+  display: block;
+  width: 100%;
+  height: max(520px, calc(100dvh - 270px));
+  border: 1px solid var(--theme-border);
+  border-radius: 14px;
+  background: white;
+}
+.cargotrack-help {
+  padding: 16px 20px;
+  color: var(--theme-muted);
+}
+.cargotrack-help summary {
+  cursor: pointer;
+  min-height: 32px;
+  color: var(--theme-fg);
+  font-weight: 600;
+}
+.cargotrack-help p {
+  margin-block: 12px;
+  line-height: 1.7;
+}
+.cargotrack-offline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+  padding: 18px;
+  color: var(--theme-muted);
+}
 .cargotrack-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 24px;
   padding: clamp(20px, 4vw, 40px);
   background:
-    radial-gradient(ellipse at top right, var(--theme-green-bg), transparent 70%),
+    radial-gradient(
+      ellipse at top right,
+      var(--theme-green-bg),
+      transparent 70%
+    ),
     var(--theme-surface);
 }
 .cargotrack-emblem {
