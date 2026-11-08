@@ -2,7 +2,7 @@ name: TruckControl production package only (NO DEPLOY)
 
 on:
   push:
-    branches: ["deploy/cargotrack-production-*"]
+    branches: ["deploy/cargotrack-production-*", "deploy/gmail-account-production-*"]
   workflow_dispatch:
 
 permissions:
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   package-production:
-    if: startsWith(github.ref, 'refs/heads/deploy/cargotrack-production-')
+    if: startsWith(github.ref, 'refs/heads/deploy/cargotrack-production-') || startsWith(github.ref, 'refs/heads/deploy/gmail-account-production-')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

@@ -5,7 +5,7 @@ import { join, resolve, relative } from "node:path";
 const siteId = "appgprj_6ae655e56db481918fe18adfe9df8b66";
 const origin = "https://truckcontrolai.com";
 const supabase = "https://kkkemaycedexymrpaqtp.supabase.co";
-const expectedBaseline = "8c13c24172758546a40e76ffe7e484348fb2124a";
+const expectedBaseline = "ee43c0267bee67f45002b9a13736eaeb7cdb94f6";
 const root = resolve(".");
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 if (!/^[a-f0-9]{40}$/.test(sha)) throw Error("Missing exact source commit.");
@@ -104,6 +104,8 @@ const bundle = files.filter((file) => file.path.endsWith(".js"))
 if (!bundle.includes("https://on7.cargotrack.ro/signin") || !bundle.includes("/cargotrack") ||
     !bundle.includes("Cerrar sesión") || !bundle.includes("Vista de CargoTrack abierta"))
   throw Error("Requested functionality missing from production bundle.");
+if (!["Cuenta y acceso", "Comprobar credenciales con Google", "validate_configuration", "check_configuration", "client_configuration"].every((value) => bundle.includes(value)))
+  throw Error("Account/Gmail repair missing from production bundle.");
 const archivePath = join(process.env.RUNNER_TEMP || "/tmp", "truckcontrol-production-" + sha + ".tar.gz");
 const tar = spawnSync("tar", ["-czf", archivePath, ".openai/hosting.json", "dist"], { stdio: "inherit", shell: false });
 if (tar.status !== 0) throw Error("Production packaging failed.");
