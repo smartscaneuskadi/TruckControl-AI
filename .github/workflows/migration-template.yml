@@ -1,0 +1,68 @@
+name: Prepare local migration template
+on:
+  push:
+    branches: ["chore/migration-cli-template-20261108"]
+    paths: [".github/workflows/migration-template.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Verify official CLI and generate local-only migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, io, json, os, pathlib, subprocess, tarfile, urllib.request
+          root = pathlib.Path.cwd()
+          work = pathlib.Path(os.environ["RUNNER_TEMP"]) / "truckcontrol-migration-cli"
+          work.mkdir(parents=True, exist_ok=True)
+          release = "https://github.com/supabase/cli/releases/download/v3.0.0/supabase_3.0.0_linux_amd64.tar.gz"
+          expected = "eeb61edcd59a4735fcb5e58596574f25d03d420efca779f43ddb307e1cc5c754"
+          with urllib.request.urlopen(release, timeout=60) as response:
+              archive = response.read(70 * 1024 * 1024 + 1)
+          if len(archive) > 70 * 1024 * 1024 or hashlib.sha256(archive).hexdigest() != expected:
+              raise SystemExit("Official CLI checksum/size verification failed")
+          with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as package:
+              member = package.getmember("supabase")
+              if not member.isfile():
+                  raise SystemExit("Expected CLI binary missing")
+              binary_data = package.extractfile(member).read()
+          binary = work / "supabase"
+          binary.write_bytes(binary_data)
+          binary.chmod(0o700)
+          env = os.environ.copy()
+          env["SUPABASE_HOME"] = str(work / "state")
+          env["CI"] = "true"
+          version = subprocess.run([str(binary), "--version"], check=True, capture_output=True, text=True, env=env).stdout.strip()
+          if version != "3.0.0":
+              raise SystemExit("Unexpected CLI version: " + version)
+          for args in (["--help"], ["migration", "--help"], ["migration", "new", "--help"]):
+              subprocess.run([str(binary)] + args, check=True, capture_output=True, text=True, env=env)
+          migrations = root / "supabase" / "migrations"
+          before = set(migrations.glob("*.sql"))
+          subprocess.run([str(binary), "migration", "new", "manual_subscription_payment_and_documents"], check=True, env=env)
+          created = set(migrations.glob("*.sql")) - before
+          if len(created) != 1:
+              raise SystemExit("Expected exactly one CLI-created migration")
+          target = created.pop()
+          receipt = {"cli_version": version, "official_archive_sha256": expected,
+                     "generated_path": str(target.relative_to(root)), "template_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+                     "linked_project": False, "database_queries": 0, "remote_migrations_applied": 0}
+          (root / "migration-template-result.json").write_text(json.dumps(receipt, indent=2))
+          print(json.dumps(receipt))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: migration-template-local-only
+          path: |
+            migration-template-result.json
+            supabase/migrations/*_manual_subscription_payment_and_documents.sql
+          retention-days: 7
+          if-no-files-found: error
