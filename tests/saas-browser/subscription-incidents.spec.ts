@@ -11,11 +11,11 @@ const jwt = (n = 1) => Buffer.from('{"alg":"HS256","typ":"JWT"}').toString("base
 async function fixtures(page: Page) {
   let actor = false, metadata: Record<string, unknown> = {}, current: SubscriptionIncident = incident();
   let resumeList: (() => void) | null = null, resumeWrite: (() => void) | null = null, resumeFiscal: (() => void) | null = null;
-  let entries: Record<string, unknown>[] = [{ id: "fc640000-0000-4000-8000-000000000091", row_version: 1, kind: "provider", actor_id: null,
+  let entries: Record<string, unknown>[] = [{ id: "fc640000-0000-4000-8000-000000000091", row_version: 2, kind: "provider", actor_id: null,
     created_at: current.created_at, provider: current.latest_provider, note: null, reference: null }];
   const completed = new Map<string, { fingerprint: string; result: IncidentMutation }>(), references = new Set<string>();
   const calls: { action: string; body: Record<string, unknown>; authorization: string; kind: string }[] = [];
-  const controls = { failure: "" as "" | "denied" | "missing", conflict: false, lostReplies: 0, providerAfterWrite: false,
+  const controls = { failure: "" as "" | "denied" | "missing", conflict: false, lostReplies: 0, providerAfterWrite: false, providerOnHistory: false,
     delayList: 0, delayWrite: false, delayFiscal: false,
     releaseList: () => resumeList?.(), releaseWrite: () => resumeWrite?.(), releaseFiscal: () => resumeFiscal?.(),
     rename(name: string) { current = { ...current, buyer_company_name: name }; }, logout() { actor = false; } };
@@ -58,9 +58,19 @@ async function fixtures(page: Page) {
         const saved = structuredClone(current);
         if (action === "list" && controls.delayList > 0) { controls.delayList--; await new Promise<void>((resolve) => { resumeList = resolve; }); }
         data = { contract: "subscription-financial-incidents-v1", items: [saved], next_cursor: null };
-      } else if (action === "history") data = { contract: "subscription-financial-incidents-v1", case_id: caseId,
-        items: entries.filter((entry) => !(body.p_data as { before_version?: number })?.before_version ||
-          Number(entry.row_version) < Number((body.p_data as { before_version: number }).before_version)).slice(0, 50), next_before_version: null };
+      } else if (action === "history") {
+        if (controls.providerOnHistory) {
+          controls.providerOnHistory = false;
+          current = { ...current, row_version: current.row_version + 1, review_state: "pending", rectification_state: "pending",
+            latest_provider: { ...current.latest_provider, event_id: "evt_incidentHistoryRace", event_type: "refund.updated",
+              current_status: "succeeded", extent: "partial", charge_amount_refunded_cents: 12100, observed_at: "2026-11-08T10:00:30Z" } };
+          entries.unshift({ id: "fc640000-0000-4000-8000-000000000093", row_version: current.row_version, kind: "provider", actor_id: null,
+            created_at: current.latest_provider.observed_at, provider: current.latest_provider, note: null, reference: null });
+        }
+        data = { contract: "subscription-financial-incidents-v1", case_id: caseId,
+          items: entries.filter((entry) => !(body.p_data as { before_version?: number })?.before_version ||
+            Number(entry.row_version) < Number((body.p_data as { before_version: number }).before_version)).slice(0, 50), next_before_version: null };
+      }
       else if (action === "review" || action === "report_rectification") {
         const id = String(body.p_operation_id), fingerprint = JSON.stringify(body), found = completed.get(id);
         if (found) {
@@ -69,11 +79,11 @@ async function fixtures(page: Page) {
         } else if (controls.conflict || body.p_expected !== current.row_version || body.p_case_id !== caseId) { status = 409; data = { code: "40001", message: "PRIVATE-DIAGNOSTIC" }; }
         else {
           const input = body.p_data as IncidentInput;
-          if ("reference" in input && references.has(input.reference)) { status = 400; data = { code: "23514" }; }
+          if ("reference" in input && references.has(input.reference.toUpperCase().trim())) { status = 400; data = { code: "23514" }; }
           else {
             const result = mutation(current, action as IncidentAction, input, id); current = result.case;
             completed.set(id, { fingerprint, result });
-            if ("reference" in input) references.add(input.reference);
+            if ("reference" in input) references.add(input.reference.toUpperCase().trim());
             entries.unshift({ id, row_version: result.operation.applied_version, kind: action === "review" ? "review" : "rectification_report",
               actor_id: actorId, created_at: result.operation.reported_at, provider: null, note: result.operation.note, reference: result.operation.reference });
             if (controls.providerAfterWrite) {
@@ -140,7 +150,7 @@ test("revisión y referencia externa con CAS e historial, sin ejecutar pagos ni 
   await expect(fiscal).not.toBeVisible(); await expect(panel(page)).toContainText("GDT-FICTICIA-R1");
   expect(f.writes()).toBe(2);
   const writes = f.calls.filter((c) => c.kind === "incident" && ["review", "report_rectification"].includes(c.action));
-  expect(writes.map((c) => c.body.p_expected)).toEqual([1, 2]);
+  expect(writes.map((c) => c.body.p_expected)).toEqual([2, 3]);
   expect(writes[1].body.p_data).toEqual({ note: "Referencia externa ficticia comprobada", reference: "GDT-FICTICIA-R1" });
   expect(await page.locator('input[type="file"]').count()).toBe(0);
   expect(f.calls.every((c) => c.authorization === "Bearer " + jwt())).toBe(true);
@@ -235,4 +245,17 @@ test("una confirmación tardía tras logout no reaparece en el panel ni en otra 
   await expect(page.locator("body")).not.toContainText("NOTA-PRIVADA-FICTICIA");
   await expect(page.getByRole("button", { name: "Entrar", exact: true }).first()).toBeVisible();
   expect(f.calls.filter((c) => c.action === "review")).toHaveLength(1);
+});
+
+test("una observación posterior al ACK actualiza el estado antes de mostrar el historial", async ({ page }) => {
+  const f = await fixtures(page); await open(page); await detail(page); f.controls.providerOnHistory = true;
+  const dialog = await review(page, "Revisión ficticia anterior a nueva observación");
+  await expect(dialog).not.toBeVisible();
+  await expect(panel(page)).toContainText("Las nuevas observaciones del proveedor ya se muestran");
+  await expect(panel(page)).toContainText("evt_incidentHistoryRace");
+  await expect(panel(page)).toContainText("Pendiente de revisar");
+  await expect(panel(page).getByText("Declarada por administración", { exact: true })).toHaveCount(0);
+  expect(f.calls.filter((c) => c.action === "review")).toHaveLength(1);
+  expect(f.calls.filter((c) => c.kind === "incident" && c.action === "detail")).toHaveLength(2);
+  expect(f.writes()).toBe(1);
 });

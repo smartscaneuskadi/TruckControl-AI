@@ -28,7 +28,7 @@ async function ready(f: ReturnType<typeof fixture>) {
 }
 describe("incidencias financieras: contrato sin pagos, con CAS y auditoría", () => {
   it("no interpreta pending/failed como devolución realizada y acepta alcance mismatch del proveedor", () => {
-    expect(incidentProviderSchema.parse(incident().latest_provider).extent).toBe("none");
+    expect(incidentProviderSchema.parse(incident().latest_provider).extent).toBe("partial");
     expect(incidentProviderSchema.parse({ ...incident().latest_provider, current_status: "failed", extent: "mismatch" }).current_status).toBe("failed");
   });
   it("rechaza importes fuera de contrato, identidad de objeto cruzada y texto de estado con controles", () => {
@@ -51,7 +51,7 @@ describe("incidencias financieras: contrato sin pagos, con CAS y auditoría", ()
     expect(() => incidentInput("report_rectification", { note: "Nota", reference: "\n" })).toThrow();
   });
   it("distingue entradas de proveedor y operador sin inventar una actuación fiscal", () => {
-    const entry = { id: operationId, row_version: 1, kind: "provider", actor_id: null, created_at: incident().created_at,
+    const entry = { id: operationId, row_version: 2, kind: "provider", actor_id: null, created_at: incident().created_at,
       provider: incident().latest_provider, note: null, reference: null };
     expect(incidentEntrySchema.parse(entry).kind).toBe("provider");
     expect(incidentEntrySchema.safeParse({ ...entry, actor_id: actorId }).success).toBe(false);
@@ -63,16 +63,16 @@ describe("incidencias financieras: contrato sin pagos, con CAS y auditoría", ()
     expect(checkedIncidentMutation(valid, before, "report_rectification", input, operationId, actorId)).toEqual(valid);
     for (const change of [
       { operation: { ...valid.operation, note: "Otra nota" } }, { operation: { ...valid.operation, reference: "Otra referencia" } },
-      { operation: { ...valid.operation, actor_id: companyId } }, { operation: { ...valid.operation, expected_version: 2 } },
+      { operation: { ...valid.operation, actor_id: companyId } }, { operation: { ...valid.operation, expected_version: 3 } },
       { case: { ...valid.case, buyer_company_id: actorId } }, { case: { ...valid.case, task_id: actorId } },
-      { case: { ...valid.case, amount_cents: 36301 } }, { case: { ...valid.case, row_version: 3 } },
+      { case: { ...valid.case, amount_cents: 36301 } }, { case: { ...valid.case, row_version: 4 } },
     ]) expect(() => checkedIncidentMutation({ ...valid, ...change }, before, "report_rectification", input, operationId, actorId)).toThrow();
   });
   it("un replay confirma su operación original aun con observaciones y revisión posteriores", () => {
     const before = incident(), input = { note: "Revisión original" }, first = mutation(before, "review", input);
-    const replay = { ...first, replayed: true, case: { ...first.case, row_version: 4, review_state: "pending",
-      last_review: { ...first.case.last_review!, note: "Otra revisión", row_version: 3 } } };
-    expect(checkedIncidentMutation(replay, before, "review", input, operationId, actorId).case.row_version).toBe(4);
+    const replay = { ...first, replayed: true, case: { ...first.case, row_version: 5, review_state: "pending",
+      last_review: { ...first.case.last_review!, note: "Otra revisión", row_version: 4 } } };
+    expect(checkedIncidentMutation(replay, before, "review", input, operationId, actorId).case.row_version).toBe(5);
     expect(() => checkedIncidentMutation(replay, before, "review", { note: "Texto cambiado" }, operationId, actorId)).toThrow();
   });
 });
@@ -108,7 +108,7 @@ describe("cliente administrativo vinculado a una única sesión en RAM", () => {
     const f = fixture(() => ({ data: mutation(before, "review", input) })), scope = await ready(f);
     expect((await scope.mutate(before, "review", input, operationId)).case.review_state).toBe("reviewed");
     expect(f.rpc).toHaveBeenLastCalledWith("tc_admin_subscription_incidents", {
-      p_action: "review", p_case_id: caseId, p_expected: 1, p_operation_id: operationId, p_data: input, p_after: null,
+      p_action: "review", p_case_id: caseId, p_expected: 2, p_operation_id: operationId, p_data: input, p_after: null,
     });
   });
   it("respuestas de detalle o historial de otro caso se rechazan", async () => {
@@ -124,9 +124,9 @@ describe("cliente administrativo vinculado a una única sesión en RAM", () => {
     await expect((await ready(fixture())).list(caseId)).rejects.toMatchObject({ kind: "invalid" });
   });
   it("la historia avanza estrictamente por versión, no por un cursor de otra entrada", async () => {
-    const entry = { id: operationId, row_version: 1, kind: "provider", actor_id: null, created_at: incident().created_at,
+    const entry = { id: operationId, row_version: 2, kind: "provider", actor_id: null, created_at: incident().created_at,
       provider: incident().latest_provider, note: null, reference: null };
-    for (const value of [{ items: [entry, entry], next_before_version: null }, { items: [entry], next_before_version: 2 }]) {
+    for (const value of [{ items: [entry, entry], next_before_version: null }, { items: [entry], next_before_version: 3 }]) {
       const f = fixture(() => ({ data: { contract: "subscription-financial-incidents-v1", case_id: caseId, ...value } }));
       await expect((await ready(f)).history(caseId)).rejects.toMatchObject({ kind: "invalid" });
     }

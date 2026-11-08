@@ -3,13 +3,13 @@ import { z } from "zod";
 export const SUBSCRIPTION_INCIDENT_CONTRACT = "subscription-financial-incidents-v1" as const;
 const uuid = z.uuid();
 const stamp = z.iso.datetime({ offset: true });
-const version = z.number().int().positive().max(Number.MAX_SAFE_INTEGER - 1);
+const version = z.number().int().min(2).max(Number.MAX_SAFE_INTEGER - 1);
 const cents = z.number().int().nonnegative().max(100000000);
 const text = (min: number, max: number) => z.string().trim().min(min).max(max).regex(/^[^\u0000-\u001f\u007f]+$/);
 const payment = z.string().regex(/^(pi|in|cs)_[A-Za-z0-9_]{1,200}$/);
 const providerStatus = z.string().regex(/^[a-z_]{1,64}$/);
 export const incidentExtentLabels = {
-  none: "Sin importe reembolsado confirmado en esta observación",
+  none: "Sin importe observado en este evento",
   partial: "Alcance parcial comunicado",
   full: "Alcance total comunicado",
   mismatch: "Importes por contrastar",

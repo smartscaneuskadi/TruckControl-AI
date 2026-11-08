@@ -21,14 +21,16 @@ export function SubscriptionIncidents({ userId, onOpenTask }: { userId: string; 
   const token = useRef<string | null | undefined>(undefined);
   useEffect(() => {
     token.current = undefined;
-    const reset = () => { setEpoch((n) => n + 1); setOnline(navigator.onLine); };
+    let active = true;
+    const reset = () => { if (!active) return; setEpoch((n) => n + 1); setOnline(navigator.onLine); };
     const subscription = client?.auth.onAuthStateChange((_event, session) => {
+      if (!active) return;
       const next = session?.user.id === userId ? session.access_token : null;
       if (_event === "SIGNED_OUT" || (token.current !== undefined && token.current !== next)) reset();
       token.current = next;
     });
     window.addEventListener("online", reset); window.addEventListener("offline", reset);
-    return () => { subscription?.data.subscription.unsubscribe(); token.current = undefined;
+    return () => { active = false; subscription?.data.subscription.unsubscribe(); token.current = undefined;
       window.removeEventListener("online", reset); window.removeEventListener("offline", reset); };
   }, [client, userId]);
   return <IncidentPanel key={userId + ":" + epoch + ":" + online} userId={userId} online={online} onOpenTask={onOpenTask} />;
@@ -109,19 +111,39 @@ function IncidentPanel({ userId, online, onOpenTask }: { userId: string; online:
     }
     const current = generation.current, scope = api.current, signal = lifetime.current?.signal, attempt = intent;
     lock.current = true; setBusy(true); setError(""); setMessage("");
+    let confirmed = false;
     try {
       const result = await scope.mutate(attempt.before, attempt.action, attempt.input, attempt.operationId, signal);
       if (signal?.aborted || current !== generation.current || !navigator.onLine) return;
+      confirmed = true;
       pending.current = null; setEditor(null); setUncertain(false); setDetail(result.case);
       setPage((old) => old ? { ...old, items: old.items.map((row) => row.id === result.case.id ? result.case : row) } : null);
       setMessage(attempt.action === "review"
         ? "Revisión registrada. Las observaciones posteriores pueden requerir otra valoración."
         : "Referencia externa declarada. La aplicación no ha emitido ni certificado una factura rectificativa.");
       const entries = await scope.history(result.case.id, null, signal);
-      if (!signal?.aborted && current === generation.current && navigator.onLine) setHistory(entries);
+      if (signal?.aborted || current !== generation.current || !navigator.onLine) return;
+      if (entries.items.some((entry) => entry.row_version > result.case.row_version)) {
+        // Provider facts can arrive after the ACK. Read once; never repeat the
+        // declaration or show its old review state beside a newer observation.
+        const fresh = await scope.detail(result.case.id, signal);
+        if (signal?.aborted || current !== generation.current || !navigator.onLine) return;
+        if (fresh.task_id !== result.case.task_id || fresh.buyer_company_id !== result.case.buyer_company_id ||
+            fresh.provider_payment_id !== result.case.provider_payment_id || fresh.amount_cents !== result.case.amount_cents ||
+            entries.items.some((entry) => entry.row_version > fresh.row_version)) throw new SubscriptionIncidentError("conflict");
+        setDetail(fresh);
+        setPage((old) => old ? { ...old, items: old.items.map((row) => row.id === fresh.id ? fresh : row) } : null);
+        setMessage("La declaración se ha registrado. Las nuevas observaciones del proveedor ya se muestran y requieren su propia valoración.");
+      }
+      setHistory(entries);
     } catch (failure) {
       if (!signal?.aborted && current === generation.current) {
-        if (failure instanceof SubscriptionIncidentError && failure.kind === "uncertain") { setUncertain(true); setError(failure.message); }
+        if (confirmed) {
+          clear(failure);
+          if (!(failure instanceof SubscriptionIncidentError && (failure.kind === "denied" || failure.kind === "cancelled"))) {
+            setMessage("La declaración se ha confirmado. Actualiza para comprobar el historial posterior antes de registrar otra actuación.");
+          }
+        } else if (failure instanceof SubscriptionIncidentError && failure.kind === "uncertain") { setUncertain(true); setError(failure.message); }
         else clear(failure);
       }
     } finally { lock.current = false; if (!signal?.aborted && current === generation.current) setBusy(false); }
