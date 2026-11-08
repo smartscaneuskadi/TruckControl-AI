@@ -39,7 +39,7 @@ create unique index tc_subscription_financial_rectification_reference_unique
 alter table private.tc_subscription_financial_cases enable row level security;
 alter table private.tc_subscription_financial_entries enable row level security;
 revoke all on private.tc_subscription_financial_cases,private.tc_subscription_financial_entries
- from public,anon,authenticated,service_role;
+ from public,anon,authenticated;
 create policy tc_subscription_financial_cases_private
  on private.tc_subscription_financial_cases as restrictive for all to public using(false) with check(false);
 create policy tc_subscription_financial_entries_private
@@ -58,7 +58,7 @@ returns boolean language sql immutable set search_path='' as $integer$
   and trunc((p_value#>>'{}')::numeric)=(p_value#>>'{}')::numeric else false end;
 $integer$;
 revoke all on function private.tc_subscription_incident_integer(jsonb,bigint,bigint)
- from public,anon,authenticated,service_role;
+ from public,anon,authenticated;
 
 -- READ ONLY: reconstruct the original63 digest, never grant access on event ID alone.
 create function private.tc_manual_subscription_known_payment_event(
@@ -124,8 +124,6 @@ returns jsonb language sql stable security invoker set search_path='' as $known_
  select private.tc_manual_subscription_known_payment_event(p_account,p_mode,p_event);
 $known_wrapper$;
 revoke all on function public.tc_manual_subscription_known_payment_event(text,text,jsonb) from public,anon,authenticated;
-grant execute on function private.tc_manual_subscription_known_payment_event(text,text,jsonb),
- public.tc_manual_subscription_known_payment_event(text,text,jsonb) to service_role;
 
 create function private.tc_subscription_incident_provider_dto(p_data jsonb,p_observed timestamptz)
 returns jsonb language sql stable set search_path='' as $provider_dto$
@@ -144,7 +142,7 @@ returns jsonb language sql stable set search_path='' as $provider_dto$
  );
 $provider_dto$;
 revoke all on function private.tc_subscription_incident_provider_dto(jsonb,timestamptz)
- from public,anon,authenticated,service_role;
+ from public,anon,authenticated;
 
 create function private.tc_subscription_incident_entry_dto(p_entry private.tc_subscription_financial_entries)
 returns jsonb language sql stable set search_path='' as $entry_dto$
@@ -155,7 +153,7 @@ returns jsonb language sql stable set search_path='' as $entry_dto$
   'reference',case when p_entry.kind='rectification_report' then p_entry.data->>'reference' else null end);
 $entry_dto$;
 revoke all on function private.tc_subscription_incident_entry_dto(private.tc_subscription_financial_entries)
- from public,anon,authenticated,service_role;
+ from public,anon,authenticated;
 
 create function private.tc_subscription_incident_case_dto(p_case uuid)
 returns jsonb language plpgsql stable security definer set search_path='' as $case_dto$
@@ -185,7 +183,7 @@ begin
    'reported_at',rectification.created_at,'row_version',rectification.row_version) end
  );
 end;$case_dto$;
-revoke all on function private.tc_subscription_incident_case_dto(uuid) from public,anon,authenticated,service_role;
+revoke all on function private.tc_subscription_incident_case_dto(uuid) from public,anon,authenticated;
 
 -- Provider observations are attributed only to an already reconciled payment.
 -- No tenant/user/task ID is accepted from the HTTP payload or mutable metadata.
@@ -331,8 +329,6 @@ returns jsonb language sql security invoker set search_path='' as $record_wrappe
  select private.tc_manual_subscription_record_incident(p_account,p_mode,p_data);
 $record_wrapper$;
 revoke all on function public.tc_manual_subscription_record_incident(text,text,jsonb) from public,anon,authenticated;
-grant execute on function private.tc_manual_subscription_record_incident(text,text,jsonb),
- public.tc_manual_subscription_record_incident(text,text,jsonb) to service_role;
 
 create function private.tc_subscription_incident_operation(p_entry private.tc_subscription_financial_entries)
 returns jsonb language sql stable set search_path='' as $operation$
@@ -342,7 +338,7 @@ returns jsonb language sql stable set search_path='' as $operation$
   'reported_at',p_entry.created_at,'note',p_entry.data->>'note','reference',p_entry.data->>'reference');
 $operation$;
 revoke all on function private.tc_subscription_incident_operation(private.tc_subscription_financial_entries)
- from public,anon,authenticated,service_role;
+ from public,anon,authenticated;
 
 create function private.tc_admin_subscription_incidents(
  p_action text,p_case_id uuid default null,p_expected bigint default null,
@@ -422,7 +418,7 @@ begin
   'replayed',false,'operation',private.tc_subscription_incident_operation(inserted));
 end;$admin$;
 revoke all on function private.tc_admin_subscription_incidents(text,uuid,bigint,uuid,jsonb,uuid)
- from public,anon,authenticated,service_role;
+ from public,anon,authenticated;
 grant execute on function private.tc_admin_subscription_incidents(text,uuid,bigint,uuid,jsonb,uuid) to authenticated;
 create function public.tc_admin_subscription_incidents(
  p_action text,p_case_id uuid default null,p_expected bigint default null,
@@ -430,5 +426,27 @@ create function public.tc_admin_subscription_incidents(
 ) returns jsonb language sql security invoker set search_path='' as $admin_wrapper$
  select private.tc_admin_subscription_incidents(p_action,p_case_id,p_expected,p_operation_id,p_data,p_after);
 $admin_wrapper$;
-revoke all on function public.tc_admin_subscription_incidents(text,uuid,bigint,uuid,jsonb,uuid) from public,anon,service_role;
+revoke all on function public.tc_admin_subscription_incidents(text,uuid,bigint,uuid,jsonb,uuid) from public,anon;
 grant execute on function public.tc_admin_subscription_incidents(text,uuid,bigint,uuid,jsonb,uuid) to authenticated;
+
+
+-- Old isolated Auth fixtures may omit service_role. Never create or alter a
+-- platform role, and never broaden PUBLIC permissions to accommodate that.
+do $service_acl$
+begin
+ if exists(select 1 from pg_roles where rolname='service_role') then
+  revoke all on private.tc_subscription_financial_cases,private.tc_subscription_financial_entries from service_role;
+  revoke all on function private.tc_subscription_incident_integer(jsonb,bigint,bigint),
+   private.tc_subscription_incident_provider_dto(jsonb,timestamptz),
+   private.tc_subscription_incident_entry_dto(private.tc_subscription_financial_entries),
+   private.tc_subscription_incident_case_dto(uuid),
+   private.tc_subscription_incident_operation(private.tc_subscription_financial_entries),
+   private.tc_admin_subscription_incidents(text,uuid,bigint,uuid,jsonb,uuid),
+   public.tc_admin_subscription_incidents(text,uuid,bigint,uuid,jsonb,uuid) from service_role;
+  grant execute on function private.tc_manual_subscription_known_payment_event(text,text,jsonb),
+   public.tc_manual_subscription_known_payment_event(text,text,jsonb),
+   private.tc_manual_subscription_record_incident(text,text,jsonb),
+   public.tc_manual_subscription_record_incident(text,text,jsonb) to service_role;
+ end if;
+end;
+$service_acl$;
