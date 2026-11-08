@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -101,6 +102,7 @@ beforeAll(async () => {
  create schema auth;create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,raw_user_meta_data jsonb not null default '{}');
  create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
  grant usage on schema public,auth to anon,authenticated,service_role;`);
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -138,6 +140,7 @@ beforeAll(async () => {
       [other],
     )
   ).rows[0].id;
+  await seedFixtureSessions(db);
 }, 30000);
 beforeEach(async () => {
   // Isolated in-memory fixtures only; never change live settings for a test.
@@ -349,9 +352,7 @@ describe("presupuesto IA: permisos y cargos desconocidos en PostgreSQL", () => {
       [truck, org, truck.slice(0, 8)],
     );
     await role("authenticated", async () => {
-      await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-        owner,
-      ]);
+      await bindFixtureActor(db, owner);
       await db.query("select public.approve_company_invoice($1,$2,$3::jsonb)", [
         org,
         invoice_id,
@@ -366,7 +367,7 @@ describe("presupuesto IA: permisos y cargos desconocidos en PostgreSQL", () => {
         }),
       ]);
     });
-    await db.exec("select set_config('request.jwt.claim.sub','',false)");
+    await bindFixtureActor(db, null);
     expect(await applyInvoice(invoice_id)).toBe(false);
     const rows = (
       await db.query<{ amount_cents: number }>(
@@ -627,9 +628,7 @@ describe("factura registrada: protección de la lectura posterior", () => {
       [truck, org, "AI" + truck.slice(0, 8)],
     );
     await role("authenticated", async () => {
-      await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-        owner,
-      ]);
+      await bindFixtureActor(db, owner);
       await db.query("select public.approve_company_invoice($1,$2,$3::jsonb)", [
         org,
         invoice_id,

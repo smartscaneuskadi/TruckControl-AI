@@ -82,6 +82,16 @@ async function run(f: ReturnType<typeof fixture>, options = config) {
   const body = await signed(f.event);
   return reconcileStripeManualInvoicePayment(body.raw, body.signature, options, f.fetcher);
 }
+function trialFixture() {
+  const f = fixture(true);
+  const start = stamp - 60, end = stamp + 10 * 86400;
+  const invoice = f.records["invoices/" + f.invoiceId];
+  Object.assign(invoice, { amount_paid: 0, total: 0, amount_remaining: 0, billing_reason: "subscription_create" });
+  const subscription = f.records["subscriptions/sub_Synthetic"];
+  Object.assign(subscription, { status: "trialing", trial_start: start, trial_end: end, current_period_end: end });
+  (invoice.lines as { data: { period: { start: number; end: number } }[] }).data[0].period = { start, end };
+  return f;
+}
 describe("Stripe fiscal reconciliation: signed canonical reads only", () => {
   it("confirms a one-off charge using account, canonical event, Checkout, PI and captured Charge", async () => {
     const f = fixture();
@@ -121,6 +131,32 @@ describe("Stripe fiscal reconciliation: signed canonical reads only", () => {
     expect(a.provider_payment_id).toBe(b.provider_payment_id);
     expect(a.paid_at).toBe(b.paid_at);
     expect(a.provider_event_id).not.toBe(b.provider_event_id);
+  });
+  it("acknowledges only a canonical zero trial invoice without inventing payment evidence", async () => {
+    const f = trialFixture();
+    expect(await run(f)).toEqual({ kind: "ignored", provider_event_id: f.event.id });
+    expect(f.fetcher).toHaveBeenCalledTimes(4);
+    const urls = vi.mocked(f.fetcher).mock.calls.map(call => String(call[0]));
+    expect(urls.some(url => /invoice_payments|payment_intents|charges/.test(url))).toBe(false);
+  });
+  it.each(["paid_nonzero", "total_nonzero", "manual", "missing_trial", "changed_snapshot"])(
+    "does not acknowledge an inconsistent zero trial invoice (%s)", async attack => {
+      const f = trialFixture();
+      const invoice = f.records["invoices/" + f.invoiceId];
+      const subscription = f.records["subscriptions/sub_Synthetic"];
+      if (attack === "paid_nonzero") invoice.amount_paid = amount;
+      if (attack === "total_nonzero") invoice.total = amount;
+      if (attack === "manual") invoice.paid_out_of_band = true;
+      if (attack === "missing_trial") delete subscription.trial_end;
+      if (attack === "changed_snapshot") subscription.metadata = { ...metadata,
+        tc_user_id: "dd110000-0000-4000-8000-000000000099" };
+      await expect(run(f)).rejects.toBeInstanceOf(StripeReconciliationError);
+    });
+  it("rejects an unsigned zero trial invoice before provider traffic", async () => {
+    const f = trialFixture();
+    await expect(reconcileStripeManualInvoicePayment(JSON.stringify(f.event), null, config, f.fetcher))
+      .rejects.toMatchObject({ code: "invalid_signature" });
+    expect(f.fetcher).not.toHaveBeenCalled();
   });
   it("does not silently map subscription Checkout to a second one-off invoice", async () => {
     const f = fixture();

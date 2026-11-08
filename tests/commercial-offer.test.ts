@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -38,7 +39,7 @@ async function insertUser(id: string) {
 }
 async function request(user: string, plan: string) {
   await db.exec("set role authenticated");
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)", [user]);
+  await bindFixtureActor(db, user);
   try {
     return (
       await db.query<{ id: string }>("select public.tc_request_plan($1) id", [
@@ -55,6 +56,7 @@ beforeAll(async () => {
     create schema auth;create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,raw_user_meta_data jsonb not null default '{}');
     create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
     grant usage on schema public,auth to anon,authenticated,service_role;`);
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort()) {
@@ -74,6 +76,7 @@ beforeAll(async () => {
   previousRequest = await request(previousUser, "limited");
   await db.exec(readFileSync(`supabase/migrations/${migration}`, "utf8"));
   await insertUser(newUser);
+  await seedFixtureSessions(db);
 }, 30000);
 afterAll(async () => {
   await db?.close();

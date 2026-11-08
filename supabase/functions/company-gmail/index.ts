@@ -1,3 +1,4 @@
+import { getSessionVerifiedUser } from "../_shared/auth-session.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { bucket, createGmailHandler } from "./handler.ts";
 import type { GmailConfig, GmailGateway } from "./handler.ts";
@@ -25,8 +26,7 @@ const gateway: GmailGateway = {
     return !error && Boolean(data?.active && data?.features?.[feature]);
   },
   async authenticate(token) {
-    const { data, error } = await client.auth.getUser(token);
-    return error ? null : data.user;
+    return getSessionVerifiedUser(client, token);
   },
   async owns(organizationId, userId) {
     const { data, error } = await client.rpc("tc_company_server_access", {

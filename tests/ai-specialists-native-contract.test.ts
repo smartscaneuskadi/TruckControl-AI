@@ -16,7 +16,7 @@ it("el contrato de especialistas pasa con rollback, sin atestar conexiones ficti
       "update private.tc_settings set enforce_access=true,sms_ready=false;update private.tc_modules set enabled=true;update private.tc_provider_settings set ai_enabled=true,ai_monthly_budget_cents=1000",
     );
     const result = await db.exec(
-      readFileSync("supabase/tests/ai-specialists-acceptance.sql", "utf8"),
+      readFileSync("docs/verification/ai-specialists-session-acceptance-20261108.sql", "utf8"),
     );
     expect(result.at(-1)?.rows[0]).toMatchObject({
       migrations: 60,

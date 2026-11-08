@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -13,9 +14,7 @@ async function as<T>(
   role = "authenticated",
 ) {
   await db.exec("set role " + role);
-  await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-    actor ?? "",
-  ]);
+  await bindFixtureActor(db, actor);
   try {
     return await fn();
   } finally {
@@ -44,6 +43,7 @@ beforeAll(async () => {
     create schema auth;create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,raw_user_meta_data jsonb not null default '{}');
     create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
     grant usage on schema auth,public to anon,authenticated,service_role;`);
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -99,6 +99,7 @@ beforeAll(async () => {
       [id(n), company, `message-${n}`, n.toString(16).padStart(64, "0")],
     );
   }
+  await seedFixtureSessions(db);
 }, 30000);
 afterAll(async () => {
   await db?.close();

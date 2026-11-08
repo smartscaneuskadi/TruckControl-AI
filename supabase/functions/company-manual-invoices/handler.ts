@@ -5,6 +5,7 @@ export const MAX_FISCAL_PDF_BYTES = 10 * 1024 * 1024;
 const MAX_MULTIPART_BYTES = MAX_FISCAL_PDF_BYTES + 65536;
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const hashPattern = /^[a-f0-9]{64}$/;
+export interface FiscalDocumentCapabilities { available: boolean; document_upload_ready: boolean; downloads_ready: boolean }
 export interface FiscalDocumentIdentity { id: string; session_id: string }
 export interface FiscalDocumentTask {
   id: string; buyer_company_id: string; row_version: number;
@@ -18,6 +19,7 @@ export interface FiscalDocumentReservation extends StoredFiscalDocument {
 }
 export interface FiscalDocumentGateway {
   authenticate(token: string): Promise<FiscalDocumentIdentity | null>;
+  status(actor: FiscalDocumentIdentity): Promise<FiscalDocumentCapabilities | null>;
   task(token: string, task: string): Promise<FiscalDocumentTask | null>;
   reserve(actor: FiscalDocumentIdentity, task: FiscalDocumentTask, operation: string, sha256: string, size: number): Promise<FiscalDocumentReservation | null>;
   complete(actor: FiscalDocumentIdentity, task: FiscalDocumentTask, reservation: FiscalDocumentReservation): Promise<StoredFiscalDocument | null>;
@@ -97,8 +99,17 @@ export function createManualFiscalDocumentHandler(gateway: FiscalDocumentGateway
     try {
       const actor = await gateway.authenticate(token);
       if (!actor || !uuid.test(actor.id) || !uuid.test(actor.session_id)) return reply(401, { error: "authentication_required" });
+      const state = await gateway.status(actor);
+      if (!state || typeof state.available !== "boolean" || typeof state.document_upload_ready !== "boolean" ||
+          typeof state.downloads_ready !== "boolean" || (!state.available && (state.document_upload_ready || state.downloads_ready))) {
+        throw new Fault(503, "document_service_unavailable");
+      }
+      if (new URL(request.url).pathname.endsWith("/capabilities")) {
+        return reply(200, { available: state.available, document_upload_ready: state.document_upload_ready, downloads_ready: state.downloads_ready });
+      }
       const contentType = request.headers.get("Content-Type") ?? "";
       if (contentType.toLowerCase().startsWith("multipart/form-data;")) {
+        if (!state.available || !state.document_upload_ready || !state.downloads_ready) throw new Fault(503, "document_upload_unavailable");
         const bytes = await boundedBody(request, MAX_MULTIPART_BYTES);
         let form: FormData;
         try { form = await new Request("https://upload.invalid/", { method: "POST", headers: { "Content-Type": contentType }, body: bytes }).formData(); }
@@ -136,6 +147,7 @@ export function createManualFiscalDocumentHandler(gateway: FiscalDocumentGateway
         return reply(200, { document: { document_id: completed!.document_id, task_id: completed!.task_id,
           object_key: completed!.object_key, sha256: completed!.sha256, size_bytes: completed!.size_bytes }, fiscal_validity_verified: false });
       }
+      if (!state.available || !state.downloads_ready) throw new Fault(503, "document_download_unavailable");
       if (!/^application\/json(?:\s*;|$)/i.test(contentType)) throw new Fault(415, "unsupported_content_type");
       const raw = new TextDecoder("utf-8", { fatal: true }).decode(await boundedBody(request, 4096));
       let input: Record<string, unknown>;

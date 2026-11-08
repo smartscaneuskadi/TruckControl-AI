@@ -18,12 +18,12 @@ async function call(action: string, changes: Record<string, unknown> = {}, role 
   return attempt(async () => {
     await db.exec(role === "authenticated" ? "set local role authenticated" : role === "anon" ? "set local role anon" : "set local role service_role");
     const result = await db.query<{ result: Stored }>("select public.tc_manual_subscription_document_server($1,$2::jsonb) result",
-      [action, JSON.stringify({ actor_id: admin, session_id: session, task_id: task, expected_version: 2, operation_id: operation(20), ...changes })]);
+      [action, JSON.stringify({ actor_id: admin, session_id: session, ...(action === "status" ? {} : { task_id: task, expected_version: 2, operation_id: operation(20) }), ...changes })]);
     await db.exec("reset role");
     return result.rows[0].result;
   });
 }
-async function enable() { await db.exec("update private.tc_manual_subscription_document_runtime set uploads_enabled=true where id"); }
+async function enable() { await db.exec("update private.tc_manual_subscription_document_runtime set uploads_enabled=true,downloads_enabled=true where id"); }
 async function reserve(n = 20) { return call("reserve", { operation_id: operation(n), sha256: hash, size_bytes: 99 }); }
 async function object(key: string, size = 99) {
   await db.query("insert into storage.objects(bucket_id,name,metadata) values('tc-subscription-fiscal',$1,$2::jsonb)",
@@ -38,7 +38,7 @@ beforeAll(async () => {
   await db.exec(
     "create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls; create schema auth;" +
     "create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,banned_until timestamptz,deleted_at timestamptz,raw_user_meta_data jsonb not null default '{}');" +
-    "create table auth.sessions(id uuid primary key,user_id uuid not null references auth.users(id));" +
+    "create table auth.sessions(id uuid primary key,user_id uuid not null references auth.users(id),not_after timestamptz);" +
     "create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;" +
     "create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}'::jsonb) $$;" +
     "grant usage on schema public,auth to anon,authenticated,service_role;",
@@ -93,6 +93,15 @@ afterEach(async () => { await db.exec("reset role; rollback"); });
 afterAll(async () => { await db?.close(); });
 
 describe("propuesta PDF en PostgreSQL efímero: rol, nonce, CAS y storage privado", () => {
+  it("readiness exige ambas autorizaciones y el bucket privado sin acceso a clientes", async () => {
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: false, downloads_ready: false });
+    await db.exec("update private.tc_manual_subscription_document_runtime set uploads_enabled=true where id");
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: false, downloads_ready: false });
+    await enable();
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: true, downloads_ready: true });
+    await db.exec("update storage.buckets set public=true where id='tc-subscription-fiscal'");
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: false, downloads_ready: false });
+  });
   it("parte deshabilitada y ningún cliente invoca la función del servidor", async () => {
     await expect(reserve()).rejects.toThrow("manual_document_upload_unavailable");
     for (const role of ["authenticated", "anon"]) await expect(call("reserve", { sha256: hash, size_bytes: 99 }, role)).rejects.toThrow();
@@ -158,6 +167,37 @@ describe("propuesta PDF en PostgreSQL efímero: rol, nonce, CAS y storage privad
     await expect(complete(reserved)).rejects.toThrow("operator_required");
     expect((await db.query("select count(*)::int n from private.tc_manual_subscription_document_reservations")).rows).toEqual([{ n: 1 }]);
     expect((await db.query("select count(*)::int n from private.tc_manual_subscription_invoice_documents")).rows).toEqual([{ n: 0 }]);
+  });
+  it("not_after caducado deniega estado y reserva con 42501; una sesión vigente sí los permite", async () => {
+    await enable();
+    await db.query("update auth.sessions set not_after=now()-interval '1 second' where id=$1", [session]);
+    for (const operation of [() => call("status"), () => reserve()]) {
+      await expect(operation()).rejects.toMatchObject({ code: "42501", message: "manual_document_operator_required" });
+    }
+    expect((await db.query("select count(*)::int n from private.tc_manual_subscription_document_reservations")).rows).toEqual([{ n: 0 }]);
+    await db.query("update auth.sessions set not_after=now()+interval '1 hour' where id=$1", [session]);
+    expect(await call("status")).toEqual({ available: true, document_upload_ready: true, downloads_ready: true });
+    expect((await reserve()).task_id).toBe(task);
+  });
+  it("caducar not_after después de reservar impide completar o descargar, sin evidencia ni auditoría parcial", async () => {
+    await enable();
+    await db.query("update auth.sessions set not_after=now()+interval '1 hour' where id=$1", [session]);
+    const reserved = await reserve();
+    await object(reserved.object_key);
+    await db.query("update auth.sessions set not_after=now()-interval '1 second' where id=$1", [session]);
+    await expect(complete(reserved)).rejects.toMatchObject({ code: "42501", message: "manual_document_operator_required" });
+    await expect(call("download", { document_id: reserved.document_id })).rejects.toMatchObject({ code: "42501", message: "manual_document_operator_required" });
+    expect((await db.query("select count(*)::int n from private.tc_manual_subscription_document_reservations")).rows).toEqual([{ n: 1 }]);
+    expect((await db.query("select count(*)::int n from private.tc_manual_subscription_invoice_documents")).rows).toEqual([{ n: 0 }]);
+    expect((await db.query("select count(*)::int n from private.tc_manual_subscription_document_access")).rows).toEqual([{ n: 0 }]);
+    await db.query("update auth.sessions set not_after=now()+interval '1 hour' where id=$1", [session]);
+    const stored = await complete(reserved);
+    expect(stored.document_id).toBe(reserved.document_id);
+    expect((await call("download", { document_id: stored.document_id })).document_id).toBe(stored.document_id);
+    await db.query("update auth.sessions set not_after=now()-interval '1 second' where id=$1", [session]);
+    await expect(call("download", { document_id: stored.document_id })).rejects.toMatchObject({ code: "42501", message: "manual_document_operator_required" });
+    expect((await db.query("select count(*)::int n from private.tc_manual_subscription_invoice_documents")).rows).toEqual([{ n: 1 }]);
+    expect((await db.query("select count(*)::int n from private.tc_manual_subscription_document_access")).rows).toEqual([{ n: 1 }]);
   });
   it("el servidor no tiene permiso directo para insertar evidencia; usa el adaptador revisado", async () => {
     await enable();

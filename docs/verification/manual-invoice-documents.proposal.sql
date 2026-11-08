@@ -33,7 +33,8 @@ begin
 end;$service_privileges$;
 create table private.tc_manual_subscription_document_runtime(
   id boolean primary key default true check(id),
-  uploads_enabled boolean not null default false
+  uploads_enabled boolean not null default false,
+  downloads_enabled boolean not null default false
 );
 insert into private.tc_manual_subscription_document_runtime(id,uploads_enabled) values(true,false);
 create table private.tc_manual_subscription_document_reservations(
@@ -105,7 +106,9 @@ begin
   if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
   perform 1 from private.tc_admins a where a.user_id=p_actor for share;
   if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
-  perform 1 from auth.sessions s where s.id=p_session and s.user_id=p_actor for share;
+  perform 1 from auth.sessions s where s.id=p_session and s.user_id=p_actor
+    and (nullif(to_jsonb(s)->>'not_after','') is null
+      or (to_jsonb(s)->>'not_after')::timestamptz>now()) for share;
   if not found then raise exception 'manual_document_operator_required' using errcode='42501'; end if;
 end;$actor$;
 revoke all on function private.tc_manual_fiscal_document_actor(uuid,uuid)
@@ -121,13 +124,32 @@ declare
  task private.tc_manual_subscription_invoice_tasks; snapshot jsonb;
  reservation private.tc_manual_subscription_document_reservations;
  document private.tc_manual_subscription_invoice_documents;
+ ready boolean:=false; bucket_ready boolean:=false;
  object_id uuid; object_key text; wanted_hash text; wanted_size integer;
 begin
- if p_action is null or p_action not in('reserve','complete','download')
+ if p_action is null or p_action not in('status','reserve','complete','download')
    or p_data is null or jsonb_typeof(p_data)<>'object' or octet_length(p_data::text)>8192 then
    raise exception 'manual_document_invalid' using errcode='22023';
  end if;
  actor:=(p_data->>'actor_id')::uuid; sid:=(p_data->>'session_id')::uuid;
+ if p_action='status' then
+   if p_data-array['actor_id','session_id']<>'{}' then
+     raise exception 'manual_document_invalid' using errcode='22023';
+   end if;
+   perform private.tc_manual_fiscal_document_actor(actor,sid);
+   if to_regclass('storage.buckets') is not null and to_regclass('storage.objects') is not null then
+     select exists(select 1 from storage.buckets b where b.id='tc-subscription-fiscal'
+       and b.public=false and b.file_size_limit between 8 and 10485760 and b.allowed_mime_types=array['application/pdf'])
+       and exists(select 1 from pg_class c where c.oid='storage.objects'::regclass and c.relrowsecurity)
+       and exists(select 1 from pg_policy p where p.polrelid='storage.objects'::regclass
+         and p.polname='tc_subscription_fiscal_backend_only' and p.polpermissive=false)
+       into bucket_ready;
+   end if;
+   select uploads_enabled and downloads_enabled into ready
+     from private.tc_manual_subscription_document_runtime where id for share;
+   ready:=coalesce(ready,false) and coalesce(bucket_ready,false);
+   return jsonb_build_object('available',true,'document_upload_ready',ready,'downloads_ready',ready);
+ end if;
  task_id:=(p_data->>'task_id')::uuid; operation:=(p_data->>'operation_id')::uuid;
  expected:=(p_data->>'expected_version')::bigint;
  if operation is null or task_id is null or expected is null or expected not between 1 and 9007199254740990 then
@@ -143,6 +165,9 @@ begin
    raise exception 'manual_document_version_conflict' using errcode='40001';
  end if;
  if p_action='download' then
+   if not coalesce((select uploads_enabled and downloads_enabled from private.tc_manual_subscription_document_runtime where id),false) then
+     raise exception 'manual_document_download_unavailable' using errcode='42501';
+   end if;
    if p_data-array['actor_id','session_id','task_id','operation_id','expected_version','document_id']<>'{}' then
      raise exception 'manual_document_invalid' using errcode='22023';
    end if;
@@ -159,7 +184,7 @@ begin
    insert into private.tc_manual_subscription_document_access(operation_id,document_id,task_id,actor_id,session_id)
      values(operation,document.id,task.id,actor,sid);
  else
-   if not coalesce((select uploads_enabled from private.tc_manual_subscription_document_runtime where id),false)
+   if not coalesce((select uploads_enabled and downloads_enabled from private.tc_manual_subscription_document_runtime where id),false)
      or snapshot->>'status'<>'awaiting_issue' or (snapshot->>'buyer_validated')::boolean is distinct from true then
      raise exception 'manual_document_upload_unavailable' using errcode='42501';
    end if;

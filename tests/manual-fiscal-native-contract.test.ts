@@ -34,7 +34,7 @@ it("ensaya el contrato fiscal nativo exacto y revierte usuarios, roles, pagos y 
       "update private.tc_settings set registration_open=true,enforce_access=true,payments_enabled=false,sms_ready=false",
     );
     const result = await db.exec(
-      readFileSync("docs/verification/manual-fiscal-rollback.sql", "utf8"),
+      readFileSync("docs/verification/manual-fiscal-session-rollback-20261108.sql", "utf8"),
     );
     const rows = result.flatMap((entry) => entry.rows) as Array<Record<string, unknown>>;
     expect(rows.find((row) => row.contract === "manual-fiscal-rollback-v1")).toMatchObject({

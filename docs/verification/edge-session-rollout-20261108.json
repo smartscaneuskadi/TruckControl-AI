@@ -1,0 +1,775 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_deployed",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "source_commit": "74f2f794e36029b3fcc9ae80760c601a7d6a3e94",
+  "source_tree": "b17fac27b3ebad49253a4110481eb4f261467a2a",
+  "source_pull_request": 75,
+  "security_source_pull_request": 74,
+  "security_source_commit": "2c7e2f73058d042c7aca3bd143da6e23aa01573a",
+  "recorded_at_utc": "2026-11-08 11:58:33 UTC",
+  "preconditions": [
+    "Root must merge and verify the final candidate SQL63 and native tc_verified_session() before replacing any user Edge Function.",
+    "Keep fiscal, payment, recurring-payment, private-document and notice activation flags at their existing values; this manifest grants no activation.",
+    "Recheck the current native version immediately before deploying. If another deployment occurred, inspect it and stop replacement until reconciled.",
+    "Use source content and Git blob identifiers from the pinned source commit. Every local relative import is included; do not fetch the default branch implicitly.",
+    "Keep existing verify_jwt=false: functions perform their own user session verification or separately signed provider authorization. Do not wrap webhooks, OAuth callbacks, signup/recovery or cron in human-session authentication.",
+    "No provider/model/email/payment calls or real customer data are needed to deploy and perform unauthenticated startup checks."
+  ],
+  "verifications": {
+    "source_commit": "74f2f794e36029b3fcc9ae80760c601a7d6a3e94",
+    "source_tree": "b17fac27b3ebad49253a4110481eb4f261467a2a",
+    "helper_blob": "bae7786300cb1e8d01585f112c544209a3bab28b",
+    "all_dependencies_present": true,
+    "all_have_auth_session": true,
+    "legacy_one_time": true,
+    "legacy_recurring": true,
+    "mail_factory_auth": true,
+    "mail_handler_native_unchanged": true,
+    "mail_index_native_unchanged": true,
+    "existing_unchanged_dependency_files": 40
+  },
+  "functions": [
+    {
+      "name": "company-assistant",
+      "entrypoint": "company-assistant/index.ts",
+      "verify_jwt": false,
+      "native_version": 10,
+      "files": [
+        {
+          "path": "supabase/functions/_shared/ai-runtime.ts",
+          "name": "_shared/ai-runtime.ts",
+          "sha": "807ea6315f6926150ba33a123f5b1ffba5087387"
+        },
+        {
+          "path": "supabase/functions/_shared/app-origins.ts",
+          "name": "_shared/app-origins.ts",
+          "sha": "d7e72dfac663a3033334988f034dc8b07b58acaa"
+        },
+        {
+          "path": "supabase/functions/_shared/auth-session.ts",
+          "name": "_shared/auth-session.ts",
+          "sha": "bae7786300cb1e8d01585f112c544209a3bab28b"
+        },
+        {
+          "path": "supabase/functions/_shared/invoice.ts",
+          "name": "_shared/invoice.ts",
+          "sha": "05a24db88e55fffd3f03ea89cafdfc9b2df94240"
+        },
+        {
+          "path": "supabase/functions/company-assistant/deno.json",
+          "name": "company-assistant/deno.json",
+          "sha": "5e4dc4c086d4ce079397ea7464a517d91c54d06b"
+        },
+        {
+          "path": "supabase/functions/company-assistant/handler.ts",
+          "name": "company-assistant/handler.ts",
+          "sha": "1f61098afe2298489d391ae0a21a7995403566c8"
+        },
+        {
+          "path": "supabase/functions/company-assistant/index.ts",
+          "name": "company-assistant/index.ts",
+          "sha": "1009f063e12199ad33cf17aba967a211d6b10a60"
+        }
+      ],
+      "external_imports": [
+        "npm:@supabase/supabase-js@2.118.0"
+      ],
+      "import_map_path": "company-assistant/deno.json",
+      "native_bundle_sha256": "82270926b40a12bed2f2ea903063b381cbfc41d1c1b9bafc08294c8b3415628b",
+      "native_observed_version": 10
+    },
+    {
+      "name": "company-gmail",
+      "entrypoint": "company-gmail/index.ts",
+      "verify_jwt": false,
+      "native_version": 13,
+      "files": [
+        {
+          "path": "supabase/functions/_shared/ai-runtime.ts",
+          "name": "_shared/ai-runtime.ts",
+          "sha": "807ea6315f6926150ba33a123f5b1ffba5087387"
+        },
+        {
+          "path": "supabase/functions/_shared/auth-session.ts",
+          "name": "_shared/auth-session.ts",
+          "sha": "bae7786300cb1e8d01585f112c544209a3bab28b"
+        },
+        {
+          "path": "supabase/functions/_shared/invoice.ts",
+          "name": "_shared/invoice.ts",
+          "sha": "05a24db88e55fffd3f03ea89cafdfc9b2df94240"
+        },
+        {
+          "path": "supabase/functions/_shared/mail-period.ts",
+          "name": "_shared/mail-period.ts",
+          "sha": "95408729d2472e299a955a70a24b01e7ff996b81"
+        },
+        {
+          "path": "supabase/functions/company-gmail/config.ts",
+          "name": "company-gmail/config.ts",
+          "sha": "a8584b87627366a5314a9a84f29c23d9687fb3ba"
+        },
+        {
+          "path": "supabase/functions/company-gmail/deno.json",
+          "name": "company-gmail/deno.json",
+          "sha": "f259dc7b9370733fc429f4c96c93c07ae7270f98"
+        },
+        {
+          "path": "supabase/functions/company-gmail/handler.ts",
+          "name": "company-gmail/handler.ts",
+          "sha": "8f0d5ead98f6b21fbda71bab978e35eada4d04cb"
+        },
+        {
+          "path": "supabase/functions/company-gmail/health.ts",
+          "name": "company-gmail/health.ts",
+          "sha": "9d55285a1a10ae6e2d40d3e44f6cf60b39cc9cea"
+        },
+        {
+          "path": "supabase/functions/company-gmail/index.ts",
+          "name": "company-gmail/index.ts",
+          "sha": "11f610d2b9717a1eafb3c9a08875254fab072d8e"
+        }
+      ],
+      "external_imports": [
+        "npm:@supabase/supabase-js@2.118.0"
+      ],
+      "import_map_path": null,
+      "native_bundle_sha256": "3126826fd356aa04e0c0066acab2a7ef147105de6cd5a88dc9fb824ba8a73c95",
+      "native_observed_version": 13
+    },
+    {
+      "name": "truckcontrol-billing",
+      "entrypoint": "truckcontrol-billing/index.ts",
+      "verify_jwt": false,
+      "native_version": 12,
+      "files": [
+        {
+          "path": "supabase/functions/_shared/auth-session.ts",
+          "name": "_shared/auth-session.ts",
+          "sha": "bae7786300cb1e8d01585f112c544209a3bab28b"
+        },
+        {
+          "path": "supabase/functions/_shared/billing-origins.ts",
+          "name": "_shared/billing-origins.ts",
+          "sha": "4848b289730346d11fd2caeecb794835566c1491"
+        },
+        {
+          "path": "supabase/functions/_shared/invoice.ts",
+          "name": "_shared/invoice.ts",
+          "sha": "05a24db88e55fffd3f03ea89cafdfc9b2df94240"
+        },
+        {
+          "path": "supabase/functions/_shared/subscription-fiscal-gate.ts",
+          "name": "_shared/subscription-fiscal-gate.ts",
+          "sha": "91349ca5e98f591835cb7feb9b1dc9933604effa"
+        },
+        {
+          "path": "supabase/functions/_shared/subscription-legacy-payment-gate.ts",
+          "name": "_shared/subscription-legacy-payment-gate.ts",
+          "sha": "7ec01922ef190750fc24b87c06ad30ad7ab7ea34"
+        },
+        {
+          "path": "supabase/functions/truckcontrol-billing/deno.json",
+          "name": "truckcontrol-billing/deno.json",
+          "sha": "4ee913ab2484dd85754e1ced869082663a2d6aee"
+        },
+        {
+          "path": "supabase/functions/truckcontrol-billing/handler.ts",
+          "name": "truckcontrol-billing/handler.ts",
+          "sha": "fdf0a99160375840362d7af0deff97da926095a7"
+        },
+        {
+          "path": "supabase/functions/truckcontrol-billing/index.ts",
+          "name": "truckcontrol-billing/index.ts",
+          "sha": "1211ef39d33a45cfbaf30f36ac3f97bae54c0602"
+        }
+      ],
+      "external_imports": [
+        "npm:@supabase/supabase-js@2.118.0"
+      ],
+      "import_map_path": null,
+      "native_bundle_sha256": "601b0efa4df52ed04adfb6130c44028c59307ab58ce22326c7ac34bbaa4cfed7",
+      "native_observed_version": 12
+    },
+    {
+      "name": "truckcontrol-subscriptions",
+      "entrypoint": "truckcontrol-subscriptions/index.ts",
+      "verify_jwt": false,
+      "native_version": 12,
+      "files": [
+        {
+          "path": "supabase/functions/_shared/auth-session.ts",
+          "name": "_shared/auth-session.ts",
+          "sha": "bae7786300cb1e8d01585f112c544209a3bab28b"
+        },
+        {
+          "path": "supabase/functions/_shared/billing-origins.ts",
+          "name": "_shared/billing-origins.ts",
+          "sha": "4848b289730346d11fd2caeecb794835566c1491"
+        },
+        {
+          "path": "supabase/functions/_shared/invoice.ts",
+          "name": "_shared/invoice.ts",
+          "sha": "05a24db88e55fffd3f03ea89cafdfc9b2df94240"
+        },
+        {
+          "path": "supabase/functions/_shared/subscription-fiscal-gate.ts",
+          "name": "_shared/subscription-fiscal-gate.ts",
+          "sha": "91349ca5e98f591835cb7feb9b1dc9933604effa"
+        },
+        {
+          "path": "supabase/functions/_shared/subscription-legacy-payment-gate.ts",
+          "name": "_shared/subscription-legacy-payment-gate.ts",
+          "sha": "7ec01922ef190750fc24b87c06ad30ad7ab7ea34"
+        },
+        {
+          "path": "supabase/functions/truckcontrol-billing/handler.ts",
+          "name": "truckcontrol-billing/handler.ts",
+          "sha": "fdf0a99160375840362d7af0deff97da926095a7"
+        },
+        {
+          "path": "supabase/functions/truckcontrol-subscriptions/deno.json",
+          "name": "truckcontrol-subscriptions/deno.json",
+          "sha": "3add7d009c3c0295fcc3138fc70430c2957db5e4"
+        },
+        {
+          "path": "supabase/functions/truckcontrol-subscriptions/handler.ts",
+          "name": "truckcontrol-subscriptions/handler.ts",
+          "sha": "8130931ee37f2fcfe097d788f214ea269f5ce931"
+        },
+        {
+          "path": "supabase/functions/truckcontrol-subscriptions/index.ts",
+          "name": "truckcontrol-subscriptions/index.ts",
+          "sha": "cdc9804af05c14c7cd8d7d2065c194cbc02a63da"
+        }
+      ],
+      "external_imports": [
+        "npm:@supabase/supabase-js@2.118.0"
+      ],
+      "import_map_path": null,
+      "native_bundle_sha256": "1c3a6130816d56c2dfc148adb4caecd649e281db1a1bf3b23accb05177491d58",
+      "native_observed_version": 12
+    },
+    {
+      "name": "company-mail",
+      "entrypoint": "company-mail/index.ts",
+      "verify_jwt": false,
+      "native_version": 12,
+      "files": [
+        {
+          "path": "supabase/functions/_shared/ai-runtime.ts",
+          "name": "_shared/ai-runtime.ts",
+          "sha": "807ea6315f6926150ba33a123f5b1ffba5087387"
+        },
+        {
+          "path": "supabase/functions/_shared/app-origins.ts",
+          "name": "_shared/app-origins.ts",
+          "sha": "d7e72dfac663a3033334988f034dc8b07b58acaa"
+        },
+        {
+          "path": "supabase/functions/_shared/auth-session.ts",
+          "name": "_shared/auth-session.ts",
+          "sha": "bae7786300cb1e8d01585f112c544209a3bab28b"
+        },
+        {
+          "path": "supabase/functions/_shared/invoice-ai.ts",
+          "name": "_shared/invoice-ai.ts",
+          "sha": "10ec50f8aa2db3632a0738a381d81c9f99d35c80"
+        },
+        {
+          "path": "supabase/functions/_shared/invoice.ts",
+          "name": "_shared/invoice.ts",
+          "sha": "05a24db88e55fffd3f03ea89cafdfc9b2df94240"
+        },
+        {
+          "path": "supabase/functions/_shared/mail.ts",
+          "name": "_shared/mail.ts",
+          "sha": "d7e29982b4fda97517c6222d6603e99b7082f638"
+        },
+        {
+          "path": "supabase/functions/_shared/resend-runtime.ts",
+          "name": "_shared/resend-runtime.ts",
+          "sha": "8fec036e74f0d1233263cdc96d6a4bd2492996df"
+        },
+        {
+          "path": "supabase/functions/company-mail/deno.json",
+          "name": "company-mail/deno.json",
+          "sha": "ef8ff5a1bab5fc7d3ba57beb0d37a641c28c3aa2"
+        },
+        {
+          "path": "supabase/functions/company-mail/gateway.ts",
+          "name": "company-mail/gateway.ts",
+          "sha": "ac741d6b58468a06469107d9706d9aca3017f4a4"
+        },
+        {
+          "path": "supabase/functions/company-mail/handler.ts",
+          "name": "company-mail/handler.ts",
+          "sha": "327fe11a0b0dac7e27efc8f4151f7fa5fc7c36ec"
+        },
+        {
+          "path": "supabase/functions/company-mail/index.ts",
+          "name": "company-mail/index.ts",
+          "sha": "43846be68300a6253424cb3ff3072bbe9fda072a"
+        },
+        {
+          "path": "supabase/functions/company-mail/saved-ai.ts",
+          "name": "company-mail/saved-ai.ts",
+          "sha": "0fb04a51be385be2091dd232bcca96951092de70"
+        }
+      ],
+      "external_imports": [
+        "@supabase/supabase-js",
+        "npm:@supabase/supabase-js@2.118.0",
+        "postal-mime"
+      ],
+      "import_map_path": "company-mail/deno.json",
+      "native_bundle_sha256": "ad3523949407b33406221727a88ac53e712de3fe2c009aef5810109799ab9282",
+      "native_observed_version": 12
+    },
+    {
+      "name": "company-auth",
+      "entrypoint": "company-auth/index.ts",
+      "verify_jwt": false,
+      "native_version": 4,
+      "files": [
+        {
+          "path": "supabase/functions/_shared/auth-session.ts",
+          "name": "_shared/auth-session.ts",
+          "sha": "bae7786300cb1e8d01585f112c544209a3bab28b"
+        },
+        {
+          "path": "supabase/functions/company-auth/deno.json",
+          "name": "company-auth/deno.json",
+          "sha": "4ee913ab2484dd85754e1ced869082663a2d6aee"
+        },
+        {
+          "path": "supabase/functions/company-auth/handler.ts",
+          "name": "company-auth/handler.ts",
+          "sha": "a2c6f9b5091efc2e3f2addf754467b9fc64b556d"
+        },
+        {
+          "path": "supabase/functions/company-auth/index.ts",
+          "name": "company-auth/index.ts",
+          "sha": "e87eefd922f0a0c86ebd539ea89ae2fabc7af456"
+        }
+      ],
+      "external_imports": [
+        "npm:@supabase/supabase-js@2.118.0"
+      ],
+      "import_map_path": null,
+      "native_bundle_sha256": "61cf61e461de4d23445cdd0a6b7a600a2bf69ec2198b4814351511f078ae57a6",
+      "native_observed_version": 4
+    },
+    {
+      "name": "company-copilot",
+      "entrypoint": "company-copilot/index.ts",
+      "verify_jwt": false,
+      "native_version": 2,
+      "files": [
+        {
+          "path": "supabase/functions/_shared/ai-runtime.ts",
+          "name": "_shared/ai-runtime.ts",
+          "sha": "807ea6315f6926150ba33a123f5b1ffba5087387"
+        },
+        {
+          "path": "supabase/functions/_shared/app-origins.ts",
+          "name": "_shared/app-origins.ts",
+          "sha": "d7e72dfac663a3033334988f034dc8b07b58acaa"
+        },
+        {
+          "path": "supabase/functions/_shared/auth-session.ts",
+          "name": "_shared/auth-session.ts",
+          "sha": "bae7786300cb1e8d01585f112c544209a3bab28b"
+        },
+        {
+          "path": "supabase/functions/_shared/invoice.ts",
+          "name": "_shared/invoice.ts",
+          "sha": "05a24db88e55fffd3f03ea89cafdfc9b2df94240"
+        },
+        {
+          "path": "supabase/functions/_shared/specialist-profiles.ts",
+          "name": "_shared/specialist-profiles.ts",
+          "sha": "c177bdca1dd016146ea3d8d3b7e063f97a66261a"
+        },
+        {
+          "path": "supabase/functions/company-copilot/contract.ts",
+          "name": "company-copilot/contract.ts",
+          "sha": "3e75decac95ef3f5cee7120fd79dd0577d24781d"
+        },
+        {
+          "path": "supabase/functions/company-copilot/handler.ts",
+          "name": "company-copilot/handler.ts",
+          "sha": "613fcca4c3642aaf9f33aae8e836af8198b659e6"
+        },
+        {
+          "path": "supabase/functions/company-copilot/index.ts",
+          "name": "company-copilot/index.ts",
+          "sha": "aec5963e627a17a8675aaba880fb676d5c403e37"
+        },
+        {
+          "path": "supabase/functions/company-copilot/specialist-contract.ts",
+          "name": "company-copilot/specialist-contract.ts",
+          "sha": "ea707240a3de885f6e86d6307a53f5e71e6c279b"
+        },
+        {
+          "path": "supabase/functions/company-copilot/specialist-handler.ts",
+          "name": "company-copilot/specialist-handler.ts",
+          "sha": "272e8c19cbebe200709ac11b2478eee0cddde447"
+        }
+      ],
+      "external_imports": [
+        "npm:@supabase/supabase-js@2.118.0"
+      ],
+      "import_map_path": null,
+      "native_bundle_sha256": "e5080392703c6cf5660842d8b0140fa1856267a5b5a2fceafc0a4bedc3e51926",
+      "native_observed_version": 2
+    }
+  ],
+  "dependency_catalog": [
+    {
+      "path": "supabase/functions/_shared/ai-runtime.ts",
+      "sha": "807ea6315f6926150ba33a123f5b1ffba5087387"
+    },
+    {
+      "path": "supabase/functions/_shared/app-origins.ts",
+      "sha": "d7e72dfac663a3033334988f034dc8b07b58acaa"
+    },
+    {
+      "path": "supabase/functions/_shared/auth-session.ts",
+      "sha": "bae7786300cb1e8d01585f112c544209a3bab28b"
+    },
+    {
+      "path": "supabase/functions/_shared/billing-origins.ts",
+      "sha": "4848b289730346d11fd2caeecb794835566c1491"
+    },
+    {
+      "path": "supabase/functions/_shared/invoice-ai.ts",
+      "sha": "10ec50f8aa2db3632a0738a381d81c9f99d35c80"
+    },
+    {
+      "path": "supabase/functions/_shared/invoice.ts",
+      "sha": "05a24db88e55fffd3f03ea89cafdfc9b2df94240"
+    },
+    {
+      "path": "supabase/functions/_shared/mail-period.ts",
+      "sha": "95408729d2472e299a955a70a24b01e7ff996b81"
+    },
+    {
+      "path": "supabase/functions/_shared/mail.ts",
+      "sha": "d7e29982b4fda97517c6222d6603e99b7082f638"
+    },
+    {
+      "path": "supabase/functions/_shared/resend-runtime.ts",
+      "sha": "8fec036e74f0d1233263cdc96d6a4bd2492996df"
+    },
+    {
+      "path": "supabase/functions/_shared/specialist-profiles.ts",
+      "sha": "c177bdca1dd016146ea3d8d3b7e063f97a66261a"
+    },
+    {
+      "path": "supabase/functions/_shared/subscription-fiscal-gate.ts",
+      "sha": "91349ca5e98f591835cb7feb9b1dc9933604effa"
+    },
+    {
+      "path": "supabase/functions/_shared/subscription-legacy-payment-gate.ts",
+      "sha": "7ec01922ef190750fc24b87c06ad30ad7ab7ea34"
+    },
+    {
+      "path": "supabase/functions/company-assistant/deno.json",
+      "sha": "5e4dc4c086d4ce079397ea7464a517d91c54d06b"
+    },
+    {
+      "path": "supabase/functions/company-assistant/handler.ts",
+      "sha": "1f61098afe2298489d391ae0a21a7995403566c8"
+    },
+    {
+      "path": "supabase/functions/company-assistant/index.ts",
+      "sha": "1009f063e12199ad33cf17aba967a211d6b10a60"
+    },
+    {
+      "path": "supabase/functions/company-auth/deno.json",
+      "sha": "4ee913ab2484dd85754e1ced869082663a2d6aee"
+    },
+    {
+      "path": "supabase/functions/company-auth/handler.ts",
+      "sha": "a2c6f9b5091efc2e3f2addf754467b9fc64b556d"
+    },
+    {
+      "path": "supabase/functions/company-auth/index.ts",
+      "sha": "e87eefd922f0a0c86ebd539ea89ae2fabc7af456"
+    },
+    {
+      "path": "supabase/functions/company-copilot/contract.ts",
+      "sha": "3e75decac95ef3f5cee7120fd79dd0577d24781d"
+    },
+    {
+      "path": "supabase/functions/company-copilot/handler.ts",
+      "sha": "613fcca4c3642aaf9f33aae8e836af8198b659e6"
+    },
+    {
+      "path": "supabase/functions/company-copilot/index.ts",
+      "sha": "aec5963e627a17a8675aaba880fb676d5c403e37"
+    },
+    {
+      "path": "supabase/functions/company-copilot/specialist-contract.ts",
+      "sha": "ea707240a3de885f6e86d6307a53f5e71e6c279b"
+    },
+    {
+      "path": "supabase/functions/company-copilot/specialist-handler.ts",
+      "sha": "272e8c19cbebe200709ac11b2478eee0cddde447"
+    },
+    {
+      "path": "supabase/functions/company-gmail/config.ts",
+      "sha": "a8584b87627366a5314a9a84f29c23d9687fb3ba"
+    },
+    {
+      "path": "supabase/functions/company-gmail/deno.json",
+      "sha": "f259dc7b9370733fc429f4c96c93c07ae7270f98"
+    },
+    {
+      "path": "supabase/functions/company-gmail/handler.ts",
+      "sha": "8f0d5ead98f6b21fbda71bab978e35eada4d04cb"
+    },
+    {
+      "path": "supabase/functions/company-gmail/health.ts",
+      "sha": "9d55285a1a10ae6e2d40d3e44f6cf60b39cc9cea"
+    },
+    {
+      "path": "supabase/functions/company-gmail/index.ts",
+      "sha": "11f610d2b9717a1eafb3c9a08875254fab072d8e"
+    },
+    {
+      "path": "supabase/functions/company-mail/deno.json",
+      "sha": "ef8ff5a1bab5fc7d3ba57beb0d37a641c28c3aa2"
+    },
+    {
+      "path": "supabase/functions/company-mail/gateway.ts",
+      "sha": "ac741d6b58468a06469107d9706d9aca3017f4a4"
+    },
+    {
+      "path": "supabase/functions/company-mail/handler.ts",
+      "sha": "327fe11a0b0dac7e27efc8f4151f7fa5fc7c36ec"
+    },
+    {
+      "path": "supabase/functions/company-mail/index.ts",
+      "sha": "43846be68300a6253424cb3ff3072bbe9fda072a"
+    },
+    {
+      "path": "supabase/functions/company-mail/saved-ai.ts",
+      "sha": "0fb04a51be385be2091dd232bcca96951092de70"
+    },
+    {
+      "path": "supabase/functions/truckcontrol-billing/deno.json",
+      "sha": "4ee913ab2484dd85754e1ced869082663a2d6aee"
+    },
+    {
+      "path": "supabase/functions/truckcontrol-billing/handler.ts",
+      "sha": "fdf0a99160375840362d7af0deff97da926095a7"
+    },
+    {
+      "path": "supabase/functions/truckcontrol-billing/index.ts",
+      "sha": "1211ef39d33a45cfbaf30f36ac3f97bae54c0602"
+    },
+    {
+      "path": "supabase/functions/truckcontrol-subscriptions/deno.json",
+      "sha": "3add7d009c3c0295fcc3138fc70430c2957db5e4"
+    },
+    {
+      "path": "supabase/functions/truckcontrol-subscriptions/handler.ts",
+      "sha": "8130931ee37f2fcfe097d788f214ea269f5ce931"
+    },
+    {
+      "path": "supabase/functions/truckcontrol-subscriptions/index.ts",
+      "sha": "cdc9804af05c14c7cd8d7d2065c194cbc02a63da"
+    }
+  ],
+  "native_comparison": {
+    "snapshot_versions": [
+      {
+        "name": "company-assistant",
+        "version": 10,
+        "bundle_sha256": "82270926b40a12bed2f2ea903063b381cbfc41d1c1b9bafc08294c8b3415628b",
+        "verify_jwt": false
+      },
+      {
+        "name": "company-gmail",
+        "version": 13,
+        "bundle_sha256": "3126826fd356aa04e0c0066acab2a7ef147105de6cd5a88dc9fb824ba8a73c95",
+        "verify_jwt": false
+      },
+      {
+        "name": "truckcontrol-billing",
+        "version": 12,
+        "bundle_sha256": "601b0efa4df52ed04adfb6130c44028c59307ab58ce22326c7ac34bbaa4cfed7",
+        "verify_jwt": false
+      },
+      {
+        "name": "truckcontrol-subscriptions",
+        "version": 12,
+        "bundle_sha256": "1c3a6130816d56c2dfc148adb4caecd649e281db1a1bf3b23accb05177491d58",
+        "verify_jwt": false
+      },
+      {
+        "name": "company-mail",
+        "version": 12,
+        "bundle_sha256": "ad3523949407b33406221727a88ac53e712de3fe2c009aef5810109799ab9282",
+        "verify_jwt": false
+      },
+      {
+        "name": "company-auth",
+        "version": 4,
+        "bundle_sha256": "61cf61e461de4d23445cdd0a6b7a600a2bf69ec2198b4814351511f078ae57a6",
+        "verify_jwt": false
+      },
+      {
+        "name": "company-copilot",
+        "version": 2,
+        "bundle_sha256": "e5080392703c6cf5660842d8b0140fa1856267a5b5a2fceafc0a4bedc3e51926",
+        "verify_jwt": false
+      }
+    ],
+    "expected_differences": [
+      {
+        "function": "company-assistant",
+        "path": "supabase/functions/company-assistant/index.ts",
+        "changesExpected": true,
+        "nativeBytes": 3394,
+        "repoBytes": 3444
+      },
+      {
+        "function": "company-gmail",
+        "path": "supabase/functions/company-gmail/index.ts",
+        "changesExpected": true,
+        "nativeBytes": 4564,
+        "repoBytes": 4584
+      },
+      {
+        "function": "truckcontrol-billing",
+        "path": "supabase/functions/truckcontrol-billing/index.ts",
+        "changesExpected": true,
+        "nativeBytes": 1488,
+        "repoBytes": 1504
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "path": "supabase/functions/truckcontrol-subscriptions/index.ts",
+        "changesExpected": true,
+        "nativeBytes": 1687,
+        "repoBytes": 1703
+      },
+      {
+        "function": "company-mail",
+        "path": "supabase/functions/company-mail/gateway.ts",
+        "changesExpected": true,
+        "nativeBytes": 3777,
+        "repoBytes": 3795
+      },
+      {
+        "function": "company-auth",
+        "path": "supabase/functions/company-auth/index.ts",
+        "changesExpected": true,
+        "nativeBytes": 2222,
+        "repoBytes": 2215
+      },
+      {
+        "function": "company-copilot",
+        "path": "supabase/functions/company-copilot/index.ts",
+        "changesExpected": true,
+        "nativeBytes": 7408,
+        "repoBytes": 7439
+      }
+    ],
+    "all_other_existing_sources_identical": true,
+    "rollback_source_commit": "847060b2478eae3cd92da437c66c278d2fe510ee",
+    "rollback_source_matches_native": [
+      {
+        "name": "company-assistant",
+        "path": "supabase/functions/company-assistant/index.ts",
+        "base_equal_native": true,
+        "base_sha": "ef59c57701a50165a84f6a4b3a1af98e8d3f9e63"
+      },
+      {
+        "name": "company-gmail",
+        "path": "supabase/functions/company-gmail/index.ts",
+        "base_equal_native": true,
+        "base_sha": "7d2aeb99f2f77617e25399dd7300467cff35f217"
+      },
+      {
+        "name": "truckcontrol-billing",
+        "path": "supabase/functions/truckcontrol-billing/index.ts",
+        "base_equal_native": true,
+        "base_sha": "63caa27e41d2fbc873132e3a6af75f2ba44d7334"
+      },
+      {
+        "name": "truckcontrol-subscriptions",
+        "path": "supabase/functions/truckcontrol-subscriptions/index.ts",
+        "base_equal_native": true,
+        "base_sha": "b90d966189456d7e9d43c3a808944ceda1c32e5b"
+      },
+      {
+        "name": "company-mail",
+        "path": "supabase/functions/company-mail/gateway.ts",
+        "base_equal_native": true,
+        "base_sha": "a43f054f18ebebd87dea7692827751b5189c02d0"
+      },
+      {
+        "name": "company-auth",
+        "path": "supabase/functions/company-auth/index.ts",
+        "base_equal_native": true,
+        "base_sha": "a9fe60769c2c69eafd4301162e9499638ed1c9cd"
+      },
+      {
+        "name": "company-copilot",
+        "path": "supabase/functions/company-copilot/index.ts",
+        "base_equal_native": true,
+        "base_sha": "20e9ac9f7a9a0342595885d1dd533672b46182c2"
+      }
+    ],
+    "rollback_warning": "Old source lacks live-session enforcement. Preserve it as recovery evidence; use it only through Root's incident procedure with affected operations gated. Never reverse applied SQL62 or SQL63 or weaken RLS."
+  },
+  "ci": {
+    "run_id": 42477165660,
+    "status": "success",
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42477165660",
+    "source_commit": "2c7e2f73058d042c7aca3bd143da6e23aa01573a",
+    "unit_sql": 1048,
+    "unit_files": 102,
+    "dedicated_session_cases": 21,
+    "python": 45,
+    "demo_browser": 72,
+    "company_browser": 50,
+    "saas_browser": 144,
+    "candidate_browser": 14,
+    "production_browser": 20,
+    "retained_original_tests": 64,
+    "public_checks": "passed",
+    "physical_device_tests": false,
+    "artifact_id": 13615794212,
+    "artifact_sha256": "432e1f3e8d6388fc735119ccf1ebc17bc916bd60d6006ecaef2ba4924d3e87d7",
+    "final_composite_ci": "Required separately for the final SQL63/PR75 head; this receipt does not claim that result."
+  },
+  "post_deploy_receipt_required": [
+    "Read each native function back, record the resulting version and verify_jwt, compare every submitted file with its pinned Git blob.",
+    "Verify the tc_verified_session RPC rejects missing/revoked/banned/foreign/expired sessions and accepts a confirmed active session in the authorized acceptance fixture.",
+    "Use requests without credentials only for startup smoke checks; reject unauthenticated protected operations without provider calls.",
+    "Record actual deployment evidence before claiming native rollout complete. Do not claim real IA/Gmail/payment acceptance from mocks or restart completed issue37 acceptance calls.",
+    "Do not claim a PDF header or checksum certifies TicketBAI validity; no native document or notification worker is deployed by this manifest."
+  ],
+  "deliberately_not_redeployed": [
+    {
+      "name": "company-mail-resend",
+      "native_version": 3,
+      "reason": "Signed Resend inbound server route has separate HMAC authorization. Its handler/index and provider delivery authorization are unchanged."
+    }
+  ],
+  "side_effects": {
+    "native_mutations_performed": false,
+    "feature_flags_changed": false,
+    "paid_operations_performed": false,
+    "real_model_calls_performed": false,
+    "real_emails_sent": false,
+    "real_payments_performed": false
+  }
+}

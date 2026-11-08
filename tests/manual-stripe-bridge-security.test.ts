@@ -82,7 +82,13 @@ beforeAll(async () => {
     grant usage on schema public,auth to anon,authenticated,service_role;`);
   for (const file of readdirSync("supabase/migrations").filter(f => f.endsWith(".sql")).sort())
     await db.exec(readFileSync("supabase/migrations/" + file,"utf8"));
-  await db.exec(readFileSync("docs/verification/manual-stripe-bridge.proposal.sql","utf8"));
+  const installed = (await db.query<{ installed: boolean }>(
+    "select to_regprocedure('public.tc_manual_subscription_apply_payment(text,text,jsonb)') is not null installed",
+  )).rows[0].installed;
+  // Before migration63 this exercises the review proposal; afterwards all the
+  // same acceptance cases exercise the migrated function without duplicate DDL.
+  if (!installed)
+    await db.exec(readFileSync("docs/verification/manual-stripe-bridge.proposal.sql","utf8"));
   // Only this ephemeral PGlite database enables synthetic Stripe mode.
   await db.query(`insert into private.tc_manual_stripe_channels(
     provider_account_id,mode,enabled,isolated_test_instance

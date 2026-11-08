@@ -1,3 +1,4 @@
+import { installAuthSessionFixture, bindFixtureActor, seedFixtureSessions } from "./helpers/auth-session-fixture";
 /** Cross-layer acceptance: real handlers, crypto, budget and PostgreSQL migrations.
  * Google/OpenAI transports and object storage are isolated fakes. No network or live data.
  */
@@ -34,13 +35,11 @@ async function as<T>(
   await previous;
   try {
     await db.exec(`set role ${role}`);
-    await db.query("select set_config('request.jwt.claim.sub',$1,false)", [
-      actor ?? "",
-    ]);
+    await bindFixtureActor(db, actor);
     return await fn();
   } finally {
     await db.exec("reset role");
-    await db.exec("select set_config('request.jwt.claim.sub','',false)");
+    await bindFixtureActor(db, null);
     release();
   }
 }
@@ -88,6 +87,7 @@ beforeAll(async () => {
     create schema auth;create table auth.users(id uuid primary key,email text,phone text,email_confirmed_at timestamptz,phone_confirmed_at timestamptz,raw_user_meta_data jsonb not null default '{}');
     create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
     grant usage on schema auth,public to anon,authenticated,service_role;`);
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())
@@ -128,6 +128,7 @@ beforeAll(async () => {
     "insert into public.trucks(id,organization_id,plate,brand,model,year,inspection_due_on) values($1,$2,'DEMO-ACCEPT','Marca ficticia','Modelo ficticio',2024,'2027-06-01')",
     [truck, organization],
   );
+  await seedFixtureSessions(db);
 }, 30000);
 afterAll(async () => {
   vi.unstubAllGlobals();

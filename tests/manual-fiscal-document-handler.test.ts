@@ -18,6 +18,7 @@ function fixture() {
   const objects = new Map<string, Uint8Array>();
   const gateway: FiscalDocumentGateway = {
     authenticate: vi.fn(async () => actor),
+    status: vi.fn(async () => ({ available: true, document_upload_ready: true, downloads_ready: true })),
     task: vi.fn(async () => ({ ...task })),
     reserve: vi.fn(async () => ({ ...reservation })),
     complete: vi.fn(async () => ({ ...doc, nonce: "must-never-return-to-browser" })),
@@ -39,6 +40,24 @@ function download(changes: Record<string, unknown> = {}) {
     body: JSON.stringify({ action: "download", task_id: task.id, expected_version: 2, operation_id: operation, document_id: docId, ...changes }) });
 }
 describe("PDF fiscal privado: transporte e integridad, nunca certificación TicketBAI", () => {
+  it("consulta readiness por JWT sin leer un cuerpo ni exponer configuración privada", async () => {
+    const f = fixture();
+    vi.mocked(f.gateway.status).mockResolvedValue({ available: true, document_upload_ready: false, downloads_ready: false });
+    const result = await f.handler(new Request("https://edge.invalid/company-manual-invoices/capabilities", { method: "POST", headers }));
+    expect(result.status).toBe(200);
+    expect(await result.json()).toEqual({ available: true, document_upload_ready: false, downloads_ready: false });
+    expect(f.gateway.status).toHaveBeenCalledWith(actor);
+    expect(f.gateway.task).not.toHaveBeenCalled();
+    expect(f.gateway.read).not.toHaveBeenCalled();
+  });
+  it("flags apagados bloquean subida y descarga aunque el operador conozca IDs válidos", async () => {
+    const f = fixture();
+    vi.mocked(f.gateway.status).mockResolvedValue({ available: true, document_upload_ready: false, downloads_ready: false });
+    expect((await f.handler(upload())).status).toBe(503);
+    expect((await f.handler(download())).status).toBe(503);
+    expect(f.gateway.reserve).not.toHaveBeenCalled();
+    expect(f.gateway.document).not.toHaveBeenCalled();
+  });
   it("rechaza orígenes ajenos y la demo antes de autenticar o acceder a almacenamiento", async () => {
     for (const origin of ["https://foreign.invalid", "https://truckcontrol-ai-fase-1.earlymug513.chatgpt.site"]) {
       const f = fixture(), request = upload();
