@@ -1,5 +1,43 @@
 # Evidencias de pruebas
 
+## Estado vigente · 8 de noviembre de 2026
+
+Este checkpoint prevalece sobre todas las notas y listas históricas inferiores. PR75 está integrado en main `71c72bed48e64e8f4d25b778c8aa2cef06260d47`, tras CI completo del head `7d411fcccc4bf8ba1a1b017becc22c6a349422cd`. **La web pública sigue en Sites32 / app0.5.20-rc.1**, https://truckcontrolai.com; v31 y demo6 se conservan. Integrar código no equivale a publicar el frontend.
+
+**Supabase:63 migraciones aplicadas.** Local `20261108100352_manual_subscription_payment_and_documents.sql` → remota `20261108123230_manual_subscription_payment_and_documents`. Gitblob `36786ff4a510b3e0df0cde32ddd71a630fc0214b`; SHA256 `cbfe47861f20129c4fbc51ebf35b2e37b46784489aee406f49291896fa81e069`. Fuente nativa idéntica, un statement registrado y OID/ACL18083,18118,19429 preservados. **La63 es inmutable: no editarla, reaplicarla ni revertir las61/62 anteriores. FIXPilot permanece separado.**
+
+**Contrato nativo aprobado y completado:** `session-fiscal-pipeline-cleanup-v1`, script Gitblob `ace04d8b048d412a60b8e2ccad5fee5c09b977e5`. Diez contadores de fixtures a0 tras rollback (usuarios,sesiones,administradores,pedidos,tareas,eventos,acciones,canales,recibos y avisos); baseline de18tablas/flags intacta. Las8tablas nuevas tienen RLS. No se han hecho pagos, emisiones fiscales, correos ni llamadas IA para esta aceptación.
+
+**Siete Edge existentes actualizados y verificados:** Auth5, Billing13, Subscriptions13, Gmail14, Mail13, Copilot3 y Assistant11;55fuentes runtime exactas. Deno/configuración no se confunde con archivos runtime. Inbound Resend3 intacto. Seis GET HTTPS devuelven405 y Gmail retorna su callback controlado `gmail_error=invalid_state`: no es prueba de conexión de un buzón. Cobros, PDF y avisos permanecen OFF. Los workers nuevos fiscal/PDF/avisos todavía no están desplegados ni programados en este corte.
+
+**Evidencia:** CI42479482785/42479488860 SUCCESS,1.526controles por ejecución; originales64/11hashes conservados. PR77/head4ea39a tiene69checks PostgreSQL17 y recuperación lógica aislada correctos en42480734805/42480739225; no acredita recuperación gestionada de Supabase/Auth/Storage/secretos ni dispositivos físicos. No sumar reejecuciones.
+
+**Límites vigentes:** no se repite la tarea37 ni sus8llamadas reales. IA10USD/mes y100llamadas/empresa sin cambios. Nuevas compras0 y nuevas llamadas IA de prueba0; presupuesto agregado200EUR, gasto/saldo globales sin conciliar. Cobros y lanzamiento comercial completo siguen pendientes de aceptación Stripe/fiscal, Google público, recuperación gestionada y revisión externa.
+
+### Pruebas verificadas de PR75
+
+| Tipo | Controles por ejecución |
+| --- | ---: |
+| Unitarias/SQL |1163 en109archivos |
+| Python |45 |
+| Navegación/demo |72 |
+| Empresa |50 |
+| SaaS |156 |
+| Candidata |14 |
+| Producción |20 |
+| Verificaciones públicas de v32 |6 |
+| Total |1526 |
+
+CI de fuente7d411: [push42479482785](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42479482785) y [PR42479488860](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42479488860), ambos SUCCESS. Son ejecuciones repetidas de la misma batería; no sumarlas como pruebas distintas.
+
+Contrato Supabase: `docs/verification/session-fiscal-pipeline-rollback-20261108.sql`, fuenteace04 exacta, baseline18tablas/flags y limpieza10/10a0. La prueba no emite facturas, cobra, envía mensajes ni consume modelos.
+
+PostgreSQL real aislado:69PASS en cada ejecución42480734805/42480739225 del head4ea39a/PR77, con dos conexiones, rollback e importación lógica en otro destino desechable. PR77 todavía no integrado en este corte. No equivale a restore gestionado de todos los componentes de Supabase.
+
+Asesor de seguridad sin hallazgos nuevos: continúan dos INFO deny-all y el WARN previo de contraseñas filtradas. Rendimiento conserva17INFO de FK,23INFO de índices sin uso,1WARN de índice duplicado antiguo de invoice_documents y la información de conexiones Auth. No se eliminan índices ni se contrata Pro para silenciar avisos.
+
+## Histórico conservado — no sustituye el estado vigente
+
 ## Estado nativo verificado · 8 de noviembre de 2026
 
 Esta actualización prevalece sobre el histórico inferior. PR42 y PR60 están integrados; main4d6b09ee806ca92a90da620fb9d47123b6398bc5 conserva el candidato0.5.21-rc.1. **La web pública sigue v32/0.5.20-rc.1**, con v31 y demo6 recuperables; no confundir main con publicación.
