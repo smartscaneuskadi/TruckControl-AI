@@ -88,3 +88,30 @@ El snapshot se obtiene **en el instante de ingesta técnica**, no necesariamente
 La ingesta guarda en la fila fiscal privada `buyer_snapshot_origin='profile_at_intake'`, la fecha del pedido, la última fecha de modificación del perfil y un indicador `buyer_profile_changed_after_request`. El indicador se calcula con marcas temporales del servidor, se congela con el resto del registro y avisa al futuro operador cuando el perfil se actualizó después de crear el pedido. **Un indicador falso no acredita que los datos se aceptaran en el checkout**, ni el nombre, NIF, domicilio, régimen de IVA o destinatario correcto; el operador debe comprobar el soporte fiscal original antes de emitir en GDTaller. Un indicador verdadero requiere investigación adicional, sin reconstruir silenciosamente la factura desde el perfil actual. Esta mejora es trazabilidad, no autorización ni servicio fiscal funcional.
 
 Prueba PGlite sintética en `tests/manual-subscription-intake-security.test.ts`: compra antigua seguida de cambio de empresa/NIF antes de la ingesta, procedencia marcada, estado todavía `awaiting_issue` y rechazo de cambio privilegiado del indicador. Sin webhook firmado, CAS de operador, PDF, Gmail real ni migración remota; conservar el guard de cobros cerrado.
+
+
+### Integridad adicional en INSERT privilegiado (08/11/2026; solo candidato)
+
+El trigger `tc_manual_subscription_guard_task_insert` valida también las escrituras
+directas en la tabla de tareas (por ejemplo, si un futuro adaptador usa service role
+sin la función de ingesta): pedido, usuario comprador, titular de la organización,
+estado interno `paid`, plan/revisión, importe, desglose IVA y procedencia de los
+datos fiscales deben coincidir en las fuentes privadas actuales. Rechaza una
+tarea que vincule pedido/empresa ajena o cifras fiscalmente coherentes pero
+**diferentes del presupuesto original**. Los tests PGlite cubren ambas variantes
+y verifican que los eventos originales quedan conservados.
+
+Es defensa de integridad interna: el estado `paid` **NO** equivale a un pago
+conciliado con Stripe, ni valida los datos aceptados al checkout. No implica
+autorización fiscal, recepción de correo, emisión TicketBAI ni despliegue.
+
+**Desviación de inventario remoto verificada en lectura de Supabase:**
+el 08/11/2026 el proyecto `truckcontrol-ai/kkkemaycedexymrpaqtp` reporta
+**61 migraciones**, última `20261108081848_company_suppliers_and_trip_allocations`
+(frente al checkpoint anterior de 60); la tabla candidata
+`private.tc_manual_subscription_invoice_tasks` continúa ausente,
+`payments_enabled=false` y no existen solicitudes `paid`. La fuente
+de esta nueva migración podría estar relacionada con trabajo paralelo en PR #42,
+pero no debe darse por integrada al repositorio principal: reconciliar el
+inventario y dependencias antes de preparar cualquier migración o despliegue.
+No ejecutar `supabase db push` ni revertir la migración nueva a ciegas.
