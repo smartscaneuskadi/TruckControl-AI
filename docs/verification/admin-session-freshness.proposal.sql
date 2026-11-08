@@ -86,3 +86,39 @@ begin
  raise exception 'Operación no disponible';
 end;
 $admin_control$;
+
+-- Preserve schema62's OID, VOLATILE semantics, definer ownership and ACL.
+-- All fiscal operator entry points call this helper, including reads/replays.
+-- A human session is mandatory; JWT claims never replace the live rows.
+create or replace function private.tc_manual_subscription_operator()
+returns uuid language plpgsql volatile security definer set search_path='' as $operator_session$
+declare actor uuid:=(select auth.uid()); sid uuid;
+begin
+  if actor is null then
+    raise exception 'manual_invoice_operator_forbidden' using errcode='42501';
+  end if;
+  perform 1 from auth.users u where u.id=actor and u.email_confirmed_at is not null
+    and u.deleted_at is null and coalesce(u.banned_until,'-infinity'::timestamptz)<=now()
+    for share;
+  if not found then raise exception 'manual_invoice_operator_forbidden' using errcode='42501'; end if;
+  perform 1 from private.tc_admins a where a.user_id=actor for share;
+  if not found then raise exception 'manual_invoice_operator_forbidden' using errcode='42501'; end if;
+  begin
+    sid:=(nullif(current_setting('request.jwt.claims',true),'')::jsonb->>'session_id')::uuid;
+  exception when invalid_text_representation then
+    raise exception 'manual_invoice_session_revoked' using errcode='42501';
+  end;
+  if sid is null or to_regclass('auth.sessions') is null then
+    raise exception 'manual_invoice_session_revoked' using errcode='42501';
+  end if;
+  perform 1 from auth.sessions s where s.id=sid and s.user_id=actor
+    and (nullif(to_jsonb(s)->>'not_after','') is null
+      or (to_jsonb(s)->>'not_after')::timestamptz>now()) for share;
+  if not found then raise exception 'manual_invoice_session_revoked' using errcode='42501'; end if;
+  -- Recheck after every authorization row is locked. This also centralizes
+  -- identity/session constraints added to the shared predicate in the future.
+  if not private.tc_actor_verified(actor,true) then
+    raise exception 'manual_invoice_operator_forbidden' using errcode='42501';
+  end if;
+  return actor;
+end;$operator_session$;

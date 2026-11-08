@@ -160,8 +160,11 @@ export default defineConfig({
     environment: "node",
     projects: [
       {
+        extends: false,
         test: {
           name: "core",
+          include: ["src/**/*.test.ts", "tests/*.test.ts"],
+          environment: "node",
           exclude: [
             ...configDefaults.exclude,
             "tests/database.test.ts",
@@ -170,8 +173,11 @@ export default defineConfig({
         },
       },
       {
+        extends: false,
         test: {
           name: "retained-auth",
+          environment: "node",
+          exclude: [...configDefaults.exclude],
           include: [
             "tests/database.test.ts",
             "tests/company-security.test.ts",
