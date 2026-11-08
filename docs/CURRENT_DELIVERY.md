@@ -1,5 +1,19 @@
 # TruckControl AI — entrega vigente, 8 de noviembre de 2026
 
+## Estado nativo verificado · 8 de noviembre de 2026
+
+Esta actualización prevalece sobre el histórico inferior. PR42 y PR60 están integrados; main4d6b09ee806ca92a90da620fb9d47123b6398bc5 conserva el candidato0.5.21-rc.1. **La web pública sigue v32/0.5.20-rc.1**, con v31 y demo6 recuperables; no confundir main con publicación.
+
+**Supabase tiene62 migraciones.** La local20261108013000 corresponde a la remota20261108101437_manual_subscription_invoice_intake, Gitblob7504aca678710771ce550430cab5ab2b5f76068a y SHA2567323ded662cf8ec4560662a86c9224d21eb3d45ad4689caa919cf2638672da7b. Está APLICADA, su fuente coincide byte a byte y no debe editarse ni repetirse. La61 de proveedores/viajes20261108081848 permanece intacta. El contrato fiscal exacto pasó en Supabase y dejó cero usuarios, sesiones, operadores, pedidos, tareas, eventos, acciones, suscripciones y facturas sintéticos tras rollback; no hubo llamadas a proveedores ni correo. Se verifican permisos frescos, snapshot validado por operador, CAS/auditoría inmutable y mensualidades independientes. Es CAS de escritor obsoleto, sin prueba de carga concurrente nativa.
+
+Head033b94f pasa ambos CI42469487926/42469491382: **1.292 controles** por ejecución (941unitarias/SQL en94archivos,45Python,72demo,50empresa,144SaaS,14candidata,20producción,6públicas), originales64/11hashes. Asesor sin hallazgos nuevos; permanecen dos INFO administrativos deny-all y el WARN previo de contraseñas filtradas que requiere plan de pago.
+
+**Cobros y guard fiscal continúan apagados.** Los ocho perfiles IA de v32 conservan su aceptación; no repetir sus llamadas. La decisión GDTaller/TicketBAI es manual. El panel fiscal y conciliador están en código; PDF privado, bridge transaccional y avisos se preparan en PR66/67 y ramas independientes, con flags cerrados y sin declarar conexiones activas. Falta aceptación real Stripe/fiscal, Google público/Gmail empresarial, restore gestionado, hardware físico y revisión jurídica.
+
+El ejecutor local sigue fallando; se trabaja por GitHub/CI/MCP. CLI oficial3.0.0 verificado por SRI ejecutó migration new en Actions42469793645 y generó la plantilla local20261108100352_manual_subscription_payment_and_documents.sql. **No es una63 aplicada**; integrar propuestas y probar antes de cualquier DDL. No crear proyectos duplicados, no tocar FIXPilot ni trasladar secretos a GitHub.
+
+Presupuesto agregado200EUR, sin nuevas compras o llamadasIA; gasto histórico y saldo real no conciliados. LímiteIA10USD/mes y cuota100/empresa preservados. Existe una automatización horaria actualizada; no duplicarla ni afirmar ejecución continua. Recibo: docs/verification/manual-fiscal-native-20261108.json; inventario62: docs/deployment/remote-migrations-20261108-manual-fiscal.json. Evidencia durable en issue3 comentario6720303851 e issue41 comentario6720304629.
+
 **Checkpoint08/11; prevalece sobre las notas históricas inferiores:** frontend público v32/0.5.20-rc.1 conservado, fuente30b39be; PR42 head1866f8d preparado, todavía sin promoción web. Supabase61:local20261107145959 → remota20261108081848 aplicada una vez,contrato nativo con205 proveedores/dos empresas y rollback PASS; no repetir ni editar. Proveedores,margen por viaje y copia v4 pasan CI447/448:1.194 controles por ejecución,64originales/11hashes. Android8/9 SUCCESS:5JVM,lint,APK debug/AAB unsigned y manifiesto compilado; no firma comercial,Play ni hardware físico. Billing/subscriptions nativos v11 con fuentes exactas y GET405:guard fiscal cerrado y pagos apagados. DecisiónGDTaller/TicketBAI manual vigente; PR60 contiene ingesta candidata separada,no aplicada ni aceptación fiscal. Entorno ERS fallido:empaquetado,promoción web y comprobación de archivos nuevos pendientes. [Recibo](verification/commercial-completion-20261108.json),[Android](verification/android-candidate-20261108.json),[pendientes](../TODO.md).
 
 ## Historial de entregas publicadas
