@@ -1,3 +1,9 @@
+## Ampliaciones verificadas · 11/11/2026 UTC
+
+Este bloque actualiza las ampliaciones, sin anunciar todavía otra publicación: pública39/app0.5.21-rc.1 y demo6 conservadas. PR87 integrado2c0d9b6, PR88 integradod439d22 (incluye interfaz83 y contratos82). Supabase65, nuevas64/65 aplicadas una vez y hashes iguales.20/20 controles nativos de segundo conductor/ledger con rollback íntegro;117PASS de PostgreSQL17 aislado con concurrencia y restauración lógica. Receptores Stripe incidentes1/fiscal2 activos técnicamente pero negocioOFF;19 fuentes ejecutables iguales y cuatro controles HTTP correctos.
+
+Candidata0.5.22-rc.1 en release/commercial-hardening-20261111. Conservar los64 casos/11hashes, no repetir #37 ni tocar FIXPilot. Sigue pendiente publicar/verificar interfaz, Stripe sandbox/backend real y aceptación fiscal/legal/recuperación administrada/Android comercial. Gmail empresarial sigue invalid_client.0 nuevas compras o compromisos; saldo200EUR histórico sin conciliar. [Recibo nativo](verification/new-additions-native-20261111.json).
+
 ## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
 
 Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.

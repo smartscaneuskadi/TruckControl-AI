@@ -1,3 +1,7 @@
+## Estado de despliegue · 11/11/2026 UTC
+
+Producción39/app0.5.21-rc.1 conservada. Supabase kkkemaycedexymrpaqtp tiene65 migraciones; mapeos64/65 y hashes en docs/deployment/recovered-migrations.json. No repetirlas.20/20 controles nuevos nativos con rollback. Receptor truckcontrol-stripe-incidents1 y fiscal2 desplegados y verificados, ambos negocioOFF. Nueva interfaz0.5.22-rc.1 requiere checkout desde la fuente39, manifiesto del sitio de PRODUCCIÓN, CI, paquete y comprobación HTTPS. Main conserva manifiesto DEMO: no publicarlo directamente. Nunca bajar esquema para revertir interfaz: conservar columnas/ledger aditivos y recuperar39; no borrar historial fiscal. Restauración lógica PostgreSQL comprobada, restauración administrada completa no.
+
 ## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
 
 Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.

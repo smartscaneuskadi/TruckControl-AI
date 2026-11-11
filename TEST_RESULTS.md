@@ -1,3 +1,7 @@
+## Evidencia nueva · 11/11/2026 UTC
+
+Head financiero2d9b1d6: CI43111232569/43111226706 SUCCESS,1400 unitarias/SQL,220/220 SaaS Android/Windows emulados,64 originales/11hashes conservados. Head conductor2c30c49:1285 unitarias/SQL y12/12 navegaciones. PostgreSQL17 job130827476749:117PASS con concurrencia y restauración lógica. Supabase nativo65:20/20 nuevas comprobaciones, fixtures anulados, auditoría/RLS/ACL/sesión revocada correctos. Edge incidentes1/fiscal2:19 fuentes ejecutables coinciden,GET405/POST503 apagado en ambos. El contrato de aceptación añadido pasa aislado; CI final de esa adición y Android nuevo PENDIENTES. No sumar reejecuciones ni confundir contratos offline de Stripe con webhooks reales. [Recibo](docs/verification/new-additions-native-20261111.json).
+
 ## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
 
 Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.

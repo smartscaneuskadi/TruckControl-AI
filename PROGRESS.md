@@ -1,3 +1,7 @@
+## Avance verificado · 11/11/2026 UTC
+
+PR87 (segundo conductor) y PR88 (incidencias de pago, interfaz83 y contratos82) integrados. Supabase exclusivo TruckControl tiene65 migraciones: nuevas64/65 aplicadas una vez con hashes nativos idénticos.20/20 controles nuevos nativos con rollback integral;117 comprobaciones PostgreSQL17 aisladas y restauración lógica. Producción39 y demo6 conservadas, nueva interfaz todavía NO publicada. Receptores Stripe desplegados con negocio apagado. [Recibo](docs/verification/new-additions-native-20261111.json).
+
 ## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
 
 Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
