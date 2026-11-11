@@ -37,6 +37,9 @@ export function TruckDetail({
   const driver = snapshot.drivers.find(
     (driver) => driver.id === truck.driverId,
   );
+  const coDriver = snapshot.drivers.find(
+    (driver) => driver.id === truck.coDriverId,
+  );
   return (
     <Modal
       title={`Ficha de ${truck.plate}`}
@@ -77,7 +80,14 @@ export function TruckDetail({
         <div>
           <UserRound size={18} />
           <span>
-            Conductor<strong>{driver?.name ?? "Sin asignar"}</strong>
+            Conductor principal<strong>{driver?.name ?? "Sin asignar"}</strong>
+          </span>
+        </div>
+        <div>
+          <UserRound size={18} />
+          <span>
+            Segundo conductor
+            <strong>{coDriver?.name ?? "Sin segundo conductor"}</strong>
           </span>
         </div>
         <div>

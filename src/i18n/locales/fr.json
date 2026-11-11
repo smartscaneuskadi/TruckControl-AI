@@ -2678,5 +2678,17 @@
   "No se ha podido verificar la configuración de Google. No se han guardado cambios.": "La configuration Google n’a pas pu être vérifiée. Aucune modification n’a été enregistrée.",
   "La configuración se ha guardado, pero su comprobación ha fallado. {0}": "La configuration a été enregistrée, mais sa vérification a échoué. {0}",
   "No se ha guardado la configuración. {0}": "La configuration n’a pas été enregistrée. {0}",
-  "No se ha podido comprobar Google.": "Google n’a pas pu être vérifié."
+  "No se ha podido comprobar Google.": "Google n’a pas pu être vérifié.",
+  "Segundo conductor (opcional)": "Second conducteur (facultatif)",
+  "Sin segundo conductor": "Sans second conducteur",
+  "Debe ser distinto del conductor principal. Deja esta opción vacía para trabajar con uno.": "Il doit être différent du conducteur principal. Laissez ce champ vide pour un seul conducteur.",
+  "Conductor principal": "Conducteur principal",
+  "Segundo conductor": "Second conducteur",
+  "Principal": "Principal",
+  "Sin principal asignado": "Aucun conducteur principal attribué",
+  "Cada vehículo, sus conductores y sus resultados. Todo conectado.": "Chaque véhicule, ses conducteurs et ses résultats. Tout est connecté.",
+  "El conductor principal y el segundo conductor deben ser distintos.": "Le conducteur principal et le second conducteur doivent être différents.",
+  "El segundo conductor requiere una copia de demo de versión 3.": "Le second conducteur nécessite une sauvegarde de démonstration version 3.",
+  "El segundo conductor requiere una copia de empresa de versión 5.": "Le second conducteur nécessite une sauvegarde de l’entreprise version 5.",
+  "El conductor asignado no existe en esta empresa.": "Le conducteur attribué n’existe pas dans cette entreprise."
 }

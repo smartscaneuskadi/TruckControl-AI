@@ -2678,5 +2678,17 @@
   "No se ha podido verificar la configuración de Google. No se han guardado cambios.": "Configurația Google nu a putut fi verificată. Nu au fost salvate modificări.",
   "La configuración se ha guardado, pero su comprobación ha fallado. {0}": "Configurația a fost salvată, dar verificarea ei a eșuat. {0}",
   "No se ha guardado la configuración. {0}": "Configurația nu a fost salvată. {0}",
-  "No se ha podido comprobar Google.": "Google nu a putut fi verificat."
+  "No se ha podido comprobar Google.": "Google nu a putut fi verificat.",
+  "Segundo conductor (opcional)": "Al doilea șofer (opțional)",
+  "Sin segundo conductor": "Fără al doilea șofer",
+  "Debe ser distinto del conductor principal. Deja esta opción vacía para trabajar con uno.": "Trebuie să fie diferit de șoferul principal. Lasă această opțiune necompletată pentru un singur șofer.",
+  "Conductor principal": "Șofer principal",
+  "Segundo conductor": "Al doilea șofer",
+  "Principal": "Principal",
+  "Sin principal asignado": "Fără șofer principal atribuit",
+  "Cada vehículo, sus conductores y sus resultados. Todo conectado.": "Fiecare vehicul, șoferii și rezultatele sale. Totul conectat.",
+  "El conductor principal y el segundo conductor deben ser distintos.": "Șoferul principal și al doilea șofer trebuie să fie diferiți.",
+  "El segundo conductor requiere una copia de demo de versión 3.": "Al doilea șofer necesită o copie demonstrativă de versiunea 3.",
+  "El segundo conductor requiere una copia de empresa de versión 5.": "Al doilea șofer necesită o copie a firmei de versiunea 5.",
+  "El conductor asignado no existe en esta empresa.": "Șoferul atribuit nu există în această firmă."
 }

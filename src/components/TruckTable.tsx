@@ -21,7 +21,7 @@ export function TruckTable({ trucks }: { trucks: Truck[] }) {
         <thead>
           <tr>
             <th scope="col">Vehículo</th>
-            <th scope="col">Conductor</th>
+            <th scope="col">Conductores</th>
             <th scope="col">Estado</th>
             <th scope="col">Ruta actual</th>
             <th scope="col" className="numeric">
@@ -36,6 +36,9 @@ export function TruckTable({ trucks }: { trucks: Truck[] }) {
           {trucks.map((truck) => {
             const driver = snapshot.drivers.find(
               (driver) => driver.id === truck.driverId,
+            );
+            const coDriver = snapshot.drivers.find(
+              (driver) => driver.id === truck.coDriverId,
             );
             const profit = metrics.get(truck.id)?.profitCents ?? 0;
             return (
@@ -62,10 +65,26 @@ export function TruckTable({ trucks }: { trucks: Truck[] }) {
                       <span className="avatar small">
                         {initials(driver.name)}
                       </span>
-                      <span>{driver.name.replace("Demo ", "")}</span>
+                      <span>
+                        {driver.name.replace("Demo ", "")}
+                        <small>Principal</small>
+                      </span>
                     </div>
                   ) : (
-                    <span className="muted">Sin asignar</span>
+                    <span className="muted">
+                      {coDriver ? "Sin principal asignado" : "Sin asignar"}
+                    </span>
+                  )}
+                  {coDriver && (
+                    <div className="person-cell">
+                      <span className="avatar small">
+                        {initials(coDriver.name)}
+                      </span>
+                      <span>
+                        {coDriver.name.replace("Demo ", "")}
+                        <small>Segundo conductor</small>
+                      </span>
+                    </div>
                   )}
                 </td>
                 <td>

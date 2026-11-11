@@ -141,7 +141,7 @@ const coverageSchema = z
 export type BackupCoverage = z.infer<typeof coverageSchema>;
 export interface CompanyBackup extends BackupRecords {
   format: "truckcontrol-company-records";
-  version: 1 | 2 | 3 | 4;
+  version: 1 | 2 | 3 | 4 | 5;
   project: typeof backupProject;
   exportedAt: string;
   coverage: BackupCoverage;
@@ -150,7 +150,13 @@ export interface CompanyBackup extends BackupRecords {
 const packageSchema = z
   .object({
     format: z.literal("truckcontrol-company-records"),
-    version: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+    version: z.union([
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+    ]),
     project: z.literal(backupProject),
     exportedAt: timestamp,
     coverage: coverageSchema,
@@ -331,6 +337,10 @@ export async function validateCompanyBackup(
         operations: p.operations as OperationRecord[],
       },
       organizationId,
+    );
+  if (p.version < 5 && records.fleet.trucks.some((truck) => truck.coDriverId))
+    throw Error(
+      "El segundo conductor requiere una copia de empresa de versión 5.",
     );
   if (p.version === 1 && p.documents.some((d) => d.tracking))
     throw Error("Los metadatos documentales requieren una copia de versión 2.");
@@ -578,9 +588,10 @@ export async function collectCompanyBackup(
     {
       ...records,
       format: "truckcontrol-company-records",
-      version:
-        records.suppliers !== undefined ||
-        records.tripFinanceLinks !== undefined
+      version: records.fleet.trucks.some((truck) => truck.coDriverId)
+        ? 5
+        : records.suppliers !== undefined ||
+            records.tripFinanceLinks !== undefined
           ? 4
           : records.tyres !== undefined
             ? 3

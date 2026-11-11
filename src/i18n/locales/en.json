@@ -2678,5 +2678,17 @@
   "No se ha podido verificar la configuración de Google. No se han guardado cambios.": "The Google configuration could not be verified. No changes were saved.",
   "La configuración se ha guardado, pero su comprobación ha fallado. {0}": "The configuration was saved, but its verification failed. {0}",
   "No se ha guardado la configuración. {0}": "The configuration was not saved. {0}",
-  "No se ha podido comprobar Google.": "Google could not be checked."
+  "No se ha podido comprobar Google.": "Google could not be checked.",
+  "Segundo conductor (opcional)": "Second driver (optional)",
+  "Sin segundo conductor": "No second driver",
+  "Debe ser distinto del conductor principal. Deja esta opción vacía para trabajar con uno.": "Must be different from the primary driver. Leave this empty to use one driver.",
+  "Conductor principal": "Primary driver",
+  "Segundo conductor": "Second driver",
+  "Principal": "Primary",
+  "Sin principal asignado": "No primary driver assigned",
+  "Cada vehículo, sus conductores y sus resultados. Todo conectado.": "Every vehicle, its drivers and its results. All connected.",
+  "El conductor principal y el segundo conductor deben ser distintos.": "The primary and second drivers must be different.",
+  "El segundo conductor requiere una copia de demo de versión 3.": "A second driver requires a version 3 demo backup.",
+  "El segundo conductor requiere una copia de empresa de versión 5.": "A second driver requires a version 5 company backup.",
+  "El conductor asignado no existe en esta empresa.": "The assigned driver does not exist in this company."
 }

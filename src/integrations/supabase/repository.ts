@@ -62,6 +62,7 @@ export class SupabaseFleetRepository implements FleetRepository {
         odometerKm: t.odometer_km,
         status: t.status,
         driverId: t.driver_id,
+        coDriverId: t.co_driver_id ?? null,
         inspectionDueOn: t.inspection_due_on,
         route: t.route,
       })),
@@ -120,6 +121,8 @@ export class SupabaseFleetRepository implements FleetRepository {
           odometer_km: t.odometerKm,
           status: t.status,
           driver_id: t.driverId,
+          // Legacy clients may omit this field; never clear an existing assignment implicitly.
+          ...(t.coDriverId !== undefined ? { co_driver_id: t.coDriverId } : {}),
           inspection_due_on: t.inspectionDueOn,
           route: t.route,
           row_version: 1,

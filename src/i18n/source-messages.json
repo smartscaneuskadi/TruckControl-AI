@@ -16359,5 +16359,83 @@
     "contexts": [
       "src/components/ProviderSetup.tsx:configuration"
     ]
+  },
+  {
+    "key": "Segundo conductor (opcional)",
+    "contexts": [
+      "src/components/Editors.tsx:label"
+    ]
+  },
+  {
+    "key": "Sin segundo conductor",
+    "contexts": [
+      "src/components/Editors.tsx:text",
+      "src/components/TruckDetail.tsx:text"
+    ]
+  },
+  {
+    "key": "Debe ser distinto del conductor principal. Deja esta opción vacía para trabajar con uno.",
+    "contexts": [
+      "src/components/Editors.tsx:text"
+    ]
+  },
+  {
+    "key": "Conductor principal",
+    "contexts": [
+      "src/components/TruckDetail.tsx:text",
+      "src/pages/Drivers.tsx:text",
+      "src/pages/Trucks.tsx:text"
+    ]
+  },
+  {
+    "key": "Segundo conductor",
+    "contexts": [
+      "src/components/TruckDetail.tsx:text",
+      "src/components/TruckTable.tsx:text",
+      "src/pages/Drivers.tsx:text",
+      "src/pages/Trucks.tsx:text"
+    ]
+  },
+  {
+    "key": "Principal",
+    "contexts": [
+      "src/components/TruckTable.tsx:text"
+    ]
+  },
+  {
+    "key": "Sin principal asignado",
+    "contexts": [
+      "src/components/TruckTable.tsx:text"
+    ]
+  },
+  {
+    "key": "Cada vehículo, sus conductores y sus resultados. Todo conectado.",
+    "contexts": [
+      "src/pages/Trucks.tsx:description"
+    ]
+  },
+  {
+    "key": "El conductor principal y el segundo conductor deben ser distintos.",
+    "contexts": [
+      "src/domain/models.ts:message"
+    ]
+  },
+  {
+    "key": "El segundo conductor requiere una copia de demo de versión 3.",
+    "contexts": [
+      "src/data/demo-backup.ts:message"
+    ]
+  },
+  {
+    "key": "El segundo conductor requiere una copia de empresa de versión 5.",
+    "contexts": [
+      "src/data/company-backup.ts:message"
+    ]
+  },
+  {
+    "key": "El conductor asignado no existe en esta empresa.",
+    "contexts": [
+      "src/domain/models.ts:message"
+    ]
   }
 ]
