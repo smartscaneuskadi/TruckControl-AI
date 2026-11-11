@@ -71,6 +71,7 @@ export function createDemo(reference = new Date()): FleetSnapshot {
     odometerKm: 112000 + i * 7300,
     status: i < 38 ? "on_route" : i < 46 ? "available" : "maintenance",
     driverId: i < 44 ? drivers[i].id : null,
+    coDriverId: null,
     inspectionDueOn: dateAfter(i < 3 ? 5 + i * 6 : 70 + i * 5),
     route: i < 38 ? routes[i % 6] : "",
   }));

@@ -27,8 +27,11 @@ export function Trucks() {
     const driver = snapshot.drivers.find(
       (driver) => driver.id === truck.driverId,
     );
+    const coDriver = snapshot.drivers.find(
+      (driver) => driver.id === truck.coDriverId,
+    );
     return (
-      `${truck.plate} ${truck.brand} ${truck.model} ${driver?.name ?? ""}`
+      `${truck.plate} ${truck.brand} ${truck.model} ${driver?.name ?? ""} ${coDriver?.name ?? ""}`
         .toLocaleLowerCase("es")
         .includes(search.toLocaleLowerCase("es")) &&
       (status === "all" || truck.status === status) &&
@@ -41,7 +44,7 @@ export function Trucks() {
       <PageHeading
         eyebrow="OPERACIONES"
         title="Tu flota de camiones"
-        description="Cada vehículo, su conductor y sus resultados. Todo conectado."
+        description="Cada vehículo, sus conductores y sus resultados. Todo conectado."
       >
         <Button
           variant="secondary"
@@ -56,6 +59,8 @@ export function Trucks() {
                 "Estado",
                 "Cuentakilómetros",
                 "ITV",
+                "Conductor principal",
+                "Segundo conductor",
               ],
               ...rows.map((truck) => [
                 truck.plate,
@@ -65,6 +70,11 @@ export function Trucks() {
                 truckStatuses[truck.status],
                 truck.odometerKm,
                 truck.inspectionDueOn,
+                snapshot.drivers.find((driver) => driver.id === truck.driverId)
+                  ?.name ?? "",
+                snapshot.drivers.find(
+                  (driver) => driver.id === truck.coDriverId,
+                )?.name ?? "",
               ]),
             ])
           }

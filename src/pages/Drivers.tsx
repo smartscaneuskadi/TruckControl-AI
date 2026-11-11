@@ -86,7 +86,8 @@ export function Drivers() {
         <div className="driver-grid">
           {rows.slice((actual - 1) * 12, actual * 12).map((driver, index) => {
             const truck = snapshot.trucks.find(
-              (truck) => truck.driverId === driver.id,
+              (truck) =>
+                truck.driverId === driver.id || truck.coDriverId === driver.id,
             );
             const expiring = daysUntil(driver.licenseExpiresOn) <= 30;
             return (
@@ -116,7 +117,16 @@ export function Drivers() {
                 </div>
                 <div className="driver-assignment">
                   <Truck size={17} />
-                  <span>Vehículo asignado</span>
+                  <span>
+                    Vehículo asignado
+                    {truck && (
+                      <small>
+                        {truck.coDriverId === driver.id
+                          ? "Segundo conductor"
+                          : "Conductor principal"}
+                      </small>
+                    )}
+                  </span>
                   {truck ? (
                     <button
                       className="text-button strong"

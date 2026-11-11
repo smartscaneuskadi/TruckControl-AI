@@ -14,7 +14,7 @@ import type { DemoStorage } from "./demo-workspace";
 export const maxDemoBackupBytes = 10 * 1024 * 1024;
 export interface DemoBackup {
   format: "truckcontrol-demo-records";
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   exportedAt: string;
   attachmentsIncluded: false;
   fleet: FleetSnapshot;
@@ -24,7 +24,7 @@ export interface DemoBackup {
 const envelope = z
   .object({
     format: z.literal("truckcontrol-demo-records"),
-    version: z.union([z.literal(1), z.literal(2)]),
+    version: z.union([z.literal(1), z.literal(2), z.literal(3)]),
     exportedAt: z.iso.datetime(),
     attachmentsIncluded: z.literal(false),
     fleet: z.unknown(),
@@ -53,7 +53,8 @@ export function createDemoBackup(
   z.iso.datetime().parse(exportedAt);
   const backup: DemoBackup = {
     format: "truckcontrol-demo-records",
-    version: tyres ? 2 : 1,
+    // Older readers must reject a crew-bearing archive rather than drop its second driver.
+    version: valid.trucks.some((truck) => truck.coDriverId) ? 3 : tyres ? 2 : 1,
     exportedAt,
     attachmentsIncluded: false,
     fleet: valid,
@@ -100,11 +101,19 @@ export function parseDemoBackupText(text: string): {
       };
     }
     const parsed = envelope.parse(value);
-    if ((parsed.version === 2) !== (parsed.tyres !== undefined))
+    if (
+      (parsed.version === 1 && parsed.tyres !== undefined) ||
+      (parsed.version === 2 && parsed.tyres === undefined)
+    )
       throw Error("La versión de la copia no corresponde a sus neumáticos.");
+    const fleet = validateSnapshot(parsed.fleet);
+    if (parsed.version < 3 && fleet.trucks.some((truck) => truck.coDriverId))
+      throw Error(
+        "El segundo conductor requiere una copia de demo de versión 3.",
+      );
     return {
       backup: createDemoBackup(
-        validateSnapshot(parsed.fleet),
+        fleet,
         parsed.operations as OperationRecord[],
         parsed.exportedAt,
         parsed.tyres as DemoTyreArchive | undefined,

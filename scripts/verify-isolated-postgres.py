@@ -414,6 +414,67 @@ def constraint_boundaries(database: str):
         rejects(label, domain(receiving), "tc_provider_settings_receiving_domain_check")
 
 
+def truck_crew_acceptance():
+    """Exercise the candidate with independent PostgreSQL sessions, never providers."""
+    if not (ROOT / "supabase/migrations/20261108141748_truck_second_driver.sql").exists():
+        return
+    check("The second-driver migration exposes its column",
+          sql("select count(*) from information_schema.columns where table_schema='public' and table_name='trucks' and column_name='co_driver_id'") == "1")
+    driver = lambda n: "fc880000-0000-4000-8000-" + str(n).zfill(12)
+    first_truck = "fc330000-0000-4000-8000-000000000001"
+    next_truck = "fc990000-0000-4000-8000-000000000001"
+    org = sql("select id from public.organizations where owner_id=" + quote(uid(1)))
+    foreign_org = sql("select id from public.organizations where owner_id=" + quote(uid(2)))
+    for n in (1, 2, 3, 4):
+        sql("insert into public.drivers(id,organization_id,name,license,license_expires_on) values(" +
+            quote(driver(n)) + "," + quote(foreign_org if n == 4 else org) +
+            ",'Synthetic crew " + str(n) + "','CE','2030-12-31')")
+    sql("insert into public.trucks(id,organization_id,plate,brand,model,year,inspection_due_on) values(" +
+        quote(next_truck) + "," + quote(org) + ",'PG CREW B','MAN','Synthetic',2026,'2030-12-31')")
+    def update(truck: str, fields: str) -> str:
+        return "update public.trucks set " + fields + " where id=" + quote(truck)
+    def crew(database: str = SOURCE):
+        return value("select jsonb_build_object('primary',driver_id,'second',co_driver_id) from public.trucks where id=" +
+                     quote(first_truck), database)
+    as_actor(1, update(first_truck, "driver_id=" + quote(driver(1)) + ",co_driver_id=" + quote(driver(2))) +
+             ";select jsonb_build_object('assigned',true)")
+    check("Second driver preserves the principal assignment", crew() == {"primary": driver(1), "second": driver(2)})
+    require_error("Same person cannot occupy both seats",
+                  "begin;" + claims(1) + update(first_truck, "co_driver_id=" + quote(driver(1))) + ";commit;", "23514")
+    require_error("A second driver cannot belong to another company",
+                  "begin;" + claims(1) + update(first_truck, "co_driver_id=" + quote(driver(4))) + ";commit;", "23503")
+    denied = as_actor(2, "with changed as (" + update(first_truck, "co_driver_id=null") +
+                      " returning id) select jsonb_build_object('changed',count(*)) from changed")
+    check("Foreign company cannot clear the second seat", denied == {"changed": 0})
+    missing = as_actor(1, "select jsonb_build_object('visible',count(*)) from public.trucks where co_driver_id=" +
+                       quote(driver(2)), session=None)
+    check("Missing verified session cannot read the crew", missing == {"visible": 0})
+    as_actor(1, update(first_truck, "route='Synthetic legacy edit'") + ";select jsonb_build_object('edited',true)")
+    check("A legacy update omitting the second seat preserves it", crew()["second"] == driver(2))
+    as_actor(1, update(first_truck, "co_driver_id=null") + ";select jsonb_build_object('cleared',true)")
+    concurrent(claims(1) + update(first_truck, "co_driver_id=" + quote(driver(2))),
+               claims(1) + update(next_truck, "driver_id=" + quote(driver(2))),
+               "crew-second-versus-primary", second_error="23505")
+    check("Cross-seat race commits exactly one allocation", crew()["second"] == driver(2) and
+          sql("select count(*) from public.trucks where driver_id=" + quote(driver(2))) == "0")
+    as_actor(1, update(first_truck, "co_driver_id=null") + ";select jsonb_build_object('cleared',true)")
+    concurrent(claims(1) + update(next_truck, "driver_id=" + quote(driver(2))),
+               claims(1) + update(first_truck, "co_driver_id=" + quote(driver(2))),
+               "crew-primary-versus-second", second_error="23505")
+    as_actor(1, update(next_truck, "driver_id=null") + ";select jsonb_build_object('cleared',true)")
+    concurrent(claims(1) + update(first_truck, "co_driver_id=" + quote(driver(2))),
+               claims(1) + "update public.drivers set status='leave' where id=" + quote(driver(2)),
+               "crew-assignment-versus-leave", second_error="23514")
+    concurrent(claims(1) + "update public.drivers set status='leave' where id=" + quote(driver(3)),
+               claims(1) + update(next_truck, "co_driver_id=" + quote(driver(3))),
+               "crew-leave-versus-assignment", second_error="23514")
+    check("Leave race preserves the assigned active driver", crew()["second"] == driver(2) and
+          sql("select status from public.drivers where id=" + quote(driver(2))) == "active")
+    REPORT["truck_crew"] = {"truck": first_truck, "expected": crew(), "independent_connection_races": 4}
+    as_actor(1, "delete from public.trucks where id=" + quote(next_truck) +
+             ";select jsonb_build_object('removed_test_truck',true)")
+
+
 def main():
     if os.environ.get("GITHUB_ACTIONS") != "true" or not re.fullmatch(r"[0-9a-f]{12,64}", CONTAINER):
         raise AssertionError("This harness only accepts an explicit GitHub Actions service container")
@@ -454,6 +515,12 @@ def main():
           catalog_fingerprint(SOURCE) == baseline)
     sql("begin;" + candidate + ";commit;")
     for path in paths[schema63_index + 1:]:
+        later_baseline = catalog_fingerprint(SOURCE)
+        columns_before = sql("select coalesce(jsonb_agg(to_jsonb(c) order by ordinal_position),'[]') from information_schema.columns c where table_schema='public' and table_name='trucks'")
+        sql("begin;" + path.read_text() + ";rollback;")
+        check(path.name + ": additive DDL rollback preserves catalog and truck columns",
+              catalog_fingerprint(SOURCE) == later_baseline and
+              sql("select coalesce(jsonb_agg(to_jsonb(c) order by ordinal_position),'[]') from information_schema.columns c where table_schema='public' and table_name='trucks'") == columns_before)
         sql("begin;" + path.read_text() + ";commit;")
     check("All repository migrations applied transactionally to the isolated database",
           value("select jsonb_build_object('bridge',to_regprocedure('public.tc_manual_subscription_apply_payment(text,text,jsonb)') is not null,'sessions',to_regprocedure('private.tc_actor_verified(uuid,boolean)') is not null)") ==
@@ -471,6 +538,7 @@ def main():
           visible_counts(1, session=sid(2)) == {"trucks": 0, "organizations": 0})
     check("Missing SID grants no company data",
           visible_counts(1, session=None) == {"trucks": 0, "organizations": 0})
+    truck_crew_acceptance()
 
     # Enforce the fiscal bucket even in the presence of an accidentally broad
     # permissive fleet policy; the real candidate restrictive policy must win.
@@ -614,6 +682,10 @@ def main():
         print("RESTORE_DIFFERENCES " + json.dumps(REPORT["restore_differences"]), flush=True)
     check("Actual pg_dump/pg_restore preserves every synthetic row, function, RLS policy and ACL",
           before_dump == after_restore, tables=len(before_dump["rows"]))
+    if "truck_crew" in REPORT:
+        restored_crew = value("select jsonb_build_object('primary',driver_id,'second',co_driver_id) from public.trucks where id=" +
+                              quote(REPORT["truck_crew"]["truck"]), RESTORED)
+        check("Logical restore preserves the two-seat crew exactly", restored_crew == REPORT["truck_crew"]["expected"])
     REPORT["fingerprint_sha256"] = hashlib.sha256(json.dumps(before_dump, sort_keys=True).encode()).hexdigest()
     check("Restored fresh session still has its isolated company access",
           visible_counts(2, RESTORED) == {"trucks": 1, "organizations": 1})
