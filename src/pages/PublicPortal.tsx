@@ -1,3 +1,4 @@
+import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
 import { useEffect, useState } from "react";
 import {
   ArrowRight,
@@ -169,6 +170,7 @@ export function PublicPortal({
           </span>
         </a>
         <nav aria-label="Acceso a TruckControl">
+          <LanguageSwitcher />
           <button
             className="theme-launcher"
             aria-label="Cambiar apariencia"

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { LockKeyhole, RefreshCw } from "lucide-react";
 import { useCompany } from "../app/CompanyAccess";
@@ -6,6 +6,7 @@ import { useFleet, errorMessage } from "../app/FleetProvider";
 import { useOperations } from "../app/OperationsProvider";
 import { useSubscription } from "../app/SubscriptionContext";
 import { useOffline } from "../app/OfflineContext";
+import { sessionExitEvent } from "../app/session-events";
 import { Button, Field } from "./ui";
 import {
   VaultSession,
@@ -35,6 +36,7 @@ export function OfflineCacheSync() {
     }
     if (!subscription.access?.active || operations.loading || operations.error)
       return;
+    const controller = new AbortController();
     void offline.session
       .update((value) =>
         value.outbox.length
@@ -44,10 +46,12 @@ export function OfflineCacheSync() {
               operations.rows,
               subscription.access!,
             ),
+        controller.signal,
       )
       .catch(() => {
         /* Keep the previous encrypted copy; never replace it with plaintext. */
       });
+    return () => controller.abort();
   }, [
     offline.session,
     offline.offline,
@@ -74,71 +78,114 @@ export function OfflineSettings() {
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
     [pending, setPending] = useState(0);
+  const key = `${company.mode}:${company.user?.id ?? ""}:${company.organization?.id ?? ""}`;
+  const currentKey = useRef(key);
+  currentKey.current = key;
+  const mounted = useRef(true), generation = useRef(0), running = useRef(false);
+  const operation = useRef<AbortController | null>(null);
+  const active = (version: number, controller: AbortController, scope: string) =>
+    mounted.current && generation.current === version && currentKey.current === scope &&
+    operation.current === controller && !controller.signal.aborted;
+  useLayoutEffect(() => {
+    mounted.current = true;
+    const stop = () => {
+      generation.current++;
+      operation.current?.abort();
+      operation.current = null;
+      running.current = false;
+      setPassphrase(""); setPending(0); setMessage(""); setError(""); setBusy(false);
+    };
+    window.addEventListener(sessionExitEvent, stop);
+    window.addEventListener("pagehide", stop);
+    return () => {
+      mounted.current = false;
+      generation.current++;
+      operation.current?.abort();
+      operation.current = null;
+      running.current = false;
+      window.removeEventListener(sessionExitEvent, stop);
+      window.removeEventListener("pagehide", stop);
+    };
+  }, []);
+  useLayoutEffect(() => {
+    generation.current++;
+    operation.current?.abort();
+    operation.current = null;
+    running.current = false;
+    setPassphrase(""); setPending(0); setMessage(""); setError(""); setBusy(false);
+  }, [key]);
   useEffect(() => {
-    if (offline.session)
-      void offline.session
-        .read(true)
-        .then((value) => setPending(value.outbox.length));
-  }, [offline.session, operations.rows]);
+    const session = offline.session, version = generation.current, scope = currentKey.current;
+    let alive = true;
+    if (!session || session.scope.split("|")[1] !== company.user?.id ||
+        session.scope.split("|")[2] !== company.organization?.id) { setPending(0); return; }
+    void session.read(true).then((value) => {
+      if (alive && mounted.current && generation.current === version && currentKey.current === scope)
+        setPending(value.outbox.length);
+    }).catch(() => {
+      if (alive && mounted.current && generation.current === version && currentKey.current === scope) setPending(0);
+    });
+    return () => { alive = false; };
+  }, [offline.session, operations.rows, key]);
   async function prepare(event: FormEvent) {
     event.preventDefault();
-    if (!client || !company.user || !company.organization) return;
-    setBusy(true);
-    setError("");
-    setMessage("");
+    if (!client || !company.user || !company.organization || running.current) return;
+    const controller = new AbortController(), version = generation.current, scopeKey = key;
+    const ownerId = company.user.id, organizationId = company.organization.id;
+    operation.current = controller; running.current = true;
+    setBusy(true); setError(""); setMessage("");
+    let next: VaultSession | null = null;
     try {
       const identity = await client.auth.getUser();
-      if (identity.error || identity.data.user?.id !== company.user.id)
+      if (!active(version, controller, scopeKey)) return;
+      if (identity.error || identity.data.user?.id !== ownerId)
         throw Error("Vuelve a iniciar sesión para verificar tu identidad.");
-      const { data, error } = await client.rpc("tc_organization_access", {
-        p_org: company.organization.id,
-      });
-      if (error)
-        throw Error("No se pueden comprobar los permisos de esta empresa.");
+      const { data, error } = await client.rpc("tc_organization_access", { p_org: organizationId });
+      if (!active(version, controller, scopeKey)) return;
+      if (error) throw Error("No se pueden comprobar los permisos de esta empresa.");
       const access = data as unknown as SubscriptionAccess;
-      const scope = vaultScope(
-        String(import.meta.env.VITE_SUPABASE_URL),
-        company.user.id,
-        company.organization.id,
-      );
-      const session = existing
-        ? await VaultSession.unlock(scope, passphrase, true)
-        : await VaultSession.create(
-            scope,
-            passphrase,
-            offlinePayload(fleet.snapshot, operations.rows, access),
-          );
-      if (!access.active) {
-        session.lock();
+      if (!access?.active || access.profile?.user_id !== ownerId)
         throw Error("La empresa no permite activar el acceso sin conexión.");
-      }
-      offline.attach(session);
+      const scope = vaultScope(String(import.meta.env.VITE_SUPABASE_URL), ownerId, organizationId);
+      next = existing
+        ? await VaultSession.unlock(scope, passphrase, true, controller.signal)
+        : await VaultSession.create(scope, passphrase,
+            offlinePayload(fleet.snapshot, operations.rows, access), controller.signal);
+      if (!active(version, controller, scopeKey)) { next.lock(); return; }
+      next.assertUnlocked();
+      offline.attach(next);
       setPassphrase("");
-      setMessage(
-        "Copia cifrada habilitada para esta cuenta y empresa. Conserva la frase; no se guarda en el dispositivo.",
-      );
+      setMessage("Copia cifrada habilitada para esta cuenta y empresa. Conserva la frase; no se guarda en el dispositivo.");
     } catch (e) {
-      setError(errorMessage(e));
+      next?.lock();
+      if (active(version, controller, scopeKey)) setError(errorMessage(e));
     } finally {
-      setBusy(false);
+      if (active(version, controller, scopeKey)) {
+        operation.current = null; running.current = false; setBusy(false);
+      }
     }
   }
   async function sync() {
-    if (!client || !offline.session) return;
-    setBusy(true);
-    setError("");
+    const session = offline.session;
+    if (!client || !session || running.current) return;
+    const controller = new AbortController(), version = generation.current, scopeKey = key;
+    operation.current = controller; running.current = true;
+    setBusy(true); setError("");
     try {
-      const result = await synchronizeVault(offline.session, client);
+      const result = await synchronizeVault(session, client, controller.signal);
+      if (!active(version, controller, scopeKey)) return;
       setPending(result.payload.outbox.length);
       await fleet.refresh();
+      if (!active(version, controller, scopeKey)) return;
       await operations.refresh();
-      setMessage(
-        `${result.sent} cambios sincronizados con los permisos actuales.`,
-      );
+      if (!active(version, controller, scopeKey)) return;
+      setMessage(`${result.sent} cambios sincronizados con los permisos actuales.`);
     } catch (e) {
-      setError(errorMessage(e));
+      if (active(version, controller, scopeKey)) setError(errorMessage(e));
     } finally {
-      setBusy(false);
+      if (active(version, controller, scopeKey)) {
+        operation.current = null; running.current = false; setBusy(false);
+      }
     }
   }
   return (
@@ -188,6 +235,7 @@ export function OfflineSettings() {
               minLength={12}
               maxLength={256}
               required
+              disabled={busy}
               autoComplete="new-password"
               value={passphrase}
               onChange={(e) => setPassphrase(e.target.value)}
@@ -197,6 +245,7 @@ export function OfflineSettings() {
             <input
               type="checkbox"
               checked={existing}
+              disabled={busy}
               onChange={(e) => setExisting(e.target.checked)}
             />{" "}
             Ya tengo una copia cifrada en este navegador

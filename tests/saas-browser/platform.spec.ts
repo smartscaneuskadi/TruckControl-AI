@@ -107,6 +107,9 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
   >();
   const controls = {
     providerDenied: false,
+    googleCredentialResult: "accepted" as "accepted" | "rejected" | "unavailable",
+    googleRuntimeCredentialResult: "accepted" as "accepted" | "rejected" | "unavailable",
+    googleCompanyReady: false,
     providerStatus: {
       google: {
         client_id: null,
@@ -1057,8 +1060,21 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
           data = { code: "23514" };
         }
       }
-    } else if (url.pathname === "/functions/v1/company-gmail")
-      data = { oauth_ready: false, ai_enabled: false };
+    } else if (url.pathname === "/functions/v1/company-gmail") {
+      if (["validate_configuration", "check_configuration"].includes(String(body?.action))) {
+        const result = body?.action === "validate_configuration" ? controls.googleCredentialResult : controls.googleRuntimeCredentialResult;
+        if (identity !== admin || controls.providerDenied) {
+          status = 403;
+          data = { error: "admin_required" };
+        } else if (result !== "accepted") {
+          status = result === "rejected" ? 422 : 503;
+          data = { error: result === "rejected" ? "google_client_rejected" : "google_validation_unavailable" };
+        } else data = { credential_validation: 1, status: "accepted", scope: "client_authentication_only", mailbox_connected: false };
+      } else if (body?.action === "start" && controls.googleCompanyReady) {
+        status = 503;
+        data = { error: "google_client_rejected" };
+      } else data = { oauth_ready: controls.googleCompanyReady, ai_enabled: false };
+    }
     else if (url.pathname === "/functions/v1/truckcontrol-subscriptions") {
       if (body?.action === "status") data = controls.recurring;
       else if (controls.recurringFailure) {
@@ -1239,7 +1255,7 @@ async function openPersonalMail(page: Page) {
   await login(page, "customer@example.com");
   await expect(page).toHaveURL(/#\/dashboard/);
   await page.evaluate(() => {
-    location.hash = "/mailbox";
+    location.hash = "/mailbox/gmail";
   });
   await page
     .getByRole("button", { name: "Preparar conexión con Google", exact: true })
@@ -1280,6 +1296,129 @@ async function openProviders(page: Page) {
     }),
   ).toBeEnabled();
 }
+test("Gmail: comprueba credenciales antes de guardar y conserva la configuración cuando Google rechaza la candidata", async ({ page }) => {
+  const f = await fixtures(page);
+  f.controls.googleCredentialResult = "rejected";
+  await openProviders(page);
+  await page.getByLabel("ID del cliente web de TruckControl").fill("468881730124-synthetic-browser.apps.googleusercontent.com");
+  await page.getByLabel("Secreto nuevo de Google").fill("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00000");
+  await page.getByLabel("Confirmo que guardaré la configuración de TruckControl").check();
+  await page.getByRole("button", { name: "Guardar Google de forma segura", exact: true }).click();
+  await expect(page.locator(".provider-setup [role=alert]")).toContainText("Google rechaza las credenciales");
+  expect(f.calls.filter((c) => c.body?.p_action === "set_google")).toHaveLength(0);
+  expect(f.controls.providerStatus.google.configured).toBe(false);
+  expect(f.calls.filter((c) => c.body?.action === "validate_configuration")).toHaveLength(1);
+});
+
+test("Gmail: comprueba la configuración guardada y rellena el ID público sin pedir copiarlo otra vez", async ({ page }) => {
+  const f = await fixtures(page);
+  f.controls.providerStatus.google = { client_id: "468881730124-synthetic-browser.apps.googleusercontent.com", id_valid: true, secret_valid: false, configured: false, vault_available: true, connections: 0 };
+  f.controls.googleRuntimeCredentialResult = "rejected";
+  await openProviders(page);
+  await expect(page.getByLabel("ID del cliente web de TruckControl")).toHaveValue(f.controls.providerStatus.google.client_id!);
+  await expect(page.getByRole("button", { name: "Comprobar credenciales con Google", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Comprobar credenciales con Google", exact: true }).click();
+  await expect(page.locator(".provider-setup [role=alert]")).toContainText("Google rechaza las credenciales");
+  expect(f.calls.some((c) => c.body?.p_action === "set_google")).toBe(false);
+  await expect(page.getByLabel("Secreto nuevo de Google")).toHaveValue("");
+});
+
+test("Gmail: no declara éxito si la configuración se guarda pero el runtime sigue rechazado", async ({ page }) => {
+  const f = await fixtures(page);
+  f.controls.googleRuntimeCredentialResult = "rejected";
+  await openProviders(page);
+  await page.getByLabel("ID del cliente web de TruckControl").fill("468881730124-synthetic-browser.apps.googleusercontent.com");
+  await page.getByLabel("Secreto nuevo de Google").fill("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00000");
+  await page.getByLabel("Confirmo que guardaré la configuración de TruckControl").check();
+  await page.getByRole("button", { name: "Guardar Google de forma segura", exact: true }).click();
+  await expect(page.locator(".provider-setup [role=alert]")).toContainText("se ha guardado, pero su comprobación ha fallado");
+  await expect(page.getByLabel("Secreto nuevo de Google")).toHaveValue("");
+  expect(f.calls.filter((c) => c.body?.p_action === "set_google")).toHaveLength(1);
+  await expect(page.getByRole("status").filter({ hasText: "Credenciales guardadas" })).toHaveCount(0);
+});
+
+test("cuenta visible: cierra sesión desde la barra, impide volver con Atrás y permite entrar como administrador", async ({ page }, info) => {
+  const f = await fixtures(page);
+  await login(page, "customer@example.com");
+  await expect(page).toHaveURL(/#\/dashboard/);
+  const account = page.getByRole("button", { name: "Cuenta y acceso", exact: true });
+  await expect(account).toBeInViewport();
+  await account.click();
+  const dialog = page.getByRole("dialog", { name: "Cuenta y acceso", exact: true });
+  await expect(dialog).toContainText("customer@example.com");
+  await dialog.getByRole("button", { name: "Cerrar sesión", exact: true }).evaluate((element) => { (element as HTMLButtonElement).click(); (element as HTMLButtonElement).click(); });
+  await expect(page.getByRole("heading", { name: "Bienvenido a TruckControl", exact: true })).toBeVisible();
+  expect(f.calls.filter((c) => c.path.includes("/auth/v1/logout"))).toHaveLength(1);
+  await page.goBack();
+  await expect(page.locator(".sidebar, .data-table")).toHaveCount(0);
+  await openProviders(page);
+  await expect(page.getByRole("heading", { name: "Servicios y conexiones", exact: true })).toBeVisible();
+  await page.screenshot({ path: info.outputPath("account-to-provider-administration.png") });
+});
+
+test("cuenta visible: el administrador vuelve desde la demo a Servicios sin cerrar ni sustituir su sesión", async ({ page }) => {
+  const f = await fixtures(page);
+  await openProviders(page);
+  await page.getByRole("button", { name: "Ver demo de flota", exact: true }).click();
+  await expect(page.locator(".sidebar")).toHaveCount(1);
+  await page.getByRole("button", { name: "Cuenta y acceso", exact: true }).click();
+  const account = page.getByRole("dialog", { name: "Cuenta y acceso", exact: true });
+  await expect(account).toContainText("pedidos@smartscaneuskadi.com");
+  await account.getByRole("button", { name: "Acceso de empresas", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Tu centro de administración", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Servicios", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Servicios y conexiones", exact: true })).toBeVisible();
+  expect(f.calls.filter((c) => c.path.includes("/auth/v1/logout"))).toHaveLength(0);
+});
+
+test("cuenta visible: el acceso permanece dentro de 320 a 1440 píxeles y conserva los cuatro idiomas", async ({ page }, info) => {
+  await fixtures(page);
+  await login(page, "customer@example.com");
+  await expect(page).toHaveURL(/#\/dashboard/);
+  for (const width of [320, 393, 600, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const account = page.getByRole("button", { name: "Cuenta y acceso", exact: true });
+    await expect(account).toBeInViewport();
+    expect(await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1)).toBe(true);
+  }
+  for (const [language, title] of [["en", "Account and sign-in"], ["ro", "Cont și acces"], ["fr", "Compte et accès"], ["es", "Cuenta y acceso"]]) {
+    await page.locator(".language-switcher select").selectOption(language);
+    await page.getByRole("button", { name: title, exact: true }).click();
+    const account = page.getByRole("dialog", { name: title, exact: true });
+    await expect(account).toBeVisible();
+    await expect(account).toContainText("customer@example.com");
+    await page.keyboard.press("Escape");
+    await expect(account).toHaveCount(0);
+  }
+  await page.setViewportSize({ width: 393, height: 852 });
+  await page.getByRole("button", { name: "Cuenta y acceso", exact: true }).click();
+  expect((await new AxeBuilder({ page }).include(".account-controls").analyze()).violations).toEqual([]);
+  await page.screenshot({ path: info.outputPath("account-mobile.png") });
+});
+
+test("Gmail: salir del panel durante la comprobación no guarda credenciales con una respuesta tardía", async ({ page }) => {
+  const f = await fixtures(page);
+  let release!: () => void;
+  let started!: () => void;
+  const blocked = new Promise<void>((resolve) => { release = resolve; });
+  const observed = new Promise<void>((resolve) => { started = resolve; });
+  await page.route("http://127.0.0.1:9999/functions/v1/company-gmail", async (route) => {
+    if (route.request().method() !== "POST" || route.request().postDataJSON()?.action !== "validate_configuration") { await route.fallback(); return; }
+    started(); await blocked;
+    await route.fulfill({ status: 200, contentType: "application/json", headers: { "Access-Control-Allow-Origin": "http://127.0.0.1:4194" }, body: JSON.stringify({ credential_validation: 1, status: "accepted", scope: "client_authentication_only", mailbox_connected: false }) });
+  });
+  await openProviders(page);
+  await page.getByLabel("ID del cliente web de TruckControl").fill("468881730124-synthetic-browser.apps.googleusercontent.com");
+  await page.getByLabel("Secreto nuevo de Google").fill("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00000");
+  await page.getByLabel("Confirmo que guardaré la configuración de TruckControl").check();
+  await page.getByRole("button", { name: "Guardar Google de forma segura", exact: true }).click();
+  await observed;
+  await page.getByRole("button", { name: "Clientes", exact: true }).click();
+  const response = page.waitForResponse((r) => r.url().includes("/functions/v1/company-gmail") && r.request().method() === "POST");
+  release(); await (await response).finished();
+  await page.evaluate(() => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+  expect(f.calls.some((c) => c.body?.p_action === "set_google")).toBe(false);
+});
 test("la administración global explica el enlace de Gmail de empresa y limpia el retorno", async ({
   page,
 }, info) => {
@@ -1546,7 +1685,9 @@ test("el propietario importa Google en el panel sin guardar ni devolver el secre
         c.body?.p_action === "set_google",
     ),
   ).toHaveLength(1);
-  expect(f.calls.filter((c) => c.path.includes("functions/v1"))).toEqual([]);
+  expect(f.calls.filter((c) => c.path.includes("functions/v1")).map((c) => c.body?.action)).toEqual([
+    "validate_configuration", "check_configuration",
+  ]);
 });
 test("el panel rechaza archivos ajenos y soporta ambos temas sin desbordarse", async ({
   page,
@@ -1786,6 +1927,7 @@ test("correo personal: un consentimiento tardío después de cerrar sesión no a
     location.hash = "/settings";
   });
   await page
+    .locator("main")
     .getByRole("button", { name: "Cerrar sesión", exact: true })
     .click();
   await logoutStarted;
@@ -1880,7 +2022,7 @@ test("correo personal demo: enviar responder y papelera son ficticios y no alter
     .getByRole("button", { name: "Explorar la demo", exact: true })
     .click();
   await page.evaluate(() => {
-    location.hash = "/mailbox";
+    location.hash = "/mailbox/gmail";
   });
   await page
     .getByRole("button", { name: "Abrir buzón ficticio", exact: true })
@@ -2250,6 +2392,83 @@ test.describe("copia cifrada y sincronización", () => {
     ).toHaveLength(2);
     await page.getByRole("button", { name: "Bloquear", exact: true }).click();
     await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+  });
+  test("cerrar sesión bloquea la clave offline y conserva únicamente la copia cifrada", async ({ page, context }) => {
+    await prepare(page);
+    const encryptedBefore = await page.evaluate(() => new Promise<string>((resolve, reject) => {
+      const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
+      r.onsuccess = () => {
+        const tx = r.result.transaction("vaults", "readonly");
+        const q = tx.objectStore("vaults").getAll();
+        tx.oncomplete = () => { resolve(JSON.stringify(q.result)); r.result.close(); };
+      };
+      r.onerror = () => reject(r.error);
+    }));
+    const open = page.getByRole("button", { name: "Abrir menú", exact: true });
+    if (await open.isVisible()) await open.click();
+    await page.getByRole("complementary", { name: "Navegación principal" })
+      .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+    await context.setOffline(true);
+    await page.evaluate(() => { location.hash = "/trucks"; });
+    await expect(page.locator("body")).not.toContainText("8888 TST");
+    await page.getByRole("button", { name: "Abrir copia sin conexión", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Acceso sin conexión" });
+    await expect(dialog.getByLabel("Frase de desbloqueo", { exact: true })).toHaveValue("");
+    await expect(dialog.getByLabel("Copia guardada")).toHaveCount(1);
+    await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+    const encryptedAfter = await page.evaluate(() => new Promise<string>((resolve, reject) => {
+      const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
+      r.onsuccess = () => {
+        const tx = r.result.transaction("vaults", "readonly");
+        const q = tx.objectStore("vaults").getAll();
+        tx.oncomplete = () => { resolve(JSON.stringify(q.result)); r.result.close(); };
+      };
+      r.onerror = () => reject(r.error);
+    }));
+    expect(encryptedAfter).toBe(encryptedBefore);
+    expect(encryptedAfter).not.toContain("customer@example.com");
+    expect(encryptedAfter).not.toContain("8888 TST");
+  });
+  test("cerrar sesión desde otra pestaña bloquea una copia ya abierta sin perder su cola", async ({ page, context }) => {
+    const f = await prepare(page);
+    await context.setOffline(true);
+    await page.reload();
+    await openAndEdit(page, f.phrase);
+    await context.setOffline(false);
+    const other = await context.newPage();
+    await fixtures(other);
+    await other.goto("/");
+    await other.getByRole("button", { name: "Entrar", exact: true }).click();
+    await expect(other.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    // Restoring the same user's shared session must not lock an explicitly unlocked copy.
+    await expect(page.locator(".offline-workspace-banner")).toBeVisible();
+    const open = other.getByRole("button", { name: "Abrir menú", exact: true });
+    if (await open.isVisible()) await open.click();
+    await other.getByRole("complementary", { name: "Navegación principal" })
+      .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(other.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    // This notification is emitted by the real SDK through its browser channel.
+    await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("Cliente offline ficticio");
+    expect(await page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1"))).toBeNull();
+    expect(f.records.size).toBe(0);
+    expect(f.calls.some((call) => call.path.endsWith("/tc_save_record"))).toBe(false);
+    const encrypted = await page.evaluate(() => new Promise<string>((resolve, reject) => {
+      const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
+      r.onsuccess = () => {
+        const tx = r.result.transaction("vaults", "readonly");
+        const q = tx.objectStore("vaults").getAll();
+        tx.oncomplete = () => { resolve(JSON.stringify(q.result)); r.result.close(); };
+      };
+      r.onerror = () => reject(r.error);
+    }));
+    expect(JSON.parse(encrypted)).toHaveLength(1);
+    expect(encrypted).not.toContain("Cliente offline ficticio");
+    expect(encrypted).not.toContain(f.phrase);
+    await other.close();
   });
   test("revocar la cuenta bloquea la copia y evita publicar cambios pendientes", async ({
     page,
@@ -4755,3 +4974,428 @@ function describeCopilot() {
     });
   });
 }
+
+
+test.describe("CargoTrack y cierre de sesión del menú", () => {
+  async function openMainMenu(page: Page) {
+    const open = page.getByRole("button", { name: "Abrir menú", exact: true });
+    if (await open.isVisible()) await open.click();
+    return page.getByRole("complementary", { name: "Navegación principal" });
+  }
+
+  test("CargoTrack abre dentro de TruckControl y conserva su documento al navegar", async ({ page, context }, testInfo) => {
+    const f = await fixtures(page);
+    f.controls.companyPlan = "limited";
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const outgoing: { url: string; referer?: string; authorization?: string; body: string | null }[] = [];
+    await context.route("https://on7.cargotrack.ro/**", async (route) => {
+      outgoing.push({ url: route.request().url(), referer: route.request().headers().referer,
+        authorization: route.request().headers().authorization, body: route.request().postData() });
+      await route.fulfill({ contentType: "text/html", body: '<!doctype html><html lang="es"><head><title>Proveedor ficticio</title></head><body><main><h1>CargoTrack ficticio</h1><label>Usuario del proveedor<input name="username"></label><script>document.body.dataset.instance=crypto.randomUUID();</script></main></body></html>' });
+    });
+    const menu = await openMainMenu(page);
+    const cargo = menu.getByRole("link", { name: "CargoTrack", exact: true });
+    await expect(cargo.locator("svg")).toHaveCount(2);
+    await cargo.click();
+    await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
+    await expect(page.locator("main iframe")).toHaveCount(0);
+    const pagesBefore = context.pages().length;
+    await page.getByRole("button", { name: "Entrar en CargoTrack", exact: true }).click();
+    const element = page.locator("iframe.cargotrack-frame");
+    await expect(element).toHaveAttribute("src", "https://on7.cargotrack.ro/signin");
+    await expect(element).toHaveAttribute("referrerpolicy", "no-referrer");
+    await expect(element).toHaveAttribute("sandbox", "allow-forms allow-scripts allow-same-origin allow-downloads allow-popups");
+    const frame = page.frameLocator("iframe.cargotrack-frame");
+    await expect(frame.getByRole("heading", { name: "CargoTrack ficticio" })).toBeVisible();
+    await frame.getByLabel("Usuario del proveedor").fill("borrador-ficticio-sin-enviar");
+    const instance = await frame.locator("body").getAttribute("data-instance");
+    expect(context.pages()).toHaveLength(pagesBefore);
+    expect(outgoing).toEqual([{ url: "https://on7.cargotrack.ro/signin", body: null }]);
+    expect(await page.evaluate(() => {
+      try { void (document.querySelector("iframe.cargotrack-frame") as HTMLIFrameElement).contentWindow!.document; return false; }
+      catch { return true; }
+    })).toBe(true);
+    for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+      await page.getByRole("button", { name: "Cambiar apariencia", exact: true }).click();
+      const dialog = page.getByRole("dialog", { name: "Apariencia de TruckControl" });
+      await dialog.getByRole("radio", { name: theme, exact: true }).check();
+      await dialog.getByRole("button", { name: "Aplicar apariencia" }).click();
+      await dialog.getByRole("button", { name: "Cerrar ventana" }).click();
+      expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      await page.locator(".cargotrack-page").screenshot({ path: testInfo.outputPath("cargotrack-" + theme.replace(" ", "-") + ".png") });
+    }
+    await page.getByRole("link", { name: "Volver al resumen", exact: true }).click();
+    await expect(page).toHaveURL(/#\/dashboard$/);
+    await expect(element).toHaveCount(1);
+    await expect(element).toBeHidden();
+    await openMainMenu(page);
+    await cargo.click();
+    await expect(element).toBeVisible();
+    await expect(frame.getByLabel("Usuario del proveedor")).toHaveValue("borrador-ficticio-sin-enviar");
+    await expect(frame.locator("body")).toHaveAttribute("data-instance", instance!);
+    expect(outgoing).toHaveLength(1);
+    expect(f.calls.some((c) => c.path === "/auth/v1/logout" || /cargotrack/i.test(c.path))).toBe(false);
+  });
+
+  test("cerrar TruckControl elimina la vista integrada y una nueva sesión no la abre automáticamente", async ({ page, context }) => {
+    await fixtures(page);
+    let providerRequests = 0;
+    await context.route("https://on7.cargotrack.ro/**", async (route) => {
+      providerRequests++;
+      await route.fulfill({ contentType: "text/html", body: '<!doctype html><html><body>Proveedor ficticio sin credenciales</body></html>' });
+    });
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await page.getByRole("button", { name: "Entrar en CargoTrack", exact: true }).click();
+    await expect(page.frameLocator("iframe.cargotrack-frame").locator("body")).toContainText("Proveedor ficticio");
+    await openMainMenu(page);
+    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator("iframe.cargotrack-frame")).toHaveCount(0);
+    await page.getByLabel("Correo electrónico", { exact: true }).fill("customer@example.com");
+    await page.getByLabel("Contraseña", { exact: true }).fill("synthetic-password-123");
+    await page.getByRole("button", { name: "Entrar", exact: true }).click();
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    await openMainMenu(page);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Entrar en CargoTrack", exact: true })).toBeVisible();
+    await expect(page.locator("iframe.cargotrack-frame")).toHaveCount(0);
+    expect(providerRequests).toBe(1);
+  });
+
+  test("cambiar de empresa desmonta CargoTrack y exige abrir su vista de nuevo", async ({ page, context }) => {
+    const f = await fixtures(page);
+    const second = "20000000-0000-4000-8000-000000000099";
+    f.controls.additionalOrganizations.push({ id: second, name: "Segunda empresa CargoTrack ficticia" });
+    let providerRequests = 0;
+    await context.route("https://on7.cargotrack.ro/**", async (route) => {
+      providerRequests++;
+      await route.fulfill({ contentType: "text/html", body: '<!doctype html><html><body>Proveedor ficticio</body></html>' });
+    });
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await page.getByRole("button", { name: "Entrar en CargoTrack", exact: true }).click();
+    await expect(page.frameLocator("iframe.cargotrack-frame").locator("body")).toContainText("Proveedor ficticio");
+    await openMainMenu(page);
+    await menu.getByRole("link", { name: "Configuración", exact: true }).click();
+    await page.getByLabel("Empresa activa", { exact: true }).selectOption(second);
+    await expect(page.locator(".workspace-label")).toContainText("Segunda empresa CargoTrack ficticia");
+    await openMainMenu(page);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Entrar en CargoTrack", exact: true })).toBeVisible();
+    await expect(page.locator("iframe.cargotrack-frame")).toHaveCount(0);
+    expect(providerRequests).toBe(1);
+  });
+
+  test("el menú muestra Cerrar sesión debajo de Configuración y revoca una sola vez", async ({ page }) => {
+    const f = await fixtures(page);
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    const settings = menu.getByRole("link", { name: "Configuración", exact: true });
+    const logout = menu.getByRole("button", { name: "Cerrar sesión", exact: true });
+    expect(await settings.evaluate((element) => element.nextElementSibling?.textContent?.trim())).toBe("Cerrar sesión");
+    let finish!: () => Promise<void>;
+    let started!: () => void;
+    const requestStarted = new Promise<void>((resolve) => { started = resolve; });
+    let logoutRequests = 0;
+    await page.route("http://127.0.0.1:9999/auth/v1/logout**", async (route) => {
+      if (route.request().method() !== "POST") { await route.fallback(); return; }
+      logoutRequests++;
+      expect(route.request().headers().authorization).toMatch(/^Bearer ey/);
+      finish = () => route.fulfill({
+        status: 200, headers: { "Access-Control-Allow-Origin": "http://127.0.0.1:4194", "Content-Type": "application/json" }, body: "{}",
+      });
+      started();
+    });
+    await logout.click();
+    await requestStarted;
+    const pending = menu.getByRole("button", { name: "Cerrando sesión…", exact: true });
+    await expect(pending).toBeDisabled();
+    await expect(pending).toHaveAttribute("aria-busy", "true");
+    await pending.evaluate((button) => { (button as HTMLButtonElement).click(); (button as HTMLButtonElement).click(); });
+    expect(logoutRequests).toBe(1);
+    await finish();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator(".sidebar, .workspace-label")).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1"))).toBeNull();
+    expect(f.records.size).toBe(0);
+    expect(f.calls.some((c) => /storage.*remove|delete_company|delete_organization/.test(c.path))).toBe(false);
+  });
+
+  test("una sesión cerrada no vuelve a mostrar datos con Atrás, recarga ni ruta privada", async ({ page }) => {
+    const f = await fixtures(page);
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    await page.evaluate(() => { location.hash = "/trucks"; });
+    await expect(page.locator("main")).toContainText("8888 TST");
+    await page.evaluate(() => { location.hash = "/cargotrack"; });
+    await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
+    const menu = await openMainMenu(page);
+    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    const callsAfterLogout = f.calls.length;
+    await page.goBack();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await page.evaluate(() => { location.hash = "/documents"; });
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await page.reload();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("8888 TST");
+    await expect(page.locator(".sidebar, .data-table, .personal-mail-reader")).toHaveCount(0);
+    const privateReads = f.calls.slice(callsAfterLogout).filter((c) => /^\/rest\/v1\/(organizations|trucks|drivers|finance_entries|company_records|company_documents)/.test(c.path));
+    expect(privateReads).toEqual([]);
+  });
+
+  test("un rechazo remoto cierra localmente, avisa y exige volver a entrar para reintentar", async ({ page }) => {
+    await fixtures(page);
+    await login(page, "customer@example.com");
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    const menu = await openMainMenu(page);
+    let deny = true;
+    let requests = 0;
+    await page.route("http://127.0.0.1:9999/auth/v1/logout**", async (route) => {
+      if (route.request().method() !== "POST") { await route.fallback(); return; }
+      requests++;
+      await route.fulfill({
+        status: deny ? 400 : 200,
+        headers: { "Access-Control-Allow-Origin": "http://127.0.0.1:4194", "Content-Type": "application/json" },
+        body: deny ? JSON.stringify({ code: "synthetic_rejection", message: "Private provider diagnostic must not be displayed" }) : "{}",
+      });
+    });
+    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    const notice = page.getByRole("alert").filter({ hasText: "Tu sesión en este dispositivo se ha cerrado" });
+    await expect(notice).toContainText("no hemos podido confirmar el cierre en el servidor");
+    await expect(page.locator("body")).not.toContainText("Private provider diagnostic");
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    await expect(page.locator(".sidebar")).toHaveCount(0);
+    expect(await page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1"))).toBeNull();
+    expect(requests).toBe(1);
+    // A second call without a token would not prove remote revocation.
+    // Reauthenticate before the real SDK is allowed to make another request.
+    await page.getByLabel("Correo electrónico", { exact: true }).fill("customer@example.com");
+    await page.getByLabel("Contraseña", { exact: true }).fill("synthetic-password-123");
+    await page.getByRole("button", { name: "Entrar", exact: true }).click();
+    await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+    await expect(notice).toHaveCount(0);
+    deny = false;
+    await openMainMenu(page);
+    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+    expect(requests).toBe(2);
+  });
+
+  test("la demo conserva CargoTrack y no muestra un cierre de sesión de empresa", async ({ page }) => {
+    await fixtures(page);
+    await page.goto("/");
+    await page.getByRole("button", { name: "Explorar la demo", exact: true }).click();
+    await expect(page.locator(".workspace-label")).toContainText("Flota de demostración");
+    const menu = await openMainMenu(page);
+    await expect(menu.getByRole("button", { name: "Cerrar sesión", exact: true })).toHaveCount(0);
+    await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
+  });
+});
+
+
+test("una página restaurada de la caché exige verificar la sesión antes de mostrar la empresa", async ({ page }) => {
+  const f = await fixtures(page);
+  await login(page, "customer@example.com");
+  await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
+  await page.evaluate(() => { location.hash = "/trucks"; });
+  await expect(page.locator("main")).toContainText("8888 TST");
+  const reads = f.calls.filter((c) => c.path === "/auth/v1/user").length;
+  // Page lifecycle events exercise the BFCache guard; these are not physical-device tests.
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pagehide", { persisted: true })));
+  await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+  await expect(page.locator(".sidebar")).toHaveCount(0);
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
+  await expect(page.locator("main")).toContainText("8888 TST");
+  expect(f.calls.filter((c) => c.path === "/auth/v1/user").length).toBeGreaterThan(reads);
+  const open = page.getByRole("button", { name: "Abrir menú", exact: true });
+  if (await open.isVisible()) await open.click();
+  await page.getByRole("complementary", { name: "Navegación principal" })
+    .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+  await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
+  await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("8888 TST");
+  await expect(page.locator(".sidebar")).toHaveCount(0);
+});
+
+test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñas", async ({
+  page,
+  context,
+}) => {
+  await fixtures(page);
+  const calls: { action: string; email: string }[] = [];
+  let reject = false;
+  await page.route("**/functions/v1/personal-mail", async (route) => {
+    const body = route.request().postDataJSON();
+    const email = body.connection.email;
+    calls.push({ action: body.action, email });
+    const headers = {
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
+    };
+    if (reject && body.action === "verify") {
+      await route.fulfill({
+        status: 403,
+        headers,
+        body: JSON.stringify({ error: "denied" }),
+      });
+      return;
+    }
+    const message = {
+      id: "fictitious-1",
+      threadId: "fictitious-1",
+      from: "sender@example.invalid",
+      to: email,
+      subject: "Mensaje IMAP ficticio",
+      date: "2026-11-08T12:00:00Z",
+      snippet: "",
+      labels: [],
+      text: "Texto IMAP ficticio privado",
+      htmlConverted: false,
+      messageId: "<fictitious@example.invalid>",
+      attachments: [],
+    };
+    const data =
+      body.action === "verify"
+        ? { email, reading: true, sending: true }
+        : body.action === "list"
+          ? { messages: [message], next: null }
+          : body.action === "read"
+            ? message
+            : body.action === "send"
+              ? { sent: true, sent_copy: true }
+              : { changed: true };
+    await route.fulfill({ status: 200, headers, body: JSON.stringify(data) });
+  });
+  await login(page, "customer@example.com");
+  await page.evaluate(() => {
+    location.hash = "/mailbox";
+  });
+  await expect(
+    page.getByRole("heading", { name: "Correo", exact: true }),
+  ).toBeVisible();
+  const menu = page.getByRole("complementary", {
+    name: "Navegación principal",
+  });
+  await expect(
+    menu.getByRole("link", { name: "Correo", exact: true }),
+  ).toHaveCount(1);
+  await expect(
+    menu.getByRole("link", { name: "Mi correo", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator("main iframe")).toHaveCount(0);
+  const pages = context.pages().length;
+  async function fill(email: string) {
+    await page.getByLabel("Correo electrónico", { exact: true }).fill(email);
+    await page
+      .getByLabel("Contraseña del buzón o de aplicación", { exact: true })
+      .fill("app-password-ficticia-no-real");
+    await page
+      .getByLabel("Autorizo a TruckControl a conectar este buzón", {
+        exact: false,
+      })
+      .check();
+    await page
+      .getByRole("button", { name: "Conectar y verificar buzón", exact: true })
+      .click();
+  }
+  await fill("first@example.invalid");
+  await expect(
+    page.getByRole("heading", { name: "first@example.invalid", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button")
+    .filter({ hasText: "Mensaje IMAP ficticio" })
+    .click();
+  await expect(
+    page.getByText("Texto IMAP ficticio privado", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Redactar", exact: true }).click();
+  const draft = page.getByRole("dialog", { name: "Redactar correo" });
+  await draft
+    .getByLabel("Para", { exact: true })
+    .fill("recipient@example.invalid");
+  await draft.getByLabel("Asunto", { exact: true }).fill("Envío ficticio IMAP");
+  await draft
+    .getByLabel("Mensaje", { exact: true })
+    .fill("Solo transporte HTTP ficticio");
+  await draft
+    .getByRole("button", { name: "Revisar envío", exact: true })
+    .click();
+  await page
+    .getByRole("dialog", { name: "Confirmar envío" })
+    .getByRole("button", { name: "Enviar ahora", exact: true })
+    .click();
+  await expect(draft).toHaveCount(0);
+  expect(calls.filter((c) => c.action === "send")).toEqual([
+    { action: "send", email: "first@example.invalid" },
+  ]);
+  await page
+    .getByRole("button", { name: "Añadir otro correo", exact: true })
+    .click();
+  reject = true;
+  await fill("second@example.invalid");
+  await expect(page.getByRole("alert")).toContainText("proveedor ha rechazado");
+  await expect(
+    page
+      .getByRole("navigation", { name: "Correos conectados" })
+      .getByRole("button", { name: "second@example.invalid", exact: true }),
+  ).toHaveCount(0);
+  reject = false;
+  await fill("second@example.invalid");
+  await expect(
+    page.getByRole("heading", { name: "second@example.invalid", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Facturas del correo", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Del correo a tus gastos", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Volver a Correo", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "second@example.invalid", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("navigation", { name: "Correos conectados" })
+    .getByRole("button", { name: "first@example.invalid", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "first@example.invalid", exact: true }),
+  ).toBeVisible();
+  expect(context.pages()).toHaveLength(pages);
+  const stored = await page.evaluate(() =>
+    JSON.stringify({
+      local: { ...localStorage },
+      session: { ...sessionStorage },
+    }),
+  );
+  expect(stored).not.toContain("app-password-ficticia-no-real");
+  expect(stored).not.toContain("Texto IMAP ficticio privado");
+  await page
+    .getByRole("button", {
+      name: "Desconectar first@example.invalid",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "first@example.invalid", exact: true }),
+  ).toHaveCount(0);
+  await page.reload();
+  await expect(
+    page.getByRole("navigation", { name: "Correos conectados" }),
+  ).toHaveCount(0);
+});

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Mail, RefreshCw, ShieldCheck, Unplug } from "lucide-react";
@@ -17,6 +18,10 @@ import { loadCompanyInvoices } from "../integrations/supabase/invoices";
 import { InvoiceRegister } from "../components/InvoiceRegister";
 import { analyzeStoredInvoice } from "../integrations/supabase/invoice-ai";
 import { GmailConnectionGuide } from "../components/GmailConnectionGuide";
+import {
+  gmailFailureCode,
+  gmailFailureMessage,
+} from "../integrations/gmail/errors";
 import { UniversalMailIntake } from "../components/UniversalMailIntake";
 import { InvoiceMailPeriod } from "../components/InvoiceMailPeriod";
 import {
@@ -53,6 +58,8 @@ function gmailCallbackMessage(code: string) {
       return "No se ha podido verificar el buzón elegido en Google. Inicia una nueva autorización desde esta empresa.";
     case "unavailable":
       return "No se ha podido preparar la conexión con Google. Comprueba el estado o contacta con la administración.";
+    case "client_configuration":
+      return gmailFailureMessage("google_client_rejected");
     default:
       return "No se ha completado la autorización de Gmail. Comprueba el estado y, si hace falta, inicia una nueva autorización desde esta empresa.";
   }
@@ -303,7 +310,7 @@ export function Invoices() {
       if (error || data?.error)
         throw new Error(
           action === "start"
-            ? "Gmail todavía no está disponible. La autorización de Google debe estar activada para esta aplicación."
+            ? gmailFailureMessage(await gmailFailureCode(data, error))
             : action === "disconnect"
               ? "No se ha podido confirmar la revocación en Google. La conexión no se ha marcado como desconectada. Vuelve a intentarlo."
               : "No se ha podido completar la operación de Gmail. Revisa la conexión e inténtalo de nuevo.",
@@ -545,6 +552,9 @@ export function Invoices() {
   }
   return (
     <>
+      <Link className="button secondary" to="/mailbox">
+        Volver a Correo
+      </Link>
       <PageHeading
         eyebrow="BANDEJA DE FACTURAS"
         title="Del correo a tus gastos"

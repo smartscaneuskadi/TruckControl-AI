@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_3b00f4822e408191b957e7b7189bddcc",
-  "published_version_number": 32,
-  "deployment_id": "appgdep_6aeef12e3624819185ab700077042c21",
-  "previous_deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
+  "published_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ecce634ca1e4819188b5ad9f888ab541",
+  "published_version_number": 39,
+  "deployment_id": "appgdep_6af1039c6574819182741d8ae52e14a5",
+  "previous_deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-07T09:37:00.578974+00:00",
+  "deployed_at": "2026-11-08T23:20:11.410197+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 42359405904,
+  "source_ci_run": 42533027609,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
-  "production_source_manifest_only_diff": true,
+  "source_ci_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+  "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 31,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0229812b6fe081918352bd7bd8d299e4",
-    "source_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
-    "deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
-    "app_version": "0.5.19-rc.1"
+    "version": 37,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_6fc4c9572014819182529cbd14eb197f",
+    "source_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
+    "deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
+    "app_version": "0.5.21-rc.1"
   },
-  "source_deployment_ci_run": 42359405904,
-  "app_version": "0.5.20-rc.1",
+  "source_deployment_ci_run": 42520789863,
+  "app_version": "0.5.21-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -203,6 +203,33 @@
       "source_commit": "2055e993fc8170ccdec1783368bffbbe80a50e9b",
       "deployment_id": "appgdep_6aee2e42428481918c4df3994c8664ee",
       "app_version": "0.5.19-rc.1"
+    },
+    {
+      "version": 32,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_3b00f4822e408191b957e7b7189bddcc",
+      "source_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
+      "deployment_id": "appgdep_6aeef12e3624819185ab700077042c21",
+      "app_version": "0.5.20-rc.1"
+    },
+    {
+      "version": 33,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_211a6e3f0b708191a852c348a6dcafd5",
+      "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+      "deployment_id": "appgdep_6af0a4fe4ec881919f08b7ac80cda8d9",
+      "app_version": "0.5.21-rc.1"
+    },
+    {
+      "published_commit": "5c954703c2d858add18501fef15efce6f1504bc9",
+      "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_4e70b8e4ef20819183cd90080ffd6106",
+      "published_version_number": 35,
+      "deployment_id": "appgdep_6af0c7f83fb881919bbb244517c0a8a6"
+    },
+    {
+      "version": 37,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_6fc4c9572014819182529cbd14eb197f",
+      "source_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
+      "deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
+      "app_version": "0.5.21-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -217,7 +244,7 @@
   "expected_auth_mail_cors": true,
   "auth_mail_function_version": 4,
   "expected_document_tracking": true,
-  "gmail_function_version": 13,
+  "gmail_function_version": 15,
   "expected_mail_service_cors": true,
   "expected_invoice_inbox": true,
   "mail_function_version": 12,
@@ -268,8 +295,55 @@
     "time_zone": "Europe/Madrid",
     "action": "sync_period"
   },
-  "ci_scope_note": "Implementation56eeef2, staging81e6674 and exact production source30b39be pass1107 checks per execution. Those six public profiles checked previous v31. Postpublication checks now require aiSpecialists=true in all six Android/Windows origin profiles. Real synthetic acceptance verifies8 model calls and native online browser verifies8 profiles in2 devices/2 themes without new model calls.",
+  "ci_scope_note": "PR98/exact-source CI:1664 per execution, including6 public profiles against prior Sites38. Postpublication receipt records Sites39 separately; no repeated AI/mailbox acceptance.",
   "final_release_verification": {
+    "code_commit": "d9e6fc8b52171a61d6747cd9e4109d3dcec3aa8d",
+    "source_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
+    "checks_before_publication": 1664,
+    "unit_sql_passed": 1249,
+    "python_passed": 45,
+    "demo_browser_passed": 82,
+    "company_browser_passed": 50,
+    "saas_browser_passed": 192,
+    "candidate_browser_passed": 20,
+    "production_build_passed": 20,
+    "public_profiles": 6,
+    "public_profile_baseline_version": 38,
+    "published_account_gmail_session_cases": 42,
+    "https_file_hashes_after_publication": 75,
+    "migrations": 63,
+    "postpublication_checks": "docs/verification/gmail-account-repair-published-20261108.json",
+    "scheduled_paid_model_calls": 0,
+    "emission_available": false,
+    "enterprise_gmail_connected": false,
+    "public_profiles_after_publication": 6
+  },
+  "source_branch": "deploy/gmail-account-production-20261108",
+  "production_source_manifest_only_diff_scope": "Runtime src/public/supabase/package and compiler configuration match reviewed d9e6fc8. Production identity, packaging workflow/helper and source-only delivery records differ; never deploy the demo manifest from main.",
+  "postpublication_runtime_tree_equal": true,
+  "postpublication_allowed_differences": [
+    "docs/**",
+    "AGENTS.md",
+    "PROGRESS.md",
+    "TODO.md",
+    "BLOCKERS.md",
+    "TEST_RESULTS.md",
+    "DEPLOYMENT.md",
+    "scripts/verify-published-cargotrack.mjs",
+    ".openai/hosting.json",
+    "scripts/verify-cargotrack-embedding.mjs"
+  ],
+  "expected_billing_issuer": {
+    "name": "ELEVADANCOR S.L.",
+    "tax_id": "B02993426",
+    "address": "Polígono Arzabalza, n.º 50, 20400 Tolosa",
+    "email": "pedidos@smartscaneuskadi.com"
+  },
+  "expected_company_fiscal_preparation": true,
+  "expected_company_copilot": true,
+  "copilot_function_version": 2,
+  "expected_ai_specialists": true,
+  "previous_final_release_verification": {
     "code_commit": "56eeef208e0cd2cfd13926cdf8ab44bc09855fcc",
     "source_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
     "checks_before_publication": 1107,
@@ -291,23 +365,104 @@
     "scheduled_paid_model_calls": 0,
     "emission_available": false
   },
-  "source_branch": "deploy/ai-specialists-production-20261107",
-  "production_source_manifest_only_diff_scope": "Implementation2395426 compared with frozen2055e99 differs only in the production hosting manifest; later publication receipts change documentation only.",
-  "postpublication_runtime_tree_equal": true,
-  "postpublication_allowed_differences": [
-    "docs/**",
-    "AGENTS.md",
-    ".github/workflows/ci.yml",
-    ".openai/hosting.json"
+  "expected_cargotrack_embedded": true,
+  "release_verification_history": [
+    {
+      "code_commit": "56eeef208e0cd2cfd13926cdf8ab44bc09855fcc",
+      "source_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
+      "checks_before_publication": 1107,
+      "unit_sql_passed": 789,
+      "python_passed": 32,
+      "demo_browser_passed": 64,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 132,
+      "candidate_browser_passed": 14,
+      "production_build_passed": 20,
+      "public_profiles": 6,
+      "native_live_profiles": 8,
+      "native_browser_online_devices": 2,
+      "native_browser_themes": 2,
+      "https_file_hashes_after_publication": 75,
+      "migrations": 60,
+      "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/38/checks",
+      "chat_writes_require_human_confirmation": true,
+      "scheduled_paid_model_calls": 0,
+      "emission_available": false
+    },
+    {
+      "code_commit": "821ba13d2f2dcf68fc0fd1990c0e7190d304f7e2",
+      "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+      "checks_before_publication": 1558,
+      "unit_sql_passed": 1179,
+      "python_passed": 45,
+      "demo_browser_passed": 72,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 172,
+      "candidate_browser_passed": 14,
+      "production_build_passed": 20,
+      "public_profiles": 6,
+      "published_cargo_logout_cases": 16,
+      "https_file_hashes_after_publication": 75,
+      "migrations": 63,
+      "postpublication_checks": "docs/verification/cargotrack-v33-published-20261108.json",
+      "scheduled_paid_model_calls": 0,
+      "emission_available": false
+    },
+    {
+      "code_commit": "b68ae352147ad458fc981079ddfe5d675b34bd9e",
+      "source_commit": "72526b86a74f2539f073e888015e477e4dbee401",
+      "checks_before_publication": 1564,
+      "unit_sql_passed": 1181,
+      "python_passed": 45,
+      "demo_browser_passed": 72,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 176,
+      "candidate_browser_passed": 14,
+      "production_build_passed": 20,
+      "public_profiles": 6,
+      "published_cargo_logout_cases": 20,
+      "native_provider_public_profiles": 2,
+      "provider_account_authentication_verified": false,
+      "https_file_hashes_after_publication": 75,
+      "migrations": 63,
+      "postpublication_checks": "docs/verification/cargotrack-embedded-published-20261108.json",
+      "scheduled_paid_model_calls": 0,
+      "emission_available": false
+    },
+    {
+      "code_commit": "1ebc1ed976c03b6d732412908a08eadb5ecb647d",
+      "source_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+      "checks_before_publication": 1622,
+      "unit_sql_passed": 1221,
+      "python_passed": 45,
+      "demo_browser_passed": 82,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 178,
+      "candidate_browser_passed": 20,
+      "production_build_passed": 20,
+      "public_profiles": 6,
+      "public_profile_baseline_version": 37,
+      "migrations": 63,
+      "postpublication_checks": "docs/verification/interface-languages-published-20261108.json",
+      "scheduled_paid_model_calls": 0,
+      "emission_available": false
+    }
   ],
-  "expected_billing_issuer": {
-    "name": "ELEVADANCOR S.L.",
-    "tax_id": "B02993426",
-    "address": "Polígono Arzabalza, n.º 50, 20400 Tolosa",
-    "email": "pedidos@smartscaneuskadi.com"
-  },
-  "expected_company_fiscal_preparation": true,
-  "expected_company_copilot": true,
-  "copilot_function_version": 2,
-  "expected_ai_specialists": true
+  "expected_languages": [
+    "es",
+    "ro",
+    "en",
+    "fr"
+  ],
+  "default_ui_language": "es",
+  "translation_catalog_keys": 2680,
+  "prior_published_versions": [
+    {
+      "version": 38,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_1158214ceae48191aac244710231626b",
+      "source_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+      "deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
+      "app_version": "0.5.21-rc.1"
+    }
+  ]
 }

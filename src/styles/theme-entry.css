@@ -9,6 +9,7 @@
 @import "./company-fiscal.css" layer(legacy);
 @import "./company-copilot.css" layer(legacy);
 @import "./themes.css" layer(appearance);
+@import "./cargotrack.css" layer(appearance);
 @layer theme-important {
   .app-main .data-table .route-cell {
     color: var(--theme-muted) !important;

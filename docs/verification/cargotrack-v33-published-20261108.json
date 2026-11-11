@@ -1,0 +1,243 @@
+{
+  "checked_at": "2026-11-08T17:02:25.668621+00:00",
+  "issue": 84,
+  "implementation_pr": 85,
+  "merge_commit": "1d3e88e1c4306c34803737e16fb2fc6fbe0f34f2",
+  "scope": "CargoTrack external access and main-menu logout; not full commercial acceptance",
+  "production": {
+    "url": "https://truckcontrolai.com",
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version": 33,
+    "app_version": "0.5.21-rc.1",
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_211a6e3f0b708191a852c348a6dcafd5",
+    "deployment_id": "appgdep_6af0a4fe4ec881919f08b7ac80cda8d9",
+    "deployment_status": "succeeded",
+    "deployment_updated_at": "2026-11-08T16:36:28.830645+00:00",
+    "deployment_failure": null,
+    "access": "public",
+    "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+    "source_branch": "deploy/cargotrack-production-20261108",
+    "source_pushed_and_read_back": true,
+    "source_dirty": false,
+    "channel": "production",
+    "company_connection_bundled": true,
+    "payments_enabled": false
+  },
+  "artifact": {
+    "workflow": 42496353868,
+    "artifact_id": 13623149793,
+    "tar_sha256": "70275a8304501c81432dbfeae66e6c6ac5508772e424d97cdae9525e62cbb70c",
+    "tar_bytes": 1233512,
+    "zip_sha256": "20e1bd0be9efaa0733a7b63269b784e007af4be81082a55a30a8acd316c3825f",
+    "dist_files": 25,
+    "sites_normalized_archive": {
+      "format": "tar",
+      "sha256": "b138de35136a0e9f9eb3ac33ead46e4c4755b81cf129851d7e718a776bcbda21",
+      "bytes": 2365440,
+      "files": 26
+    },
+    "note": "Original gzip artifact and native normalized tar have distinct hashes; all25 public dist bytes were independently verified."
+  },
+  "execution_recovery": {
+    "shell": "operational",
+    "git": "operational",
+    "network": "official sandbox escalation required: inherited proxy refused inside default network sandbox; HTTPS succeeds with normal TLS verification",
+    "browser": "system /usr/bin/chromium operational",
+    "dependency_versions_and_integrities": "unchanged from exact release lockfile; existing installation reused",
+    "local_refs_backup": "before-local-refs-3bbec3c.bundle",
+    "backup_sha256": "7f8217faacf026267020053950ee2b5280572bfdd8dfc870246665d798f96ef8",
+    "backup_bytes": 2358453,
+    "backup_verified": true,
+    "main_worktree_overwritten": false,
+    "source_credentials": "official ephemeral credential via hidden stdin; no credential file/log/Actions export",
+    "source_helper": "reused verified v32 helper, task cwd only changed, normal fast-forward push with remote and local head guards"
+  },
+  "prepublication_ci": {
+    "checks_per_execution": 1558,
+    "source_run": 42496353761,
+    "final_pr_runs": [
+      42497386164,
+      42497390339
+    ],
+    "postmerge_main_run": 42498406754,
+    "conclusion": "success",
+    "unit_sql": 1179,
+    "unit_files": 111,
+    "python": 45,
+    "demo_browser": 72,
+    "company_browser": 50,
+    "saas_browser": 172,
+    "candidate_browser": 14,
+    "production_browser": 20,
+    "public_browser": 6,
+    "original_tests": 64,
+    "retained_hashes": 11,
+    "postgres_run": 42496353729,
+    "postgres_checks": 69,
+    "android_run": 42496353748,
+    "jvm_tests": 5,
+    "failures": 0,
+    "skipped": 0,
+    "counts_not_added_across_reruns": true
+  },
+  "postpublication": {
+    "https_hashes": 75,
+    "https_hashes_passed": 75,
+    "origins": [
+      "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "https://truckcontrolai.com",
+      "https://www.truckcontrolai.com"
+    ],
+    "public_profiles": 6,
+    "public_profiles_passed": 6,
+    "cargo_logout_cases": 16,
+    "cargo_logout_passed": 16,
+    "skipped": 0,
+    "flaky": 0,
+    "browser_cases": [
+      {
+        "case": "una página restaurada de la caché exige verificar la sesión antes de mostrar la empresa",
+        "project": "published-windows",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "una página restaurada de la caché exige verificar la sesión antes de mostrar la empresa",
+        "project": "published-android",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "cerrar sesión bloquea la clave offline y conserva únicamente la copia cifrada",
+        "project": "published-windows",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "cerrar sesión desde otra pestaña bloquea una copia ya abierta sin perder su cola",
+        "project": "published-windows",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "cerrar sesión bloquea la clave offline y conserva únicamente la copia cifrada",
+        "project": "published-android",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "cerrar sesión desde otra pestaña bloquea una copia ya abierta sin perder su cola",
+        "project": "published-android",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "CargoTrack abre sólo la URL oficial en otra pestaña sin compartir credenciales",
+        "project": "published-windows",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "el menú muestra Cerrar sesión debajo de Configuración y revoca una sola vez",
+        "project": "published-windows",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "una sesión cerrada no vuelve a mostrar datos con Atrás, recarga ni ruta privada",
+        "project": "published-windows",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "un rechazo remoto cierra localmente, avisa y exige volver a entrar para reintentar",
+        "project": "published-windows",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "la demo conserva CargoTrack y no muestra un cierre de sesión de empresa",
+        "project": "published-windows",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "CargoTrack abre sólo la URL oficial en otra pestaña sin compartir credenciales",
+        "project": "published-android",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "el menú muestra Cerrar sesión debajo de Configuración y revoca una sola vez",
+        "project": "published-android",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "una sesión cerrada no vuelve a mostrar datos con Atrás, recarga ni ruta privada",
+        "project": "published-android",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "un rechazo remoto cierra localmente, avisa y exige volver a entrar para reintentar",
+        "project": "published-android",
+        "status": "expected",
+        "attempts": 1
+      },
+      {
+        "case": "la demo conserva CargoTrack y no muestra un cierre de sesión de empresa",
+        "project": "published-android",
+        "status": "expected",
+        "attempts": 1
+      }
+    ],
+    "scope": "Published UI and real pinned Supabase SDK, with intercepted fictitious HTTP for identity/company data. CargoTrack destination intercepted to verify tab security, no external account login. Six public profiles additionally test native non-mutating public configuration. No native customer account used.",
+    "https_transport_note": "urllib default client returned Cloudflare1010/403; not counted as application pass; original failed report retained separately",
+    "profile_receipt": "cargotrack-v33-public-profiles-20261108.json",
+    "https_receipt": "cargotrack-v33-https-20261108.json",
+    "unmatched_supabase_calls_blocked": true,
+    "release_source_asserted_before_each_case": true,
+    "guarded_test_stats": {
+      "expected": 16,
+      "unexpected": 0,
+      "flaky": 0,
+      "skipped": 0
+    }
+  },
+  "preserved": {
+    "rollback_versions": [
+      32,
+      31
+    ],
+    "demo_project": "appgprj_6adfbdfa388481919121d43f0fd9c242",
+    "demo_version": 6,
+    "main_hosting_manifest": "demo identity unchanged",
+    "native_migrations": 63,
+    "ddl_executed": 0,
+    "edge_deployments": 0,
+    "real_model_calls": 0,
+    "model_budget_usd_monthly": 10,
+    "company_model_calls_monthly": 100,
+    "other_prs_excluded": [
+      82,
+      83,
+      87,
+      88
+    ]
+  },
+  "costs": {
+    "new_service_purchases_eur": 0,
+    "new_paid_model_calls": 0,
+    "budget_limit_eur": 200,
+    "historical_spend_and_remaining": "not reconciled; do not claim200 EUR remaining"
+  },
+  "limitations": [
+    "Android/Windows browser emulation, no physical devices available",
+    "No CargoTrack account authentication or API/synchronization by design",
+    "No fresh native customer-session revocation acceptance; SDK HTTP is fictitious in these browser tests",
+    "Play release/signing and full commercial Stripe/fiscal/Google/managed-recovery/legal gates remain separate",
+    "Existing continuation automation observed paused; no claim of continuous execution"
+  ],
+  "full_commercial_launch_complete": false
+}

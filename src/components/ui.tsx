@@ -139,7 +139,11 @@ export function Metric({
             ) : (
               <ArrowDownLeft size={13} />
             )}
-            {Math.abs(change.value).toFixed(1).replace(".", ",")} %
+            {Math.abs(change.value).toLocaleString("es-ES", {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            })}{" "}
+            %
           </span>
         )}
         <span>{change?.label ?? subtitle}</span>

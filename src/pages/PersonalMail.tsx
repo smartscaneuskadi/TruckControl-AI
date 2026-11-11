@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import {
@@ -29,6 +30,7 @@ import type {
   MailFolder,
   MailMessage,
   MailSummary,
+  Mailbox,
 } from "../integrations/personal-mail/gmail";
 
 const emptyDraft = (): MailDraft => ({ to: "", cc: "", subject: "", text: "" });
@@ -50,6 +52,8 @@ function errorMessage(error: unknown) {
         "El contenido supera el límite de lectura o descarga de este apartado.",
       unavailable:
         "No se ha podido completar la operación. Comprueba la conexión y actualiza.",
+      sent_copy_failed:
+        "El servidor de envío ha aceptado el mensaje, pero no se ha podido guardar una copia en Enviados. No lo envíes otra vez por este fallo.",
       send_uncertain:
         "No se ha podido confirmar el envío. Puede haberse enviado: revisa Enviados antes de crear otro mensaje. No lo reenviaremos automáticamente.",
     }[error.code];
@@ -60,8 +64,31 @@ export function PersonalMail() {
   const account = usePersonalMail();
   return <PersonalMailView key={account.scopeKey} />;
 }
-function PersonalMailView() {
-  const account = usePersonalMail();
+export interface ConnectedMailbox {
+  mailbox: Mailbox;
+  email: string;
+  online: boolean;
+  disconnect(): void;
+  expire(): void;
+}
+export function ConnectedMailView({
+  connection,
+}: {
+  connection: ConnectedMailbox;
+}) {
+  return <PersonalMailView connection={connection} />;
+}
+function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
+  const personal = usePersonalMail();
+  const account = connection
+    ? {
+        ...personal,
+        ...connection,
+        cloud: true,
+        error: "",
+        scopeKey: connection.email,
+      }
+    : personal;
   const [demo] = useState(createDemoMailbox),
     [demoOpen, setDemoOpen] = useState(false);
   const mailbox = account.cloud ? account.mailbox : demoOpen ? demo : null,
@@ -97,7 +124,7 @@ function PersonalMailView() {
     };
   }, []);
   useEffect(() => {
-    if (account.cloud) void account.configure();
+    if (account.cloud && !connection) void account.configure();
   }, [account.scopeKey]);
   useEffect(() => {
     setRows([]);
@@ -245,7 +272,7 @@ function PersonalMailView() {
       } catch (e) {
         if (
           e instanceof MailError &&
-          e.code === "send_uncertain" &&
+          ["send_uncertain", "sent_copy_failed"].includes(e.code) &&
           mounted.current
         ) {
           setUncertain(true);
@@ -258,9 +285,14 @@ function PersonalMailView() {
   const formError = error || account.error;
   return (
     <div className="personal-mail-page">
+      {!connection && (
+        <Link className="button secondary" to="/mailbox">
+          Volver a Correo
+        </Link>
+      )}
       <PageHeading
         eyebrow="COMUNICACIONES"
-        title="Mi correo"
+        title={connection ? "Buzón conectado" : "Mi correo"}
         description="Tu buzón personal. Tú eliges la cuenta y autorizas el acceso ante tu proveedor."
       >
         {mailbox && (
@@ -351,7 +383,7 @@ function PersonalMailView() {
             Abrir buzón ficticio
           </Button>
         )}
-        {account.cloud && (
+        {account.cloud && !connection && (
           <p className="personal-mail-privacy">
             La sesión caduca y se cierra al salir de TruckControl o cambiar de
             empresa. Tus mensajes y el permiso de correo no se guardan en la
@@ -366,7 +398,7 @@ function PersonalMailView() {
             . Retirarlo puede afectar otras conexiones con TruckControl.
           </p>
         )}
-        {account.cloud && (
+        {account.cloud && !connection && (
           <p className="personal-mail-privacy">
             Outlook, Yahoo y otros servidores todavía no tienen conexión directa
             en este apartado. El reenvío de facturas existente sigue disponible
@@ -754,7 +786,7 @@ function PersonalMailView() {
               </Field>
               <p className="full muted">
                 El borrador se mantiene en esta pantalla. Todavía no se adjuntan
-                archivos ni se guarda en Borradores de Google.
+                archivos ni se guarda en Borradores del proveedor.
               </p>
               {uncertain && (
                 <p className="full form-error" role="status">

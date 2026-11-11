@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { ReactNode, FormEvent } from "react";
 import type { User } from "@supabase/supabase-js";
+import { flushSync } from "react-dom";
 import { Building2, LogIn, ShieldCheck, Truck } from "lucide-react";
 import { getSupabaseClient } from "../integrations/supabase/client";
 import { SupabaseFleetRepository } from "../integrations/supabase/repository";
@@ -60,6 +61,7 @@ export function CompanyOfflineContext({
   organization: Organization;
   onExit(): void;
 }) {
+  const signOutRequest = useRef<Promise<void> | null>(null);
   return (
     <Context.Provider
       value={{
@@ -73,9 +75,28 @@ export function CompanyOfflineContext({
         select: onExit,
         newCompany: onExit,
         refreshCompanies: onExit,
-        signOut: async () => {
-          endPrivateSessions();
-          onExit();
+        signOut: () => {
+          if (signOutRequest.current) return signOutRequest.current;
+          const request = (async () => {
+            const client = getSupabaseClient();
+            if (!client)
+              throw new Error(
+                "No se puede verificar el cierre. Conecta para cerrar la sesión; puedes bloquear tu copia sin conexión.",
+              );
+            const { error } = await client.auth.signOut();
+            if (error)
+              throw new Error(
+                "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.",
+              );
+            endPrivateSessions();
+            onExit();
+          })();
+          signOutRequest.current = request;
+          void request.then(
+            () => { signOutRequest.current = null; },
+            () => { signOutRequest.current = null; },
+          );
+          return request;
         },
         portal: onExit,
       }}
@@ -114,6 +135,7 @@ if (initialEmailAction)
   );
 export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   const observedUserId = useRef<string | null>(null);
+  const signOutRequest = useRef<Promise<void> | null>(null);
   const [emailAction, setEmailAction] = useState(initialEmailAction);
   const [client] = useState(getSupabaseClient);
   const [mode, setMode] = useState<"demo" | "company" | "portal">(() =>
@@ -134,6 +156,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   }>({ user: null, organizations: [], loaded: false });
   const [selected, setSelected] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [signOutError, setSignOutError] = useState("");
   const [recovery, setRecovery] = useState(false);
   const [revision, setRevision] = useState(0);
   const [loading, setLoading] = useState(Boolean(client));
@@ -161,9 +184,11 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     }
     let active = true;
     let authRevision = 0;
+    let suspended = false;
     function receive(user: User | null) {
-      if (!active) return;
+      if (!active || suspended) return;
       const nextUserId = user?.id ?? null;
+      if (nextUserId) setSignOutError("");
       if (observedUserId.current !== nextUserId) endPrivateSessions();
       observedUserId.current = nextUserId;
       setAccount((old) =>
@@ -188,27 +213,52 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
       }
       receive(session?.user ?? null);
     });
-    const requestRevision = authRevision;
-    // Validate a persisted session with the server; never authorize from user_metadata.
-    void client.auth
-      .getUser()
-      .then(({ data, error }) => {
-        if (!active || authRevision !== requestRevision) return;
-        if (error && error.name !== "AuthSessionMissingError")
-          setError(
-            "No se ha podido verificar la sesión. Vuelve a iniciar sesión.",
-          );
-        receive(data.user);
-      })
-      .catch(() => {
-        if (active) {
+    function verifyCurrentUser() {
+      const requestRevision = authRevision;
+      // Validate persisted identity with the server, including after BFCache restore.
+      void client!.auth
+        .getUser()
+        .then(({ data, error }) => {
+          if (!active || suspended || authRevision !== requestRevision) return;
+          if (error && error.name !== "AuthSessionMissingError")
+            setError(
+              "No se ha podido verificar la sesión. Vuelve a iniciar sesión.",
+            );
+          receive(error ? null : data.user);
+        })
+        .catch(() => {
+          if (!active || suspended || authRevision !== requestRevision) return;
           setError("No se puede conectar con el acceso de empresas.");
-          setLoading(false);
-        }
+          receive(null);
+        });
+    }
+    function suspendPrivateView() {
+      suspended = true;
+      authRevision++;
+      // Flush before the browser captures a page for its Back/Forward cache.
+      flushSync(() => {
+        endPrivateSessions();
+        observedUserId.current = null;
+        setAccount({ user: null, organizations: [], loaded: false });
+        setSelected(null);
+        setRecovery(false);
+        setLoading(true);
       });
+    }
+    function resumePrivateView(event: PageTransitionEvent) {
+      if (!active || (!suspended && !event.persisted)) return;
+      suspended = false;
+      authRevision++;
+      verifyCurrentUser();
+    }
+    window.addEventListener("pagehide", suspendPrivateView);
+    window.addEventListener("pageshow", resumePrivateView);
+    verifyCurrentUser();
     return () => {
       active = false;
       subscription.unsubscribe();
+      window.removeEventListener("pagehide", suspendPrivateView);
+      window.removeEventListener("pageshow", resumePrivateView);
     };
   }, [client]);
   const userId = account.user?.id;
@@ -287,19 +337,58 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
       }
       setRevision((n) => n + 1);
     },
-    signOut: async () => {
-      endPrivateSessions();
-      if (!client) return;
-      const { error } = await client.auth.signOut();
-      if (error)
-        throw new Error("No se ha podido cerrar la sesión. Reinténtalo.");
-      setAccount({ user: null, organizations: [], loaded: false });
-      setSelected(null);
-      setRecovery(false);
+    signOut: () => {
+      if (signOutRequest.current) return signOutRequest.current;
+      const request = (async () => {
+        // End RAM-only provider capabilities before awaiting network revocation.
+        endPrivateSessions();
+        if (client) {
+          try {
+            const { error } = await client.auth.signOut();
+            if (error) throw error;
+          } catch {
+            // auth-js 2.118 clears its local session even on a remote error.
+            // Its SIGNED_OUT callback runs before signOut resolves/rejects.
+            const localClosed = observedUserId.current === null;
+            const message = localClosed
+              ? "Tu sesión en este dispositivo se ha cerrado, pero no hemos podido confirmar el cierre en el servidor. Vuelve a iniciar sesión cuando tengas conexión para revisarlo."
+              : "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.";
+            if (localClosed) {
+              setAccount({ user: null, organizations: [], loaded: false });
+              setSelected(null);
+              setRecovery(false);
+              setEntryView("login");
+              changeMode("company");
+            }
+            setSignOutError(message);
+            throw new Error(message);
+          }
+        }
+        setSignOutError("");
+        setAccount({ user: null, organizations: [], loaded: false });
+        setSelected(null);
+        setRecovery(false);
+        setEntryView("login");
+        changeMode("company");
+      })();
+      signOutRequest.current = request;
+      void request.then(
+        () => { signOutRequest.current = null; },
+        () => { signOutRequest.current = null; },
+      );
+      return request;
     },
   };
   return (
     <Context.Provider value={value}>
+      {signOutError && (
+        <div className="access-signout-notice" role="alert">
+          <p>{signOutError}</p>
+          <Button variant="secondary" onClick={() => setSignOutError("")}>
+            Entendido
+          </Button>
+        </div>
+      )}
       {["notice", "privacy", "terms"].includes(
         new URLSearchParams(window.location.search).get("legal") ?? "",
       ) ? (
