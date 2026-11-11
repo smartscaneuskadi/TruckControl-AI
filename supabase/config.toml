@@ -432,3 +432,8 @@ verify_jwt = false
 # and registration gates. Non-browser operations additionally require HMAC.
 [functions.company-auth]
 verify_jwt = false
+
+[functions.personal-mail]
+# Human operations verify getUser, the exact live session and company access.
+# Health/TLS diagnostics have no credentials and only probe fixed public hosts.
+verify_jwt = false

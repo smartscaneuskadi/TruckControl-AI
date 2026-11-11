@@ -1,0 +1,94 @@
+{
+  "published": true,
+  "url": "https://truckcontrolai.com",
+  "version": 38,
+  "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_1158214ceae48191aac244710231626b",
+  "deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
+  "status": "succeeded",
+  "source_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+  "published_at": "2026-11-08T20:47:46.339781+00:00",
+  "pull_request": 96,
+  "merge_commit": "6b439a880122a47ad31985687f6133e19f9a54b4",
+  "ci_success": {
+    "pull_request": 42520790998,
+    "exact_source": 42520789841,
+    "package": 42520789863
+  },
+  "verification": {
+    "code_commit": "1ebc1ed976c03b6d732412908a08eadb5ecb647d",
+    "source_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+    "checks_before_publication": 1622,
+    "unit_sql_passed": 1221,
+    "python_passed": 45,
+    "demo_browser_passed": 82,
+    "company_browser_passed": 50,
+    "saas_browser_passed": 178,
+    "candidate_browser_passed": 20,
+    "production_build_passed": 20,
+    "public_profiles": 6,
+    "public_profile_baseline_version": 37,
+    "migrations": 63,
+    "postpublication_checks": "docs/verification/interface-languages-published-20261108.json",
+    "scheduled_paid_model_calls": 0,
+    "emission_available": false
+  },
+  "archive_local": {
+    "source": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+    "sha256": "1ac1e6168e5ce42717ad72750b27f00c7cdc9f9a4ca625f53e4f77ec38a50080",
+    "bytes": 1477591,
+    "files": 26
+  },
+  "archive_native": {
+    "archive_format": "tar",
+    "sediment_file_id": "file_00000000fbe881f48d7ef6279d827645",
+    "content_hash": "sha256:75d50b06927cbc98b670c388e7c2a4291dc7c4ea1a85bfe5d4751a42698e9fd6",
+    "size_bytes": 3153920,
+    "file_count": 26
+  },
+  "languages": [
+    "es",
+    "ro",
+    "en",
+    "fr"
+  ],
+  "catalog_keys_per_target": 2664,
+  "interface_translations": 7992,
+  "public_browser_verified": {
+    "portal_languages": [
+      "es",
+      "ro",
+      "en",
+      "fr"
+    ],
+    "application_languages": [
+      "es",
+      "ro",
+      "en",
+      "fr"
+    ],
+    "preference_survives_reload": true,
+    "pwa_update_applied": true,
+    "romanian_dashboard": true
+  },
+  "preview_browser_verified": {
+    "mail_draft_preserved_during_cross_tab_language_change": true,
+    "real_mail_sent": false
+  },
+  "native_saved_source_and_deployment_match": true,
+  "direct_executor_http_release_probe": "403; no claim of executor HTTPS file-hash verification after publication",
+  "physical_devices_tested": false,
+  "original_tests_retained": {
+    "files": 11,
+    "cases": 64
+  },
+  "scope": [
+    "Interface only; authored email, files and records retain original text",
+    "Third-party pages and server-generated document/email templates retain their own language",
+    "EUR and stored business values unchanged",
+    "Existing personal-mail v1 retained; account authorisation still required; Microsoft OAuth pending"
+  ],
+  "new_database_changes": false,
+  "paid_model_calls": 0,
+  "real_mail_sends": 0,
+  "payments_activated": false
+}

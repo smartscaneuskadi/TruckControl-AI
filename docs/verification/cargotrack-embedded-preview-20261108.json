@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-11-08T17:46:35.344Z",
+  "origin": "http://127.0.0.1:4194",
+  "expected_source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+  "authentication_scope": "public provider login and document lifetime, no account login",
+  "framework_partitioning_override_removed": true,
+  "privacy_controls_weakened": false,
+  "results": [
+    {
+      "device": "windows",
+      "physical": false,
+      "credentials_entered": false,
+      "login_submitted": false,
+      "native_storage_partitioning": true,
+      "passed": true,
+      "source_commit": "cfe272e82de67aa518386360fdab212dd60ab99b",
+      "live_login_form_visible": true,
+      "same_document_retained": true,
+      "new_tabs": 0,
+      "authenticated_provider_session_verified": false
+    },
+    {
+      "device": "android",
+      "physical": false,
+      "credentials_entered": false,
+      "login_submitted": false,
+      "native_storage_partitioning": true,
+      "passed": true,
+      "source_commit": "cfe272e82de67aa518386360fdab212dd60ab99b",
+      "live_login_form_visible": true,
+      "same_document_retained": true,
+      "new_tabs": 0,
+      "authenticated_provider_session_verified": false
+    }
+  ],
+  "scope": "Preview aislado, bundle con cambios locales sin publicar; prueba real sólo del formulario público del proveedor y del ciclo de vida del documento. Sin credenciales.",
+  "provider_headers": {
+    "url": "https://on7.cargotrack.ro/signin",
+    "checked_at": "2026-11-08T17:24:03.010318+00:00",
+    "curl_exit": 0,
+    "headers": [
+      "HTTP/1.1 200 OK",
+      "server: envoy",
+      "HTTP/2 200 ",
+      "content-type: text/html; charset=utf-8",
+      "server: envoy",
+      "FINAL_HTTP_STATUS:200"
+    ],
+    "transport_error": "",
+    "body_bytes": 89428
+  },
+  "directory_lookup": {
+    "cli": "Stripe CLI1.55.8, Directory0.3.5, official binary SHA256 verified",
+    "result": "Invalid user agent from official Directory CLI endpoint; no retry with spoofed agent and no new account, keys or charges",
+    "fallback": "Existing official provider URL plus public provider integration documentation"
+  }
+}

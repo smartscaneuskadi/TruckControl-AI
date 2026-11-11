@@ -1,0 +1,108 @@
+{
+  "checked_at": "2026-11-08T15:56:56Z",
+  "issue": 84,
+  "pr": 85,
+  "branch": "feature/cargotrack-access-84",
+  "verified_application_source": "821ba13d2f2dcf68fc0fd1990c0e7190d304f7e2",
+  "ci": {
+    "push": 42495957998,
+    "pull_request": 42495963203,
+    "conclusion": "success",
+    "checks_per_execution": 1558,
+    "suites": {
+      "unit_sql": 1179,
+      "unit_files": 111,
+      "python": 45,
+      "demo_browser": 72,
+      "company_browser": 50,
+      "saas_browser": 172,
+      "candidate_browser": 14,
+      "production_browser": 20,
+      "published_browser": 6
+    },
+    "original_tests_retained": 64,
+    "retained_hashes": 11,
+    "runs_not_added_together": true
+  },
+  "security_review": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/85#issuecomment-6723621040",
+  "verified_behaviors": [
+    "official HTTPS CargoTrack link",
+    "noopener noreferrer and no referrer",
+    "isolated external browser tab",
+    "no CargoTrack passwords API or synchronization",
+    "menu logout below settings",
+    "real auth-js signOut with fictitious HTTP transport",
+    "single in-flight logout",
+    "SDK local cleanup and honest remote-failure warning",
+    "private-route Back/reload protection",
+    "BFCache identity revalidation",
+    "offline key closure and late-operation rejection",
+    "encrypted outbox preservation",
+    "explicit permission-denial lock",
+    "cross-tab SDK logout closes unlocked vault"
+  ],
+  "transport": {
+    "supabase_browser": "real pinned SDK against fictitious transport",
+    "cargotrack_navigation": "intercepted test document; no provider credentials",
+    "cargotrack_live_probe": "bot_blocked; no controls bypassed"
+  },
+  "production_package": {
+    "source_commit": "89100d92c0b44d2b86c1495faffcab2944abacbb",
+    "branch": "deploy/cargotrack-production-20261108",
+    "workflow": 42496353868,
+    "conclusion": "success",
+    "artifact_id": 13623149793,
+    "artifact_url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/42496353868/artifacts/13623149793",
+    "zip_sha256": "20e1bd0be9efaa0733a7b63269b784e007af4be81082a55a30a8acd316c3825f",
+    "tar_sha256": "70275a8304501c81432dbfeae66e6c6ac5508772e424d97cdae9525e62cbb70c",
+    "tar_bytes": 1233512,
+    "dist_files": 25,
+    "channel": "production",
+    "company_connection_bundled": true,
+    "source_dirty": false,
+    "payments_enabled": false,
+    "connector_secrets_used": false,
+    "source_pushed_to_sites": false,
+    "published": false
+  },
+  "extra_isolated_checks": {
+    "postgres": {
+      "workflow": 42496353729,
+      "conclusion": "success",
+      "checks": 69,
+      "managed_restore": false
+    },
+    "android": {
+      "workflow": 42496353748,
+      "conclusion": "success",
+      "jvm_tests": 5,
+      "failures": 0,
+      "skipped_tests": 0,
+      "commercial_signed": false,
+      "play_published": false
+    }
+  },
+  "preserved": {
+    "production_url": "https://truckcontrolai.com",
+    "production_project": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "production_version": 32,
+    "production_app_version": "0.5.20-rc.1",
+    "production_source": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
+    "backup_version": 31,
+    "demo_project": "appgprj_6adfbdfa388481919121d43f0fd9c242",
+    "demo_version": 6
+  },
+  "blocker": {
+    "kind": "execution_environment",
+    "error": "No usable execution environment",
+    "owner_reconnect_reported": true,
+    "post_reconnect_test_still_failed": true,
+    "diagnostic_history": "not_found",
+    "netlify_truckcontrol_project_found": false
+  },
+  "physical_devices_tested": false,
+  "new_paid_services": 0,
+  "new_ai_calls": 0,
+  "new_production_migrations": 0,
+  "commercial_launch_completed": false
+}

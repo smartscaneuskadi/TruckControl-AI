@@ -1,4 +1,28 @@
 import { z } from "zod";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "./database.types";
+import { gmailFailureCode, gmailFailureMessage } from "../gmail/errors";
+
+export async function checkGoogleConfiguration(
+  client: SupabaseClient<Database>,
+  candidate?: { client_id: string; client_secret: string },
+) {
+  const { data, error } = await client.functions.invoke("company-gmail", {
+    body: candidate
+      ? { action: "validate_configuration", ...candidate }
+      : { action: "check_configuration" },
+  });
+  const code = await gmailFailureCode(data, error);
+  if (
+    error ||
+    code ||
+    data?.credential_validation !== 1 ||
+    data.status !== "accepted" ||
+    data.scope !== "client_authentication_only" ||
+    data.mailbox_connected !== false
+  )
+    throw Error(gmailFailureMessage(code));
+}
 export const googleClientSchema = z
   .string()
   .trim()

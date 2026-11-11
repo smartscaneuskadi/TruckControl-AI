@@ -21,11 +21,17 @@ import {
   savePeriodCursor,
 } from "../_shared/mail-period.ts";
 import type { MailReadWindow } from "../_shared/mail-period.ts";
+import {
+  createGoogleCredentialValidator,
+  oauthFailureCode,
+  validGoogleCredentials,
+} from "./credentials.ts";
 
 const gmailScope = "https://www.googleapis.com/auth/gmail.readonly";
 const bucket = "truckcontrol-documents";
 type Data = Record<string, unknown>;
 export interface GmailGateway {
+  canConfigureGoogle?(token: string): Promise<boolean>;
   actionAllowed?(
     organizationId: string,
     userId: string,
@@ -43,6 +49,7 @@ export interface GmailGateway {
   remove(path: string): Promise<void>;
 }
 export interface GmailConfig {
+  validateOAuthCredentials?: boolean;
   /** Production enables the received-period protocol; legacy SDK consumers keep their contract. */
   enforceReceivedPeriod?: boolean;
   now?: () => number;
@@ -52,7 +59,7 @@ export interface GmailConfig {
   additionalOrigins?: string[];
   callbackUrl: string;
   oauth?: GmailOAuthConfig;
-  resolveOAuth?: () => Promise<GmailOAuthConfig | undefined>;
+  resolveOAuth?: (fresh?: boolean) => Promise<GmailOAuthConfig | undefined>;
   ai?: AiRuntime;
   resolveAI?(
     organizationId: string,
@@ -77,6 +84,7 @@ interface Part {
   parts?: Part[];
 }
 class GmailAuthorizationError extends Error {}
+class GoogleClientError extends Error {}
 class GoogleRequestError extends Error {
   constructor(readonly status: number) {
     super("Google request unavailable");
@@ -106,7 +114,13 @@ export function createGmailHandler(
 ) {
   const origin = new URL(config.appOrigin).origin;
   const now = () => config.now?.() ?? Date.now();
-  const getOAuth = async () => config.oauth ?? (await config.resolveOAuth?.());
+  const getOAuth = async (fresh = false) =>
+    config.oauth ?? (await config.resolveOAuth?.(fresh));
+  const validateCredentials = createGoogleCredentialValidator(
+    config.callbackUrl,
+    fetcher,
+    now,
+  );
   const allowedOrigins = new Set([
     origin,
     ...(config.additionalOrigins ?? []).map((value) => new URL(value).origin),
@@ -152,6 +166,9 @@ export function createGmailHandler(
       signal: AbortSignal.timeout(20000),
     });
     if (!response.ok) {
+      const code = await oauthFailureCode(response);
+      if (code === "invalid_client" || code === "unauthorized_client")
+        throw new GoogleClientError();
       if (response.status === 400) throw new GmailAuthorizationError();
       throw new Error("Google token request unavailable");
     }
@@ -228,8 +245,14 @@ export function createGmailHandler(
         refresh_token_cipher: cipher,
       });
       return redirect("gmail_ticket", ticket, destination);
-    } catch {
-      return redirect("gmail_error", "authorization_failed", destination);
+    } catch (error) {
+      return redirect(
+        "gmail_error",
+        error instanceof GoogleClientError
+          ? "client_configuration"
+          : "authorization_failed",
+        destination,
+      );
     }
   }
   async function sync(
@@ -563,7 +586,48 @@ export function createGmailHandler(
       } catch {
         return json({ error: "invalid_request" }, 400);
       }
-      if (!body || typeof body !== "object" || !isUuid(body.organization_id))
+      if (!body || typeof body !== "object")
+        return json({ error: "invalid_request" }, 400);
+      if (
+        ["validate_configuration", "check_configuration"].includes(
+          String(body.action),
+        )
+      ) {
+        if (!gateway.canConfigureGoogle)
+          return json({ error: "authorization_not_configured" }, 503);
+        if (!(await gateway.canConfigureGoogle(token)))
+          return json({ error: "admin_required" }, 403);
+        let credentials:
+          Pick<GmailOAuthConfig, "clientId" | "clientSecret"> | undefined;
+        if (body.action === "validate_configuration") {
+          const candidate = {
+            clientId: body.client_id,
+            clientSecret: body.client_secret,
+          };
+          if (!validGoogleCredentials(candidate))
+            return json({ error: "invalid_google_credentials" }, 400);
+          credentials = candidate;
+        } else credentials = await getOAuth(true);
+        if (!credentials) return json({ error: "gmail_not_configured" }, 503);
+        const result = await validateCredentials(credentials);
+        if (result !== "accepted")
+          return json(
+            {
+              error:
+                result === "rejected"
+                  ? "google_client_rejected"
+                  : "google_validation_unavailable",
+            },
+            result === "rejected" ? 422 : 503,
+          );
+        return json({
+          credential_validation: 1,
+          status: "accepted",
+          scope: "client_authentication_only",
+          mailbox_connected: false,
+        });
+      }
+      if (!isUuid(body.organization_id))
         return json({ error: "invalid_request" }, 400);
       // A distinct action makes a new UI fail closed against an older deployment.
       // Reuse the existing sync role/entitlement checks; this alias grants no permission.
@@ -637,6 +701,19 @@ export function createGmailHandler(
       }
       if (!oauth) return json({ error: "gmail_not_configured" }, 503);
       if (body.action === "start") {
+        if (config.validateOAuthCredentials) {
+          const checked = await validateCredentials(oauth);
+          if (checked !== "accepted")
+            return json(
+              {
+                error:
+                  checked === "rejected"
+                    ? "google_client_rejected"
+                    : "google_validation_unavailable",
+              },
+              503,
+            );
+        }
         const state = randomToken();
         await gateway.server("state_create", {
           organization_id: organizationId,

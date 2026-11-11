@@ -1,0 +1,61 @@
+{
+  "checked_at": "2026-11-08T19:05:41.195128+00:00",
+  "implementation_pr": 94,
+  "implementation_source": "852987a47060c3a9a85ea049cf8fe67df80cf9ad",
+  "merge_commit": "56ebbf6ab2a69db8d0f739893010385919ae1132",
+  "production": {
+    "url": "https://truckcontrolai.com",
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version": 35,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_4e70b8e4ef20819183cd90080ffd6106",
+    "source_commit": "5c954703c2d858add18501fef15efce6f1504bc9",
+    "deployment_id": "appgdep_6af0c7f83fb881919bbb244517c0a8a6",
+    "status": "succeeded",
+    "source_pushed_and_read_back": true,
+    "source_dirty": false
+  },
+  "ci": {
+    "pr_run": 42512225452,
+    "exact_source_run": 42512311126,
+    "package_run": 42512311132,
+    "conclusion": "success",
+    "unit_sql": 1191,
+    "unit_files": 112,
+    "python": 45,
+    "demo_browser": 72,
+    "company_browser": 50,
+    "saas_browser": 178,
+    "candidate_browser": 14,
+    "production_browser": 20,
+    "public_profiles_before_deploy": 6,
+    "total_per_execution": 1576,
+    "retained_original_tests": 64,
+    "retained_file_hashes": 11
+  },
+  "postpublication": {
+    "release_json_https_checked": true,
+    "source_commit_matches": true,
+    "public_demo_mail_ui_checked": true,
+    "providers": [
+      "Gmail",
+      "Yahoo Mail",
+      "Webmail Porkbun",
+      "Outlook",
+      "custom HTTPS webmail"
+    ],
+    "authenticated_mailbox_tested": false
+  },
+  "constraints": [
+    "No application-imposed maximum for open views; device memory limits practical capacity.",
+    "Provider cookies are shared within the browser; independent accounts are not guaranteed.",
+    "Gmail returned provider error401 and Yahoo refused embedding in the prepublication live check; fallback is voluntary same-tab navigation.",
+    "No new migrations, Edge deployments, real email sends, AI calls or purchases."
+  ],
+  "retained_versions": [
+    34,
+    33,
+    32,
+    31
+  ],
+  "demo_version": 6
+}

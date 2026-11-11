@@ -102,8 +102,17 @@ export function createGmailConfigResolver(
   let cached: GmailOAuthConfig | undefined;
   let expiresAt = 0;
   let pending: Promise<GmailOAuthConfig | undefined> | null = null;
-  return async function resolve(): Promise<GmailOAuthConfig | undefined> {
+  let generation = 0;
+  return async function resolve(
+    fresh = false,
+  ): Promise<GmailOAuthConfig | undefined> {
     if (valid(environment, expectedProjectNumber)) return { ...environment };
+    if (fresh) {
+      generation++;
+      expiresAt = 0;
+      pending = null;
+    }
+    const currentGeneration = generation;
     if (now() < expiresAt) return cached;
     if (pending) return pending;
     pending = (async () => {
@@ -142,12 +151,16 @@ export function createGmailConfigResolver(
         return undefined;
       }
     })();
+    const attempt = pending;
     try {
-      cached = await pending;
-      expiresAt = now() + 60_000;
-      return cached;
+      const resolved = await attempt;
+      if (generation === currentGeneration) {
+        cached = resolved;
+        expiresAt = now() + 60_000;
+      }
+      return resolved;
     } finally {
-      pending = null;
+      if (pending === attempt) pending = null;
     }
   };
 }
