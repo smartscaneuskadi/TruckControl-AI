@@ -1,0 +1,518 @@
+{
+  "source_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
+  "scope": "Published bundle; real SDK and fictitious HTTP; unmatched private calls blocked; no native customer or provider consent",
+  "stats": {
+    "startTime": "2026-11-08T23:20:28.371Z",
+    "duration": 113133.722,
+    "expected": 42,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "cases": [
+    {
+      "title": "Gmail: comprueba credenciales antes de guardar y conserva la configuración cuando Google rechaza la candidata",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 4436
+        }
+      ]
+    },
+    {
+      "title": "Gmail: comprueba la configuración guardada y rellena el ID público sin pedir copiarlo otra vez",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2825
+        }
+      ]
+    },
+    {
+      "title": "Gmail: no declara éxito si la configuración se guarda pero el runtime sigue rechazado",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3007
+        }
+      ]
+    },
+    {
+      "title": "cuenta visible: cierra sesión desde la barra, impide volver con Atrás y permite entrar como administrador",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 5081
+        }
+      ]
+    },
+    {
+      "title": "cuenta visible: el administrador vuelve desde la demo a Servicios sin cerrar ni sustituir su sesión",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3685
+        }
+      ]
+    },
+    {
+      "title": "cuenta visible: el acceso permanece dentro de 320 a 1440 píxeles y conserva los cuatro idiomas",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 6967
+        }
+      ]
+    },
+    {
+      "title": "Gmail: salir del panel durante la comprobación no guarda credenciales con una respuesta tardía",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3100
+        }
+      ]
+    },
+    {
+      "title": "el propietario importa Google en el panel sin guardar ni devolver el secreto al navegador",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3175
+        }
+      ]
+    },
+    {
+      "title": "el panel rechaza archivos ajenos y soporta ambos temas sin desbordarse",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 6054
+        }
+      ]
+    },
+    {
+      "title": "el servidor rechaza a quien pierde administración y el cliente no ve este panel",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 5404
+        }
+      ]
+    },
+    {
+      "title": "lectura IA de factura guardada sin Gmail: permiso, confirmación, estado y sin gasto automático",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 8157
+        }
+      ]
+    },
+    {
+      "title": "una página restaurada de la caché exige verificar la sesión antes de mostrar la empresa",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3496
+        }
+      ]
+    },
+    {
+      "title": "Gmail: comprueba credenciales antes de guardar y conserva la configuración cuando Google rechaza la candidata",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 4829
+        }
+      ]
+    },
+    {
+      "title": "Gmail: comprueba la configuración guardada y rellena el ID público sin pedir copiarlo otra vez",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3212
+        }
+      ]
+    },
+    {
+      "title": "Gmail: no declara éxito si la configuración se guarda pero el runtime sigue rechazado",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3169
+        }
+      ]
+    },
+    {
+      "title": "cuenta visible: cierra sesión desde la barra, impide volver con Atrás y permite entrar como administrador",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 5144
+        }
+      ]
+    },
+    {
+      "title": "cuenta visible: el administrador vuelve desde la demo a Servicios sin cerrar ni sustituir su sesión",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3591
+        }
+      ]
+    },
+    {
+      "title": "cuenta visible: el acceso permanece dentro de 320 a 1440 píxeles y conserva los cuatro idiomas",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 8317
+        }
+      ]
+    },
+    {
+      "title": "Gmail: salir del panel durante la comprobación no guarda credenciales con una respuesta tardía",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3178
+        }
+      ]
+    },
+    {
+      "title": "el propietario importa Google en el panel sin guardar ni devolver el secreto al navegador",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3274
+        }
+      ]
+    },
+    {
+      "title": "el panel rechaza archivos ajenos y soporta ambos temas sin desbordarse",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 5742
+        }
+      ]
+    },
+    {
+      "title": "el servidor rechaza a quien pierde administración y el cliente no ve este panel",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 5440
+        }
+      ]
+    },
+    {
+      "title": "lectura IA de factura guardada sin Gmail: permiso, confirmación, estado y sin gasto automático",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 9854
+        }
+      ]
+    },
+    {
+      "title": "una página restaurada de la caché exige verificar la sesión antes de mostrar la empresa",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2363
+        }
+      ]
+    },
+    {
+      "title": "cerrar sesión bloquea la clave offline y conserva únicamente la copia cifrada",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 5646
+        }
+      ]
+    },
+    {
+      "title": "cerrar sesión desde otra pestaña bloquea una copia ya abierta sin perder su cola",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 8287
+        }
+      ]
+    },
+    {
+      "title": "cerrar sesión bloquea la clave offline y conserva únicamente la copia cifrada",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 6737
+        }
+      ]
+    },
+    {
+      "title": "cerrar sesión desde otra pestaña bloquea una copia ya abierta sin perder su cola",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 10134
+        }
+      ]
+    },
+    {
+      "title": "CargoTrack abre dentro de TruckControl y conserva su documento al navegar",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 9342
+        }
+      ]
+    },
+    {
+      "title": "cerrar TruckControl elimina la vista integrada y una nueva sesión no la abre automáticamente",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3976
+        }
+      ]
+    },
+    {
+      "title": "cambiar de empresa desmonta CargoTrack y exige abrir su vista de nuevo",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 4209
+        }
+      ]
+    },
+    {
+      "title": "el menú muestra Cerrar sesión debajo de Configuración y revoca una sola vez",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3470
+        }
+      ]
+    },
+    {
+      "title": "una sesión cerrada no vuelve a mostrar datos con Atrás, recarga ni ruta privada",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 4375
+        }
+      ]
+    },
+    {
+      "title": "un rechazo remoto cierra localmente, avisa y exige volver a entrar para reintentar",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3624
+        }
+      ]
+    },
+    {
+      "title": "la demo conserva CargoTrack y no muestra un cierre de sesión de empresa",
+      "project": "published-windows",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3255
+        }
+      ]
+    },
+    {
+      "title": "CargoTrack abre dentro de TruckControl y conserva su documento al navegar",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 10657
+        }
+      ]
+    },
+    {
+      "title": "cerrar TruckControl elimina la vista integrada y una nueva sesión no la abre automáticamente",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 5521
+        }
+      ]
+    },
+    {
+      "title": "cambiar de empresa desmonta CargoTrack y exige abrir su vista de nuevo",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 6126
+        }
+      ]
+    },
+    {
+      "title": "el menú muestra Cerrar sesión debajo de Configuración y revoca una sola vez",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 4067
+        }
+      ]
+    },
+    {
+      "title": "una sesión cerrada no vuelve a mostrar datos con Atrás, recarga ni ruta privada",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 3882
+        }
+      ]
+    },
+    {
+      "title": "un rechazo remoto cierra localmente, avisa y exige volver a entrar para reintentar",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2714
+        }
+      ]
+    },
+    {
+      "title": "la demo conserva CargoTrack y no muestra un cierre de sesión de empresa",
+      "project": "published-android",
+      "expected_status": "passed",
+      "status": "expected",
+      "results": [
+        {
+          "status": "passed",
+          "duration_ms": 2373
+        }
+      ]
+    }
+  ]
+}

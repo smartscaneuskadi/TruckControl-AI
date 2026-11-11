@@ -26,9 +26,11 @@ export function applyCommand(
         ...command.value,
         plate: command.value.plate.trim().toUpperCase(),
         // Omitted by an older client means preserve; explicit null unassigns.
-        coDriverId: command.value.coDriverId === undefined
-          ? snapshot.trucks.find((truck) => truck.id === command.value.id)?.coDriverId ?? null
-          : command.value.coDriverId,
+        coDriverId:
+          command.value.coDriverId === undefined
+            ? (snapshot.trucks.find((truck) => truck.id === command.value.id)
+                ?.coDriverId ?? null)
+            : command.value.coDriverId,
       });
       break;
     case "save-driver":
@@ -45,7 +47,11 @@ export function applyCommand(
       next.trucks = snapshot.trucks.filter((truck) => truck.id !== command.id);
       break;
     case "delete-driver":
-      if (snapshot.trucks.some((truck) => truckDriverIds(truck).includes(command.id)))
+      if (
+        snapshot.trucks.some((truck) =>
+          truckDriverIds(truck).includes(command.id),
+        )
+      )
         throw new Error(
           "Desasigna al conductor de su camión antes de eliminarlo.",
         );

@@ -27,7 +27,9 @@ export function Trucks() {
     const driver = snapshot.drivers.find(
       (driver) => driver.id === truck.driverId,
     );
-    const coDriver = snapshot.drivers.find((driver) => driver.id === truck.coDriverId);
+    const coDriver = snapshot.drivers.find(
+      (driver) => driver.id === truck.coDriverId,
+    );
     return (
       `${truck.plate} ${truck.brand} ${truck.model} ${driver?.name ?? ""} ${coDriver?.name ?? ""}`
         .toLocaleLowerCase("es")
@@ -68,8 +70,11 @@ export function Trucks() {
                 truckStatuses[truck.status],
                 truck.odometerKm,
                 truck.inspectionDueOn,
-                snapshot.drivers.find((driver) => driver.id === truck.driverId)?.name ?? "",
-                snapshot.drivers.find((driver) => driver.id === truck.coDriverId)?.name ?? "",
+                snapshot.drivers.find((driver) => driver.id === truck.driverId)
+                  ?.name ?? "",
+                snapshot.drivers.find(
+                  (driver) => driver.id === truck.coDriverId,
+                )?.name ?? "",
               ]),
             ])
           }

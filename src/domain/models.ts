@@ -109,7 +109,9 @@ export type FleetSnapshot = z.infer<typeof snapshotSchema>;
 export type Period = string; // YYYY-MM, or "all"
 
 /** Both assignments share the existing one-driver-per-truck allocation rule. */
-export function truckDriverIds(truck: Pick<Truck, "driverId" | "coDriverId">): string[] {
+export function truckDriverIds(
+  truck: Pick<Truck, "driverId" | "coDriverId">,
+): string[] {
   return [truck.driverId, truck.coDriverId].filter(
     (id): id is string => typeof id === "string",
   );
@@ -135,10 +137,13 @@ export function validateSnapshot(input: unknown): FleetSnapshot {
   for (const truck of data.trucks) {
     truck.coDriverId ??= null;
     if (truck.coDriverId && truck.coDriverId === truck.driverId)
-      throw new Error("El conductor principal y el segundo conductor deben ser distintos.");
+      throw new Error(
+        "El conductor principal y el segundo conductor deben ser distintos.",
+      );
     for (const driverId of truckDriverIds(truck)) {
       const driver = data.drivers.find((item) => item.id === driverId);
-      if (!driver) throw new Error("El conductor asignado no existe en esta empresa.");
+      if (!driver)
+        throw new Error("El conductor asignado no existe en esta empresa.");
       if (driver.status !== "active")
         throw new Error("Desasigna al conductor antes de ponerlo de permiso.");
       if (assigned.has(driverId))

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { LockKeyhole, RefreshCw, WifiOff } from "lucide-react";
@@ -10,6 +10,7 @@ import { TyresProvider } from "./TyresProvider";
 import { PersonalMailProvider } from "./PersonalMailProvider";
 import { SubscriptionProvider } from "./SubscriptionContext";
 import { OfflineContext } from "./OfflineContext";
+import { endPrivateSessions, sessionExitEvent } from "./session-events";
 import { listVaultScopes, VaultSession } from "../data/offline-vault";
 import type { VaultPayload } from "../data/offline-vault";
 import { synchronizeVault } from "../data/offline-sync";
@@ -32,9 +33,12 @@ class OfflineFleetRepository implements FleetRepository {
   }
 }
 export function OfflineApplication({ children }: { children: ReactNode }) {
+  const [sdkClient] = useState(getSupabaseClient);
   const [session, setSession] = useState<VaultSession | null>(null),
     [payload, setPayload] = useState<VaultPayload | null>(null),
-    [entry, setEntry] = useState(false);
+    [entry, setEntry] = useState(false),
+    [online, setOnline] = useState(navigator.onLine),
+    [notice, setNotice] = useState("");
   const [scopes, setScopes] = useState<string[]>([]),
     [selected, setSelected] = useState(""),
     [passphrase, setPassphrase] = useState(""),
@@ -43,6 +47,55 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
     [revision, setRevision] = useState(0);
   const shell = useRef<HTMLDivElement>(null),
     banner = useRef<HTMLDivElement>(null);
+  const currentSession = useRef<VaultSession | null>(null);
+  const generation = useRef(0), mounted = useRef(true), running = useRef(false);
+  const operation = useRef<AbortController | null>(null);
+  const active = (version: number, controller: AbortController) =>
+    mounted.current && generation.current === version &&
+    operation.current === controller && !controller.signal.aborted;
+  // The wrapper outlives CompanyAccessProvider. Close its RAM capabilities
+  // synchronously, including work still deriving a key or awaiting a response.
+  useLayoutEffect(() => {
+    mounted.current = true;
+    const stop = () => lock();
+    window.addEventListener(sessionExitEvent, stop);
+    window.addEventListener("pagehide", stop);
+    return () => {
+      mounted.current = false;
+      generation.current++;
+      operation.current?.abort();
+      operation.current = null;
+      running.current = false;
+      currentSession.current?.lock();
+      currentSession.current = null;
+      window.removeEventListener(sessionExitEvent, stop);
+      window.removeEventListener("pagehide", stop);
+    };
+  }, []);
+  useEffect(() => {
+    if (!sdkClient) return;
+    let alive = true;
+    const { data: { subscription } } = sdkClient.auth.onAuthStateChange((event, identity) => {
+      if (!alive || !mounted.current || event === "INITIAL_SESSION") return;
+      // CompanyAccessProvider is unmounted while an offline copy is open.
+      // Observe the real shared SDK here too, including logout in another tab.
+      if (event === "SIGNED_OUT") { endPrivateSessions(); return; }
+      const owner = currentSession.current?.scope.split("|")[1];
+      if (owner && identity?.user.id && identity.user.id !== owner) endPrivateSessions();
+      // A null initial session is not logout; same-user token refresh does not
+      // revoke a deliberately unlocked, passphrase-protected offline copy.
+    });
+    return () => { alive = false; subscription.unsubscribe(); };
+  }, [sdkClient]);
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
   useEffect(() => {
     if (!payload || !session || !shell.current || !banner.current) return;
     const resize = () =>
@@ -56,38 +109,50 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
     return () => observer.disconnect();
   }, [Boolean(payload && session)]);
   function lock() {
-    session?.lock();
+    generation.current++;
+    operation.current?.abort();
+    operation.current = null;
+    running.current = false;
+    currentSession.current?.lock();
+    currentSession.current = null;
     setSession(null);
     setPayload(null);
+    setEntry(false);
+    setScopes([]);
+    setSelected("");
     setPassphrase("");
     setError("");
+    setBusy(false);
   }
   function openEntry() {
+    if (running.current) return;
+    setNotice("");
     setEntry(true);
     setError("");
     setPassphrase("");
   }
   useEffect(() => {
     if (!entry) return;
-    let active = true;
+    let alive = true;
+    const version = generation.current;
     void listVaultScopes()
       .then((rows) => {
-        if (active) {
+        if (alive && generation.current === version) {
           setScopes(rows);
           setSelected(rows[0] ?? "");
         }
       })
       .catch((e) => {
-        if (active) setError(errorMessage(e));
+        if (alive && generation.current === version) setError(errorMessage(e));
       });
     return () => {
-      active = false;
+      alive = false;
     };
   }, [entry]);
   useEffect(() => {
     if (!payload) return;
     const timer = setInterval(() => {
-      if (Date.parse(payload.expiresAt) <= Date.now()) lock();
+      if (currentSession.current === session && Date.parse(payload.expiresAt) <= Date.now()) lock();
     }, 30000);
     return () => clearInterval(timer);
   }, [payload, session]);
@@ -98,9 +163,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
       clearTimeout(timer);
       timer = setTimeout(
         () => {
-          session.lock();
-          setSession(null);
-          setPayload(null);
+          if (currentSession.current === session) lock();
         },
         30 * 60 * 1000,
       );
@@ -115,43 +178,73 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
     };
   }, [session]);
   async function unlock() {
+    if (running.current) return;
+    const controller = new AbortController(), version = generation.current;
+    operation.current = controller;
+    running.current = true;
     setBusy(true);
     setError("");
+    let next: VaultSession | null = null;
     try {
-      const next = await VaultSession.unlock(selected, passphrase);
-      const value = await next.read();
-      session?.lock();
+      next = await VaultSession.unlock(selected, passphrase, false, controller.signal);
+      if (!active(version, controller)) { next.lock(); return; }
+      const value = await next.read(false, controller.signal);
+      if (!active(version, controller)) { next.lock(); return; }
+      if (currentSession.current !== next) currentSession.current?.lock();
+      currentSession.current = next;
       setSession(next);
       setPayload(value);
+      setNotice("");
       setEntry(false);
       setPassphrase("");
       setRevision((n) => n + 1);
     } catch (e) {
-      setError(errorMessage(e));
+      next?.lock();
+      if (active(version, controller)) setError(errorMessage(e));
     } finally {
-      setBusy(false);
+      if (active(version, controller)) {
+        operation.current = null;
+        running.current = false;
+        setBusy(false);
+      }
     }
   }
   async function sync() {
-    const client = getSupabaseClient();
-    if (!client || !session) return;
+    const client = getSupabaseClient(), current = currentSession.current;
+    if (!client || !current || running.current) return;
+    const controller = new AbortController(), version = generation.current;
+    operation.current = controller;
+    running.current = true;
     setBusy(true);
     setError("");
     try {
-      const result = await synchronizeVault(session, client);
+      const result = await synchronizeVault(current, client, controller.signal);
+      if (!active(version, controller) || currentSession.current !== current) return;
       setPayload(result.payload);
       setRevision((n) => n + 1);
     } catch (e) {
+      if (!active(version, controller) || currentSession.current !== current) return;
       setError(errorMessage(e));
       try {
-        setPayload(await session.read());
+        const value = await current.read(false, controller.signal);
+        if (active(version, controller) && currentSession.current === current) setPayload(value);
       } catch {
-        lock();
-        setEntry(true);
-        setError(errorMessage(e));
+        if (active(version, controller) && currentSession.current === current) {
+          const denied = errorMessage(e).includes("ya no permite el acceso");
+          lock();
+          // Public notice only: a remounted account may emit session-exit
+          // again. It must not erase the denial or restore any private entry.
+          setNotice(denied
+            ? "Esta empresa ya no permite el acceso. La copia permanece cifrada y bloqueada hasta verificar de nuevo tus permisos."
+            : "La copia está bloqueada. Conéctate y verifica tus permisos antes de volver a abrirla. Los datos cifrados se conservan.");
+        }
       }
     } finally {
-      setBusy(false);
+      if (active(version, controller)) {
+        operation.current = null;
+        running.current = false;
+        setBusy(false);
+      }
     }
   }
   const offline = Boolean(payload && session);
@@ -162,8 +255,11 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
         offline,
         openEntry,
         attach: (next) => {
-          if (session !== next) session?.lock();
+          if (!mounted.current) { next.lock(); return; }
+          if (currentSession.current !== next) currentSession.current?.lock();
+          currentSession.current = next;
           setSession(next);
+          setPayload(null);
         },
         lock,
       }}
@@ -247,7 +343,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
       ) : (
         children
       )}
-      {!offline && !navigator.onLine && (
+      {!offline && !online && (
         <Button
           className="offline-entry-button"
           variant="secondary"
@@ -257,11 +353,19 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
           Abrir copia sin conexión
         </Button>
       )}
+      {notice && <Modal
+        title="Copia bloqueada"
+        subtitle="Aviso de acceso sin datos de empresa"
+        onClose={() => setNotice("")}
+      >
+        <p role="alert">{notice}</p>
+        <div className="modal-actions"><Button onClick={() => setNotice("")}>Entendido</Button></div>
+      </Modal>}
       {entry && (
         <Modal
           title="Acceso sin conexión"
           subtitle="Solo copias cifradas activadas previamente desde tu empresa"
-          onClose={() => !busy && setEntry(false)}
+          onClose={() => { if (!running.current) { setEntry(false); setPassphrase(""); } }}
         >
           {!scopes.length ? (
             <p>
@@ -282,6 +386,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
               </p>
               <Field label="Copia guardada">
                 <select
+                  disabled={busy}
                   value={selected}
                   onChange={(e) => setSelected(e.target.value)}
                 >
@@ -299,6 +404,7 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
                   minLength={12}
                   maxLength={256}
                   autoComplete="off"
+                  disabled={busy}
                   value={passphrase}
                   onChange={(e) => setPassphrase(e.target.value)}
                 />

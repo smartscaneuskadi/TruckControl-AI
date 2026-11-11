@@ -101,12 +101,16 @@ export function parseDemoBackupText(text: string): {
       };
     }
     const parsed = envelope.parse(value);
-    if ((parsed.version === 1 && parsed.tyres !== undefined) ||
-        (parsed.version === 2 && parsed.tyres === undefined))
+    if (
+      (parsed.version === 1 && parsed.tyres !== undefined) ||
+      (parsed.version === 2 && parsed.tyres === undefined)
+    )
       throw Error("La versión de la copia no corresponde a sus neumáticos.");
     const fleet = validateSnapshot(parsed.fleet);
     if (parsed.version < 3 && fleet.trucks.some((truck) => truck.coDriverId))
-      throw Error("El segundo conductor requiere una copia de demo de versión 3.");
+      throw Error(
+        "El segundo conductor requiere una copia de demo de versión 3.",
+      );
     return {
       backup: createDemoBackup(
         fleet,

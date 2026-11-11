@@ -1,0 +1,122 @@
+{
+  "checked_at": "2026-11-08T18:10:10.224170+00:00",
+  "issue": 91,
+  "implementation_pr": 92,
+  "implementation_source": "b68ae352147ad458fc981079ddfe5d675b34bd9e",
+  "merge": "7bd8de6c1bc9dbb67e8d2761f8620838114a0c76",
+  "production": {
+    "url": "https://truckcontrolai.com",
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version": 34,
+    "app_version": "0.5.21-rc.1",
+    "source_commit": "72526b86a74f2539f073e888015e477e4dbee401",
+    "source_branch": "deploy/cargotrack-production-embedded-20261108",
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31bb5be99d8c8191b220d76104041206",
+    "deployment_id": "appgdep_6af0b9aa501c819195e5bb1a8898895d",
+    "deployment_status": "succeeded",
+    "updated_at": "2026-11-08T18:04:41.082212+00:00",
+    "source_pushed_and_read_back": true,
+    "source_dirty": false,
+    "channel": "production",
+    "payments_enabled": false
+  },
+  "artifact": {
+    "run": 42507142653,
+    "id": 13627389701,
+    "zip_sha256": "3ed461a5b32abd3b37f177cb7aa8c113e5245053a493b1be99cca764329b9e53",
+    "tar_sha256": "21577cfdab95e445c1146cd7432f21e286b3a5f0e3170194f60258b7132d4413",
+    "tar_bytes": 1235711,
+    "dist_files": 25,
+    "sites_normalized_tar_sha256": "01ba851fbc02ac52be037ff2f558f3c857b8b9eceb57d51e89bfdcdb2d7242ea",
+    "sites_normalized_tar_bytes": 2365440,
+    "sites_normalized_file_count": 26
+  },
+  "ci": {
+    "pr": 42506902906,
+    "push": 42506892118,
+    "exact_production_source": 42507142648,
+    "conclusion": "success",
+    "checks_per_execution": 1564,
+    "unit_sql": 1181,
+    "unit_files": 111,
+    "python": 45,
+    "demo_browser": 72,
+    "company_browser": 50,
+    "saas_browser": 176,
+    "candidate_browser": 14,
+    "production_browser": 20,
+    "public_profiles": 6,
+    "retained_original_tests": 64,
+    "retained_file_hashes": 11,
+    "runs_not_added_together": true
+  },
+  "postpublication": {
+    "https_hashes": 75,
+    "https_hashes_passed": 75,
+    "public_profiles": 6,
+    "public_profiles_passed": 6,
+    "cargo_session_regressions": 20,
+    "cargo_session_regressions_passed": 20,
+    "regression_scope": "Published UI and real pinned Supabase SDK with fictitious intercepted identity/company HTTP. Context blocks all unmatched Supabase calls; source checked before each case. CargoTrack regression document also fictitious.",
+    "native_provider_public_profiles": 2,
+    "native_provider_public_profiles_passed": 2,
+    "live_form_visible": true,
+    "same_provider_document_retained": true,
+    "new_tabs": 0,
+    "credentials_entered": false,
+    "login_submitted": false,
+    "authenticated_provider_session_verified": false,
+    "physical_devices": false
+  },
+  "behavior": [
+    "Official CargoTrack login embedded after explicit click, no main-button new tab",
+    "Iframe persists hidden across application routes",
+    "Identity/company/offline-context changes reset the view; TruckControl logout removes it",
+    "Provider owns credentials, cookies and expiry; no claim of authentication on load",
+    "Sandbox blocks top navigation; same-origin policy blocks host access to provider DOM",
+    "Referrer suppressed; no TruckControl Authorization/body sent to provider",
+    "Voluntary same-tab fallback for browsers restricting third-party storage",
+    "No provider API, data import, password storage or automatic provider logout"
+  ],
+  "browser_compatibility": {
+    "native_chrome_storage_partitioning_restored_for_live_probe": true,
+    "other_browser_flags_preserved": true,
+    "tls_cookie_sop_or_vendor_controls_weakened": false,
+    "reason": "Playwright disables ThirdPartyStoragePartitioning; its override is removed only for the live normal-browser probe. With partitioning disabled, provider IndexedDB permission fails. Native browser-default partitioning isolates storage and allows public login.",
+    "limitations": [
+      "Provider account authentication not exercised: owner enters credentials directly in provider form",
+      "Provider expiry/strict privacy settings can require login or same-tab fallback",
+      "Provider cookies belong to the browser; no per-company cookie isolation is claimed",
+      "Android/Windows emulated, no physical hardware"
+    ]
+  },
+  "preserved": {
+    "versions": [
+      33,
+      32,
+      31
+    ],
+    "demo_version": 6,
+    "demo_project": "appgprj_6adfbdfa388481919121d43f0fd9c242",
+    "main_manifest": "demo unchanged",
+    "native_migrations": 63,
+    "ddl_executed": 0,
+    "edge_deployments": 0,
+    "new_paid_model_calls": 0,
+    "model_limit_usd_monthly": 10,
+    "company_calls_monthly": 100,
+    "other_prs_excluded": [
+      82,
+      83,
+      87,
+      88
+    ]
+  },
+  "costs": {
+    "new_purchases_eur": 0,
+    "new_paid_model_calls": 0,
+    "aggregate_budget_eur": 200,
+    "historical_remaining": "not reconciled"
+  },
+  "full_commercial_launch_complete": false
+}

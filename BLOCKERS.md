@@ -1,4 +1,51 @@
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+No hay conector administrativo de Google ni secreto alternativo recuperable verificado. El coste nuevo de esta entrega es0EUR; el acumulado histórico sigue pendiente de conciliación. Las pruebas ficticias no resuelven el acceso privado del propietario a Google. Los demás gates comerciales no se declaran completados.
+
+Recibo durable: [docs/verification/gmail-account-repair-published-20261108.json](docs/verification/gmail-account-repair-published-20261108.json).
+
 # Dependencias comerciales pendientes
+
+## CargoTrack integrado publicado · Sites34 · 08/11/2026
+
+**Estado vigente: https://truckcontrolai.com, Sites34/app0.5.21-rc.1**, fuente72526b86a74f2539f073e888015e477e4dbee401. PR92 fusionado en7bd8de6c1bc9dbb67e8d2761f8620838114a0c76. Deploymentappgdep_6af0b9aa501c819195e5bb1a8898895d SUCCEEDED. Se conservan33/32/31 y demo6; no publicar main con su manifiesto de demo.
+
+CargoTrack abre ahora dentro de TruckControl por acción explícita y conserva el mismo iframe/documento al cambiar de sección. Salir o cambiar empresa/usuario retira la vista. El proveedor mantiene sus propias credenciales/cookies/caducidad; no se captura contraseña, no se promete autenticación por cargar la página y no se cierra automáticamente su sesión. Sin API ni importación. La petición del titular sustituye el acceso principal en otra pestaña de33; los checkpoints anteriores son históricos.
+
+CI42506902906/42506892118 y fuente exacta42507142648 SUCCESS:1564 controles por ejecución,64originales/11hashes. Después de publicar:75/75 hashes HTTPS,6/6 perfiles públicos,20/20 regresiones de CargoTrack/sesión y2/2 pruebas del formulario REAL público del proveedor, conservado al navegar con0pestañas nuevas. En estas últimas no se introdujeron credenciales ni se envió login: no se certifica sesión autenticada del titular. Android/Windows emulados, sin hardware físico. El probe restablece sólo la protección de almacenamiento particionado de Chrome desactivada por Playwright; sin rebajar TLS/SOP/cookies ni controles del proveedor. Hay alternativa voluntaria en la misma pestaña para navegadores restrictivos.
+
+Recibo: docs/verification/cargotrack-embedded-published-20261108.json; detalles y procedimiento: docs/CARGOTRACK_EMBEDDED.md. Fuente enviada por Git oficial y archivo Actions42507142653/artifact13627389701, tarSHA25621577cfdab95e445c1146cd7432f21e286b3a5f0e3170194f60258b7132d4413. Sin DDL/Edge/compras/IA nuevas; Native63/#37 y cuotas intactos, cobrosOFF. Gates comerciales generales y PR82/83/87/88 siguen separados. Automatización existente pausada, no prometer ejecución continua.
+
+## Publicación CargoTrack y Cerrar sesión verificada · 08/11/2026
+
+**Este bloque sustituye el estado de publicación y ejecutor de las notas históricas inferiores.** Producción **Sites33 / app0.5.21-rc.1**, https://truckcontrolai.com; source **89100d92c0b44d2b86c1495faffcab2944abacbb**, deploy **appgdep_6af0a4fe4ec881919f08b7ac80cda8d9 SUCCEEDED**. PR85 integrado en main1d3e88e; no volver a fusionarlo ni reconstruir CargoTrack/logout. Se conservan32/31 y demo6. Main mantiene el manifiesto de demo: no desplegarlo como producción.
+
+Ejecutor recuperado: shell, Git, descarga y Chromium funcionan. La red del sandbox no alcanza el proxy; el mismo comando por la escalada oficial funciona con proxy/CA heredados y TLS activo. No pedir al titular otra reconexión ni exportar credenciales a Actions. Copia Git de todos los refs locales verificada antes del fetch; sin reset ni sobrescritura. Fuente exacta enviada por Git de Sites y leída de vuelta, después save/deploy del archivo de Actions42496353868, artifact13623149793.
+
+**Pruebas:** CI completo de release42496353761 y PR42497386164/42497390339 SUCCESS,1.558 comprobaciones por ejecución; postmerge42498406754 SUCCESS;64 originales/11hashes conservados. Después de publicar: **75/75 hashes HTTPS**, **6/6 perfiles públicos** en3orígenes y **16/16 casos CargoTrack/logout** sobre el bundle publicado,0fallos/omisiones/flaky. Las16 pruebas usan SDK real y transporte HTTP ficticio; comprueban doble pulsación, rechazo remoto honesto, Atrás/recarga/BFCache, copia cifrada y logout entre pestañas. No certifican una sesión nativa de un cliente. Android/Windows emulados, sin hardware físico ni login CargoTrack real.
+
+Sin DDL, cambios Edge, compras ni llamadas IA nuevas; Native63/#37, aislamiento y cuotas10USD/mes–100llamadas/empresa intactos. Cobros reales y lanzamiento comercial global siguen cerrados/pendientes. Presupuesto histórico y saldo200EUR sin conciliar. PR82/83/87/88 permanecen separados. La automatización existente se observó pausada; no prometer ejecución continua.
+
+Evidencia durable: [recibo v33](docs/verification/cargotrack-v33-published-20261108.json); hashes y perfiles detallados enlazados dentro. Antes de una nueva entrega, volver a consultar main, PR y versión pública actuales; no promover891 ni32 si hay avances posteriores.
+
+El bloqueo de ejecutor/publicación de84 está RESUELTO. Permanecen las limitaciones de hardware, login CargoTrack del titular y aceptación comercial global; no son permisos rutinarios pendientes de CargoTrack.
+
+## Checkpoints anteriores — históricos, no sustituyen el bloque superior
+
+## Bloqueo de publicación CargoTrack/PR85 · 08/11/2026
+
+Código821ba13 y pruebas completos(1.558 por ejecución); paquete conectado89100d9 preparado/artifact13623149793. El bloqueo restante para enviar esta actualización es **infraestructura de ejecución de Codex**, no permisos de escritura GitHub ni una migración Supabase: incluso pwd devuelve `No usable execution environment`. El titular comunicó reconexión y el intento posterior devolvió el mismo error. El estado de entorno declara connected/capabilities[] y no hay capturas diagnósticas retenidas.
+
+La web real sigue Sites32 en https://truckcontrolai.com. Netlify no contiene un sitio TruckControl; no cambiar proyectos ajenos, crear duplicados o mover DNS para forzarlo. El protocolo de Sites exige fuente exacta enviada por su Git autorizado antes de guardar/desplegar una versión. No trasladar su token a Actions ni usar un SHA/archive ajeno. Se ha preparado todo lo posible mediante GitHub/CI sin esa transmisión.
+
+Acción imprescindible de infraestructura: un entorno que admita realmente ejecutar Git y el helper oficial. No volver a pedir los permisos GitHub/Supabase ya concedidos ni claves que no se necesitan. La reconexión indicada ya se intentó y no debe tratarse como autorización pendiente del propietario.
+
+Limitaciones de verificación: perfiles Android/Windows emulados, sin hardware físico; la navegación CargoTrack se intercepta en pruebas y su sondeo público devuelve bot_blocked. No se eluden controles ni se certifica un login de proveedor. No son nuevos requisitos de contratación. Ver [recibo](docs/verification/cargotrack-logout-20261108.json).
+
 
 ## Estado vigente · 8 de noviembre de 2026
 

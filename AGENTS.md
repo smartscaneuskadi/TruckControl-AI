@@ -1,4 +1,83 @@
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+CI de PR42533025198, rama42533020536 y fuente exacta42533027609 SUCCESS: **1.664 comprobaciones por ejecución**, sin sumar reejecuciones. Se conservan las64 originales/11hashes. Después de publicar: **75/75 hashes HTTPS y 42/42 recorridos de navegador**, sin fallos, omisiones ni flaky. SDK real con transporte ficticio y accesos privados no interceptados bloqueados. Android/Windows emulados; sin hardware físico ni nueva autenticación de un cliente real.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+Backend `company-gmail`15 ACTIVE:9/9 fuentes y7/7 controles HTTP verificados; las otras11 funciones intactas. Sin DDL, compras, nuevas llamadas IA ni lectura/envío de correo. Native63, cuotas10USD/mes y100llamadas/empresa, precios, RLS y cobrosOFF conservados. No repetir #37 ni las migraciones aplicadas.
+
+Recibo durable: [docs/verification/gmail-account-repair-published-20261108.json](docs/verification/gmail-account-repair-published-20261108.json).
+
+# Reparación de cuenta/Gmail candidata · 08/11/2026
+
+Producción comprobada sigue Sites38/sourceee43c0267bee67f45002b9a13736eaeb7cdb94f6; conservarla y demo6. Trabajo en fix/gmail-setup-account-flow-20261108, issue97. Leer docs/GMAIL_ACCOUNT_REPAIR.md antes de continuar. Cuenta accesible en barra, tarjeta de cuenta primero, validación Google antes de guardar y antes de iniciar OAuth; solo administración global comprueba candidatas/configuración. Sin DDL/nuevas claves/IA/cobros. Google rechaza la credencial real guardada con401/invalid_client; no declarar buzón empresarial conectado ni pedir repetir consentimiento antes de resolverla. El titular confirma Gmail personal.1248unit/SQL,45Python,Deno y18focalizadas correctas; regresión completa y arreglo de anchuras pendientes en este checkpoint, no anunciar CI verde. Publicar backend verificado antes de frontend, exclusivamente en el proyecto existente y tras controles completos. Conservar14/38 para recuperación. Native63/64pruebas/11hashes/#37 y cuotas intactos.
+
+# Cuatro idiomas publicados · Sites38 · 08/11/2026
+
+Este bloque prevalece sobre el histórico inferior. Vigente https://truckcontrolai.com, Sites38/app0.5.21-rc.1, fuenteee43c0267bee67f45002b9a13736eaeb7cdb94f6, deploymentappgdep_6af0dfe58e408191a072932ea5cd9a30 SUCCEEDED. PR96 integrado en6b439a880122a47ad31985687f6133e19f9a54b4. Se conservan37/35/34/33/32/31 y demo6;36 nunca publicado. Main conserva manifiesto DEMO: no desplegarlo como producción.
+
+Selector Español/Română/English/Français en portal y barra de la app; preferencia local persistente y compartida entre pestañas.2664 claves por idioma destino,7992 traducciones locales. No remonta formularios ni buzones al cambiar idioma. Fechas/importes según idioma, EUR y datos guardados intactos. Correo, nombres/documentos del usuario, páginas externas y plantillas de servidor conservan idioma original. Barra adaptable a320px. Ver docs/INTERFACE_LANGUAGES.md.
+
+CI PR42520790998 y fuente exacta42520789841 SUCCESS; paquete42520789863 SUCCESS:1622 controles por ejecución (1221unit/SQL,45Python,82demo,50empresa,178SaaS,20candidata,20producción,6perfiles publicados sobre37).64originales/11hashes intactos. Tras publicar se comprobaron interactivamente los4idiomas en portal y app, persistencia tras recarga y actualización PWA. Fuente/deployment nativos coinciden; GET del ejecutor devolvió403, sin afirmar hashes HTTPS pospublicación. Android/Windows emulados, sin hardware físico. Recibo docs/verification/interface-languages-published-20261108.json.
+
+Correo real de37 conservado: Gmail OAuth existente y cuentas compatibles IMAP993/SMTP465; autorización de cada usuario necesaria, Microsoft OAuth pendiente. No se autenticó un buzón real ni se envió correo real. Sin DDL, compras, llamadas IA o cambios de cobros; continúanOFF. No repetir aceptación nativa63 ni llamadas de IA previas.
+
+# Correo real publicado · Sites37 · 08/11/2026
+
+Vigente: https://truckcontrolai.com, fuente8c13c24172758546a40e76ffe7e484348fb2124a, deploymentappgdep_6af0d5f2a8b08191b89c782ebfbd7bf7 SUCCEEDED. PR95 integrado. Sites36 guardado pero nunca publicado. Main conserva manifiesto DEMO: usar checkout de producción.
+
+Correo conecta cuentas mediante IMAP993/SMTP465 con TLS estricto y sesión humana verificada. Contraseñas sólo en memoria temporal; sin WebStorage/BD/logs. Gmail OAuth existente conservado; Microsoft OAuth pendiente. Pruebas TLS nativas Yahoo/Porkbun correctas, 7 fuentes Edge iguales; no se autenticó ningún buzón ni se envió correo real. CI final y fuente exacta SUCCESS,1597 controles por ejecución,64originales/11hashes intactos. Recibo docs/verification/personal-mail-connectors-published-20261108.json. Sin DDL/compras/IA nueva, cobrosOFF. La siguiente entrega añade cuatro idiomas en la interfaz.
+
 # TruckControl AI — continuidad y publicación
+
+## Correo unificado publicado · Sites35 · 08/11/2026
+
+Estado vigente: https://truckcontrolai.com, Sites35/app0.5.21-rc.1, fuente5c954703c2d858add18501fef15efce6f1504bc9. PR94 integrado en56ebbf6. Deploymentappgdep_6af0c7f83fb881919bbb244517c0a8a6 SUCCEEDED. Se conservan34/33/32/31 y demo6. No publicar el manifiesto de demo de main.
+
+Un único menú Correo abre Gmail/Yahoo/Porkbun/Outlook o una URL HTTPS propia. Vistas sin máximo configurado, persistentes al cambiar correo/sección; añadir o cerrar una no recarga las otras. Cookies/cuentas/caducidad dependen del proveedor; las vistas no equivalen a sesiones aisladas ni sobreviven a recargar toda la app. Gmail dio401 y Yahoo rechazó iframe en prueba pública previa: no afirmar login real ni quitar protecciones. Alternativa voluntaria en la misma pestaña. Facturas y cliente Gmail anterior conservan rutas/permisos.
+
+CI de PR42512225452 y fuente exacta42512311126 SUCCESS:1576 controles por ejecución (1191 unitarias/SQL,45Python,72demo,50empresa,178SaaS,14candidata,20producción,6perfiles públicos sobre la versión anterior). Paquete42512311132 SUCCESS.64originales/11hashes intactos. Tras publicar se comprobó release.json HTTPS con fuente exacta limpia y pantalla Correo pública en demo. Android/Windows emulados; sin login real ni hardware físico. Recibo: docs/verification/mail-workspace-published-20261108.json. Sin DDL/Edge/env de servidor/compras/IA/correos nuevos; cobros OFF.
+
+## CargoTrack integrado publicado · Sites34 · 08/11/2026
+
+**Estado vigente: https://truckcontrolai.com, Sites34/app0.5.21-rc.1**, fuente72526b86a74f2539f073e888015e477e4dbee401. PR92 fusionado en7bd8de6c1bc9dbb67e8d2761f8620838114a0c76. Deploymentappgdep_6af0b9aa501c819195e5bb1a8898895d SUCCEEDED. Se conservan33/32/31 y demo6; no publicar main con su manifiesto de demo.
+
+CargoTrack abre ahora dentro de TruckControl por acción explícita y conserva el mismo iframe/documento al cambiar de sección. Salir o cambiar empresa/usuario retira la vista. El proveedor mantiene sus propias credenciales/cookies/caducidad; no se captura contraseña, no se promete autenticación por cargar la página y no se cierra automáticamente su sesión. Sin API ni importación. La petición del titular sustituye el acceso principal en otra pestaña de33; los checkpoints anteriores son históricos.
+
+CI42506902906/42506892118 y fuente exacta42507142648 SUCCESS:1564 controles por ejecución,64originales/11hashes. Después de publicar:75/75 hashes HTTPS,6/6 perfiles públicos,20/20 regresiones de CargoTrack/sesión y2/2 pruebas del formulario REAL público del proveedor, conservado al navegar con0pestañas nuevas. En estas últimas no se introdujeron credenciales ni se envió login: no se certifica sesión autenticada del titular. Android/Windows emulados, sin hardware físico. El probe restablece sólo la protección de almacenamiento particionado de Chrome desactivada por Playwright; sin rebajar TLS/SOP/cookies ni controles del proveedor. Hay alternativa voluntaria en la misma pestaña para navegadores restrictivos.
+
+Recibo: docs/verification/cargotrack-embedded-published-20261108.json; detalles y procedimiento: docs/CARGOTRACK_EMBEDDED.md. Fuente enviada por Git oficial y archivo Actions42507142653/artifact13627389701, tarSHA25621577cfdab95e445c1146cd7432f21e286b3a5f0e3170194f60258b7132d4413. Sin DDL/Edge/compras/IA nuevas; Native63/#37 y cuotas intactos, cobrosOFF. Gates comerciales generales y PR82/83/87/88 siguen separados. Automatización existente pausada, no prometer ejecución continua.
+
+## Publicación CargoTrack y Cerrar sesión verificada · 08/11/2026
+
+**Este bloque sustituye el estado de publicación y ejecutor de las notas históricas inferiores.** Producción **Sites33 / app0.5.21-rc.1**, https://truckcontrolai.com; source **89100d92c0b44d2b86c1495faffcab2944abacbb**, deploy **appgdep_6af0a4fe4ec881919f08b7ac80cda8d9 SUCCEEDED**. PR85 integrado en main1d3e88e; no volver a fusionarlo ni reconstruir CargoTrack/logout. Se conservan32/31 y demo6. Main mantiene el manifiesto de demo: no desplegarlo como producción.
+
+Ejecutor recuperado: shell, Git, descarga y Chromium funcionan. La red del sandbox no alcanza el proxy; el mismo comando por la escalada oficial funciona con proxy/CA heredados y TLS activo. No pedir al titular otra reconexión ni exportar credenciales a Actions. Copia Git de todos los refs locales verificada antes del fetch; sin reset ni sobrescritura. Fuente exacta enviada por Git de Sites y leída de vuelta, después save/deploy del archivo de Actions42496353868, artifact13623149793.
+
+**Pruebas:** CI completo de release42496353761 y PR42497386164/42497390339 SUCCESS,1.558 comprobaciones por ejecución; postmerge42498406754 SUCCESS;64 originales/11hashes conservados. Después de publicar: **75/75 hashes HTTPS**, **6/6 perfiles públicos** en3orígenes y **16/16 casos CargoTrack/logout** sobre el bundle publicado,0fallos/omisiones/flaky. Las16 pruebas usan SDK real y transporte HTTP ficticio; comprueban doble pulsación, rechazo remoto honesto, Atrás/recarga/BFCache, copia cifrada y logout entre pestañas. No certifican una sesión nativa de un cliente. Android/Windows emulados, sin hardware físico ni login CargoTrack real.
+
+Sin DDL, cambios Edge, compras ni llamadas IA nuevas; Native63/#37, aislamiento y cuotas10USD/mes–100llamadas/empresa intactos. Cobros reales y lanzamiento comercial global siguen cerrados/pendientes. Presupuesto histórico y saldo200EUR sin conciliar. PR82/83/87/88 permanecen separados. La automatización existente se observó pausada; no prometer ejecución continua.
+
+Evidencia durable: [recibo v33](docs/verification/cargotrack-v33-published-20261108.json); hashes y perfiles detallados enlazados dentro. Antes de una nueva entrega, volver a consultar main, PR y versión pública actuales; no promover891 ni32 si hay avances posteriores.
+
+## Checkpoints anteriores — históricos, no sustituyen el bloque superior
+
+## Entrega84/PR85 · CargoTrack y salida segura · 08/11/2026
+
+Fuente de aplicación verificada `821ba13d2f2dcf68fc0fd1990c0e7190d304f7e2`: ambos CI42495957998/42495963203 SUCCESS, **1.558 comprobaciones por ejecución**, sin sumar reejecuciones. Revisión de seguridad6723621040. Este bloque se refiere a CargoTrack/logout; no declara completado el lanzamiento comercial general.
+
+Código en la rama existente feature/cargotrack-access-84/PR85. CargoTrack sólo enlaza HTTPS oficial en pestaña segura: sin contraseña, API ni sincronización. Salida por SDK Supabase con promesa única, aviso persistente si sólo se confirma cierre local, rutas privadas/BFCache y claves/copias offline protegidas también ante logout desde otra pestaña. No modificar los64 casos originales/11hashes ni relajar Axe.
+
+**Publicación nueva bloqueada:** el ejecutor sigue devolviendo No usable execution environment después de la reconexión comunicada por el titular. GitHub permite escribir y Actions prueba/compila. Producción continúa Sites32/0.5.20-rc.1; respaldo31 y demo6 verificados. Netlify no contiene TruckControl: no crear duplicados ni mover DNS. No exportar credenciales de Sites a Actions para sortear el bloqueo.
+
+Paquete conectado preparado en deploy/cargotrack-production-20261108/`89100d92c0b44d2b86c1495faffcab2944abacbb`, workflow42496353868 SUCCESS, artifact13623149793. Es **UNPUBLISHED**, no fuente enviada a Sites. Sólo su rama tiene el manifiesto de producción; main conserva el de demo. Antes de desplegar, checks del head final, PR85 integrado, fuente exacta por Git oficial, archivo correspondiente y comprobación HTTPS/recorridos posteriores. Ver docs/CARGOTRACK.md y docs/verification/cargotrack-logout-20261108.json.
+
+No hay DDL, cambios de permisos/cuotas/credenciales ni nuevas llamadas IA/compras por esta entrega. Conservar63 migraciones aplicadas y #37. Segundo conductor(PR87), incidencias backend(PR88), panel(PR83) y pruebas Stripe(PR82) permanecen separados; no incluirlos en esta publicación.
+
 
 ## Estado vigente · 8 de noviembre de 2026
 

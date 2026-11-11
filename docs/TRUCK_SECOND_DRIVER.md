@@ -1,6 +1,6 @@
 # Segundo conductor opcional por camión
 
-Candidato en revisión; no desplegado ni aplicado en Supabase. La web pública continúa en v32. La plantilla SQL fue creada por el CLI oficial, no por un nombre inventado: [evidencia de generación](verification/truck-second-driver-cli-template-20261108.json).
+Candidato en revisión, actualizado con main7cfa25f el11/11/2026; no desplegado ni aplicado en Supabase. La web pública continúa en Sites39 y se conserva demo6. La plantilla SQL fue creada por el CLI oficial, no por un nombre inventado: [evidencia de generación](verification/truck-second-driver-cli-template-20261108.json).
 
 En Camiones, abre la ficha y pulsa «Editar ficha». El campo «Conductor asignado» conserva el puesto principal. «Segundo conductor (opcional)» permite asignar otra persona disponible de la misma empresa o dejar «Sin segundo conductor». No es obligatorio usar dos conductores. Si eliges la misma persona en ambos puestos, el formulario muestra el error y conserva tus valores para corregirlos.
 
@@ -17,6 +17,6 @@ La lista, búsqueda, CSV y ficha de camiones muestran los dos puestos. En Conduc
 
 ## Verificación y publicación
 
-Las pruebas candidatas cubren las dos asignaciones, ausencia/null en clientes antiguos, permisos por empresa y sesión, cambios concurrentes, copias y vault cifrado, y el formulario en Android/Windows emulados y ambos temas. Los resultados reales de CI se registrarán en el PR; este documento no afirma que ya hayan pasado.
+Las36pruebas focalizadas de dominio, DTO y SQL embebido pasaron después de incorporar main. Se añaden12mensajes en inglés, rumano y francés y recorridos de formulario en los cuatro idiomas. El contrato PostgreSQL17 comprueba rollback de DDL, cuatro carreras reales entre conexiones independientes y conservación de los dos puestos tras pg_dump/pg_restore. Mantiene el guard de ejecución exclusiva en GitHub Actions, las comprobaciones históricas y las64pruebas originales/11hashes. Los resultados del nuevo CI y de los navegadores se registrarán en el PR; no se presentan como completados antes de terminar.
 
 Root coordina el orden de aplicación con la candidata independiente de incidencias Stripe. No aplicar esta migración ni publicar el frontend antes de revisión, CI y aceptación nativa autorizada. No se han usado datos empresariales reales, proveedores o llamadas IA para esta implementación. Los dispositivos físicos siguen pendientes.

@@ -1,4 +1,9 @@
-import { Component, StrictMode } from "react";
+import {
+  currentLanguage,
+  subscribeLanguage,
+  updateDocumentTitle,
+} from "./i18n/runtime";
+import { useEffect, useSyncExternalStore, Component, StrictMode } from "react";
 import type { ErrorInfo, ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App";
@@ -52,28 +57,37 @@ class ErrorBoundary extends Component<
 setAppearanceDocument(
   readAppearanceCache(null)?.preference ?? defaultAppearance,
 );
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <AppearanceProvider>
-        <PwaTools>
-          <OfflineApplication>
-            <CompanyAccessProvider>
-              <FleetAccess>
-                <OperationsProvider>
-                  <DocumentsProvider>
-                    <TyresProvider>
-                      <PersonalMailProvider>
-                        <App />
-                      </PersonalMailProvider>
-                    </TyresProvider>
-                  </DocumentsProvider>
-                </OperationsProvider>
-              </FleetAccess>
-            </CompanyAccessProvider>
-          </OfflineApplication>
-        </PwaTools>
-      </AppearanceProvider>
-    </ErrorBoundary>
-  </StrictMode>,
-);
+function LocalizedApplication() {
+  const language = useSyncExternalStore(
+    subscribeLanguage,
+    currentLanguage,
+    () => "es" as const,
+  );
+  useEffect(() => updateDocumentTitle(), [language]);
+  return (
+    <StrictMode>
+      <ErrorBoundary>
+        <AppearanceProvider>
+          <PwaTools>
+            <OfflineApplication>
+              <CompanyAccessProvider>
+                <FleetAccess>
+                  <OperationsProvider>
+                    <DocumentsProvider>
+                      <TyresProvider>
+                        <PersonalMailProvider>
+                          <App />
+                        </PersonalMailProvider>
+                      </TyresProvider>
+                    </DocumentsProvider>
+                  </OperationsProvider>
+                </FleetAccess>
+              </CompanyAccessProvider>
+            </OfflineApplication>
+          </PwaTools>
+        </AppearanceProvider>
+      </ErrorBoundary>
+    </StrictMode>
+  );
+}
+createRoot(document.getElementById("root")!).render(<LocalizedApplication />);

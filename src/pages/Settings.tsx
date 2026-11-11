@@ -12,6 +12,7 @@ import { useInstall } from "../components/PwaTools";
 import { downloadFile } from "../lib/export";
 import { Badge, Button, Field, Modal, PageHeading } from "../components/ui";
 import { useCompany } from "../app/CompanyAccess";
+import { useOffline } from "../app/OfflineContext";
 import { Link } from "react-router-dom";
 import { OfflineSettings } from "../components/OfflineSettings";
 import { DemoBackupTools } from "../components/DemoBackupTools";
@@ -26,6 +27,7 @@ export function Settings() {
   const operations = useOperations();
   const tyres = useTyres();
   const access = useCompany();
+  const offline = useOffline();
   const cloud = access.mode === "company";
   const { install, installed } = useInstall();
   const [confirm, setConfirm] = useState(false);
@@ -41,30 +43,7 @@ export function Settings() {
             : "Controla tus datos de demostración y lleva la aplicación contigo."
         }
       />
-      <AppearanceSettings />
-      <div className="settings-grid">
-        <CompanyFiscalSettings />
-        <OfflineSettings />
-        {cloud && <CompanyBackupTools />}
-        <section className="card settings-card">
-          <span className="settings-icon">
-            <MonitorSmartphone size={25} />
-          </span>
-          <Badge tone="green">Windows + Android</Badge>
-          <h2>Tu flota, donde estés</h2>
-          <p>
-            Instala la aplicación desde Edge o Chrome. La demo funciona sin
-            conexión después de la primera visita.
-          </p>
-          <Button icon={Download} onClick={install}>
-            {installed
-              ? "Ver instrucciones de instalación"
-              : "Instalar aplicación"}
-          </Button>
-          <small>
-            Aplicación web instalable (PWA). Sin .exe ni .apk en esta fase.
-          </small>
-        </section>
+      <div className="settings-account">
         <section className="card settings-card">
           <span className="settings-icon">
             <Database size={25} />
@@ -118,13 +97,17 @@ export function Settings() {
                 </Button>
                 <Button
                   variant="ghost"
-                  onClick={() =>
+                  onClick={() => {
+                    if (offline.offline) {
+                      offline.lock();
+                      return;
+                    }
                     void access
                       .signOut()
-                      .catch((e) => setError(errorMessage(e)))
-                  }
+                      .catch((e) => setError(errorMessage(e)));
+                  }}
                 >
-                  Cerrar sesión
+                  {offline.offline ? "Bloquear copia" : "Cerrar sesión"}
                 </Button>
               </div>
               <Link to="/invoices" className="button secondary">
@@ -141,6 +124,31 @@ export function Settings() {
               <Button onClick={access.openAccount}>Acceso de empresas</Button>
             </>
           )}
+        </section>
+      </div>
+      <AppearanceSettings />
+      <div className="settings-grid">
+        <CompanyFiscalSettings />
+        <OfflineSettings />
+        {cloud && <CompanyBackupTools />}
+        <section className="card settings-card">
+          <span className="settings-icon">
+            <MonitorSmartphone size={25} />
+          </span>
+          <Badge tone="green">Windows + Android</Badge>
+          <h2>Tu flota, donde estés</h2>
+          <p>
+            Instala la aplicación desde Edge o Chrome. La demo funciona sin
+            conexión después de la primera visita.
+          </p>
+          <Button icon={Download} onClick={install}>
+            {installed
+              ? "Ver instrucciones de instalación"
+              : "Instalar aplicación"}
+          </Button>
+          <small>
+            Aplicación web instalable (PWA). Sin .exe ni .apk en esta fase.
+          </small>
         </section>
         <section className="card settings-card">
           <span className="settings-icon">

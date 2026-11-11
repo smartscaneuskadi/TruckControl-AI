@@ -260,16 +260,21 @@ async function readEnvelope(scope: string) {
     db.close();
   }
 }
-async function compareAndWrite(value: VaultEnvelope, expected: number | null) {
+async function compareAndWrite(
+  value: VaultEnvelope,
+  expected: number | null,
+  active: () => boolean = () => true,
+) {
   const db = await database();
   try {
+    if (!active()) return false;
     return await new Promise<boolean>((resolve, reject) => {
       const tx = db.transaction("vaults", "readwrite"),
         store = tx.objectStore("vaults"),
         r = store.get(value.scope);
       let success = false;
       r.onsuccess = () => {
-        if ((r.result?.revision ?? null) !== expected) return;
+        if (!active() || (r.result?.revision ?? null) !== expected) return;
         store.put(value);
         success = true;
       };
@@ -309,31 +314,51 @@ export class VaultSession {
   lock() {
     this.key = null;
   }
-  async read(allowExpired = false) {
+  assertUnlocked() {
     if (!this.key) throw Error("La copia está bloqueada.");
-    const envelope = await readEnvelope(this.scope);
-    if (!envelope) throw Error("No hay una copia para esta cuenta.");
-    return openVault(envelope, this.scope, this.key, allowExpired);
   }
-  async update(change: (value: VaultPayload) => VaultPayload) {
+  private activeKey(key: CryptoKey, signal?: AbortSignal) {
+    this.assertUnlocked();
+    if (this.key !== key) throw Error("La copia está bloqueada.");
+    signal?.throwIfAborted();
+  }
+  async read(allowExpired = false, signal?: AbortSignal) {
+    this.assertUnlocked();
+    const key = this.key!;
+    signal?.throwIfAborted();
+    const envelope = await readEnvelope(this.scope);
+    this.activeKey(key, signal);
+    if (!envelope) throw Error("No hay una copia para esta cuenta.");
+    const payload = await openVault(envelope, this.scope, key, allowExpired);
+    // WebCrypto cannot be recalled once started. Never release its plaintext
+    // after the owner locked the capability while decryption was in flight.
+    this.activeKey(key, signal);
+    return payload;
+  }
+  async update(
+    change: (value: VaultPayload) => VaultPayload,
+    signal?: AbortSignal,
+  ) {
+    this.assertUnlocked();
+    const key = this.key!;
+    const active = () => this.key === key && !signal?.aborted;
     for (let attempt = 0; attempt < 5; attempt++) {
-      if (!this.key) throw Error("La copia está bloqueada.");
+      this.activeKey(key, signal);
       const old = await readEnvelope(this.scope);
+      this.activeKey(key, signal);
       if (!old) throw Error("No hay una copia para esta cuenta.");
-      const next = validateVaultPayload(
-        change(await openVault(old, this.scope, this.key, true)),
-        this.scope,
-        true,
-      );
+      const plain = await openVault(old, this.scope, key, true);
+      this.activeKey(key, signal);
+      const next = validateVaultPayload(change(plain), this.scope, true);
       const envelope = await sealVault(
-        next,
-        this.scope,
-        this.key,
-        this.salt,
-        old.revision + 1,
+        next, this.scope, key, this.salt, old.revision + 1,
       );
-      if (!this.key) throw Error("La copia está bloqueada.");
-      if (await compareAndWrite(envelope, old.revision)) return next;
+      this.activeKey(key, signal);
+      const written = await compareAndWrite(envelope, old.revision, active);
+      // A completed encrypted transaction is retained, even if the UI closed
+      // during its commit. Closing never deletes data or reports stale success.
+      this.activeKey(key, signal);
+      if (written) return next;
     }
     throw Error(
       "Otra ventana está actualizando la copia. Reintenta sin cerrar el formulario.",
@@ -372,28 +397,37 @@ export class VaultSession {
     scope: string,
     passphrase: string,
     payload: VaultPayload,
+    signal?: AbortSignal,
   ) {
-    if (await readEnvelope(scope))
+    signal?.throwIfAborted();
+    const previous = await readEnvelope(scope);
+    signal?.throwIfAborted();
+    if (previous)
       throw Error(
         "Ya existe una copia cifrada. Desbloquéala con su frase para conservar los cambios pendientes.",
       );
-    const salt = newVaultSalt(),
-      key = await deriveVaultKey(passphrase, salt),
-      valid = validateVaultPayload(payload, scope);
-    if (
-      !(await compareAndWrite(
-        await sealVault(valid, scope, key, salt, 1),
-        null,
-      ))
-    )
-      throw Error("Ya existe una copia para esta empresa.");
+    const salt = newVaultSalt();
+    const key = await deriveVaultKey(passphrase, salt);
+    signal?.throwIfAborted();
+    const valid = validateVaultPayload(payload, scope);
+    const envelope = await sealVault(valid, scope, key, salt, 1);
+    signal?.throwIfAborted();
+    const written = await compareAndWrite(envelope, null, () => !signal?.aborted);
+    signal?.throwIfAborted();
+    if (!written) throw Error("Ya existe una copia para esta empresa.");
     return new VaultSession(scope, key, salt);
   }
-  static async unlock(scope: string, passphrase: string, allowExpired = false) {
+  static async unlock(
+    scope: string, passphrase: string, allowExpired = false, signal?: AbortSignal,
+  ) {
+    signal?.throwIfAborted();
     const envelope = await readEnvelope(scope);
+    signal?.throwIfAborted();
     if (!envelope) throw Error("No hay una copia guardada para esta cuenta.");
     const key = await deriveVaultKey(passphrase, envelope.salt);
+    signal?.throwIfAborted();
     await openVault(envelope, scope, key, allowExpired);
+    signal?.throwIfAborted();
     return new VaultSession(scope, key, envelope.salt);
   }
 }

@@ -378,7 +378,8 @@ function TruckFields({ value }: { value?: Truck }) {
           <option value="">Sin segundo conductor</option>
           {snapshot.drivers
             .filter(
-              (driver) => driver.status === "active" && !assigned.has(driver.id),
+              (driver) =>
+                driver.status === "active" && !assigned.has(driver.id),
             )
             .map((driver) => (
               <option key={driver.id} value={driver.id}>
@@ -386,7 +387,10 @@ function TruckFields({ value }: { value?: Truck }) {
               </option>
             ))}
         </select>
-        <small>Debe ser distinto del conductor principal. Deja esta opción vacía para trabajar con uno.</small>
+        <small>
+          Debe ser distinto del conductor principal. Deja esta opción vacía para
+          trabajar con uno.
+        </small>
       </Field>
       <Field label="Próxima ITV">
         <input

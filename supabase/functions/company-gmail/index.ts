@@ -18,6 +18,17 @@ const client = createClient(url, serviceKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 const gateway: GmailGateway = {
+  async canConfigureGoogle(token) {
+    const actor = createClient(url, serviceKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
+    const { data, error } = await actor.rpc("tc_provider_control", {
+      p_action: "status",
+      p_data: {},
+    });
+    return !error && Boolean(data?.google && data?.google?.vault_available);
+  },
   async featureAllowed(organizationId, userId, feature) {
     const { data, error } = await client.rpc("tc_company_server_access", {
       p_org: organizationId,
@@ -99,6 +110,7 @@ const aiRuntime = createAiRuntimeResolver(
   [Deno.env.get("OPENAI_API_KEY"), Deno.env.get("truckcontrol_openai_api_key")],
 );
 const config: GmailConfig = {
+  validateOAuthCredentials: true,
   enforceCompanyRoles: true,
   enforceReceivedPeriod: true,
   enforceEntitlements: true,
