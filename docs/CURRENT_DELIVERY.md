@@ -1,3 +1,23 @@
+## Ampliaciones verificadas · 11/11/2026 UTC
+
+Este bloque actualiza las ampliaciones, sin anunciar todavía otra publicación: pública39/app0.5.21-rc.1 y demo6 conservadas. PR87 integrado2c0d9b6, PR88 integradod439d22 (incluye interfaz83 y contratos82). Supabase65, nuevas64/65 aplicadas una vez y hashes iguales.20/20 controles nativos de segundo conductor/ledger con rollback íntegro;117PASS de PostgreSQL17 aislado con concurrencia y restauración lógica. Receptores Stripe incidentes1/fiscal2 activos técnicamente pero negocioOFF;19 fuentes ejecutables iguales y cuatro controles HTTP correctos.
+
+Candidata0.5.22-rc.1 en release/commercial-hardening-20261111. Conservar los64 casos/11hashes, no repetir #37 ni tocar FIXPilot. Sigue pendiente publicar/verificar interfaz, Stripe sandbox/backend real y aceptación fiscal/legal/recuperación administrada/Android comercial. Gmail empresarial sigue invalid_client.0 nuevas compras o compromisos; saldo200EUR histórico sin conciliar. [Recibo nativo](verification/new-additions-native-20261111.json).
+
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+CI de PR42533025198, rama42533020536 y fuente exacta42533027609 SUCCESS: **1.664 comprobaciones por ejecución**, sin sumar reejecuciones. Se conservan las64 originales/11hashes. Después de publicar: **75/75 hashes HTTPS y 42/42 recorridos de navegador**, sin fallos, omisiones ni flaky. SDK real con transporte ficticio y accesos privados no interceptados bloqueados. Android/Windows emulados; sin hardware físico ni nueva autenticación de un cliente real.
+
+Backend `company-gmail`15 ACTIVE:9/9 fuentes y7/7 controles HTTP verificados; las otras11 funciones intactas. Sin DDL, compras, nuevas llamadas IA ni lectura/envío de correo. Native63, cuotas10USD/mes y100llamadas/empresa, precios, RLS y cobrosOFF conservados. No repetir #37 ni las migraciones aplicadas.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+Recibo: [verificación](verification/gmail-account-repair-published-20261108.json).
+
 # TruckControl AI — entrega vigente, 8 de noviembre de 2026
 
 ## Candidata de cuenta/Gmail · producción38 conservada

@@ -1,3 +1,21 @@
+## Estado de despliegue · 11/11/2026 UTC
+
+Producción39/app0.5.21-rc.1 conservada. Supabase kkkemaycedexymrpaqtp tiene65 migraciones; mapeos64/65 y hashes en docs/deployment/recovered-migrations.json. No repetirlas.20/20 controles nuevos nativos con rollback. Receptor truckcontrol-stripe-incidents1 y fiscal2 desplegados y verificados, ambos negocioOFF. Nueva interfaz0.5.22-rc.1 requiere checkout desde la fuente39, manifiesto del sitio de PRODUCCIÓN, CI, paquete y comprobación HTTPS. Main conserva manifiesto DEMO: no publicarlo directamente. Nunca bajar esquema para revertir interfaz: conservar columnas/ledger aditivos y recuperar39; no borrar historial fiscal. Restauración lógica PostgreSQL comprobada, restauración administrada completa no.
+
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+Fuente enviada por Git oficial sin force ni credencial persistente; paquete local exacto SHA256 `c35fb0be6045f4af12f0587b995056c0af5db12783ae8808eeedc7b01340dcd0`. Sites normaliza el contenedor almacenado: no confundir ambos hashes. Las75 comparaciones de bytes HTTPS verifican el contenido servido.
+
+Recuperación frontend: desplegar la versión guardada38 `appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_1158214ceae48191aac244710231626b` en el mismo proyecto. No modificar DNS ni demo6. Si se detecta una regresión del backend, las fuentes14 están preservadas en main anterior `a4d2c37cb5ac29a60be78740c258a76d71762872` y en el bundle anterior local; redeplegar esas fuentes crearía otra versión, sin cambiar secretos ni migraciones. No ejecutar la recuperación sin un fallo que la justifique.
+
+Backend `company-gmail`15 ACTIVE:9/9 fuentes y7/7 controles HTTP verificados; las otras11 funciones intactas. Sin DDL, compras, nuevas llamadas IA ni lectura/envío de correo. Native63, cuotas10USD/mes y100llamadas/empresa, precios, RLS y cobrosOFF conservados. No repetir #37 ni las migraciones aplicadas.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+Recibo durable: [docs/verification/gmail-account-repair-published-20261108.json](docs/verification/gmail-account-repair-published-20261108.json).
+
 # Despliegue y recuperación
 
 ## CargoTrack integrado publicado · Sites34 · 08/11/2026

@@ -1,0 +1,155 @@
+{
+  "url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+  "origins": [
+    "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+    "https://truckcontrolai.com",
+    "https://www.truckcontrolai.com"
+  ],
+  "results": [
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "profile": "windows",
+      "sourceCommit": "f861e42ece8ba7c83b42f493be611814113058c3",
+      "themes": [
+        "light",
+        "cockpit"
+      ],
+      "gmailCallback": true,
+      "universalMailOffline": true,
+      "authMailCors": true,
+      "mailServicesCors": true,
+      "personalMailConfig": true,
+      "personalMailReady": true,
+      "publicLegalPages": true,
+      "billingIssuer": true,
+      "invoiceInbox": true,
+      "tyresOffline": true,
+      "personalMailOffline": true,
+      "companyFiscalPreparation": true,
+      "companyCopilot": true,
+      "aiSpecialists": true,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "profile": "android",
+      "sourceCommit": "f861e42ece8ba7c83b42f493be611814113058c3",
+      "themes": [
+        "light",
+        "cockpit"
+      ],
+      "gmailCallback": true,
+      "universalMailOffline": true,
+      "authMailCors": true,
+      "mailServicesCors": true,
+      "personalMailConfig": true,
+      "personalMailReady": true,
+      "publicLegalPages": true,
+      "billingIssuer": true,
+      "invoiceInbox": true,
+      "tyresOffline": true,
+      "personalMailOffline": true,
+      "companyFiscalPreparation": true,
+      "companyCopilot": true,
+      "aiSpecialists": true,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "profile": "windows",
+      "sourceCommit": "f861e42ece8ba7c83b42f493be611814113058c3",
+      "themes": [
+        "light",
+        "cockpit"
+      ],
+      "gmailCallback": true,
+      "universalMailOffline": true,
+      "authMailCors": true,
+      "mailServicesCors": true,
+      "personalMailConfig": true,
+      "personalMailReady": true,
+      "publicLegalPages": true,
+      "billingIssuer": true,
+      "invoiceInbox": true,
+      "tyresOffline": true,
+      "personalMailOffline": true,
+      "companyFiscalPreparation": true,
+      "companyCopilot": true,
+      "aiSpecialists": true,
+      "passed": true
+    },
+    {
+      "origin": "https://truckcontrolai.com",
+      "profile": "android",
+      "sourceCommit": "f861e42ece8ba7c83b42f493be611814113058c3",
+      "themes": [
+        "light",
+        "cockpit"
+      ],
+      "gmailCallback": true,
+      "universalMailOffline": true,
+      "authMailCors": true,
+      "mailServicesCors": true,
+      "personalMailConfig": true,
+      "personalMailReady": true,
+      "publicLegalPages": true,
+      "billingIssuer": true,
+      "invoiceInbox": true,
+      "tyresOffline": true,
+      "personalMailOffline": true,
+      "companyFiscalPreparation": true,
+      "companyCopilot": true,
+      "aiSpecialists": true,
+      "passed": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "profile": "windows",
+      "sourceCommit": "f861e42ece8ba7c83b42f493be611814113058c3",
+      "themes": [
+        "light",
+        "cockpit"
+      ],
+      "gmailCallback": true,
+      "universalMailOffline": true,
+      "authMailCors": true,
+      "mailServicesCors": true,
+      "personalMailConfig": true,
+      "personalMailReady": true,
+      "publicLegalPages": true,
+      "billingIssuer": true,
+      "invoiceInbox": true,
+      "tyresOffline": true,
+      "personalMailOffline": true,
+      "companyFiscalPreparation": true,
+      "companyCopilot": true,
+      "aiSpecialists": true,
+      "passed": true
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "profile": "android",
+      "sourceCommit": "f861e42ece8ba7c83b42f493be611814113058c3",
+      "themes": [
+        "light",
+        "cockpit"
+      ],
+      "gmailCallback": true,
+      "universalMailOffline": true,
+      "authMailCors": true,
+      "mailServicesCors": true,
+      "personalMailConfig": true,
+      "personalMailReady": true,
+      "publicLegalPages": true,
+      "billingIssuer": true,
+      "invoiceInbox": true,
+      "tyresOffline": true,
+      "personalMailOffline": true,
+      "companyFiscalPreparation": true,
+      "companyCopilot": true,
+      "aiSpecialists": true,
+      "passed": true
+    }
+  ],
+  "physicalDevices": false
+}

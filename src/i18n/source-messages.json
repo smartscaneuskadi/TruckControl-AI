@@ -16359,5 +16359,665 @@
     "contexts": [
       "src/components/ProviderSetup.tsx:configuration"
     ]
+  },
+  {
+    "key": "Segundo conductor (opcional)",
+    "contexts": [
+      "src/components/Editors.tsx:label"
+    ]
+  },
+  {
+    "key": "Sin segundo conductor",
+    "contexts": [
+      "src/components/Editors.tsx:text",
+      "src/components/TruckDetail.tsx:text"
+    ]
+  },
+  {
+    "key": "Debe ser distinto del conductor principal. Deja esta opción vacía para trabajar con uno.",
+    "contexts": [
+      "src/components/Editors.tsx:text"
+    ]
+  },
+  {
+    "key": "Conductor principal",
+    "contexts": [
+      "src/components/TruckDetail.tsx:text",
+      "src/pages/Drivers.tsx:text",
+      "src/pages/Trucks.tsx:text"
+    ]
+  },
+  {
+    "key": "Segundo conductor",
+    "contexts": [
+      "src/components/TruckDetail.tsx:text",
+      "src/components/TruckTable.tsx:text",
+      "src/pages/Drivers.tsx:text",
+      "src/pages/Trucks.tsx:text"
+    ]
+  },
+  {
+    "key": "Principal",
+    "contexts": [
+      "src/components/TruckTable.tsx:text"
+    ]
+  },
+  {
+    "key": "Sin principal asignado",
+    "contexts": [
+      "src/components/TruckTable.tsx:text"
+    ]
+  },
+  {
+    "key": "Cada vehículo, sus conductores y sus resultados. Todo conectado.",
+    "contexts": [
+      "src/pages/Trucks.tsx:description"
+    ]
+  },
+  {
+    "key": "El conductor principal y el segundo conductor deben ser distintos.",
+    "contexts": [
+      "src/domain/models.ts:message"
+    ]
+  },
+  {
+    "key": "El segundo conductor requiere una copia de demo de versión 3.",
+    "contexts": [
+      "src/data/demo-backup.ts:message"
+    ]
+  },
+  {
+    "key": "El segundo conductor requiere una copia de empresa de versión 5.",
+    "contexts": [
+      "src/data/company-backup.ts:message"
+    ]
+  },
+  {
+    "key": "El conductor asignado no existe en esta empresa.",
+    "contexts": [
+      "src/domain/models.ts:message"
+    ]
+  },
+  {
+    "key": "Incidencias de pagos del servicio",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "SEGUIMIENTO ADMINISTRATIVO",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Incidencias de pagos",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Hechos del proveedor, revisión humana y referencias fiscales externas.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Actualizar incidencias",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Este registro no ejecuta reembolsos, no cambia licencias y no emite rectificativas. «Pendiente de valoración» requiere una decisión humana; no determina por sí solo una obligación fiscal.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Conéctate para consultar estas incidencias. No se conservan datos para uso sin conexión.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Comprobando acceso al registro de incidencias…",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "El registro de incidencias de pago todavía está en preparación.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "incidencias en esta página. Cada caso corresponde a su pago y solicitud de factura.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "No hay incidencias registradas",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Los hechos conciliados del proveedor aparecerán cuando esté habilitado el circuito.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Incidencia de {0}",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Revisión pendiente",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisión declarada",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Pendiente de valoración fiscal",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Referencia externa declarada",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Pago original",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Observación",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Última consulta al proveedor",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Revisar incidencia",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Incidencias anteriores",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Más incidencias",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Volver al listado de incidencias",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Ver solicitud fiscal",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Detalle de la incidencia",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Identidad del caso",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Solicitud fiscal",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Período original",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Pendiente de revisar",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Declarada por administración",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Valoración fiscal",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Pendiente de valoración humana",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Última revisión",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Última referencia externa",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Declarar revisión",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Declarar referencia rectificativa",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Historial inmutable de la incidencia",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Historial de observaciones y actuaciones",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "entradas en esta página, ordenadas de más reciente a más antigua.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Observación del proveedor",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Referencia:",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Operador:",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Entradas anteriores",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Declarar revisión de la incidencia",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Declarar referencia rectificativa externa",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Actuación administrativa sobre la versión",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": ". No realiza operaciones en Stripe ni genera un documento fiscal.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Referencia real emitida en GDTaller",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Nota de la actuación",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "He comprobado los hechos y confirmo esta declaración administrativa.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "La referencia y el historial son declaraciones del operador, no una certificación ni una emisión de TicketBAI.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "El resultado es incierto. Reintentar conserva la misma identidad, versión y datos para evitar duplicados. Al cerrar, comprueba el historial antes de registrar otra actuación.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Cerrar declaración",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Reintentar la misma declaración",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Confirmar declaración",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text",
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Datos comunicados por el proveedor",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Un reembolso pendiente o fallido no acredita dinero entregado. El acumulado del cargo no se suma a las observaciones de reembolso.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Evento y objeto",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Estado al ocurrir / al consultar",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Importe del evento / actual observado",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Acumulado reembolsado del cargo",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Alcance comunicado",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Fechas del evento / consulta",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "Intento de pago y cargo",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:text"
+    ]
+  },
+  {
+    "key": "No se ha podido comprobar el registro. Actualiza antes de continuar.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprueba la nota y la referencia de la actuación.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisión registrada. Las observaciones posteriores pueden requerir otra valoración.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Referencia externa declarada. La aplicación no ha emitido ni certificado una factura rectificativa.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "La declaración se ha registrado. Las nuevas observaciones del proveedor ya se muestran y requieren su propia valoración.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "La declaración se ha confirmado. Actualiza para comprobar el historial posterior antes de registrar otra actuación.",
+    "contexts": [
+      "src/components/SubscriptionIncidents.tsx:message"
+    ]
+  },
+  {
+    "key": "Solicitud fiscal seleccionada",
+    "contexts": [
+      "src/components/ManualSubscriptionInvoices.tsx:text"
+    ]
+  },
+  {
+    "key": "Volver a todas las facturas",
+    "contexts": [
+      "src/components/ManualSubscriptionInvoices.tsx:text"
+    ]
+  },
+  {
+    "key": "La sesión ya no permite consultar estas incidencias. Comprueba el acceso de administración.",
+    "contexts": [
+      "src/integrations/supabase/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "El registro de incidencias de pago todavía no está disponible.",
+    "contexts": [
+      "src/integrations/supabase/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "La incidencia ha cambiado en otro dispositivo. Actualiza y revisa el historial antes de continuar.",
+    "contexts": [
+      "src/integrations/supabase/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Se ha cerrado el contexto de esta consulta.",
+    "contexts": [
+      "src/integrations/supabase/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "No se ha podido confirmar el resultado. Comprueba el historial o reintenta expresamente la misma declaración.",
+    "contexts": [
+      "src/integrations/supabase/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "No se ha podido contrastar la actuación. Revisa los datos y actualiza el registro.",
+    "contexts": [
+      "src/integrations/supabase/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Sin importe observado en este evento",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Alcance parcial comunicado",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Alcance total comunicado",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Importes por contrastar",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Identidad de observación incoherente.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Período incompleto.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Identidad de renovación incoherente.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Período sin identidad de renovación.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Período incoherente.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Falta la revisión declarada.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Falta la referencia declarada.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Versión de actuación incoherente.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "Entrada de auditoría incoherente.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "No se puede confirmar esta actuación administrativa.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
+  },
+  {
+    "key": "La declaración no coincide con la confirmación del servidor.",
+    "contexts": [
+      "src/domain/subscription-incidents.ts:message"
+    ]
   }
 ]

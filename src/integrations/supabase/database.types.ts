@@ -7,8 +7,9 @@ export type DeployedFleetTables = Pick<
 >;
 type Table<
   Row extends { id: string; created_at: string },
-  Insert = Omit<Row, "id" | "created_at"> &
-    Partial<Pick<Row, "id" | "created_at">>,
+  Insert = Omit<Row, "id" | "created_at" | "co_driver_id"> &
+    Partial<Pick<Row, "id" | "created_at">> &
+    Partial<Pick<Row, Extract<keyof Row, "co_driver_id">>>,
 > = { Row: Row; Insert: Insert; Update: Partial<Insert>; Relationships: [] };
 export type Json =
   | string
@@ -79,6 +80,8 @@ export interface Database {
           odometer_km: number;
           status: "on_route" | "available" | "maintenance";
           driver_id: string | null;
+          /** New server column defaults to null; INSERT/UPDATE may omit it. */
+          co_driver_id: string | null;
           inspection_due_on: string;
           route: string;
         }
@@ -115,6 +118,10 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_admin_subscription_incidents: {
+        Args: { p_action: string; p_case_id?: string | null; p_expected?: number | null; p_operation_id?: string | null; p_data?: Json; p_after?: string | null };
+        Returns: Json;
+      };
       tc_admin_manual_subscription_invoices: {
         Args: {
           p_action: string;

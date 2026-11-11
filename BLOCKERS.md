@@ -1,3 +1,17 @@
+## Bloqueos vigentes · 11/11/2026 UTC
+
+La ampliación SQL64/65 ya está aplicada y pasa20/20 controles nativos; no volver a pedir ni repetir esas migraciones. El test se revirtió completamente. Stripe sigue sin credencial de ejecutante verificable; nueva autorización oficial solicitada, cobrosOFF. Gmail empresarial sigue con invalid_client; no hay administración Google conectada. Faltan aceptación fiscal real/revisión jurídica, restauración administrada y firma/Play/dispositivos físicos. No se declara lanzamiento comercial completo. Producción39 permanece hasta verificar la candidata.
+
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+No hay conector administrativo de Google ni secreto alternativo recuperable verificado. El coste nuevo de esta entrega es0EUR; el acumulado histórico sigue pendiente de conciliación. Las pruebas ficticias no resuelven el acceso privado del propietario a Google. Los demás gates comerciales no se declaran completados.
+
+Recibo durable: [docs/verification/gmail-account-repair-published-20261108.json](docs/verification/gmail-account-repair-published-20261108.json).
+
 # Dependencias comerciales pendientes
 
 ## CargoTrack integrado publicado · Sites34 · 08/11/2026

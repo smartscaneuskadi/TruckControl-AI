@@ -1,0 +1,78 @@
+name: Prepare truck second driver local template
+on:
+  push:
+    branches: ["feat/truck-second-driver-20261108"]
+    paths: [".github/workflows/truck-second-driver-template.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - name: Verify official CLI and generate local-only migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, io, json, os, pathlib, subprocess, tarfile, urllib.request
+          root = pathlib.Path.cwd()
+          work = pathlib.Path(os.environ["RUNNER_TEMP"]) / "truckcontrol-truck-second-driver-cli"
+          work.mkdir(parents=True, exist_ok=True)
+          release = "https://registry.npmjs.org/@supabase/cli-linux-x64/-/cli-linux-x64-3.0.0.tgz"
+          expected = "cR4S5e3nygMaBShbbt6FOiMumtrFJjwdKMXMimC1y7FpxITlwLv36BveaifQZ8aY+v1u+w8oYANU2H72Y4ibWA=="
+          with urllib.request.urlopen(release, timeout=60) as response:
+              archive = response.read(70 * 1024 * 1024 + 1)
+          if len(archive) > 70 * 1024 * 1024 or base64.b64encode(hashlib.sha512(archive).digest()).decode() != expected:
+              raise SystemExit("Official CLI checksum/size verification failed")
+          with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as package:
+              member = package.getmember("package/bin/supabase")
+              if not member.isfile():
+                  raise SystemExit("Expected CLI binary missing")
+              binary_data = package.extractfile(member).read()
+          binary = work / "supabase"
+          binary.write_bytes(binary_data)
+          binary.chmod(0o700)
+          env = os.environ.copy()
+          env["SUPABASE_HOME"] = str(work / "state")
+          env["CI"] = "true"
+          version = subprocess.run([str(binary), "--version"], check=True, capture_output=True, text=True, env=env).stdout.strip()
+          if version != "3.0.0":
+              raise SystemExit("Unexpected CLI version: " + version)
+          for args in (["--help"], ["migration", "--help"], ["migration", "new", "--help"]):
+              subprocess.run([str(binary)] + args, check=True, capture_output=True, text=True, env=env)
+          migrations = root / "supabase" / "migrations"
+          before = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in migrations.glob("*.sql")}
+          subprocess.run([str(binary), "migration", "new", "truck_second_driver"], check=True, env=env)
+          if any(hashlib.sha256(p.read_bytes()).hexdigest() != digest for p, digest in before.items()):
+              raise SystemExit("Existing migration changed unexpectedly")
+          created = set(migrations.glob("*.sql")) - set(before)
+          if len(created) != 1:
+              raise SystemExit("Expected exactly one CLI-created migration")
+          target = created.pop()
+          if target.stat().st_size != 0:
+              raise SystemExit("Expected an empty CLI-created template")
+          receipt = {"cli_version": version, "official_registry_integrity": "sha512-" + expected,
+                     "generated_path": str(target.relative_to(root)), "template_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+                     "template_bytes": target.stat().st_size, "existing_migrations_unchanged": True,
+                     "linked_project": False, "database_queries": 0, "remote_migrations_applied": 0,
+                     "cli_command": "supabase migration new truck_second_driver",
+                     "workflow_source_commit": os.environ["GITHUB_SHA"], "run_id": os.environ["GITHUB_RUN_ID"],
+                     "run_url": os.environ["GITHUB_SERVER_URL"] + "/" + os.environ["GITHUB_REPOSITORY"] + "/actions/runs/" + os.environ["GITHUB_RUN_ID"],
+                     "base_workflow_commit": "a243eb7f2d51ded4c6b838d88eb14953e3af19e1",
+                     "base_workflow_blob": "4a8270f6f939008761d26f90482f70c4a02c3849"}
+          (root / "truck-second-driver-template-result.json").write_text(json.dumps(receipt, indent=2))
+          print(json.dumps(receipt))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: truck-second-driver-template-local-only
+          path: |
+            truck-second-driver-template-result.json
+            supabase/migrations/*_truck_second_driver.sql
+          retention-days: 7
+          if-no-files-found: error

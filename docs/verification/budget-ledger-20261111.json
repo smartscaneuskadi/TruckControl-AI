@@ -1,0 +1,33 @@
+{
+  "currency": "EUR",
+  "aggregate_authorized_ceiling": 200,
+  "new_charges_in_current_session": 0,
+  "new_recurring_commitments_in_current_session": 0,
+  "prior_total_eur": "not reconciled against vendor invoices; remaining balance cannot yet be certified",
+  "known_prior_evidence": [
+    {
+      "provider": "OpenAI",
+      "currency": "USD",
+      "estimated_usage_cost": 0.019465,
+      "source": "docs/verification/ai-specialists-costs-20261107.json",
+      "note": "Estimated usage, not vendor invoice or EUR conversion"
+    },
+    {
+      "provider": "Migadu",
+      "currency": "USD",
+      "annual_plan_approved": 19,
+      "paid": "Owner reported paid; invoice not available here"
+    },
+    {
+      "provider": "Porkbun",
+      "currency": "USD",
+      "domain_quote_prior": 11.08,
+      "paid": "Domain active; invoice not available here"
+    }
+  ],
+  "limits_preserved": {
+    "ai_monthly_usd": 10,
+    "calls_per_company": 100
+  },
+  "policy": "No new paid service until prior commitments and available balance are verified."
+}

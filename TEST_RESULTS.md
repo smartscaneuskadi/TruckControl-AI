@@ -1,3 +1,21 @@
+## Evidencia nueva · 11/11/2026 UTC
+
+Head financiero2d9b1d6: CI43111232569/43111226706 SUCCESS,1400 unitarias/SQL,220/220 SaaS Android/Windows emulados,64 originales/11hashes conservados. Head conductor2c30c49:1285 unitarias/SQL y12/12 navegaciones. PostgreSQL17 job130827476749:117PASS con concurrencia y restauración lógica. Supabase nativo65:20/20 nuevas comprobaciones, fixtures anulados, auditoría/RLS/ACL/sesión revocada correctos. Edge incidentes1/fiscal2:19 fuentes ejecutables coinciden,GET405/POST503 apagado en ambos. El contrato de aceptación añadido pasa aislado; CI final de esa adición y Android nuevo PENDIENTES. No sumar reejecuciones ni confundir contratos offline de Stripe con webhooks reales. [Recibo](docs/verification/new-additions-native-20261111.json).
+
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+CI de PR42533025198, rama42533020536 y fuente exacta42533027609 SUCCESS: **1.664 comprobaciones por ejecución**, sin sumar reejecuciones. Se conservan las64 originales/11hashes. Después de publicar: **75/75 hashes HTTPS y 42/42 recorridos de navegador**, sin fallos, omisiones ni flaky. SDK real con transporte ficticio y accesos privados no interceptados bloqueados. Android/Windows emulados; sin hardware físico ni nueva autenticación de un cliente real.
+
+Desglose CI:1.249unit/SQL,45Python,82demo,50empresa,192SaaS,20candidata,20producción y6perfiles públicos sobre Sites38 antes de desplegar.24pruebas focales locales finales y Deno correctos; no se suman al CI. Los42 recorridos pospublicación validan la fuente39 en cada caso; la lista de aceptación y los7 controles HTTP nativos están en el recibo.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+Recibo durable: [docs/verification/gmail-account-repair-published-20261108.json](docs/verification/gmail-account-repair-published-20261108.json).
+
 # Evidencias de pruebas
 
 ## CargoTrack integrado publicado · Sites34 · 08/11/2026

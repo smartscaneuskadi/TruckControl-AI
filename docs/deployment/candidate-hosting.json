@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_1158214ceae48191aac244710231626b",
-  "published_version_number": 38,
-  "deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
-  "previous_deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
+  "published_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ecce634ca1e4819188b5ad9f888ab541",
+  "published_version_number": 39,
+  "deployment_id": "appgdep_6af1039c6574819182741d8ae52e14a5",
+  "previous_deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-08T20:47:46.339781+00:00",
+  "deployed_at": "2026-11-08T23:20:11.410197+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 42520789841,
+  "source_ci_run": 42533027609,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -244,7 +244,7 @@
   "expected_auth_mail_cors": true,
   "auth_mail_function_version": 4,
   "expected_document_tracking": true,
-  "gmail_function_version": 13,
+  "gmail_function_version": 15,
   "expected_mail_service_cors": true,
   "expected_invoice_inbox": true,
   "mail_function_version": 12,
@@ -295,27 +295,31 @@
     "time_zone": "Europe/Madrid",
     "action": "sync_period"
   },
-  "ci_scope_note": "Four-language release: PR96 and exact production source pass1622 checks per execution. Six published profiles before publication cover Sites37; native publication and interactive four-language verification cover Sites38. No repeat AI or authenticated mailbox acceptance.",
+  "ci_scope_note": "PR98/exact-source CI:1664 per execution, including6 public profiles against prior Sites38. Postpublication receipt records Sites39 separately; no repeated AI/mailbox acceptance.",
   "final_release_verification": {
-    "code_commit": "1ebc1ed976c03b6d732412908a08eadb5ecb647d",
-    "source_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
-    "checks_before_publication": 1622,
-    "unit_sql_passed": 1221,
+    "code_commit": "d9e6fc8b52171a61d6747cd9e4109d3dcec3aa8d",
+    "source_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
+    "checks_before_publication": 1664,
+    "unit_sql_passed": 1249,
     "python_passed": 45,
     "demo_browser_passed": 82,
     "company_browser_passed": 50,
-    "saas_browser_passed": 178,
+    "saas_browser_passed": 192,
     "candidate_browser_passed": 20,
     "production_build_passed": 20,
     "public_profiles": 6,
-    "public_profile_baseline_version": 37,
+    "public_profile_baseline_version": 38,
+    "published_account_gmail_session_cases": 42,
+    "https_file_hashes_after_publication": 75,
     "migrations": 63,
-    "postpublication_checks": "docs/verification/interface-languages-published-20261108.json",
+    "postpublication_checks": "docs/verification/gmail-account-repair-published-20261108.json",
     "scheduled_paid_model_calls": 0,
-    "emission_available": false
+    "emission_available": false,
+    "enterprise_gmail_connected": false,
+    "public_profiles_after_publication": 6
   },
-  "source_branch": "deploy/cargotrack-production-four-languages-20261108",
-  "production_source_manifest_only_diff_scope": "Application b68ae35 and release72526b8 have byte-identical runtime. Production manifest, guarded packaging workflow/helper and two preparation records are the only release differences.",
+  "source_branch": "deploy/gmail-account-production-20261108",
+  "production_source_manifest_only_diff_scope": "Runtime src/public/supabase/package and compiler configuration match reviewed d9e6fc8. Production identity, packaging workflow/helper and source-only delivery records differ; never deploy the demo manifest from main.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
     "docs/**",
@@ -424,6 +428,24 @@
       "postpublication_checks": "docs/verification/cargotrack-embedded-published-20261108.json",
       "scheduled_paid_model_calls": 0,
       "emission_available": false
+    },
+    {
+      "code_commit": "1ebc1ed976c03b6d732412908a08eadb5ecb647d",
+      "source_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+      "checks_before_publication": 1622,
+      "unit_sql_passed": 1221,
+      "python_passed": 45,
+      "demo_browser_passed": 82,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 178,
+      "candidate_browser_passed": 20,
+      "production_build_passed": 20,
+      "public_profiles": 6,
+      "public_profile_baseline_version": 37,
+      "migrations": 63,
+      "postpublication_checks": "docs/verification/interface-languages-published-20261108.json",
+      "scheduled_paid_model_calls": 0,
+      "emission_available": false
     }
   ],
   "expected_languages": [
@@ -433,5 +455,14 @@
     "fr"
   ],
   "default_ui_language": "es",
-  "translation_catalog_keys": 2664
+  "translation_catalog_keys": 2680,
+  "prior_published_versions": [
+    {
+      "version": 38,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_1158214ceae48191aac244710231626b",
+      "source_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+      "deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
+      "app_version": "0.5.21-rc.1"
+    }
+  ]
 }

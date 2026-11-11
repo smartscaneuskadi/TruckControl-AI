@@ -1,3 +1,17 @@
+## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
+
+Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.
+
+Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.
+
+CI de PR42533025198, rama42533020536 y fuente exacta42533027609 SUCCESS: **1.664 comprobaciones por ejecución**, sin sumar reejecuciones. Se conservan las64 originales/11hashes. Después de publicar: **75/75 hashes HTTPS y 42/42 recorridos de navegador**, sin fallos, omisiones ni flaky. SDK real con transporte ficticio y accesos privados no interceptados bloqueados. Android/Windows emulados; sin hardware físico ni nueva autenticación de un cliente real.
+
+Gmail personal conserva la aceptación del titular. Gmail empresarial NO está conectado: Google rechaza la credencial guardada con401/`invalid_client`. No pedir repetir el consentimiento ni recrear proyecto/cliente. Hace falta un secreto válido del mismo cliente existente mediante el formulario privado. La validación de credenciales no acredita permiso de buzón ni verificación pública de Google. Issue97 sigue abierto.
+
+Backend `company-gmail`15 ACTIVE:9/9 fuentes y7/7 controles HTTP verificados; las otras11 funciones intactas. Sin DDL, compras, nuevas llamadas IA ni lectura/envío de correo. Native63, cuotas10USD/mes y100llamadas/empresa, precios, RLS y cobrosOFF conservados. No repetir #37 ni las migraciones aplicadas.
+
+Recibo durable: [docs/verification/gmail-account-repair-published-20261108.json](docs/verification/gmail-account-repair-published-20261108.json).
+
 # Reparación de cuenta/Gmail candidata · 08/11/2026
 
 Producción comprobada sigue Sites38/sourceee43c0267bee67f45002b9a13736eaeb7cdb94f6; conservarla y demo6. Trabajo en fix/gmail-setup-account-flow-20261108, issue97. Leer docs/GMAIL_ACCOUNT_REPAIR.md antes de continuar. Cuenta accesible en barra, tarjeta de cuenta primero, validación Google antes de guardar y antes de iniciar OAuth; solo administración global comprueba candidatas/configuración. Sin DDL/nuevas claves/IA/cobros. Google rechaza la credencial real guardada con401/invalid_client; no declarar buzón empresarial conectado ni pedir repetir consentimiento antes de resolverla. El titular confirma Gmail personal.1248unit/SQL,45Python,Deno y18focalizadas correctas; regresión completa y arreglo de anchuras pendientes en este checkpoint, no anunciar CI verde. Publicar backend verificado antes de frontend, exclusivamente en el proyecto existente y tras controles completos. Conservar14/38 para recuperación. Native63/64pruebas/11hashes/#37 y cuotas intactos.
