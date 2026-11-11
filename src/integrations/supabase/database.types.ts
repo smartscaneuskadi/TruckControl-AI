@@ -118,6 +118,10 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_admin_subscription_incidents: {
+        Args: { p_action: string; p_case_id?: string | null; p_expected?: number | null; p_operation_id?: string | null; p_data?: Json; p_after?: string | null };
+        Returns: Json;
+      };
       tc_admin_manual_subscription_invoices: {
         Args: {
           p_action: string;

@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createManualStripeWebhookHandler } from "./handler.ts";
 import { persistManualStripePayment } from "../_shared/subscription-stripe-persistence.ts";
+import { lookupKnownStripePayment } from "../_shared/subscription-financial-persistence.ts";
 import { manualStripeRuntimeAllowed } from "../_shared/subscription-stripe-runtime.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -11,7 +12,10 @@ Deno.serve(createManualStripeWebhookHandler({
   async applyPayment(payment) {
     await persistManualStripePayment((name, parameters) => client.rpc(name, parameters), payment);
   },
+  knownPaymentEvent: (account, paymentMode, event) =>
+    lookupKnownStripePayment((name, parameters) => client.rpc(name, parameters), account, paymentMode, event),
 }, {
+  knownPaymentEvents: Deno.env.get("TRUCKCONTROL_STRIPE_INCIDENTS_SCHEMA_ACCEPTED") === "true",
   // Separate switches: deploying code alone never enables even the sandbox pipeline.
   enabled: Deno.env.get("TRUCKCONTROL_MANUAL_STRIPE_PIPELINE_ENABLED") === "true" &&
     manualStripeRuntimeAllowed(supabaseUrl, mode, Deno.env.get("TRUCKCONTROL_MANUAL_STRIPE_TEST_PROJECT_REF")),

@@ -2,34 +2,20 @@ import {
   reconcileStripeManualInvoicePayment, StripeReconciliationError,
   type StripeReconciliationConfig, type ReconciledStripePayment,
 } from "../_shared/subscription-stripe-reconciliation.ts";
+import { StripeProviderBodyLimit as BodyLimit, readStripeRawBody as rawBody } from "../_shared/stripe-provider-reader.ts";
+import { knownStripePaymentReplay, type KnownStripePaymentEvent } from "../_shared/subscription-paid-replay.ts";
 
 export interface ManualStripePaymentGateway {
   /** The implementation MUST call a single transactional RPC, never separate billing/intake writes. */
   applyPayment(payment: Exclude<ReconciledStripePayment, { kind: "ignored" }>): Promise<void>;
+  knownPaymentEvent?(account: string, mode: "test" | "live", event: KnownStripePaymentEvent): Promise<boolean>;
 }
 export interface ManualStripeWebhookConfig extends StripeReconciliationConfig {
   enabled: boolean;
   schemaAccepted: boolean;
+  /** Separate64 capability; false unless its read-only proof lookup passed acceptance. */
+  knownPaymentEvents?: boolean;
 }
-class BodyLimit extends Error {}
-async function rawBody(request: Request) {
-  const reader = request.body?.getReader();
-  if (!reader) return "";
-  const chunks: Uint8Array[] = [];
-  let length = 0;
-  while (true) {
-    const part = await reader.read();
-    if (part.done) break;
-    length += part.value.length;
-    if (length > 65536) { await reader.cancel(); throw new BodyLimit(); }
-    chunks.push(part.value);
-  }
-  const bytes = new Uint8Array(length);
-  let offset = 0;
-  for (const part of chunks) { bytes.set(part, offset); offset += part.length; }
-  return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
-}
-
 /** Provider webhook only. Browser JWTs, redirect returns and client metadata confer no capability. */
 export function createManualStripeWebhookHandler(
   gateway: ManualStripePaymentGateway,
@@ -49,6 +35,12 @@ export function createManualStripeWebhookHandler(
       return respond({ error: "invalid_content_type" }, 415);
     try {
       const raw = await rawBody(request);
+      if (config.knownPaymentEvents) {
+        if (!gateway.knownPaymentEvent) throw Error("subscription_payment_replay_unavailable");
+        if (await knownStripePaymentReplay(raw, request.headers.get("stripe-signature"), config,
+          (account, mode, event) => gateway.knownPaymentEvent!(account, mode, event), fetcher))
+          return respond({ received: true }, 200);
+      }
       const payment = await reconcileStripeManualInvoicePayment(
         raw, request.headers.get("stripe-signature"), config, fetcher,
       );
