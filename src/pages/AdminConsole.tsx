@@ -35,6 +35,7 @@ import { ProviderSetup } from "../components/ProviderSetup";
 import { FiscalAdminSettings } from "../components/FiscalAdminSettings";
 import { ManualSubscriptionInvoices } from "../components/ManualSubscriptionInvoices";
 import { SubscriptionIncidents } from "../components/SubscriptionIncidents";
+import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
 
 export function AdminConsole({
   userId,
@@ -65,11 +66,15 @@ export function AdminConsole({
     const clear = () => setFiscalTaskId(null);
     const subscription = client?.auth.onAuthStateChange((event, session) => {
       const next = session?.user.id === userId ? session.access_token : null;
-      if (event === "SIGNED_OUT" || (token !== undefined && token !== next)) clear();
+      if (event === "SIGNED_OUT" || (token !== undefined && token !== next))
+        clear();
       token = next;
     });
     window.addEventListener("offline", clear);
-    return () => { subscription?.data.subscription.unsubscribe(); window.removeEventListener("offline", clear); };
+    return () => {
+      subscription?.data.subscription.unsubscribe();
+      window.removeEventListener("offline", clear);
+    };
   }, [client, userId]);
   useEffect(() => {
     const capture = () => {
@@ -161,8 +166,16 @@ export function AdminConsole({
     { id: "activity", label: "Actividad", icon: Activity },
     { id: "providers", label: "Servicios", icon: ShieldCheck },
     { id: "fiscal", label: "Facturación de empresas", icon: Landmark },
-    { id: "subscription_invoices", label: "Facturas del servicio", icon: CreditCard },
-    { id: "subscription_incidents", label: "Incidencias de pagos", icon: AlertTriangle },
+    {
+      id: "subscription_invoices",
+      label: "Facturas del servicio",
+      icon: CreditCard,
+    },
+    {
+      id: "subscription_incidents",
+      label: "Incidencias de pagos",
+      icon: AlertTriangle,
+    },
   ];
   return (
     <main className="admin-page">
@@ -177,6 +190,7 @@ export function AdminConsole({
           </span>
         </div>
         <div className="admin-account">
+          <LanguageSwitcher />
           <Button variant="secondary" onClick={appearance.open}>
             Apariencia
           </Button>
@@ -295,8 +309,24 @@ export function AdminConsole({
             ))}
           </nav>
           {tab === "providers" && <ProviderSetup />}
-          {tab === "subscription_invoices" && <ManualSubscriptionInvoices key={userId} userId={userId} focusTaskId={fiscalTaskId ?? undefined} onClearFocus={() => setFiscalTaskId(null)} />}
-          {tab === "subscription_incidents" && <SubscriptionIncidents key={userId} userId={userId} onOpenTask={(taskId) => { setFiscalTaskId(taskId); setTab("subscription_invoices"); }} />}
+          {tab === "subscription_invoices" && (
+            <ManualSubscriptionInvoices
+              key={userId}
+              userId={userId}
+              focusTaskId={fiscalTaskId ?? undefined}
+              onClearFocus={() => setFiscalTaskId(null)}
+            />
+          )}
+          {tab === "subscription_incidents" && (
+            <SubscriptionIncidents
+              key={userId}
+              userId={userId}
+              onOpenTask={(taskId) => {
+                setFiscalTaskId(taskId);
+                setTab("subscription_invoices");
+              }}
+            />
+          )}
           {tab === "fiscal" && (
             <FiscalAdminSettings onSaved={() => setRevision((n) => n + 1)} />
           )}
