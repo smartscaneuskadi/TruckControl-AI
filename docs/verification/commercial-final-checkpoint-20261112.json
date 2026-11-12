@@ -1,0 +1,120 @@
+{
+  "checked_at": "2026-11-12T00:39:44.507Z",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "main_merge_commit": "1a1be188ab9e0984702aaadf67803f6ad06c073d",
+  "merged_prs": [
+    87,
+    88,
+    100
+  ],
+  "production": {
+    "url": "https://truckcontrolai.com",
+    "version": 40,
+    "app_version": "0.5.22-rc.1",
+    "source_commit": "de8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4",
+    "deployment_id": "appgdep_6af503dc2a988191b3cb864879d880ea",
+    "status": "succeeded",
+    "previous39_preserved": true,
+    "demo6_preserved": true
+  },
+  "checks": {
+    "code_ci_runs": [
+      43126674797,
+      43126680831
+    ],
+    "code_ci_conclusion": "success",
+    "source40_ci": 43123780131,
+    "unit_sql": 1426,
+    "retained_initial_tests": 64,
+    "retained_hash_files": 11,
+    "python": 45,
+    "saas_browser": 220,
+    "postgres17_isolated": 117,
+    "native_new_additions_with_complete_rollback": 20,
+    "public_https_artifact_hashes": 75,
+    "public_account_mail_cargotrack": 42,
+    "public_crew_and_financial_incidents": 40,
+    "public_pwa_profiles": 6,
+    "public_low_volume_https_requests": 20,
+    "stripe_real_sandbox": 13,
+    "android_jvm": 5,
+    "physical_devices": false
+  },
+  "supabase": {
+    "project_id": "kkkemaycedexymrpaqtp",
+    "migration_count": 65,
+    "new_migrations_applied_once": 2,
+    "fixture_users_remaining": 0,
+    "registration_open": true,
+    "payments_enabled": false,
+    "enabled_payment_channels": 0,
+    "fiscal_storage_public": false,
+    "other_eleven_functions_unchanged": true,
+    "edge": [
+      {
+        "name": "truckcontrol-stripe-incidents",
+        "version": 2,
+        "status": "ACTIVE",
+        "matched_files": 10,
+        "all_matched": true,
+        "business_enabled": false
+      },
+      {
+        "name": "truckcontrol-stripe-fiscal",
+        "version": 3,
+        "status": "ACTIVE",
+        "matched_files": 11,
+        "all_matched": true,
+        "business_enabled": false
+      }
+    ]
+  },
+  "ai": {
+    "profiles": 8,
+    "last_real_acceptance": "2026-11-07",
+    "public_health_checked": true,
+    "repeat_of_issue37": false,
+    "new_paid_calls": 0,
+    "monthly_usd_limit": 10,
+    "calls_per_company_limit": 100
+  },
+  "stripe": {
+    "authorized_sandbox": "acct_1UWYX5ECykZtDl5d",
+    "real_money_eur": 0,
+    "real_signed_sandbox_events": 4,
+    "local_isolated_persistence": true,
+    "test_subscriptions_cancelled": 3,
+    "production_key_and_registered_webhook_acceptance": false,
+    "complete_browser_checkout": false,
+    "commercial_payments_enabled": false
+  },
+  "recovery": {
+    "git_bundle_verified": true,
+    "postgres_logical_restore_verified": true,
+    "managed_auth_storage_vault_restore_verified": false
+  },
+  "android": {
+    "candidate_build": "success",
+    "commercial_signing": false,
+    "google_play_published": false,
+    "pwa_available": true
+  },
+  "costs": {
+    "additional_ceiling_eur": 200,
+    "new_purchases_eur": 0,
+    "new_recurring_commitments_eur": 0,
+    "prior_spending_reconciled": false,
+    "remaining_eur_verified": null,
+    "tinyfish_wallet_usd": -0.328,
+    "auto_reload_enabled": false
+  },
+  "commercial_launch_complete": false,
+  "external_dependencies": [
+    "Stripe backend credential, registered webhook and complete payment/licence acceptance",
+    "Fiscal advisor confirmation and actual valid GDTaller/TicketBAI invoice delivery",
+    "Google enterprise OAuth credential and public review",
+    "Authorized isolated managed environment for complete Auth/Storage/Vault restoration",
+    "Commercial Android signing custody, Play account and physical devices",
+    "Migadu DKIM provider target still returns DNS SERVFAIL"
+  ]
+}

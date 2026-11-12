@@ -1,3 +1,9 @@
+## Estado vigente confirmado · 12/11/2026 UTC
+
+Producción40/app0.5.22-rc.1 y demo6 conservadas. Main1a1be188ab9e0984702aaadf67803f6ad06c073d integró PR100 con ambos CI correctos;1426 unitarias/SQL y los64 originales/11hashes intactos. Supabase65; fiscal3/incidentes2 verificados, negocioOFF; no volver a desplegar esos cambios ni repetir migraciones o #37. El [checkpoint final](docs/verification/commercial-final-checkpoint-20261112.json) y [comentario6810872922](https://github.com/smartscaneuskadi/TruckControl-AI/issues/3#issuecomment-6810872922) sustituyen los estados CI/Edge pendientes de notas anteriores.
+
+Nueva continuación: laboratorio Auth/Storage/recuperación en dos stacks locales de GitHub Actions, sin datos ni credenciales de producción,42 archivos de esquema consolidados y claves distintas. Seis pruebas nuevas de barreras pasan;51Python en total. Ejecución de servicios en curso: NO afirmar recuperación real ni gestionada todavía. Sin DDL remoto, IA nueva, compras o apertura de cobros.
+
 ## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
 
 Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.

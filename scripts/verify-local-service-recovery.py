@@ -90,6 +90,30 @@ def child_env() -> dict:
     return env
 
 
+def safe_diagnostics(raw: bytes) -> dict:
+    """Extract only fixed codes and source identifiers, never raw messages."""
+    text = raw.decode("utf-8", "replace")
+    migrations = re.findall(r"Applying migration ([0-9]{14}_[a-z0-9_]+\.sql)", text)
+    states = sorted(set(re.findall(r"SQLSTATE[ :]+([A-Z0-9]{5})", text)))
+    identifiers = re.findall(r'''(?:relation|schema|table|function|extension|column|role) "([a-z_][a-z0-9_.]{0,100})"''', text)
+    # A name alone is diagnostic, not a statement or a credential value.
+    identifiers = sorted(set(x for x in identifiers if x.split(".")[0] in
+                             {"public", "private", "auth", "storage", "extensions", "cron", "vault", "postgres", "service_role", "http", "pg_cron"}))
+    signatures = [name for name, pattern in {
+        "registry_auth": "unauthorized: authentication required",
+        "registry_rate_limit": "toomanyrequests",
+        "image_missing": "manifest unknown",
+        "disk_full": "no space left on device",
+        "untrusted_certificate": "certificate signed by unknown authority",
+        "health_check_failed": "not healthy",
+        "connection_refused": "connection refused",
+        "network_unreachable": "network is unreachable",
+        "configuration_invalid": "failed to parse config",
+    }.items() if pattern in text.lower()]
+    return {"last_migration": migrations[-1] if migrations else None,
+            "sqlstates": states, "identifiers": identifiers, "codes": signatures}
+
+
 def command(args: list[str], *, data: bytes | None = None, timeout: int = 60,
             failure: str = "local_command_failed", allow_failure: bool = False):
     result = subprocess.run(args, input=data, capture_output=True, timeout=timeout, env=child_env())
@@ -97,6 +121,7 @@ def command(args: list[str], *, data: bytes | None = None, timeout: int = 60,
         # Never print raw CLI/status/Auth responses or private SQL/COPY errors.
         if PRIVATE:
             (PRIVATE / "last-error.private.log").write_bytes(result.stderr + result.stdout)
+        REPORT["command_diagnostics"] = safe_diagnostics(result.stderr + result.stdout)
         raise LabFailure(failure)
     return result
 

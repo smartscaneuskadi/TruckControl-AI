@@ -44,6 +44,18 @@ class LocalRecoveryGuards(unittest.TestCase):
         offset = int(pdf.split(b"startxref\n")[1].splitlines()[0])
         self.assertEqual(pdf[offset:offset + 4], b"xref")
 
+    def test_startup_diagnostic_never_returns_raw_credentials_or_sql(self):
+        import json
+        raw = (b'Applying migration 20261108141748_truck_second_driver.sql\n'
+               b'ERROR: relation "public.trucks" already exists (SQLSTATE 42P07)\n'
+               b'password=DO-NOT-PUBLISH sk_test_DO_NOT_PUBLISH whsec_DO_NOT_PUBLISH\n'
+               b'private_jwk={"d":"DO-NOT-PUBLISH"}')
+        result = lab.safe_diagnostics(raw)
+        self.assertEqual(result["sqlstates"], ["42P07"])
+        self.assertEqual(result["identifiers"], ["public.trucks"])
+        self.assertNotIn("DO-NOT-PUBLISH", json.dumps(result))
+        self.assertNotIn("sk_test", json.dumps(result))
+
 
 if __name__ == "__main__":
     unittest.main()
