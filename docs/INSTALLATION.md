@@ -1,6 +1,6 @@
 # Instalar y empezar con TruckControl AI
 
-Abre **https://truckcontrolai.com**. El registro de empresas está abierto; los cobros automáticos están apagados. Es una PWA por HTTPS, sin APK o EXE.
+Abre **https://truckcontrolai.com**. El registro de empresas está abierto; los cobros automáticos están apagados. La versión40 es una PWA por HTTPS. El paquete Android candidato se compila en CI, pero no está firmado comercialmente ni publicado en Google Play.
 
 ## Crear una empresa
 

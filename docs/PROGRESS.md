@@ -1,3 +1,9 @@
+## Actualización40 publicada · 12/11/2026 UTC
+
+https://truckcontrolai.com está en Sites40/app0.5.22-rc.1, fuentede8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4, deploymentappgdep_6af503dc2a988191b3cb864879d880ea SUCCEEDED.39 y demo6 conservadas. Segundo conductor y administración de incidencias publicados. CI exacto43123780131 SUCCESS:1401 unitarias/SQL,45Python,94demo,50empresa,220SaaS,20candidata,20producción,6perfiles públicos previos;64 originales/11hashes intactos. Después:75/75 hashes HTTPS,42/42 cuenta/Gmail/CargoTrack,40/40 segundo conductor/incidencias y6/6 perfiles PWA. Native65 y20/20 nuevas comprobaciones con rollback.
+
+Stripe sandbox real:13 controles correctos, eventos firmados oficiales, API canónica por CLI y persistencia en PGlite aislado; no es aceptación de clave/receptor de producción ni Checkout en navegador ni emisión TicketBAI. El primer ensayo detectó context exacto de cuenta rechazado; corrección estricta y25 pruebas nuevas correctas, pendiente CI/despliegue Edge final. Receptores productivos y cobrosOFF. Gmail empresarial invalid_client, firma/Play, dispositivos físicos, restauración administrada y aceptación fiscal/jurídica pendientes. Sin compras ni compromisos nuevos; acumulado histórico200EUR sin conciliar. [Recibo de publicación](verification/commercial-update-published-20261112.json).
+
 ## Avance verificado · 11/11/2026 UTC
 
 PR87/88 integrados. Native65, fuentes iguales y20/20 controles nuevos con rollback. Edge incidentes1/fiscal2 apagados y verificados; producción39/demo6 conservadas. Publicación de nueva interfaz pendiente. Ver [recibo](verification/new-additions-native-20261111.json) y documentos raíz actualizados; los checkpoints inferiores son históricos.

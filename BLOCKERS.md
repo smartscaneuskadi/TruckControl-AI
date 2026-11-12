@@ -1,3 +1,9 @@
+## Actualización40 publicada · 12/11/2026 UTC
+
+https://truckcontrolai.com está en Sites40/app0.5.22-rc.1, fuentede8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4, deploymentappgdep_6af503dc2a988191b3cb864879d880ea SUCCEEDED.39 y demo6 conservadas. Segundo conductor y administración de incidencias publicados. CI exacto43123780131 SUCCESS:1401 unitarias/SQL,45Python,94demo,50empresa,220SaaS,20candidata,20producción,6perfiles públicos previos;64 originales/11hashes intactos. Después:75/75 hashes HTTPS,42/42 cuenta/Gmail/CargoTrack,40/40 segundo conductor/incidencias y6/6 perfiles PWA. Native65 y20/20 nuevas comprobaciones con rollback.
+
+Stripe sandbox real:13 controles correctos, eventos firmados oficiales, API canónica por CLI y persistencia en PGlite aislado; no es aceptación de clave/receptor de producción ni Checkout en navegador ni emisión TicketBAI. El primer ensayo detectó context exacto de cuenta rechazado; corrección estricta y25 pruebas nuevas correctas, pendiente CI/despliegue Edge final. Receptores productivos y cobrosOFF. Gmail empresarial invalid_client, firma/Play, dispositivos físicos, restauración administrada y aceptación fiscal/jurídica pendientes. Sin compras ni compromisos nuevos; acumulado histórico200EUR sin conciliar. [Recibo de publicación](docs/verification/commercial-update-published-20261112.json).
+
 ## Bloqueos vigentes · 11/11/2026 UTC
 
 La ampliación SQL64/65 ya está aplicada y pasa20/20 controles nativos; no volver a pedir ni repetir esas migraciones. El test se revirtió completamente. Stripe sigue sin credencial de ejecutante verificable; nueva autorización oficial solicitada, cobrosOFF. Gmail empresarial sigue con invalid_client; no hay administración Google conectada. Faltan aceptación fiscal real/revisión jurídica, restauración administrada y firma/Play/dispositivos físicos. No se declara lanzamiento comercial completo. Producción39 permanece hasta verificar la candidata.

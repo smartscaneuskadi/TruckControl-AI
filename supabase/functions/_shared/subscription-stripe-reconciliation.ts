@@ -1,5 +1,6 @@
 import { isUuid } from "./invoice.ts";
 import { verifyStripeSignature } from "../truckcontrol-billing/handler.ts";
+import { stripeEventMatchesAccount } from "./stripe-event-scope.ts";
 
 type Obj = Record<string, unknown>;
 export type StripeReconciliationCode =
@@ -102,7 +103,7 @@ export async function reconcileStripeManualInvoicePayment(
     if (!id(event.id, "evt") || typeof event.type !== "string" ||
         typeof event.livemode !== "boolean" || !seconds(event.created, now))
       return fail("invalid_event");
-    if (event.livemode !== (config.mode === "live") || event.account != null || event.context != null)
+    if (event.livemode !== (config.mode === "live") || !stripeEventMatchesAccount(event, config.expectedAccountId))
       return fail("provider_identity_mismatch");
     if (!supported.has(event.type)) return { kind: "ignored", provider_event_id: event.id };
 
@@ -126,7 +127,7 @@ export async function reconcileStripeManualInvoicePayment(
     const canonicalEvent = await get("events/" + event.id);
     if (canonicalEvent.id !== event.id || canonicalEvent.type !== event.type ||
         canonicalEvent.created !== event.created || canonicalEvent.livemode !== event.livemode ||
-        canonicalEvent.account != null || canonicalEvent.context != null ||
+        !stripeEventMatchesAccount(canonicalEvent, config.expectedAccountId) ||
         obj(obj(canonicalEvent.data).object).id !== resource.id)
       return fail("provider_identity_mismatch");
     const live = (record: Obj): void => {

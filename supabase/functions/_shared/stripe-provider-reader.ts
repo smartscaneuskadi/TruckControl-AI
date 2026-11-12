@@ -1,5 +1,6 @@
 import { verifyStripeSignature } from "../truckcontrol-billing/handler.ts";
 import { StripeReconciliationError, type StripeReconciliationConfig } from "./subscription-stripe-reconciliation.ts";
+import { stripeEventMatchesAccount } from "./stripe-event-scope.ts";
 
 export type StripeObject = Record<string, unknown>;
 export const stripeObject = (value: unknown): StripeObject =>
@@ -75,7 +76,7 @@ export async function canonicalStripeEnvelope(
     if (!stripeId(input.id, "evt") || typeof input.type !== "string" ||
         typeof input.livemode !== "boolean" || !stripeSeconds(input.created, now))
       return fail("invalid_event");
-    if (input.livemode !== (config.mode === "live") || input.account != null || input.context != null)
+    if (input.livemode !== (config.mode === "live") || !stripeEventMatchesAccount(input, config.expectedAccountId))
       return fail("provider_identity_mismatch");
     if (!supported.has(input.type)) return { kind: "ignored", event_id: input.id };
     const snapshot = stripeObject(stripeObject(input.data).object);
@@ -96,7 +97,7 @@ export async function canonicalStripeEnvelope(
     if (account.id !== config.expectedAccountId) return fail("provider_identity_mismatch");
     const event = await get("events/" + input.id);
     if (event.id !== input.id || event.type !== input.type || event.created !== input.created ||
-        event.livemode !== input.livemode || event.account != null || event.context != null ||
+        event.livemode !== input.livemode || !stripeEventMatchesAccount(event, config.expectedAccountId) ||
         stripeObject(stripeObject(event.data).object).id !== snapshot.id)
       return fail("provider_identity_mismatch");
     return { kind: "verified", event, snapshot: stripeObject(stripeObject(event.data).object), get, now };

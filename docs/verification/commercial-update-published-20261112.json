@@ -1,0 +1,50 @@
+{
+  "checked_at": "2026-11-12T00:19:04.588761+00:00",
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "version": 40,
+  "app_version": "0.5.22-rc.1",
+  "url": "https://truckcontrolai.com",
+  "source_commit": "de8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4",
+  "source_branch": "deploy/gmail-account-production-20261111",
+  "deployment_id": "appgdep_6af503dc2a988191b3cb864879d880ea",
+  "saved_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_b183f31729248191aced622e3b942261",
+  "deployment_status": "succeeded",
+  "previous_version_preserved": 39,
+  "demo_preserved": 6,
+  "source_ci": {
+    "run": 43123780131,
+    "conclusion": "success",
+    "unit_sql": 1401,
+    "python": 45,
+    "demo_browser": 94,
+    "company_browser": 50,
+    "saas_browser": 220,
+    "candidate": 20,
+    "production_build": 20,
+    "previous_public_profiles": 6
+  },
+  "post_publication": {
+    "https_artifact_hashes": 75,
+    "account_gmail_cargotrack_browser": 42,
+    "pwa_profiles": 6,
+    "new_feature_browser": 40,
+    "scope": "Real public bundle and pinned SDK; private HTTP intercepted using synthetic fixtures, unmatched private HTTP/WebSocket blocked. No native customer logins or physical devices."
+  },
+  "supabase_migrations": 65,
+  "native_new_additions": 20,
+  "postgres17_isolated": 117,
+  "new_ai_calls": 0,
+  "new_purchases_eur": 0,
+  "new_recurring_commitments_eur": 0,
+  "prior_expenses_eur_reconciled": false,
+  "physical_devices": false,
+  "android": {
+    "ci_run": 43123780158,
+    "conclusion": "success",
+    "commercial_signed": false,
+    "play_published": false
+  },
+  "payments_enabled": false,
+  "commercial_launch_complete": false,
+  "ci_race_note": "Older hardening push43123682069 passed every build/UI stage then detected public source change39->40 at its last public-origin check. Update monitor expectation to40; do not weaken assertions."
+}
