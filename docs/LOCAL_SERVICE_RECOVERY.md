@@ -1,6 +1,6 @@
 # Recuperación de servicios locales aislados
 
-Estado inicial: código y nueve barreras unitarias comprobados; ejecución real en curso. No se certifica una restauración gestionada, RPO/RTO, un pago ni una factura fiscal.
+Estado: **67/67 controles reales correctos** en [Actions43137304506](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43137304506), fuente70429f1. Nueve barreras nuevas/54Python pasan. [Recibo saneado](verification/local-service-recovery-20261112.json). CI completo del head documental pendiente. No se certifica una restauración gestionada, RPO/RTO, un pago ni una factura fiscal.
 
 El workflow `Isolated Auth and Storage recovery` arranca dos instalaciones Supabase CLI3.1.0/Postgres17 independientes en un runner estándar del repositorio público. No usa secretos de producción, datos empresariales, credenciales alojadas o conexiones a los proyectos de Supabase. Solo publica un recibo saneado; el token efímero del propio job se limita a descargar paquetes oficiales. No tiene programación periódica ni crea servicios de pago.
 
@@ -23,7 +23,7 @@ El dump/restauración integral usa el rol local existente `supabase_admin` media
 - Nunca se imprimen contraseñas, tokens, claves, enlaces personales, dumps o mensajes SMTP. No se suben archivos privados como artefactos.
 - La limpieza selecciona únicamente los dos proyectos que creó la ejecución; no usa `--all`.
 
-## Recorridos que debe acreditar el recibo
+## Recorridos acreditados por el recibo
 
 Alta y confirmación mediante el correo SMTP local, enlace de un uso, contraseña y sesión real de GoTrue; provisión Básico; autorización REST/RLS de dos empresas; subida/descarga de bytes PDF privados y rechazo de otro inquilino/URL pública; recuperación de contraseña; congelación de servicios, copia PostgreSQL y objetos, restauración en el segundo stack y coincidencia de tablas; nueva autenticación en el destino, rechazo del token del origen y cierre global con pérdida inmediata del acceso privado.
 
