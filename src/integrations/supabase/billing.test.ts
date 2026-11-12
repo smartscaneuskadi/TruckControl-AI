@@ -68,6 +68,17 @@ const checkout = (token = "synthetic-session") =>
     }),
   });
 describe("cobros mensuales opcionales", () => {
+  it("comprueba la aprobación manual después de autenticar y antes de crear cada pago", async () => {
+    const f = fixture();
+    const ready = vi.fn().mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    const handler = createBillingHandler({ ...f.gateway, manualCheckoutReady: ready },
+      { appOrigin: origin, stripeKey: "synthetic" }, f.fetcher);
+    expect((await handler(checkout("invalid"))).status).toBe(401);
+    expect(ready).not.toHaveBeenCalled();
+    expect((await handler(checkout())).status).toBe(503);
+    expect(f.fetcher).not.toHaveBeenCalled();
+    expect((await handler(checkout())).status).toBe(200);
+  });
   it("no llama al proveedor si no hay configuración y rechaza sesiones falsas", async () => {
     const f = fixture(),
       handle = createBillingHandler(
