@@ -5,7 +5,7 @@ import { join, resolve, relative } from "node:path";
 const siteId = "appgprj_6ae655e56db481918fe18adfe9df8b66";
 const origin = "https://truckcontrolai.com";
 const supabase = "https://kkkemaycedexymrpaqtp.supabase.co";
-const expectedBaseline = "f861e42ece8ba7c83b42f493be611814113058c3";
+const expectedBaseline = "de8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4";
 const root = resolve(".");
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 if (!/^[a-f0-9]{40}$/.test(sha)) throw Error("Missing exact source commit.");
@@ -108,6 +108,8 @@ if (!["Cuenta y acceso", "Comprobar credenciales con Google", "validate_configur
   throw Error("Account/Gmail repair missing from production bundle.");
 if (!["co_driver_id", "subscription-financial-incidents-v1"].every((value) => bundle.includes(value)))
   throw Error("Verified crew or financial incident functionality missing from production bundle.");
+if (!["Comprobar Stripe", "admin_readiness", "stripe-readiness-v1"].every((value) => bundle.includes(value)))
+  throw Error("Private Stripe readiness is missing from the production bundle.");
 const archivePath = join(process.env.RUNNER_TEMP || "/tmp", "truckcontrol-production-" + sha + ".tar.gz");
 const tar = spawnSync("tar", ["-czf", archivePath, ".openai/hosting.json", "dist"], { stdio: "inherit", shell: false });
 if (tar.status !== 0) throw Error("Production packaging failed.");
