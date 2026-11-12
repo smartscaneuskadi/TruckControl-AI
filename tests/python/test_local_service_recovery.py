@@ -56,6 +56,17 @@ class LocalRecoveryGuards(unittest.TestCase):
         self.assertNotIn("DO-NOT-PUBLISH", json.dumps(result))
         self.assertNotIn("sk_test", json.dumps(result))
 
+    def test_diagnostic_tail_redacts_short_named_values_jwks_bearers_and_urls(self):
+        import json
+        raw = (b'password=short-one\n{"d":"short-two"}\n'
+               b'Authorization: Bearer short-three\n'
+               b'https://user:short-four@host/path?token=short-five\n'
+               b'sb_secret_short-six\n'
+               b'long_random_material_01234567890123456789\n')
+        value = json.dumps(lab.safe_diagnostics(raw))
+        for secret in ['short-one','short-two','short-three','short-four','short-five','short-six','long_random_material']:
+            self.assertNotIn(secret, value)
+
 
 if __name__ == "__main__":
     unittest.main()

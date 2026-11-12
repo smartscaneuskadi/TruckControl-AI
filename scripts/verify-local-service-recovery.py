@@ -110,10 +110,19 @@ def safe_diagnostics(raw: bytes) -> dict:
         "network_unreachable": "network is unreachable",
         "configuration_invalid": "failed to parse config",
     }.items() if pattern in text.lower()]
+    excerpt = []
+    for line in text.splitlines()[-14:]:
+        line = re.sub(r"(?i)(?:https?|postgres(?:ql)?)://[^\s\"'<>]+", "[url redacted]", line)
+        line = re.sub(r"(?i)\bBearer\s+\S+", "Bearer [redacted]", line)
+        line = re.sub(r'''(?i)(["']?(?:[\w-]*password|[\w-]*secret|[\w-]*token|[\w-]*api[_-]?key|authorization|d)["']?\s*[:=]\s*)(["'][^"']*["']|[^\s,}]+)''', r"\1[redacted]", line)
+        line = re.sub(r"(?:sb_secret_|sk_|rk_|whsec_)[A-Za-z0-9_-]+", "[redacted]", line)
+        line = re.sub(r"[A-Za-z0-9_+/=-]{20,}", "[long value redacted]", line)
+        excerpt.append(line[:240])
     return {"last_migration": migrations[-1] if migrations else None,
             "sqlstates": states, "identifiers": identifiers, "codes": signatures,
             "all_registry_candidates_failed": "failed to pull docker image from all registries" in text.lower(),
-            "images": sorted(set(re.findall(r"(?:public\.ecr\.aws|ghcr\.io|docker\.io)/supabase/[a-z0-9._/-]+:[a-zA-Z0-9._-]+", text)))}
+            "images": sorted(set(re.findall(r"(?:public\.ecr\.aws|ghcr\.io|docker\.io)/supabase/[a-z0-9._/-]+:[a-zA-Z0-9._-]+", text))),
+            "redacted_tail": excerpt}
 
 
 def command(args: list[str], *, data: bytes | None = None, timeout: int = 60,
@@ -282,7 +291,11 @@ class Stack:
         if not path.startswith("/") or path.startswith("//"):
             raise LabFailure("refuse_nonlocal_path")
         key = self.service if service else self.public
-        headers = {"apikey": key, "Authorization": "Bearer " + (token or key), "Content-Type": content_type}
+        # Publishable/secret API keys belong only in apikey. Authorization is
+        # reserved for a real Auth access JWT, as in the current client API.
+        headers = {"apikey": key, "Content-Type": content_type}
+        if token:
+            headers["Authorization"] = "Bearer " + token
         body = data if isinstance(data, bytes) else json.dumps(data).encode() if data is not None else None
         request = urllib.request.Request(self.url + path, data=body, method=method, headers=headers)
         # Do not inherit an external proxy for loopback and never follow redirects.
