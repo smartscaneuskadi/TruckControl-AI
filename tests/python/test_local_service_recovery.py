@@ -31,6 +31,23 @@ class LocalRecoveryGuards(unittest.TestCase):
             mutation(value)
             self.assertFalse(lab.container_allowed(value, "tc-recovery-test-source", "test-offline"))
 
+    def test_relay_accepts_only_the_owned_service_and_its_private_subnet(self):
+        import copy
+        original = self.fixture()
+        original["NetworkSettings"]["Networks"]["test-offline"]["IPAddress"] = "172.19.0.2"
+        args = ("tc-recovery-test-source", "test-offline", "db", "172.19.0.0/24")
+        self.assertEqual(lab.relay_target(original, *args), ("172.19.0.2", 5432))
+        for mutation in [lambda x: x.update({"Name": "/supabase_db_another-project"}),
+                         lambda x: x["NetworkSettings"]["Networks"]["test-offline"].update({"IPAddress": "8.8.8.8"}),
+                         lambda x: x["NetworkSettings"]["Networks"]["test-offline"].update({"IPAddress": "172.20.0.2"}),
+                         lambda x: x["NetworkSettings"]["Networks"]["test-offline"].update({"IPAddress": "127.0.0.1"})]:
+            value = copy.deepcopy(original)
+            mutation(value)
+            with self.assertRaises(lab.LabFailure):
+                lab.relay_target(value, *args)
+        with self.assertRaises(lab.LabFailure):
+            lab.relay_target(original, args[0], args[1], "arbitrary", args[3])
+
     def test_configuration_change_stays_in_its_exact_section(self):
         text = "[api]\nport = 54321\n[db]\nport = 54322\n"
         self.assertEqual(lab.toml_set(text, "api", "port", "55431"), "[api]\nport = 55431\n[db]\nport = 54322\n")

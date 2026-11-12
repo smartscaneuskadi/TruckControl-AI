@@ -11,15 +11,19 @@ import base64
 import hashlib
 import html
 import io
+import ipaddress
 import json
 import os
 from pathlib import Path
 import re
 import secrets
+import select
 import shutil
+import socket
 import subprocess
 import tarfile
 import tempfile
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -71,6 +75,97 @@ def container_allowed(info: dict, project: str, network: str) -> bool:
                 for bindings in ports.values() if bindings for p in bindings)
         and not any(m.get("Source", "").endswith("docker.sock") for m in info.get("Mounts", []))
     )
+
+
+def relay_target(info: dict, project: str, network: str, service: str, subnet: str):
+    """Only a named, owned service inside this private Docker subnet is reachable."""
+    ports = {"db": 5432, "kong": 8000, "inbucket": 8025}
+    if (service not in ports or not container_allowed(info, project, network)
+            or info.get("Name") != "/supabase_" + service + "_" + project):
+        raise LabFailure("refuse_unowned_relay_target")
+    address = ipaddress.ip_address(info["NetworkSettings"]["Networks"][network]["IPAddress"])
+    owned = ipaddress.ip_network(subnet)
+    if (address.version != 4 or not address.is_private or address not in owned
+            or address in (owned.network_address, owned.broadcast_address) or address.is_loopback):
+        raise LabFailure("refuse_noninternal_relay_target")
+    return str(address), ports[service]
+
+
+class LoopbackRelays:
+    """Docker28 internal bridges intentionally do not publish host ports.
+
+    Keep that outbound isolation. A host-only relay lets the real CLI and HTTP
+    tests reach exactly three owned services; it cannot reach a remote address,
+    DNS name, another project/network or arbitrary container port.
+    """
+    def __init__(self, stack, subnet: str):
+        self.stack = stack
+        self.subnet = subnet
+        self.stopped = threading.Event()
+        self.listeners = []
+        self.connections = set()
+        self.lock = threading.Lock()
+
+    def start(self):
+        for offset, service in [(0, "kong"), (1, "db"), (3, "inbucket")]:
+            listener = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.listeners.append(listener)
+            listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            listener.bind(("127.0.0.1", self.stack.port + offset))
+            listener.listen(32)
+            listener.settimeout(.5)
+            threading.Thread(target=self.accept, args=(listener, service), daemon=True).start()
+
+    def accept(self, listener, service):
+        while not self.stopped.is_set():
+            try:
+                client, _ = listener.accept()
+            except socket.timeout:
+                continue
+            except OSError:
+                return
+            threading.Thread(target=self.forward, args=(client, service), daemon=True).start()
+
+    def forward(self, client, service):
+        upstream = None
+        try:
+            with self.lock:
+                self.connections.add(client)
+            result = docker("inspect", "supabase_" + service + "_" + self.stack.project,
+                            allow_failure=True, timeout=5)
+            if result.returncode:
+                return  # A service still being created is retried by the real CLI.
+            info = json_output(result)[0]
+            destination = relay_target(info, self.stack.project, self.stack.network, service, self.subnet)
+            upstream = socket.create_connection(destination, timeout=3)
+            upstream.settimeout(None)
+            with self.lock:
+                self.connections.add(upstream)
+            while not self.stopped.is_set():
+                readable, _, _ = select.select([client, upstream], [], [], .5)
+                for sender in readable:
+                    data = sender.recv(65536)
+                    if not data:
+                        return
+                    (upstream if sender is client else client).sendall(data)
+        except (OSError, LabFailure, ValueError, KeyError, IndexError, subprocess.TimeoutExpired):
+            # Startup retries are normal. Never forward to a less restrictive
+            # address or log Docker env/Auth/API-key material on failure.
+            return
+        finally:
+            with self.lock:
+                for connection in (client, upstream):
+                    if connection is not None:
+                        self.connections.discard(connection)
+                        connection.close()
+
+    def close(self):
+        self.stopped.set()
+        for listener in self.listeners:
+            listener.close()
+        with self.lock:
+            for connection in self.connections:
+                connection.close()
 
 
 def check(name: str, condition: bool, **evidence):
@@ -171,6 +266,7 @@ class Stack:
         self.port = base_port
         self.containers: list[dict] = []
         self.settings: dict = {}
+        self.relays = None
 
     def cli(self, *args: str, **kwargs):
         if (not self.project.startswith("tc-recovery-") or self.project == PRODUCTION
@@ -239,6 +335,11 @@ class Stack:
         net = json_output(docker("network", "inspect", self.network))[0]
         check(self.project + ": internal network and loopback-only binding", net["Internal"] is True
               and net["Options"].get("com.docker.network.bridge.host_binding_ipv4") == "127.0.0.1")
+        self.relays = LoopbackRelays(self, net["IPAM"]["Config"][0]["Subnet"])
+        self.relays.start()
+        check(self.project + ": three owned-service relays listen only on loopback",
+              all(s.getsockname()[0] == "127.0.0.1" for s in self.relays.listeners)
+              and len(self.relays.listeners) == 3)
         print("Starting disposable " + self.project + " (private output suppressed)", flush=True)
         self.cli("start", "--network-id", self.network,
                  "--exclude", "realtime,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
@@ -371,6 +472,8 @@ class Stack:
 
     def cleanup(self):
         # Only the two newly owned workdirs/project IDs; never --all or remote.
+        if self.relays:
+            self.relays.close()
         if self.project.startswith("tc-recovery-") and self.folder.is_relative_to(PRIVATE):
             self.cli("stop", "--no-backup", "--project-id", self.project,
                      timeout=120, allow_failure=True)
