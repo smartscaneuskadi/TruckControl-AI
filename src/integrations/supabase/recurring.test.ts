@@ -259,6 +259,13 @@ describe("suscripciones mensuales opcionales", () => {
     ).toBe(400);
     expect(f.fetcher).not.toHaveBeenCalled();
   });
+  it.each([["limited", "Básico"], ["full", "Full"]])("la suscripción muestra el nombre comercial de %s", async (planId, name) => {
+    const f = fixture();
+    f.order.plan_id = planId;
+    expect((await f.handle(checkout())).status).toBe(200);
+    const form = new URLSearchParams(String(f.fetcher.mock.calls[0][1]!.body));
+    expect(form.get("line_items[0][price_data][product_data][name]")).toBe(`TruckControl AI · ${name}`);
+  });
   it("usa precio, identidad, periodo gratuito y reserva del servidor; jamás la vuelta del navegador", async () => {
     const f = fixture();
     expect((await f.handle(checkout())).status).toBe(200);
