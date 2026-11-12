@@ -1,0 +1,175 @@
+{
+  "checked_at": "2026-11-12T23:00:51.448179+00:00",
+  "url": "https://truckcontrolai.com",
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "version": 41,
+  "app_version": "0.5.23-rc.1",
+  "source_commit": "a33ed6f073392984a5de4de9f073734097db3a8d",
+  "source_branch": "deploy/gmail-account-production-20261112",
+  "deployment_id": "appgdep_6af643bcca608191829fc7007605ab13",
+  "saved_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ae1ded3662248191b949e880b0d6a647",
+  "deployment_status": "succeeded",
+  "github": {
+    "pr": 108,
+    "head": "7599e4a61c8808c147d1a17e9612823a742eac14",
+    "merge": "2131e9c0cd42fead994dbfeb8ac57dabe994facd",
+    "preserved_prior_prs": [
+      103,
+      104,
+      105,
+      106,
+      107
+    ]
+  },
+  "rollback": {
+    "production_version": 40,
+    "source_commit": "de8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4",
+    "deployment_id": "appgdep_6af503dc2a988191b3cb864879d880ea",
+    "saved_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_b183f31729248191aced622e3b942261",
+    "demo_preserved": 6
+  },
+  "ci": {
+    "pr_run": 43321910161,
+    "branch_run": 43321901562,
+    "exact_production_source_run": 43321984533,
+    "conclusion": "success",
+    "checks_per_run": 1949,
+    "unit_sql": 1477,
+    "python": 54,
+    "demo_browser": 94,
+    "company_browser": 50,
+    "saas_browser": 228,
+    "candidate": 20,
+    "production_build": 20,
+    "previous_public_profiles": 6,
+    "sql_isolated_run": 43321132543,
+    "sql_isolated_conclusion": "success"
+  },
+  "package": {
+    "run": 43321984422,
+    "artifact": 13991550558,
+    "tar_sha256": "66e40eebed17a927a3189c7389f374911c8dbc735517a1cd74bb98887346dd8c",
+    "compressed_bytes": 1499096
+  },
+  "native": {
+    "project_id": "kkkemaycedexymrpaqtp",
+    "migration_count": 66,
+    "new_migrations_by_this_execution": 0,
+    "function": "truckcontrol-billing",
+    "previous_version": 17,
+    "version": 18,
+    "status": "ACTIVE",
+    "files_exact": 11,
+    "file_sha256": {
+      "truckcontrol-billing/index.ts": "74d9ca501e1500065af554aa0d400bba44455a77fb1990f66bf80bcafc51e804",
+      "truckcontrol-billing/handler.ts": "6ed25bf96b9350ec2c87ec237aaf8ea49b2080675f1c76f173e18abb6491f3f1",
+      "_shared/auth-session.ts": "4d489e5610118a0d4170b743803c4d12562f560e02367e1b5198e44cec32c30f",
+      "_shared/subscription-legacy-payment-gate.ts": "c5bceab1b88a7a6a07e2aa962f327be7ea345b65629ed86bede76d439ed40d4a",
+      "_shared/subscription-fiscal-gate.ts": "e2c19c7e453b401285c9998076e0906fb05e838ce341727ff34589f67b8aa639",
+      "_shared/manual-checkout-readiness.ts": "e2c86b4eb66b25974a5fb83d7b4410db1c272aae2aba72cb7498fa676f51e1f7",
+      "_shared/subscription-stripe-runtime.ts": "d26413cf1394206b1315ceabc8922cf26a1c9832b8ad9279ae8f5b500c30f346",
+      "_shared/invoice.ts": "e81557bd97de9ab38e9d623a754960e88eaf92bd1faa6a0e253c40c8514bf189",
+      "_shared/billing-origins.ts": "09bb66be7eea0e240a960610e35750c9395f05f31ea999e5a8894ebe7c2f757f",
+      "_shared/provider-admin-access.ts": "0ea579429ac52e1bb4a869d489133c3779cba8402c13892b56d7477ae00def35",
+      "_shared/stripe-readiness.ts": "de2342e837633a324ab4d1d979302d07ac0ced8240dd585a298dc1992168011e"
+    },
+    "other_functions_unchanged": 12,
+    "deny_checks": {
+      "checked_at": "2026-11-12T22:52:34.498391+00:00",
+      "function": "truckcontrol-billing",
+      "scope": "unauthenticated denial paths only",
+      "results": [
+        {
+          "check": "missing_session",
+          "status": 401,
+          "code": "authentication_required",
+          "passed": true,
+          "no_store": true
+        },
+        {
+          "check": "invalid_session",
+          "status": 401,
+          "code": "authentication_required",
+          "passed": true,
+          "no_store": true
+        },
+        {
+          "check": "foreign_origin",
+          "status": 403,
+          "code": "origin_not_allowed",
+          "passed": true,
+          "no_store": true
+        },
+        {
+          "check": "unsupported_method",
+          "status": 405,
+          "code": "method_not_allowed",
+          "passed": true,
+          "no_store": true
+        },
+        {
+          "check": "unsigned_webhook",
+          "status": 400,
+          "code": "invalid_signature",
+          "passed": true,
+          "no_store": true
+        },
+        {
+          "check": "checkout_still_requires_session",
+          "status": 401,
+          "code": "authentication_required",
+          "passed": true,
+          "no_store": true
+        }
+      ],
+      "passed": true,
+      "authenticated_owner_check": false,
+      "model_calls": 0,
+      "stripe_provider_calls": 0,
+      "data_mutations": 0
+    },
+    "new_functions": 0,
+    "unsafe_public_probe_deployed": false
+  },
+  "post_publication": {
+    "https_exact_artifact_hashes": 75,
+    "hashes_total": 75,
+    "public_browser": {
+      "startTime": "2026-11-12T22:56:13.450Z",
+      "duration": 95011.302,
+      "expected": 38,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "browser_scope": "Real published bundle and pinned SDK; fictitious HTTP, unmatched private HTTP/WebSocket blocked. Not an authenticated native customer or Stripe account acceptance.",
+    "public_pwa_profiles": 6,
+    "pwa_scope": "HTTPS, exact source, expected registration policy, both themes, offline demo; Desktop Chrome and Pixel7 emulated, not physical devices."
+  },
+  "leaked_password_warning_present": false,
+  "retained_original_cases": 64,
+  "retained_file_hashes": 11,
+  "private_stripe_owner_session_check": {
+    "state": "pending",
+    "url": "https://truckcontrolai.com/#/admin?section=providers",
+    "action": "Comprobar Stripe",
+    "no_secrets_in_chat": true
+  },
+  "payments_enabled": false,
+  "commercial_launch_complete": false,
+  "new_ai_calls": 0,
+  "new_purchases_eur": 0,
+  "new_recurring_commitments_eur": 0,
+  "aggregate_budget_eur": 200,
+  "historical_expenses_reconciled": false,
+  "remaining_budget_eur": null,
+  "physical_devices": false,
+  "google_play_published": false,
+  "blockers": [
+    "Real owner-session Stripe configuration check and subsequent signed/native payment/fiscal acceptance.",
+    "Public Google restricted-data verification and enterprise Gmail credential acceptance.",
+    "Managed Auth/Storage/Vault recovery acceptance; 67/67 self-hosted isolated recovery already preserved.",
+    "Production Android signing custody, Play account and physical device acceptance.",
+    "External legal/fiscal acceptance and cumulative historical budget reconciliation."
+  ]
+}

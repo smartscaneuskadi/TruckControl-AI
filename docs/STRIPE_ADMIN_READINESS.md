@@ -1,3 +1,5 @@
+Publicado en Sites41/app0.5.23-rc.1 el12/11/2026. Billing18 verificado, PR108 integrado, cobros cerrados. La comprobación positiva con sesión real del propietario sigue pendiente. [Recibo](verification/admin-stripe-readiness-published-20261112.json).
+
 # Comprobación privada de Stripe
 
 La administración global dispone de **Servicios → Comprobar Stripe**. El enlace directo es https://truckcontrolai.com/#/admin?section=providers. La pantalla requiere entrar con la cuenta administradora habitual; nunca pide copiar claves o códigos.
