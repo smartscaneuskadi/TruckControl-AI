@@ -168,6 +168,20 @@
       "name": "universal_company_copilot",
       "sha256": "6c66e584ebb510abde83b6d89b277d58fd75b98856c9aef0657963b9d98c258a",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261108134217_subscription_payment_incidents.sql",
+      "version": "20261111224101",
+      "name": "subscription_payment_incidents",
+      "sha256": "f1be3f3f8b5220f0ce7c84767c0f564be4f4fd5f003a44cecf8c93b910ee8bc7",
+      "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261108141748_truck_second_driver.sql",
+      "version": "20261111224113",
+      "name": "truck_second_driver",
+      "sha256": "dedceb1ce213bb3ed8f923de385303d251e53402522d143a55076245dc3f0375",
+      "already_applied": true
     }
   ]
 }

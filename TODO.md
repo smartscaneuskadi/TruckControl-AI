@@ -1,3 +1,19 @@
+## Actualización40 publicada · 12/11/2026 UTC
+
+https://truckcontrolai.com está en Sites40/app0.5.22-rc.1, fuentede8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4, deploymentappgdep_6af503dc2a988191b3cb864879d880ea SUCCEEDED.39 y demo6 conservadas. Segundo conductor y administración de incidencias publicados. CI exacto43123780131 SUCCESS:1401 unitarias/SQL,45Python,94demo,50empresa,220SaaS,20candidata,20producción,6perfiles públicos previos;64 originales/11hashes intactos. Después:75/75 hashes HTTPS,42/42 cuenta/Gmail/CargoTrack,40/40 segundo conductor/incidencias y6/6 perfiles PWA. Native65 y20/20 nuevas comprobaciones con rollback.
+
+Stripe sandbox real:13 controles correctos, eventos firmados oficiales, API canónica por CLI y persistencia en PGlite aislado; no es aceptación de clave/receptor de producción ni Checkout en navegador ni emisión TicketBAI. El primer ensayo detectó context exacto de cuenta rechazado; corrección estricta y25 pruebas nuevas correctas, pendiente CI/despliegue Edge final. Receptores productivos y cobrosOFF. Gmail empresarial invalid_client, firma/Play, dispositivos físicos, restauración administrada y aceptación fiscal/jurídica pendientes. Sin compras ni compromisos nuevos; acumulado histórico200EUR sin conciliar. [Recibo de publicación](docs/verification/commercial-update-published-20261112.json).
+
+## Prioridad actual · 11/11/2026 UTC
+
+- [x] Integrar87/88 y aplicar únicamente las migraciones nuevas64/65, verificadas con20 controles nativos y rollback.
+- [ ] Publicar interfaz0.5.22-rc.1 desde un checkout separado con identidad de producción, conservar39/demo6 y comprobar HTTPS.
+- [ ] Autenticar ejecutante Stripe sandbox y probar entrega real, cobros/licencias, cancelación y renovación sin dinero real.
+- [ ] Aceptación fiscal manual GDTaller/PDF válido, revisión jurídica, restauración administrada Auth/Storage/Vault.
+- [ ] Corregir secreto empresarial del cliente Google existente y completar revisión pública.
+- [ ] Firma comercial Android, cuenta Play y dispositivos físicos.
+- [ ] Conciliar facturas anteriores con límite agregado200EUR; no nuevo gasto mientras no se verifique saldo.
+
 ## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
 
 Este checkpoint prevalece sobre los estados históricos inferiores. https://truckcontrolai.com está en Sites39/app0.5.21-rc.1, fuente `f861e42ece8ba7c83b42f493be611814113058c3`, despliegue `appgdep_6af1039c6574819182741d8ae52e14a5` SUCCEEDED. PR98 fusionado en `89ef16115c2a52492c270922370c9f43eb09d592`; Sites38 y demo6 conservados. Main mantiene el manifiesto DEMO: no publicarlo como producción.

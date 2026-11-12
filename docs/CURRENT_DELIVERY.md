@@ -1,3 +1,15 @@
+## Actualización40 publicada · 12/11/2026 UTC
+
+https://truckcontrolai.com está en Sites40/app0.5.22-rc.1, fuentede8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4, deploymentappgdep_6af503dc2a988191b3cb864879d880ea SUCCEEDED.39 y demo6 conservadas. Segundo conductor y administración de incidencias publicados. CI exacto43123780131 SUCCESS:1401 unitarias/SQL,45Python,94demo,50empresa,220SaaS,20candidata,20producción,6perfiles públicos previos;64 originales/11hashes intactos. Después:75/75 hashes HTTPS,42/42 cuenta/Gmail/CargoTrack,40/40 segundo conductor/incidencias y6/6 perfiles PWA. Native65 y20/20 nuevas comprobaciones con rollback.
+
+Stripe sandbox real:13 controles correctos, eventos firmados oficiales, API canónica por CLI y persistencia en PGlite aislado; no es aceptación de clave/receptor de producción ni Checkout en navegador ni emisión TicketBAI. El primer ensayo detectó context exacto de cuenta rechazado; corrección estricta y25 pruebas nuevas correctas, pendiente CI/despliegue Edge final. Receptores productivos y cobrosOFF. Gmail empresarial invalid_client, firma/Play, dispositivos físicos, restauración administrada y aceptación fiscal/jurídica pendientes. Sin compras ni compromisos nuevos; acumulado histórico200EUR sin conciliar. [Recibo de publicación](verification/commercial-update-published-20261112.json).
+
+## Ampliaciones verificadas · 11/11/2026 UTC
+
+Este bloque actualiza las ampliaciones, sin anunciar todavía otra publicación: pública39/app0.5.21-rc.1 y demo6 conservadas. PR87 integrado2c0d9b6, PR88 integradod439d22 (incluye interfaz83 y contratos82). Supabase65, nuevas64/65 aplicadas una vez y hashes iguales.20/20 controles nativos de segundo conductor/ledger con rollback íntegro;117PASS de PostgreSQL17 aislado con concurrencia y restauración lógica. Receptores Stripe incidentes1/fiscal2 activos técnicamente pero negocioOFF;19 fuentes ejecutables iguales y cuatro controles HTTP correctos.
+
+Candidata0.5.22-rc.1 en release/commercial-hardening-20261111. Conservar los64 casos/11hashes, no repetir #37 ni tocar FIXPilot. Sigue pendiente publicar/verificar interfaz, Stripe sandbox/backend real y aceptación fiscal/legal/recuperación administrada/Android comercial. Gmail empresarial sigue invalid_client.0 nuevas compras o compromisos; saldo200EUR histórico sin conciliar. [Recibo nativo](verification/new-additions-native-20261111.json).
+
 ## Cuenta y Gmail publicados · Sites39 · 08/11/2026 UTC
 
 Los **6/6 perfiles PWA públicos de Sites39** también han pasado después de publicar: tres orígenes, dos dispositivos emulados, ambos temas y demo offline. No se envió correo ni se autenticó un buzón real.

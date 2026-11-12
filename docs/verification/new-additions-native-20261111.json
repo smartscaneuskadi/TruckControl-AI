@@ -1,0 +1,84 @@
+{
+  "checked_at": "2026-11-11T23:55:46.049Z",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "production_unchanged_at_acceptance": 39,
+  "migrations": [
+    {
+      "ordinal": 64,
+      "remote_version": "20261111224101",
+      "file": "supabase/migrations/20261108134217_subscription_payment_incidents.sql",
+      "sha256": "f1be3f3f8b5220f0ce7c84767c0f564be4f4fd5f003a44cecf8c93b910ee8bc7"
+    },
+    {
+      "ordinal": 65,
+      "remote_version": "20261111224113",
+      "file": "supabase/migrations/20261108141748_truck_second_driver.sql",
+      "sha256": "dedceb1ce213bb3ed8f923de385303d251e53402522d143a55076245dc3f0375"
+    }
+  ],
+  "source_hashes_match_native": true,
+  "native_acceptance": {
+    "checks": [
+      "two_verified_synthetic_companies",
+      "authenticated_second_driver_assignment",
+      "driver_rls_other_company_hidden",
+      "same_person_two_seats_denied",
+      "cross_company_assignment_denied",
+      "opposite_seat_duplicate_denied",
+      "assigned_second_driver_leave_denied",
+      "legacy_update_preserves_second_driver",
+      "explicit_unassignment_allows_driver_leave",
+      "sessionless_claims_cannot_read_private_trucks",
+      "company_user_admin_endpoint_denied",
+      "provider_observation_and_duplicate_idempotence",
+      "fresh_admin_review_and_stable_operation_replay",
+      "stale_admin_compare_and_swap_denied",
+      "financial_audit_update_denied",
+      "original_payment_task_and_licence_unchanged",
+      "revoked_admin_session_denied",
+      "provider_and_direct_ledger_acl_restricted",
+      "all_fixture_rows_rolled_back_exactly",
+      "old_specialist_attestations_unchanged"
+    ],
+    "passed": 20,
+    "real_payments": false,
+    "providers_called": false,
+    "fixtures_persisted": false
+  },
+  "postgres17_isolated": {
+    "run": 43111232563,
+    "job": 130827476749,
+    "pass_checks": 117,
+    "scope": "Independent connection races, rollback, logical PostgreSQL dump/restore; not managed Auth/Storage/Vault restoration"
+  },
+  "edge": [
+    {
+      "name": "truckcontrol-stripe-incidents",
+      "version": 1,
+      "matched_source_files": 9,
+      "business_enabled": false
+    },
+    {
+      "name": "truckcontrol-stripe-fiscal",
+      "version": 2,
+      "matched_source_files": 10,
+      "business_enabled": false
+    }
+  ],
+  "http_checks": {
+    "get_method_not_allowed": 2,
+    "post_disabled": 2
+  },
+  "security_advisors": {
+    "new_findings": 0,
+    "retained_info_deny_all_tables": 2,
+    "retained_warning_leaked_password_protection_disabled": true
+  },
+  "payments_enabled": false,
+  "new_ai_calls": 0,
+  "new_charges_eur": 0,
+  "managed_project_restoration_verified": false,
+  "physical_devices_verified": false,
+  "commercial_launch_complete": false
+}
