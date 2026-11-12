@@ -52,13 +52,19 @@ export function AdminConsole({
   const client = getSupabaseClient();
   const [snapshot, setSnapshot] = useState<AdminSnapshot | null>(null);
   const [tab, setTab] = useState(() =>
-    new URLSearchParams(window.location.hash.split("?")[1] ?? "").get("section") === "providers"
-      ? "providers" : "customers",
+    new URLSearchParams(window.location.hash.split("?")[1] ?? "").get(
+      "section",
+    ) === "providers"
+      ? "providers"
+      : "customers",
   );
   useEffect(() => {
     const selectSection = () => {
       const [route, query = ""] = window.location.hash.split("?");
-      if (route === "#/admin" && new URLSearchParams(query).get("section") === "providers")
+      if (
+        route === "#/admin" &&
+        new URLSearchParams(query).get("section") === "providers"
+      )
         setTab("providers");
     };
     window.addEventListener("hashchange", selectSection);

@@ -22,6 +22,6 @@ El chequeo completo positivo requiere la sesión real del propietario. Las prueb
 
 ## Despliegue y recuperación
 
-Validar unitarias, SQL aislado, Deno, permisos, interfaz y CI antes de actualizar únicamente `truckcontrol-billing`; conservar sus siete fuentes anteriores y la configuración existente. Son dos dependencias internas adicionales, sin endpoint nuevo, DDL ni cambios de RLS. Publicar la interfaz desde checkout de producción separado: el manifiesto de main pertenece a la demo. Conservar Sites40 y demo6. Si falla, restaurar las fuentes previas del backend y la versión pública40; no borrar datos ni volver a aplicar migraciones.
+Validar unitarias, SQL aislado, Deno, permisos, interfaz y CI antes de actualizar únicamente `truckcontrol-billing`; conservar sus nueve fuentes anteriores (v17, PR106) y la configuración existente. Son dos dependencias internas adicionales a las nueve de v17, sin endpoint nuevo, DDL ni cambios de RLS. Publicar la interfaz desde checkout de producción separado: el manifiesto de main pertenece a la demo. Conservar Sites40 y demo6. Si falla, restaurar las fuentes previas del backend y la versión pública40; no borrar datos ni volver a aplicar migraciones.
 
 El intento anterior de publicar un diagnóstico temporal separado fue rechazado por la revisión automática porque añadía una función pública con acceso a secretos. **No se desplegó y no se reintenta.** Esta implementación usa la autenticación humana y autorización de administración existentes; no introduce token alternativo ni función nueva.

@@ -5,7 +5,10 @@ import { manualCheckoutReadiness } from "../_shared/manual-checkout-readiness.ts
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createBillingHandler } from "./handler.ts";
 import { canInspectProviderConfiguration } from "../_shared/provider-admin-access.ts";
-import { cachedStripeReadiness, inspectStripeReadiness } from "../_shared/stripe-readiness.ts";
+import {
+  cachedStripeReadiness,
+  inspectStripeReadiness,
+} from "../_shared/stripe-readiness.ts";
 import {
   productionBillingOrigin,
   productionBillingOrigins,
@@ -15,19 +18,31 @@ const client = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   { auth: { persistSession: false, autoRefreshToken: false } },
 );
-const stripeReadiness = cachedStripeReadiness(() => inspectStripeReadiness({
-  stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
-  fiscalSigningSecret: Deno.env.get("STRIPE_MANUAL_FISCAL_WEBHOOK_SECRET"),
-}, fetch));
+const stripeReadiness = cachedStripeReadiness(() =>
+  inspectStripeReadiness(
+    {
+      stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
+      fiscalSigningSecret: Deno.env.get("STRIPE_MANUAL_FISCAL_WEBHOOK_SECRET"),
+    },
+    fetch,
+  ),
+);
 Deno.serve(
   createBillingHandler(
     {
-      manualCheckoutReady: manualCheckoutReadiness(key => Deno.env.get(key),
-        async account => await client.rpc("tc_manual_stripe_checkout_ready", { p_account: account }), "one_time"),
+      manualCheckoutReady: manualCheckoutReadiness(
+        (key) => Deno.env.get(key),
+        async (account) =>
+          await client.rpc("tc_manual_stripe_checkout_ready", {
+            p_account: account,
+          }),
+        "one_time",
+      ),
       async authenticate(token) {
         return getSessionVerifiedUser(client, token);
       },
-      canInspectProviders: (token) => canInspectProviderConfiguration(client, token),
+      canInspectProviders: (token) =>
+        canInspectProviderConfiguration(client, token),
       stripeReadiness,
       server: createLegacyStripeServer("one_time", async (action, data) => {
         const result = await client.rpc("tc_platform_server", {
@@ -45,7 +60,9 @@ Deno.serve(
       allowedOrigins: productionBillingOrigins,
       stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
       webhookSecret: Deno.env.get("STRIPE_WEBHOOK_SECRET"),
-      invoicingVerified: subscriptionFiscalCheckoutAllowed(Deno.env.get("BILLING_INVOICING_VERIFIED")),
+      invoicingVerified: subscriptionFiscalCheckoutAllowed(
+        Deno.env.get("BILLING_INVOICING_VERIFIED"),
+      ),
     },
   ),
 );

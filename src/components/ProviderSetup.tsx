@@ -244,9 +244,7 @@ export function ProviderSetup() {
           ))}
         </div>
       )}
-      {status && (
-        <StripeReadinessSettings />
-      )}
+      {status && <StripeReadinessSettings />}
       {status && (
         <section
           className="settings-card gmail-link-readiness"
