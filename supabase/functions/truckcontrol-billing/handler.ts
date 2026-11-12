@@ -1,6 +1,7 @@
 import { isUuid } from "../_shared/invoice.ts";
 import type { StripeReadinessReport } from "../_shared/stripe-readiness.ts";
 export interface BillingGateway {
+  manualCheckoutReady?(): Promise<boolean>;
   authenticate(token: string): Promise<{ id: string } | null>;
   server<T>(action: string, data: Record<string, unknown>): Promise<T>;
   canInspectProviders?(token: string): Promise<boolean>;
@@ -184,7 +185,7 @@ export function createBillingHandler(
         return json({ error: "invalid_request" }, 400);
       if (!config.stripeKey)
         return json({ error: "payments_not_configured" }, 503);
-      if (config.invoicingVerified !== true)
+      if (config.invoicingVerified !== true && (await gateway.manualCheckoutReady?.()) !== true)
         return json({ error: "automatic_invoicing_unavailable" }, 503);
       const order = await gateway.server<Order>("checkout_order", {
         user_id: user.id,

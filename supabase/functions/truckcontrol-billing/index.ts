@@ -1,6 +1,7 @@
 import { getSessionVerifiedUser } from "../_shared/auth-session.ts";
 import { createLegacyStripeServer } from "../_shared/subscription-legacy-payment-gate.ts";
 import { subscriptionFiscalCheckoutAllowed } from "../_shared/subscription-fiscal-gate.ts";
+import { manualCheckoutReadiness } from "../_shared/manual-checkout-readiness.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createBillingHandler } from "./handler.ts";
 import { canInspectProviderConfiguration } from "../_shared/provider-admin-access.ts";
@@ -21,6 +22,8 @@ const stripeReadiness = cachedStripeReadiness(() => inspectStripeReadiness({
 Deno.serve(
   createBillingHandler(
     {
+      manualCheckoutReady: manualCheckoutReadiness(key => Deno.env.get(key),
+        async account => await client.rpc("tc_manual_stripe_checkout_ready", { p_account: account }), "one_time"),
       async authenticate(token) {
         return getSessionVerifiedUser(client, token);
       },
