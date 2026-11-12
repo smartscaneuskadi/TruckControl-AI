@@ -7,11 +7,6 @@ on:
       - ".github/workflows/local-service-recovery.yml"
       - "scripts/verify-local-service-recovery.py"
       - "tests/python/test_local_service_recovery.py"
-  pull_request:
-    paths:
-      - ".github/workflows/local-service-recovery.yml"
-      - "scripts/verify-local-service-recovery.py"
-      - "tests/python/test_local_service_recovery.py"
 
 permissions:
   contents: read

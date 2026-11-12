@@ -178,7 +178,23 @@ class Stack:
         target = self.folder / "supabase/migrations"
         target.mkdir(exist_ok=True)
         migrations = sorted((ROOT / "supabase/migrations").glob("*.sql"))
-        check(self.project + ": only committed schema is staged", len(migrations) >= 65)
+        committed = command(["git", "-C", str(ROOT), "ls-files", "supabase/migrations/*.sql"]).stdout.decode().splitlines()
+        # Remote history has65 entries, but the reviewed repository currently
+        # consolidates that schema in42 files. Never substitute a remote counter
+        # for exact committed source provenance.
+        actual = [str(p.relative_to(ROOT)) for p in migrations]
+        check(self.project + ": only the complete committed schema is staged",
+              bool(committed) and sorted(committed) == actual and not any(p.is_symlink() for p in migrations))
+        frozen = {
+            "20261108013000_manual_subscription_invoice_intake.sql": "7323ded662cf8ec4560662a86c9224d21eb3d45ad4689caa919cf2638672da7b",
+            "20261108100352_manual_subscription_payment_and_documents.sql": "cbfe47861f20129c4fbc51ebf35b2e37b46784489aee406f49291896fa81e069",
+            "20261108134217_subscription_payment_incidents.sql": "f1be3f3f8b5220f0ce7c84767c0f564be4f4fd5f003a44cecf8c93b910ee8bc7",
+            "20261108141748_truck_second_driver.sql": "dedceb1ce213bb3ed8f923de385303d251e53402522d143a55076245dc3f0375",
+        }
+        check(self.project + ": reviewed fiscal, session and crew migration hashes retained",
+              all((ROOT / "supabase/migrations" / name).is_file() and hashlib.sha256((ROOT / "supabase/migrations" / name).read_bytes()).hexdigest() == digest
+                  for name, digest in frozen.items()))
+        REPORT["committed_schema_file_count"] = len(migrations)
         for p in migrations:
             shutil.copyfile(p, target / p.name)
         docker("network", "create", "--internal", "--opt", "com.docker.network.bridge.host_binding_ipv4=127.0.0.1",
