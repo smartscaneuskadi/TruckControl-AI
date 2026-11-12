@@ -15,6 +15,8 @@ Deno.serve(createManualStripeWebhookHandler({
   knownPaymentEvent: (account, paymentMode, event) =>
     lookupKnownStripePayment((name, parameters) => client.rpc(name, parameters), account, paymentMode, event),
 }, {
+  deliveryCheckAccountId: manualStripeRuntimeAllowed(supabaseUrl, "live")
+    ? "acct_1UZSsJCWctKw8slH" : undefined,
   knownPaymentEvents: Deno.env.get("TRUCKCONTROL_STRIPE_INCIDENTS_SCHEMA_ACCEPTED") === "true",
   // Separate switches: deploying code alone never enables even the sandbox pipeline.
   enabled: Deno.env.get("TRUCKCONTROL_MANUAL_STRIPE_PIPELINE_ENABLED") === "true" &&
