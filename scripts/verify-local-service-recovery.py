@@ -364,7 +364,14 @@ class Stack:
         check(self.project + ": all containers owned, offline and loopback bound",
               all(container_allowed(c, self.project, self.network) for c in self.containers))
         self.db = next(c["Id"] for c in self.containers if c["Name"].startswith("/supabase_db_"))
-        self.storage = next(c["Id"] for c in self.containers if c["Name"].startswith("/supabase_storage_"))
+        storage = next(c for c in self.containers if c["Name"].startswith("/supabase_storage_"))
+        self.storage = storage["Id"]
+        # CLI3's official storage service mounts its file backend at /mnt.
+        # Refuse a guessed path or host bind mount before copying any bytes.
+        self.storage_path = "/mnt"
+        check(self.project + ": private file backend is this project's named volume",
+              any(m.get("Destination") == self.storage_path and m.get("Type") == "volume"
+                  and m.get("Name") == "supabase_storage_" + self.project for m in storage.get("Mounts", [])))
 
     def load_settings(self):
         self.settings = json_output(self.cli("status", "--output", "json", failure="local_status_unavailable"))
@@ -384,9 +391,23 @@ class Stack:
         return json.loads(self.sql("select to_jsonb(x) from (" + text + ") x;").splitlines()[-1]).popitem()[1]
 
     def safety(self):
-        data = json.loads(self.sql("select jsonb_build_object('payments',(select payments_enabled from private.tc_settings where id),'channels',(select count(*) from private.tc_manual_stripe_channels where enabled),'pdf_uploads',(select uploads_enabled from private.tc_manual_subscription_document_runtime where id),'notices',(select enabled from private.tc_manual_invoice_notice_settings where id),'ai_keys',(select count(*) from vault.secrets where name in ('truckcontrol_openai_api_key','truckcontrol_resend_api_key','truckcontrol_stripe_secret_key')));").splitlines()[-1])
+        data = json.loads(self.sql("""select jsonb_build_object(
+          'payments',(select payments_enabled from private.tc_settings where id),
+          'channels',(select count(*) from private.tc_manual_stripe_channels where enabled),
+          'pdf_uploads',(select uploads_enabled from private.tc_manual_subscription_document_runtime where id),
+          'notices',(select enabled from private.tc_manual_invoice_notice_settings where id),
+          'ai_enabled',(select ai_enabled from private.tc_provider_settings where id),
+          'receiving_enabled',(select receiving_enabled from private.tc_provider_settings where id),
+          'configured_provider_keys',(select count(*) from vault.decrypted_secrets where name in
+             ('truckcontrol_openai_api_key','truckcontrol_resend_api_key','truckcontrol_stripe_secret_key',
+              'truckcontrol_google_client_id','truckcontrol_google_client_secret')
+             and btrim(decrypted_secret) not in ('','pending')));""").splitlines()[-1])
+        # Migrations create encrypted literal 'pending' placeholders. Count
+        # configured values, never expose/decrypt values outside PostgreSQL.
+        REPORT.setdefault("local_safety", {})[self.project] = data
         check(self.project + ": external billing, fiscal uploads, notices and provider credentials OFF",
-              data == {"payments": False, "channels": 0, "pdf_uploads": False, "notices": False, "ai_keys": 0})
+              data == {"payments": False, "channels": 0, "pdf_uploads": False, "notices": False,
+                       "ai_enabled": False, "receiving_enabled": False, "configured_provider_keys": 0})
 
     def http(self, method: str, path: str, data=None, *, token=None, service=False, content_type="application/json"):
         if not path.startswith("/") or path.startswith("//"):
@@ -588,11 +609,11 @@ def exercise(source: Stack, target: Stack):
     check("old password no longer authenticates", status >= 400)
     a["password"] = replacement
     # Consistent snapshot: freeze non-DB services, then dump schema+data and raw objects.
-    before = snapshot(source)
     source.freeze()
+    before = snapshot(source)
     dump = docker("exec", source.db, "pg_dump", "-U", "postgres", "-d", "postgres", "-Fc",
                   timeout=120, failure="source_dump_failed").stdout
-    storage = docker("cp", source.storage + ":/var/lib/storage/.", "-", timeout=60, failure="storage_backup_failed").stdout
+    storage = docker("cp", source.storage + ":" + source.storage_path + "/.", "-", timeout=60, failure="storage_backup_failed").stdout
     with tarfile.open(fileobj=io.BytesIO(storage)) as archive:
         members = archive.getmembers()
         check("storage archive contains no symlinks, devices or escaping paths", all(
@@ -605,7 +626,7 @@ def exercise(source: Stack, target: Stack):
     target.freeze()
     docker("exec", "-i", target.db, "pg_restore", "-U", "postgres", "-d", "postgres", "--clean", "--if-exists", "--exit-on-error",
            data=dump, timeout=180, failure="destination_restore_failed")
-    docker("cp", "-a", "-", target.storage + ":/var/lib/storage/", data=storage, timeout=60, failure="storage_restore_failed")
+    docker("cp", "-a", "-", target.storage + ":" + target.storage_path + "/", data=storage, timeout=60, failure="storage_restore_failed")
     after = snapshot(target)
     check("restored Auth, company, document and Storage metadata match the snapshot exactly", before == after)
     target.resume()
