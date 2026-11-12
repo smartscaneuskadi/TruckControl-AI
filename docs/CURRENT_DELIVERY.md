@@ -1,3 +1,29 @@
+## Comprobación privada Stripe y seguridad · candidata 12/11/2026 UTC
+
+Supabase confirma la desaparición del aviso de contraseñas filtradas: cero WARN/ERROR de seguridad y un INFO de RLS sin política; no se alteran RLS ni las66 migraciones. [Recibo](verification/auth-password-protection-20261112.json). Main d375f0c incorpora PR103/104/105/106; se conserva la confirmación del propietario sobre emisión/entrega manual GDTaller y el nuevo verificador de entrega Stripe. No repetir esa decisión ni las aceptaciones IA de #37.
+
+Candidata0.5.23-rc.1: **Servicios → Comprobar Stripe**, dentro del endpoint de pagos existente y detrás de sesión humana vigente más superadministrador SQL real. Solo GET de cuenta/receptor, sin secretos al navegador ni cambios de cobros. No hay función pública nueva: el prototipo separado fue rechazado por revisión automática y NO se desplegó. [Diseño y límites](STRIPE_ADMIN_READINESS.md).El head166ffd3 pasó npm run check:1473 unitarias/SQL y compilación; además54Python, Deno2.9.6 y8 nuevos recorridos Android/Windows emulados con ambos temas/accesibilidad. PR106 integrado sin conflictos y sin repetir su migración66; CI de la fuente compuesta, despliegue y comprobación privada real pendientes. Los64 originales/11hashes se conservan. Producción40/demo6 intactas.
+
+CobrosOFF, IA10USD/mes–100llamadas/empresa sin nuevas llamadas; compras/compromisos nuevos0EUR. Presupuesto agregado200EUR: gasto histórico y saldo aún sin conciliar. No autorizar cargos sobre un saldo supuesto. Gmail empresarial y revisión Google, restore gestionado, firma/Play y hardware físico siguen pendientes; no declarar lanzamiento comercial completo.
+
+## Renovación Stripe sandbox verificada · 12/11/2026 UTC
+
+PR101 integrado en a73f0708c502d4b9542830be725375e558668904 tras ambos CI correctos del head0f4999f; recuperación67/67 repetida correctamente en main/Actions43139567891. Producción40/demo6 y Native65 conservados.
+
+Nuevo ensayo Stripe real: **17/17 controles**, dos mensualidades con tareas independientes, replay sin duplicados/regresión y firma inválida rechazada. Adaptadores productivos, API/firmas auténticas mediante CLI oficial, persistencia PGlite local; reloj, cliente y suscripción propios eliminados. Seis barreras nuevas pasan; regresión completa de esta rama pendiente. [Recibo saneado](verification/stripe-renewal-sandbox-20261112.json). No acredita Checkout comercial, clave/receptor productivo, factura TicketBAI ni entrega. CobrosOFF, IA0nueva, compras/compromisos0EUR; saldo histórico200EUR sin conciliar.
+
+## Estado vigente confirmado · 12/11/2026 UTC
+
+Producción40/app0.5.22-rc.1 y demo6 conservadas. Main1a1be188ab9e0984702aaadf67803f6ad06c073d integró PR100 con ambos CI correctos;1426 unitarias/SQL y los64 originales/11hashes intactos. Supabase65; fiscal3/incidentes2 verificados, negocioOFF; no volver a desplegar esos cambios ni repetir migraciones o #37. El [checkpoint final](verification/commercial-final-checkpoint-20261112.json) y [comentario6810872922](https://github.com/smartscaneuskadi/TruckControl-AI/issues/3#issuecomment-6810872922) sustituyen los estados CI/Edge pendientes de notas anteriores.
+
+Recuperación real en servicios autohospedados aislados: **67/67 controles correctos** en [Actions43137304506](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43137304506), fuente70429f1. Dos empresas ficticias, SMTP local, alta Básico, contraseña, sesiones, RLS, originales privados y restauración DB/archivos con cierre efectivo; ambas instalaciones desechables se eliminaron.42 archivos SQL consolidados, claves de firma distintas,54Python/nueve barreras;64 originales/11hashes intactos. [Recibo saneado](verification/local-service-recovery-20261112.json), PR101. CI completo del head documental aún pendiente. **No equivale a recuperación gestionada ni del Vault productivo**, emisión TicketBAI o aceptación comercial. Sin DDL remoto, IA nueva, compras o apertura de cobros.
+
+## Actualización40 publicada · 12/11/2026 UTC
+
+https://truckcontrolai.com está en Sites40/app0.5.22-rc.1, fuentede8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4, deploymentappgdep_6af503dc2a988191b3cb864879d880ea SUCCEEDED.39 y demo6 conservadas. Segundo conductor y administración de incidencias publicados. CI exacto43123780131 SUCCESS:1401 unitarias/SQL,45Python,94demo,50empresa,220SaaS,20candidata,20producción,6perfiles públicos previos;64 originales/11hashes intactos. Después:75/75 hashes HTTPS,42/42 cuenta/Gmail/CargoTrack,40/40 segundo conductor/incidencias y6/6 perfiles PWA. Native65 y20/20 nuevas comprobaciones con rollback.
+
+Stripe sandbox real:13 controles correctos, eventos firmados oficiales, API canónica por CLI y persistencia en PGlite aislado; no es aceptación de clave/receptor de producción ni Checkout en navegador ni emisión TicketBAI. El primer ensayo detectó context exacto de cuenta rechazado; corrección estricta y25 pruebas nuevas correctas, pendiente CI/despliegue Edge final. Receptores productivos y cobrosOFF. Gmail empresarial invalid_client, firma/Play, dispositivos físicos, restauración administrada y aceptación fiscal/jurídica pendientes. Sin compras ni compromisos nuevos; acumulado histórico200EUR sin conciliar. [Recibo de publicación](verification/commercial-update-published-20261112.json).
+
 ## Ampliaciones verificadas · 11/11/2026 UTC
 
 Este bloque actualiza las ampliaciones, sin anunciar todavía otra publicación: pública39/app0.5.21-rc.1 y demo6 conservadas. PR87 integrado2c0d9b6, PR88 integradod439d22 (incluye interfaz83 y contratos82). Supabase65, nuevas64/65 aplicadas una vez y hashes iguales.20/20 controles nativos de segundo conductor/ledger con rollback íntegro;117PASS de PostgreSQL17 aislado con concurrencia y restauración lógica. Receptores Stripe incidentes1/fiscal2 activos técnicamente pero negocioOFF;19 fuentes ejecutables iguales y cuatro controles HTTP correctos.

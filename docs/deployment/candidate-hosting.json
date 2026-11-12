@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ecce634ca1e4819188b5ad9f888ab541",
-  "published_version_number": 39,
-  "deployment_id": "appgdep_6af1039c6574819182741d8ae52e14a5",
-  "previous_deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
+  "published_commit": "de8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_b183f31729248191aced622e3b942261",
+  "published_version_number": 40,
+  "deployment_id": "appgdep_6af503dc2a988191b3cb864879d880ea",
+  "previous_deployment_id": "appgdep_6af1039c6574819182741d8ae52e14a5",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-08T23:20:11.410197+00:00",
+  "deployed_at": "2026-11-12T00:10:22Z",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 42533027609,
+  "source_ci_run": 43123780131,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "ee43c0267bee67f45002b9a13736eaeb7cdb94f6",
+  "source_ci_commit": "de8ad2c7d3fee9f628e09566a2ed91d62a2d1fa4",
   "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 37,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_6fc4c9572014819182529cbd14eb197f",
-    "source_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
-    "deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
+    "version": 39,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ecce634ca1e4819188b5ad9f888ab541",
+    "source_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
+    "deployment_id": "appgdep_6af1039c6574819182741d8ae52e14a5",
     "app_version": "0.5.21-rc.1"
   },
-  "source_deployment_ci_run": 42520789863,
-  "app_version": "0.5.21-rc.1",
+  "source_deployment_ci_run": 43123780131,
+  "app_version": "0.5.22-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -230,6 +230,13 @@
       "source_commit": "8c13c24172758546a40e76ffe7e484348fb2124a",
       "deployment_id": "appgdep_6af0d5f2a8b08191b89c782ebfbd7bf7",
       "app_version": "0.5.21-rc.1"
+    },
+    {
+      "version": 39,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ecce634ca1e4819188b5ad9f888ab541",
+      "source_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
+      "deployment_id": "appgdep_6af1039c6574819182741d8ae52e14a5",
+      "app_version": "0.5.21-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -297,28 +304,22 @@
   },
   "ci_scope_note": "PR98/exact-source CI:1664 per execution, including6 public profiles against prior Sites38. Postpublication receipt records Sites39 separately; no repeated AI/mailbox acceptance.",
   "final_release_verification": {
-    "code_commit": "d9e6fc8b52171a61d6747cd9e4109d3dcec3aa8d",
-    "source_commit": "f861e42ece8ba7c83b42f493be611814113058c3",
-    "checks_before_publication": 1664,
-    "unit_sql_passed": 1249,
+    "source_ci": 43123780131,
+    "unit_sql_passed": 1401,
     "python_passed": 45,
-    "demo_browser_passed": 82,
+    "demo_browser_passed": 94,
     "company_browser_passed": 50,
-    "saas_browser_passed": 192,
-    "candidate_browser_passed": 20,
+    "saas_browser_passed": 220,
+    "candidate_passed": 20,
     "production_build_passed": 20,
-    "public_profiles": 6,
-    "public_profile_baseline_version": 38,
-    "published_account_gmail_session_cases": 42,
-    "https_file_hashes_after_publication": 75,
-    "migrations": 63,
-    "postpublication_checks": "docs/verification/gmail-account-repair-published-20261108.json",
-    "scheduled_paid_model_calls": 0,
-    "emission_available": false,
-    "enterprise_gmail_connected": false,
-    "public_profiles_after_publication": 6
+    "previous_public_profiles_passed": 6,
+    "post_publication_https_hashes": 75,
+    "post_publication_browser": 82,
+    "physical_devices": false,
+    "commercial_payments": false,
+    "post_publication_profiles": 6
   },
-  "source_branch": "deploy/gmail-account-production-20261108",
+  "source_branch": "deploy/gmail-account-production-20261111",
   "production_source_manifest_only_diff_scope": "Runtime src/public/supabase/package and compiler configuration match reviewed d9e6fc8. Production identity, packaging workflow/helper and source-only delivery records differ; never deploy the demo manifest from main.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
@@ -455,7 +456,7 @@
     "fr"
   ],
   "default_ui_language": "es",
-  "translation_catalog_keys": 2680,
+  "translation_catalog_keys": 2786,
   "prior_published_versions": [
     {
       "version": 38,
@@ -464,5 +465,8 @@
       "deployment_id": "appgdep_6af0dfe58e408191a072932ea5cd9a30",
       "app_version": "0.5.21-rc.1"
     }
-  ]
+  ],
+  "expected_second_driver": true,
+  "expected_subscription_incidents": true,
+  "source_production_manifest_only_diff_scope": "Runtime src/public/supabase/package and compiler configuration match reviewed da16c57. Production manifest, packaging workflow/helper and source delivery records differ; never deploy the demo manifest from main."
 }

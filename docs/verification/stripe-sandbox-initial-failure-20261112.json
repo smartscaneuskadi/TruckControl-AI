@@ -1,0 +1,42 @@
+{
+  "started_at": "2026-11-12T00:09:10.384Z",
+  "account": "acct_1UWYX5ECykZtDl5d",
+  "livemode": false,
+  "real_money_eur": 0,
+  "transport": "Official Stripe CLI forwards signed real sandbox events; canonical API reads use the same authorized CLI. No backend API key is exported.",
+  "persistence": "Fresh local PGlite with all reviewed migrations, never managed production",
+  "limitations": [
+    "Not a completed browser Checkout purchase",
+    "Not a production-registered webhook or production backend key acceptance",
+    "Cancellation does not certify production licence suspension",
+    "No fiscal invoice issued or delivered"
+  ],
+  "checks": [
+    "Official CLI is authorized only for the explicitly selected test account for this run",
+    "Canonical Stripe account identity matches the existing sandbox",
+    "Official CLI webhook signing secret obtained only in process memory",
+    "Synthetic customer created strictly in sandbox",
+    "Existing test monthly price is EUR36300 with no production price changes",
+    "Real sandbox subscription is active"
+  ],
+  "events": [
+    {
+      "id": "evt_1UalZuECykZtDl5dFGZfZKkY",
+      "type": "invoice.paid",
+      "status": 400,
+      "error": "provider_identity_mismatch"
+    }
+  ],
+  "provider_reads": [
+    "/v1/account",
+    "/v1/events/evt_1UalZuECykZtDl5dFGZfZKkY"
+  ],
+  "resources": {
+    "customer": "cus_VbzYZ6synTlGTb",
+    "subscription": "sub_1UalZrECykZtDl5d5qB6dXDB"
+  },
+  "complete": false,
+  "failure_code": "wait_timeout",
+  "subscription_cleanup": false,
+  "finished_at": "2026-11-12T00:11:12.109Z"
+}

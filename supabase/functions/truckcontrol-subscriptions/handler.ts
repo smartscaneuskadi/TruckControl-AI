@@ -2,6 +2,7 @@ import { isUuid } from "../_shared/invoice.ts";
 import { verifyStripeSignature } from "../truckcontrol-billing/handler.ts";
 
 export interface RecurringGateway {
+  manualCheckoutReady?(): Promise<boolean>;
   authenticate(token: string): Promise<{ id: string } | null>;
   server<T>(action: string, data: Record<string, unknown>): Promise<T>;
 }
@@ -94,12 +95,11 @@ export function createRecurringHandler(
       return null;
     }
   })();
-  const configured = Boolean(
+  const checkoutConfigured = Boolean(
     config.enabled &&
     config.stripeKey &&
     config.termsVersion &&
-    termsUrl &&
-    config.invoicingVerified === true,
+    termsUrl,
   );
   async function stripe(
     path: string,
@@ -336,6 +336,10 @@ export function createRecurringHandler(
       } catch {
         return json({ error: "invalid_request" }, 400);
       }
+      const checkFiscal = body.action === "status" || body.action === "checkout" || body.action === "resume";
+      const invoiceReady = config.invoicingVerified === true ||
+        (checkFiscal && (await gateway.manualCheckoutReady?.()) === true);
+      const configured = checkoutConfigured && invoiceReady;
       if (body.action === "status") {
         const status = await gateway.server<Obj>("status", {
           user_id: user.id,
@@ -343,7 +347,7 @@ export function createRecurringHandler(
         return json({
           ...status,
           configured,
-          invoice_delivery_ready: config.invoicingVerified === true,
+          invoice_delivery_ready: invoiceReady,
           management_available: Boolean(config.stripeKey),
           terms_version: config.termsVersion ?? null,
           terms_url: termsUrl,
@@ -383,7 +387,7 @@ export function createRecurringHandler(
           "line_items[0][price_data][unit_amount]": String(order.quoted_cents),
           "line_items[0][price_data][recurring][interval]": "month",
           "line_items[0][price_data][recurring][interval_count]": "1",
-          "line_items[0][price_data][product_data][name]": `TruckControl AI · ${order.plan_id === "full" ? "Full" : "Inicial"}`,
+          "line_items[0][price_data][product_data][name]": `TruckControl AI · ${order.plan_id === "full" ? "Full" : "Básico"}`,
           "subscription_data[metadata][tc_user_id]": user.id,
           "subscription_data[metadata][tc_request_id]": order.id,
           "metadata[tc_user_id]": user.id,

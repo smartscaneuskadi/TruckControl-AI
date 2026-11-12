@@ -189,6 +189,16 @@ async function webhook(
   );
 }
 describe("suscripciones mensuales opcionales", () => {
+  it("vuelve a comprobar el canal manual aunque el último estado permitiera suscribirse", async () => {
+    const f = fixture();
+    const ready = vi.fn().mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    const handler = createRecurringHandler({ ...f.gateway, manualCheckoutReady: ready },
+      { ...config, invoicingVerified: false }, f.fetcher);
+    expect(await (await handler(request({ action: "status" }))).json()).toMatchObject({ configured: true, invoice_delivery_ready: true });
+    expect((await handler(checkout())).status).toBe(503);
+    expect(f.fetcher).not.toHaveBeenCalled();
+    expect((await handler(checkout())).status).toBe(200);
+  });
   it("solo libera una reserva cuando Stripe confirma la caducidad de ese checkout", async () => {
     const f = fixture();
     const session = {
@@ -258,6 +268,13 @@ describe("suscripciones mensuales opcionales", () => {
       ).status,
     ).toBe(400);
     expect(f.fetcher).not.toHaveBeenCalled();
+  });
+  it.each([["limited", "Básico"], ["full", "Full"]])("la suscripción muestra el nombre comercial de %s", async (planId, name) => {
+    const f = fixture();
+    f.order.plan_id = planId;
+    expect((await f.handle(checkout())).status).toBe(200);
+    const form = new URLSearchParams(String(f.fetcher.mock.calls[0][1]!.body));
+    expect(form.get("line_items[0][price_data][product_data][name]")).toBe(`TruckControl AI · ${name}`);
   });
   it("usa precio, identidad, periodo gratuito y reserva del servidor; jamás la vuelta del navegador", async () => {
     const f = fixture();

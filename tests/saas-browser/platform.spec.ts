@@ -5399,3 +5399,113 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
     page.getByRole("navigation", { name: "Correos conectados" }),
   ).toHaveCount(0);
 });
+
+
+// Provider transport is synthetic here; native readiness requires the owner's verified session.
+const stripeReadinessFixture = () => ({
+  contract: "truckcontrol-stripe-readiness-v1",
+  checked_at: new Date().toISOString(),
+  stripe_key_configured: true, key_mode: "live",
+  fiscal_signing_secret_format_valid: false,
+  account_checked: true, account_status: 200,
+  account_id: "acct_1UZSsJCWctKw8slH", expected_account: true,
+  charges_enabled: true, payouts_enabled: true,
+  webhook_checked: true, webhook_status: 200,
+  webhook_id_matches: true, webhook_url_matches: true,
+  webhook_events_match: true, webhook_api_version_matches: true,
+  webhook_disabled: true, signature_delivery_verified: false,
+  payment_or_customer_mutations: 0,
+});
+
+test.describe("Stripe privado", () => {
+  test("verifica al pulsar, evita duplicados y conserva el formulario de Google", async ({ page }) => {
+    await fixtures(page);
+    let reads = 0;
+    await page.route("**/functions/v1/truckcontrol-billing", async route => {
+      if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization,apikey,content-type,x-client-info" } });
+      expect(route.request().postDataJSON()).toEqual({ action: "admin_readiness" });
+      const bearer = route.request().headers().authorization;
+      expect(bearer).toMatch(/^Bearer /);
+      expect(JSON.parse(Buffer.from(bearer.split(".")[1], "base64url").toString()).sub).toBe(admin);
+      reads++;
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await route.fulfill({ json: stripeReadinessFixture(), headers: { "access-control-allow-origin": "*" } });
+    });
+    await openProviders(page);
+    const card = page.getByRole("region", { name: "Conexión de Stripe", exact: true });
+    await expect(card).toBeVisible();
+    expect(reads).toBe(0);
+    await page.getByLabel("Secreto nuevo de Google").fill("draft-preserved-on-stripe-check");
+    await card.getByRole("button", { name: "Comprobar Stripe", exact: true }).evaluate((button: HTMLButtonElement) => { button.click(); button.click(); });
+    await expect(card.getByRole("status")).toContainText("La firma y la entrega del webhook siguen pendientes de prueba.");
+    await expect(card).toContainText("Estado del receptor: Desactivado");
+    await expect(card).toContainText("Esta comprobación no modifica los cobros ni las licencias.");
+    await expect(page.getByLabel("Secreto nuevo de Google")).toHaveValue("draft-preserved-on-stripe-check");
+    expect(reads).toBe(1);
+    expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toContain("stripe-readiness-v1");
+  });
+
+  test("explica permisos y rechaza resultados falsos sin mostrar errores privados", async ({ page }) => {
+    await fixtures(page);
+    let attempts = 0;
+    await page.route("**/functions/v1/truckcontrol-billing", async route => {
+      if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization,apikey,content-type,x-client-info" } });
+      attempts++;
+      await route.fulfill({ status: attempts === 1 ? 403 : 200, json: attempts === 1
+        ? { error: "platform_admin_required", diagnostic: "private-stripe-diagnostic" }
+        : { ...stripeReadinessFixture(), signature_delivery_verified: true, diagnostic: "private-stripe-diagnostic" },
+        headers: { "access-control-allow-origin": "*" } });
+    });
+    await openProviders(page);
+    const card = page.getByRole("region", { name: "Conexión de Stripe", exact: true });
+    await card.getByRole("button", { name: "Comprobar Stripe", exact: true }).click();
+    await expect(card.getByRole("alert")).toHaveText("Solo la administración global puede comprobar Stripe.");
+    await card.getByRole("button", { name: "Comprobar Stripe", exact: true }).click();
+    await expect(card.getByRole("alert")).toHaveText("La comprobación de Stripe no devolvió un resultado válido.");
+    await expect(card.getByRole("status")).toHaveCount(0);
+    await expect(page.locator("body")).not.toContainText("private-stripe-diagnostic");
+    expect(attempts).toBe(2);
+  });
+
+  test("enlace directo, ambos temas y limpieza offline son accesibles", async ({ page }, testInfo) => {
+    test.setTimeout(60000);
+    await fixtures(page);
+    await page.route("**/functions/v1/truckcontrol-billing", async route => {
+      if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization,apikey,content-type,x-client-info" } });
+      await route.fulfill({ json: stripeReadinessFixture(), headers: { "access-control-allow-origin": "*" } });
+    });
+    await login(page, "pedidos@smartscaneuskadi.com");
+    await expect(page.getByRole("heading", { name: "Tu centro de administración", exact: true })).toBeVisible();
+    await page.goto("/#/admin?section=providers");
+    const card = page.getByRole("region", { name: "Conexión de Stripe", exact: true });
+    await expect(card).toBeVisible();
+    await card.getByRole("button", { name: "Comprobar Stripe", exact: true }).click();
+    await expect(card.getByRole("status")).toBeVisible();
+    for (const theme of ["Fleet Light", "Fleet Cockpit"]) {
+      await page.getByRole("button", { name: "Apariencia", exact: true }).click();
+      const appearance = page.getByRole("dialog", { name: "Apariencia de TruckControl" });
+      await appearance.getByRole("radio", { name: theme, exact: true }).check();
+      await appearance.getByLabel("Animaciones", { exact: true }).selectOption("off");
+      await appearance.getByRole("button", { name: "Aplicar apariencia" }).click();
+      await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+      expect(await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1)).toBe(true);
+      expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+      await card.screenshot({ path: testInfo.outputPath(`stripe-${theme.replace(/ /g, "-")}.png`) });
+    }
+    await page.evaluate(() => window.dispatchEvent(new Event("offline")));
+    await expect(card.getByRole("status")).toHaveCount(0);
+  });
+
+  test("una cuenta Básico no muestra ni consulta el diagnóstico administrativo", async ({ page }) => {
+    const f = await fixtures(page);
+    f.controls.companyPlan = "limited";
+    f.snapshot.customers[0].trial_plan_id = "limited";
+    let reads = 0;
+    await page.route("**/functions/v1/truckcontrol-billing", async route => { reads++; await route.fulfill({ status: 403, json: { error: "platform_admin_required" } }); });
+    await login(page, "customer@example.com");
+    await expect(page).toHaveURL(/#\/dashboard/);
+    await page.goto("/#/admin?section=providers");
+    await expect(page.getByRole("button", { name: "Comprobar Stripe", exact: true })).toHaveCount(0);
+    expect(reads).toBe(0);
+  });
+});

@@ -1,0 +1,102 @@
+{
+  "started_at": "2026-11-12T00:16:31.343Z",
+  "account": "acct_1UWYX5ECykZtDl5d",
+  "livemode": false,
+  "real_money_eur": 0,
+  "transport": "Official Stripe CLI forwards signed real sandbox events; canonical API reads use the same authorized CLI. No backend API key is exported.",
+  "persistence": "Fresh local PGlite with all reviewed migrations, never managed production",
+  "limitations": [
+    "Not a completed browser Checkout purchase",
+    "Not a production-registered webhook or production backend key acceptance",
+    "Cancellation does not certify production licence suspension",
+    "No fiscal invoice issued or delivered"
+  ],
+  "checks": [
+    "Official CLI is authorized only for the explicitly selected test account for this run",
+    "Canonical Stripe account identity matches the existing sandbox",
+    "Official CLI webhook signing secret obtained only in process memory",
+    "Synthetic customer created strictly in sandbox",
+    "Existing test monthly price is EUR36300 with no production price changes",
+    "Real sandbox subscription is active",
+    "Authentic signed sandbox invoice reconciles and persists atomically",
+    "Exactly one invoice request from the funded subscription",
+    "Exact signed event replay is idempotent",
+    "Invalid signature rejected before any provider read",
+    "Refund targets only this newly created test customer and funded intent",
+    "Real test refund reaches signed incident reconciliation and isolated immutable ledger",
+    "Refund observation preserves licence pending manual review"
+  ],
+  "events": [
+    {
+      "id": "evt_1Ualh0ECykZtDl5dtJyjpW8A",
+      "type": "invoice.paid",
+      "status": 200,
+      "error": null
+    },
+    {
+      "id": "evt_3UalgyECykZtDl5d154q11WZ",
+      "type": "charge.refunded",
+      "status": 200,
+      "error": null
+    },
+    {
+      "id": "evt_3UalgyECykZtDl5d1cUQoY7L",
+      "type": "refund.created",
+      "status": 200,
+      "error": null
+    },
+    {
+      "id": "evt_3UalgyECykZtDl5d1kxZIt9i",
+      "type": "refund.updated",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "provider_reads": [
+    "/v1/account",
+    "/v1/events/evt_1Ualh0ECykZtDl5dtJyjpW8A",
+    "/v1/invoices/in_1UalgyECykZtDl5df8Pb7lO1",
+    "/v1/subscriptions/sub_1UalgyECykZtDl5dVrjlBARM",
+    "/v1/invoice_payments?invoice=in_1UalgyECykZtDl5df8Pb7lO1&status=paid&limit=2",
+    "/v1/payment_intents/pi_3UalgyECykZtDl5d15viyYof",
+    "/v1/charges/ch_3UalgyECykZtDl5d1XxMZMWf",
+    "/v1/account",
+    "/v1/events/evt_1Ualh0ECykZtDl5dtJyjpW8A",
+    "/v1/invoices/in_1UalgyECykZtDl5df8Pb7lO1",
+    "/v1/subscriptions/sub_1UalgyECykZtDl5dVrjlBARM",
+    "/v1/invoice_payments?invoice=in_1UalgyECykZtDl5df8Pb7lO1&status=paid&limit=2",
+    "/v1/payment_intents/pi_3UalgyECykZtDl5d15viyYof",
+    "/v1/charges/ch_3UalgyECykZtDl5d1XxMZMWf",
+    "/v1/account",
+    "/v1/account",
+    "/v1/account",
+    "/v1/events/evt_3UalgyECykZtDl5d154q11WZ",
+    "/v1/events/evt_3UalgyECykZtDl5d1cUQoY7L",
+    "/v1/events/evt_3UalgyECykZtDl5d1kxZIt9i",
+    "/v1/charges/ch_3UalgyECykZtDl5d1XxMZMWf",
+    "/v1/refunds/re_3UalgyECykZtDl5d10aNnkR4",
+    "/v1/refunds/re_3UalgyECykZtDl5d10aNnkR4",
+    "/v1/charges/ch_3UalgyECykZtDl5d1XxMZMWf",
+    "/v1/payment_intents/pi_3UalgyECykZtDl5d15viyYof",
+    "/v1/charges/ch_3UalgyECykZtDl5d1XxMZMWf",
+    "/v1/payment_intents/pi_3UalgyECykZtDl5d15viyYof",
+    "/v1/invoice_payments?payment%5Btype%5D=payment_intent&payment%5Bpayment_intent%5D=pi_3UalgyECykZtDl5d15viyYof&status=paid&limit=2",
+    "/v1/payment_intents/pi_3UalgyECykZtDl5d15viyYof",
+    "/v1/invoice_payments?payment%5Btype%5D=payment_intent&payment%5Bpayment_intent%5D=pi_3UalgyECykZtDl5d15viyYof&status=paid&limit=2",
+    "/v1/invoices/in_1UalgyECykZtDl5df8Pb7lO1",
+    "/v1/invoice_payments?payment%5Btype%5D=payment_intent&payment%5Bpayment_intent%5D=pi_3UalgyECykZtDl5d15viyYof&status=paid&limit=2",
+    "/v1/invoices/in_1UalgyECykZtDl5df8Pb7lO1",
+    "/v1/subscriptions/sub_1UalgyECykZtDl5dVrjlBARM",
+    "/v1/invoices/in_1UalgyECykZtDl5df8Pb7lO1",
+    "/v1/subscriptions/sub_1UalgyECykZtDl5dVrjlBARM",
+    "/v1/subscriptions/sub_1UalgyECykZtDl5dVrjlBARM"
+  ],
+  "resources": {
+    "customer": "cus_VbzgDKrxVR55T1",
+    "subscription": "sub_1UalgyECykZtDl5dVrjlBARM",
+    "refund": "re_3UalgyECykZtDl5d10aNnkR4"
+  },
+  "complete": true,
+  "subscription_cleanup": true,
+  "finished_at": "2026-11-12T00:17:02.141Z"
+}

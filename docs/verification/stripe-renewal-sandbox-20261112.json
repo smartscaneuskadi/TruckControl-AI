@@ -1,0 +1,108 @@
+{
+  "contract": "truckcontrol-real-sandbox-renewal-v1",
+  "started_at": "2026-11-12T02:21:09.422Z",
+  "account": "acct_1UWYX5ECykZtDl5d",
+  "livemode": false,
+  "real_money_eur": 0,
+  "production_modified": false,
+  "transport": "Official CLI only; signed forwarded webhooks and canonical API reads, without exporting its credential",
+  "persistence": "Disposable local PGlite; never managed production",
+  "limitations": [
+    "Not a browser Checkout purchase or a production backend key/webhook acceptance",
+    "Not a TicketBAI invoice or dispatch; fiscal tasks remain awaiting_issue",
+    "Cancellation is checked at the provider only, not production licence suspension"
+  ],
+  "checks": [
+    "Authorized official profile is the existing test sandbox",
+    "Canonical provider identity matches the sandbox",
+    "Existing EUR363 monthly test price is unchanged",
+    "Authentic signing secret remains only in process memory",
+    "Own disposable clock starts in the past without relaxing time validation",
+    "Test customer is attached only to this clock",
+    "Real sandbox subscription is active",
+    "First genuine signed invoice creates one awaiting-issue task",
+    "Renewal invoice creates an independent second task",
+    "Monthly periods are contiguous and belong to the same subscription",
+    "Original immutable task survives the renewal unchanged",
+    "Provider canonical evidence distinguishes initial purchase and renewal",
+    "Signed replay is idempotent for renewal period",
+    "Signed replay is idempotent for first period after renewal",
+    "Out-of-order replays do not regress or extend isolated access",
+    "Invalid signature is denied before canonical reads",
+    "Only this synthetic subscription is canceled at the provider"
+  ],
+  "events": [
+    {
+      "id": "evt_1UandgECykZtDl5dPYAt7J2X",
+      "type": "invoice.paid",
+      "status": 200
+    },
+    {
+      "id": "evt_1UandyECykZtDl5dafUbboD9",
+      "type": "invoice.paid",
+      "status": 200
+    }
+  ],
+  "resources": {
+    "local_listener_port": 46721,
+    "clock": "clock_1UandaECykZtDl5dsujHy3OV",
+    "customer": "cus_Vc1hDHeQJR6ojD",
+    "subscription": "sub_1UandeECykZtDl5drtRyQ9o2"
+  },
+  "provider_reads": 22,
+  "tasks": [
+    {
+      "id": "8637058f-bab1-4af0-a6e3-92033fce2637",
+      "provider_invoice_id": "in_1UandeECykZtDl5daMcCk3nH",
+      "subscription_id": "sub_1UandeECykZtDl5drtRyQ9o2",
+      "period_start": "2026-10-03T02:21:16.000Z",
+      "period_end": "2026-11-03T02:21:16.000Z",
+      "status": "awaiting_issue",
+      "amount_cents": 36300
+    },
+    {
+      "id": "5a68d70c-25c9-4702-ad12-db02b0842767",
+      "provider_invoice_id": "in_1UandqECykZtDl5dw99bIXey",
+      "subscription_id": "sub_1UandeECykZtDl5drtRyQ9o2",
+      "period_start": "2026-11-03T02:21:16.000Z",
+      "period_end": "2026-12-03T02:21:16.000Z",
+      "status": "awaiting_issue",
+      "amount_cents": 36300
+    }
+  ],
+  "complete": true,
+  "synthetic_clock_and_associated_resources_removed": true,
+  "completed_at": "2026-11-12T02:21:55.278Z",
+  "fiscal_emission_verified": false,
+  "provenance": {
+    "repository": "smartscaneuskadi/TruckControl-AI",
+    "branch": "test/stripe-renewal-20261112",
+    "base_commit": "a73f0708c502d4b9542830be725375e558668904",
+    "official_cli": "1.55.10",
+    "executed_files": [
+      {
+        "path": "scripts/verify-stripe-sandbox-renewal.mjs",
+        "sha256": "a0eac50500f3f75f5cee212fbd5d20abbb4f35f16b17aebb25a8ef33dfb080ba",
+        "git_blob": "e3edfa5c824a129982ae44d6d9c66c3d0612d7a7"
+      },
+      {
+        "path": "scripts/lib/stripe-qa-guards.mjs",
+        "sha256": "d14e7fb5b2b3b9a1933fe23f7a90eeca614240bcb869153ad79c5c75c7c217a0",
+        "git_blob": "cb8f22756c4695b387e3d94300e140c936377e27"
+      },
+      {
+        "path": "tests/stripe-qa-guards.test.ts",
+        "sha256": "9b3a6d2e92ea9f573bcb6336e49883f4bb094b95b14edc8c915acac955fc3b11",
+        "git_blob": "7aefa3229659f75036254a7a91d424c3246b1722"
+      }
+    ]
+  },
+  "costs": {
+    "new_purchases_eur": 0,
+    "new_recurring_commitments_eur": 0,
+    "real_money_eur": 0,
+    "new_ai_calls": 0,
+    "aggregate_budget_eur": 200,
+    "historic_total_and_remaining_reconciled": false
+  }
+}

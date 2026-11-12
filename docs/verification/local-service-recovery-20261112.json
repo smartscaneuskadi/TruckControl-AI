@@ -1,0 +1,332 @@
+{
+  "contract": "truckcontrol-local-service-recovery-v1",
+  "managed_platform_restore_verified": false,
+  "production_modified": false,
+  "real_customer_data": false,
+  "external_provider_calls": 0,
+  "fiscal_emission_verified": false,
+  "physical_devices": false,
+  "checks": [
+    {
+      "name": "runner has at least 8GB free for disposable service images",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: only the complete committed schema is staged",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: reviewed fiscal, session and crew migration hashes retained",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: internal network and loopback-only binding",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: three owned-service relays listen only on loopback",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: all containers owned, offline and loopback bound",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: local restore role is available without changing privileges",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: private file backend is this project's named volume",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: all staged migrations actually applied",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: source starts without users",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-source: external billing, fiscal uploads, notices and provider credentials OFF",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: only the complete committed schema is staged",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: reviewed fiscal, session and crew migration hashes retained",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: internal network and loopback-only binding",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: three owned-service relays listen only on loopback",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: all containers owned, offline and loopback bound",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: local restore role is available without changing privileges",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: private file backend is this project's named volume",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: all staged migrations actually applied",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: source starts without users",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: external billing, fiscal uploads, notices and provider credentials OFF",
+      "passed": true
+    },
+    {
+      "name": "source and destination have distinct asymmetric signing keys",
+      "passed": true
+    },
+    {
+      "name": "real Auth signup requires email confirmation A",
+      "passed": true
+    },
+    {
+      "name": "actual isolated SMTP message carries signup link",
+      "passed": true
+    },
+    {
+      "name": "real Auth confirms the synthetic email A",
+      "passed": true
+    },
+    {
+      "name": "confirmation link is single-use A",
+      "passed": true
+    },
+    {
+      "name": "real password login succeeds A",
+      "passed": true
+    },
+    {
+      "name": "native session exists and passes the current session predicate A",
+      "passed": true
+    },
+    {
+      "name": "new company receives only Basic trial A",
+      "passed": true
+    },
+    {
+      "name": "one company provisioned through actual REST A",
+      "passed": true
+    },
+    {
+      "name": "real Auth signup requires email confirmation B",
+      "passed": true
+    },
+    {
+      "name": "actual isolated SMTP message carries signup link",
+      "passed": true
+    },
+    {
+      "name": "real Auth confirms the synthetic email B",
+      "passed": true
+    },
+    {
+      "name": "confirmation link is single-use B",
+      "passed": true
+    },
+    {
+      "name": "real password login succeeds B",
+      "passed": true
+    },
+    {
+      "name": "native session exists and passes the current session predicate B",
+      "passed": true
+    },
+    {
+      "name": "new company receives only Basic trial B",
+      "passed": true
+    },
+    {
+      "name": "one company provisioned through actual REST B",
+      "passed": true
+    },
+    {
+      "name": "authorized company uploads actual private PDF bytes",
+      "passed": true
+    },
+    {
+      "name": "authorized download matches PDF bytes exactly",
+      "passed": true
+    },
+    {
+      "name": "second company can upload to its own private namespace",
+      "passed": true
+    },
+    {
+      "name": "second company has working authorized private downloads",
+      "passed": true
+    },
+    {
+      "name": "another company cannot download the private original",
+      "passed": true
+    },
+    {
+      "name": "public URL cannot expose the private original",
+      "passed": true
+    },
+    {
+      "name": "another company cannot upload into the first company namespace",
+      "passed": true
+    },
+    {
+      "name": "real REST inserts only the authorized company truck QA REC A",
+      "passed": true
+    },
+    {
+      "name": "real REST inserts only the authorized company truck QA REC B",
+      "passed": true
+    },
+    {
+      "name": "actual signed JWT and RLS hide the other company truck",
+      "passed": true
+    },
+    {
+      "name": "forgot-password request succeeds without external SMTP",
+      "passed": true
+    },
+    {
+      "name": "actual isolated SMTP message carries recovery link",
+      "passed": true
+    },
+    {
+      "name": "real Auth verifies the recovery token",
+      "passed": true
+    },
+    {
+      "name": "verified recovery changes the password",
+      "passed": true
+    },
+    {
+      "name": "old password no longer authenticates",
+      "passed": true
+    },
+    {
+      "name": "storage archive contains no symlinks, devices or escaping paths",
+      "passed": true
+    },
+    {
+      "name": "backup contains the actual original PDF",
+      "passed": true
+    },
+    {
+      "name": "restored Auth, company, document and Storage metadata match the snapshot exactly",
+      "passed": true
+    },
+    {
+      "name": "tc-recovery-1f33c65ade-target: external billing, fiscal uploads, notices and provider credentials OFF",
+      "passed": true
+    },
+    {
+      "name": "source access token is rejected by the distinct destination signing key",
+      "passed": true
+    },
+    {
+      "name": "restored account logs in with its recovered password",
+      "passed": true
+    },
+    {
+      "name": "restored session passes the current permission predicate",
+      "passed": true
+    },
+    {
+      "name": "restored authenticated download preserves the original bytes",
+      "passed": true
+    },
+    {
+      "name": "second company also authenticates after restoration",
+      "passed": true
+    },
+    {
+      "name": "second company's own restored private download also works",
+      "passed": true
+    },
+    {
+      "name": "cross-company Storage isolation survives restoration",
+      "passed": true
+    },
+    {
+      "name": "real global sign-out succeeds",
+      "passed": true
+    },
+    {
+      "name": "unexpired but signed-out token cannot read private fleet data",
+      "passed": true
+    },
+    {
+      "name": "signed-out token cannot retrieve restored private document",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-11-12T01:51:09Z",
+  "committed_schema_file_count": 42,
+  "local_safety": {
+    "tc-recovery-1f33c65ade-source": {
+      "notices": false,
+      "channels": 0,
+      "payments": false,
+      "ai_enabled": false,
+      "pdf_uploads": false,
+      "receiving_enabled": false,
+      "configured_provider_keys": 0
+    },
+    "tc-recovery-1f33c65ade-target": {
+      "notices": false,
+      "channels": 0,
+      "payments": false,
+      "ai_enabled": false,
+      "pdf_uploads": false,
+      "receiving_enabled": false,
+      "configured_provider_keys": 0
+    }
+  },
+  "private_backup": {
+    "database_sha256": "e24cf18c44c0bc9ed83d0a02a83e24a0dfd52839f48e880caecf7927732b55a3",
+    "database_bytes": 1168127,
+    "storage_sha256": "b55a8dd6d9ee5e046020d8b34cc9ef82e891aa14a43be14f44422d1356955ea0",
+    "storage_bytes": 9216,
+    "raw_artifacts_uploaded": false
+  },
+  "all_passed": true,
+  "completed_at": "2026-11-12T01:52:31Z",
+  "provenance": {
+    "repository": "smartscaneuskadi/TruckControl-AI",
+    "source_commit": "70429f1ca90e0974bf7e88134af8a63887699ee1",
+    "pull_request": 101,
+    "workflow_run": 43137304506,
+    "workflow_url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43137304506",
+    "artifact_id": 13907379734,
+    "artifact_contains_only_sanitized_receipt": true,
+    "job_conclusion": "success"
+  },
+  "costs": {
+    "new_purchases_eur": 0,
+    "new_recurring_commitments_eur": 0,
+    "new_model_calls": 0,
+    "aggregate_budget_eur": 200,
+    "historic_total_and_remaining_reconciled": false
+  },
+  "limitations": [
+    "Self-hosted disposable GoTrue/PostgREST/Storage only, not managed Supabase backup acceptance",
+    "No production data, OAuth secret recovery or production Vault restore",
+    "No fiscal invoice, live charge, paid AI call or physical-device acceptance"
+  ]
+}

@@ -90,6 +90,53 @@ async function requestFor(f: ReturnType<typeof fixture>) {
     body: body.raw });
 }
 describe("manual Stripe webhook adapter: durable acknowledgement and closed switches", () => {
+  describe("delivery check with commercial processing disabled", () => {
+    const checkConfig: ManualStripeWebhookConfig = { ...config, enabled: false, schemaAccepted: false,
+      stripeKey: "rk_live_synthetic", deliveryCheckAccountId: config.expectedAccountId };
+    const product = { object: "product", id: "prod_TruckControlDeliveryCheck", active: false, default_price: null };
+    const marker = { object: "event", id: "evt_CheckProduct", type: "product.created", livemode: true,
+      created: stamp, data: { object: product } };
+    async function check(event = marker, canonical = marker, account = config.expectedAccountId) {
+      const applyPayment = vi.fn();
+      const fetcher = vi.fn(async (url: RequestInfo | URL) => {
+        if (String(url) === "https://api.stripe.com/v1/account") return Response.json({ id: account });
+        if (String(url) === "https://api.stripe.com/v1/events/" + event.id) return Response.json(canonical);
+        throw Error("Unexpected provider call");
+      });
+      const handler = createManualStripeWebhookHandler({ applyPayment }, checkConfig, fetcher);
+      const body = await signed(event);
+      const response = await handler(new Request("https://edge.example/webhook?verify=delivery", {
+        method: "POST", headers: { "content-type": "application/json", "stripe-signature": body.signature }, body: body.raw,
+      }));
+      expect(applyPayment).not.toHaveBeenCalled();
+      return { response, fetcher };
+    }
+    it("records delivery only after reading the merchant and canonical archived product event", async () => {
+      const { response, fetcher } = await check();
+      expect(response.status).toBe(204);
+      expect(fetcher).toHaveBeenCalledTimes(2);
+    });
+    it("does not mark a different merchant or a sellable canonical product verified", async () => {
+      expect((await check(marker, marker, "acct_AnotherMerchant")).response.status).toBe(400);
+      const other = { ...marker, data: { object: { ...product, active: true } } };
+      expect(await (await check(marker, other)).response.json()).toEqual({ ignored: true });
+    });
+    it("never acknowledges a payment on the delivery-check route", async () => {
+      const result = await check({ ...marker, type: "invoice.paid" });
+      expect(result.response.status).toBe(409);
+      expect(result.fetcher).not.toHaveBeenCalled();
+    });
+    it("rejects unsigned checks before reading Stripe or touching the database", async () => {
+      const applyPayment = vi.fn(), fetcher = vi.fn();
+      const handler = createManualStripeWebhookHandler({ applyPayment }, checkConfig, fetcher);
+      const response = await handler(new Request("https://edge.example/webhook?verify=delivery", {
+        method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(marker),
+      }));
+      expect(response.status).toBe(400);
+      expect(fetcher).not.toHaveBeenCalled();
+      expect(applyPayment).not.toHaveBeenCalled();
+    });
+  });
   it.each(["disabled", "schema_pending"])("fails closed before provider or SQL when %s", async reason => {
     const f = fixture();
     const applyPayment = vi.fn();
