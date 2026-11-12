@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { manualCheckoutReadiness } from "../supabase/functions/_shared/manual-checkout-readiness.ts";
 import { financialDatabase, withDbRole } from "./helpers/subscription-financial-db";
 
@@ -15,6 +15,10 @@ const readyEnv: Record<string, string> = {
 };
 
 describe("manual fiscal checkout approval", () => {
+  let db: Awaited<ReturnType<typeof financialDatabase>>;
+  // Compile the complete isolated schema as fixture setup, outside the five-second assertion budget.
+  beforeAll(async () => { db = await financialDatabase(); }, 30_000);
+  afterAll(async () => { await db?.close(); });
   it("requires the live receiver, the issuer decision and the correct channel on every checkout", async () => {
     const env = { ...readyEnv };
     const read = vi.fn().mockResolvedValue({ data: true, error: null });
@@ -37,10 +41,8 @@ describe("manual fiscal checkout approval", () => {
   });
 
   it("only the service role sees the native readiness of a currently approved live account", async () => {
-    const db = await financialDatabase();
     const read = (role: string, merchant = account) => withDbRole(db, role, async () =>
       (await db.query<{ready: boolean}>("select public.tc_manual_stripe_checkout_ready($1) as ready", [merchant])).rows[0].ready);
-    try {
       for (const role of ["anon", "authenticated"])
         await expect(read(role)).rejects.toThrow(/permission denied/);
       await db.query("update private.tc_settings set payments_enabled=true where id");
@@ -54,6 +56,5 @@ describe("manual fiscal checkout approval", () => {
       expect(await read("service_role","acct_other")).toBe(false);
       await db.query("update private.tc_settings set payments_enabled=false where id");
       expect(await read("service_role")).toBe(false);
-    } finally { await db.close(); }
   });
 });

@@ -60,9 +60,7 @@ Deno.serve(
       allowedOrigins: productionBillingOrigins,
       stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
       webhookSecret: Deno.env.get("STRIPE_WEBHOOK_SECRET"),
-      invoicingVerified: subscriptionFiscalCheckoutAllowed(
-        Deno.env.get("BILLING_INVOICING_VERIFIED"),
-      ),
+      invoicingVerified: subscriptionFiscalCheckoutAllowed(Deno.env.get("BILLING_INVOICING_VERIFIED")),
     },
   ),
 );
