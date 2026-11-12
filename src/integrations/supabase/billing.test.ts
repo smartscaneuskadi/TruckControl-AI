@@ -24,7 +24,7 @@ async function signature(body: string, stamp = Math.floor(Date.now() / 1000)) {
   );
   return `t=${stamp},v1=${Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join("")}`;
 }
-function fixture() {
+function fixture(planId = "full") {
   const calls: { action: string; data: Record<string, unknown> }[] = [];
   const gateway: BillingGateway = {
     authenticate: async (token) =>
@@ -36,7 +36,7 @@ function fixture() {
           ? {
               id: requestId,
               user_id: userId,
-              plan_id: "full",
+              plan_id: planId,
               quoted_cents: 90000,
               currency: "EUR",
               checkout_id: null,
@@ -78,6 +78,15 @@ describe("cobros mensuales opcionales", () => {
     expect((await handle(checkout())).status).toBe(503);
     expect((await handle(checkout("fake"))).status).toBe(401);
     expect(f.fetcher).not.toHaveBeenCalled();
+  });
+  it.each([["limited", "Básico"], ["full", "Full"]])("el pago de un mes muestra el nombre comercial de %s", async (planId, name) => {
+    const f = fixture(planId);
+    const handle = createBillingHandler(f.gateway, {
+      appOrigin: origin, stripeKey: "synthetic-provider-key", invoicingVerified: true,
+    }, f.fetcher);
+    expect((await handle(checkout())).status).toBe(200);
+    const form = new URLSearchParams(String(f.fetcher.mock.calls[0][1]!.body));
+    expect(form.get("line_items[0][price_data][product_data][name]")).toBe(`TruckControl AI · ${name} · 1 mes`);
   });
   it("usa propietario y precio del servidor, con idempotencia y sin activar por redirección", async () => {
     const f = fixture(),

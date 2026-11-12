@@ -191,7 +191,7 @@ export function createBillingHandler(
         "line_items[0][quantity]": "1",
         "line_items[0][price_data][currency]": "eur",
         "line_items[0][price_data][unit_amount]": String(order.quoted_cents),
-        "line_items[0][price_data][product_data][name]": `TruckControl AI · ${order.plan_id === "full" ? "Full" : "Limitado"} · 1 mes`,
+        "line_items[0][price_data][product_data][name]": `TruckControl AI · ${order.plan_id === "full" ? "Full" : "Básico"} · 1 mes`,
         "metadata[tc_user_id]": user.id,
         "metadata[tc_request_id]": order.id,
       });

@@ -383,7 +383,7 @@ export function createRecurringHandler(
           "line_items[0][price_data][unit_amount]": String(order.quoted_cents),
           "line_items[0][price_data][recurring][interval]": "month",
           "line_items[0][price_data][recurring][interval_count]": "1",
-          "line_items[0][price_data][product_data][name]": `TruckControl AI · ${order.plan_id === "full" ? "Full" : "Inicial"}`,
+          "line_items[0][price_data][product_data][name]": `TruckControl AI · ${order.plan_id === "full" ? "Full" : "Básico"}`,
           "subscription_data[metadata][tc_user_id]": user.id,
           "subscription_data[metadata][tc_request_id]": order.id,
           "metadata[tc_user_id]": user.id,
