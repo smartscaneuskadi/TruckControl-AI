@@ -17019,5 +17019,155 @@
     "contexts": [
       "src/domain/subscription-incidents.ts:message"
     ]
+  },
+  {
+    "key": "Conexión de Stripe",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Verifica la cuenta y el receptor de pagos desde tu administración.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprobando Stripe…",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprobar Stripe",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Clave de Stripe guardada",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Cuenta ELEVADANCOR verificada",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Cuenta habilitada para cargos",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Receptor de pagos correcto",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Secreto de firma guardado",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Sin comprobar",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Correcto",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Modo de Stripe:",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Producción",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Pruebas",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Estado del receptor:",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Desactivado",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Activado",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Stripe no acepta la clave guardada.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "La clave de Stripe no permite consultar esta cuenta.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "La firma y la entrega del webhook siguen pendientes de prueba.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Esta comprobación no modifica los cobros ni las licencias.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Vuelve a entrar para comprobar Stripe.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "Solo la administración global puede comprobar Stripe.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "No se ha podido comprobar Stripe. Inténtalo de nuevo.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
+  },
+  {
+    "key": "La comprobación de Stripe no devolvió un resultado válido.",
+    "contexts": [
+      "src/components/StripeReadinessSettings.tsx:message"
+    ]
   }
 ]

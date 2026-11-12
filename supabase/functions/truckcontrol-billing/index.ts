@@ -3,6 +3,8 @@ import { createLegacyStripeServer } from "../_shared/subscription-legacy-payment
 import { subscriptionFiscalCheckoutAllowed } from "../_shared/subscription-fiscal-gate.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createBillingHandler } from "./handler.ts";
+import { canInspectProviderConfiguration } from "../_shared/provider-admin-access.ts";
+import { cachedStripeReadiness, inspectStripeReadiness } from "../_shared/stripe-readiness.ts";
 import {
   productionBillingOrigin,
   productionBillingOrigins,
@@ -12,12 +14,18 @@ const client = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   { auth: { persistSession: false, autoRefreshToken: false } },
 );
+const stripeReadiness = cachedStripeReadiness(() => inspectStripeReadiness({
+  stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
+  fiscalSigningSecret: Deno.env.get("STRIPE_MANUAL_FISCAL_WEBHOOK_SECRET"),
+}, fetch));
 Deno.serve(
   createBillingHandler(
     {
       async authenticate(token) {
         return getSessionVerifiedUser(client, token);
       },
+      canInspectProviders: (token) => canInspectProviderConfiguration(client, token),
+      stripeReadiness,
       server: createLegacyStripeServer("one_time", async (action, data) => {
         const result = await client.rpc("tc_platform_server", {
           p_action: action,

@@ -1,3 +1,11 @@
+## Comprobación privada Stripe y seguridad · candidata 12/11/2026 UTC
+
+Supabase confirma la desaparición del aviso de contraseñas filtradas: cero WARN/ERROR de seguridad y un INFO de RLS sin política; no se alteran RLS ni las65 migraciones. [Recibo](verification/auth-password-protection-20261112.json). Main e376a3a incorpora PR103/104/105; se conserva la confirmación del propietario sobre emisión/entrega manual GDTaller y el nuevo verificador de entrega Stripe. No repetir esa decisión ni las aceptaciones IA de #37.
+
+Candidata0.5.23-rc.1: **Servicios → Comprobar Stripe**, dentro del endpoint de pagos existente y detrás de sesión humana vigente más superadministrador SQL real. Solo GET de cuenta/receptor, sin secretos al navegador ni cambios de cobros. No hay función pública nueva: el prototipo separado fue rechazado por revisión automática y NO se desplegó. [Diseño y límites](STRIPE_ADMIN_READINESS.md).33 nuevas unitarias/SQL y54Python correctas; Deno correcto; regresión completa, CI, despliegue y comprobación privada real aún pendientes. Los64 originales/11hashes se conservan. Producción40/demo6 intactas.
+
+CobrosOFF, IA10USD/mes–100llamadas/empresa sin nuevas llamadas; compras/compromisos nuevos0EUR. Presupuesto agregado200EUR: gasto histórico y saldo aún sin conciliar. No autorizar cargos sobre un saldo supuesto. Gmail empresarial y revisión Google, restore gestionado, firma/Play y hardware físico siguen pendientes; no declarar lanzamiento comercial completo.
+
 ## Renovación Stripe sandbox verificada · 12/11/2026 UTC
 
 PR101 integrado en a73f0708c502d4b9542830be725375e558668904 tras ambos CI correctos del head0f4999f; recuperación67/67 repetida correctamente en main/Actions43139567891. Producción40/demo6 y Native65 conservados.

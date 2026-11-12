@@ -12,6 +12,7 @@ import {
 import type { ProviderStatus } from "../integrations/supabase/provider-setup";
 import { Badge, Button, Field } from "./ui";
 import { t } from "../i18n/runtime";
+import { StripeReadinessSettings } from "./StripeReadinessSettings";
 
 export function ProviderSetup() {
   const client = getSupabaseClient(),
@@ -242,6 +243,9 @@ export function ProviderSetup() {
             </div>
           ))}
         </div>
+      )}
+      {status && (
+        <StripeReadinessSettings />
       )}
       {status && (
         <section
