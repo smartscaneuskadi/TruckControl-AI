@@ -1,10 +1,12 @@
 # Recuperación de servicios locales aislados
 
-Estado inicial: código y seis barreras unitarias comprobados; ejecución real en curso. No se certifica una restauración gestionada, RPO/RTO, un pago ni una factura fiscal.
+Estado inicial: código y siete barreras unitarias comprobados; ejecución real en curso. No se certifica una restauración gestionada, RPO/RTO, un pago ni una factura fiscal.
 
 El workflow `Isolated Auth and Storage recovery` arranca dos instalaciones Supabase CLI3.1.0/Postgres17 independientes en un runner estándar del repositorio público. No usa secretos de GitHub, datos empresariales, credenciales alojadas o conexiones a los proyectos de Supabase. Solo publica un recibo saneado. No tiene programación periódica ni crea servicios de pago.
 
 La fuente local usa los42 archivos SQL consolidados del commit. Esto es distinto de las65 entradas del historial remoto, que no se modifican. Se comprueban la lista Git completa y los hashes inmutables de las cuatro migraciones fiscales/sesión/equipo recientes.
+
+El primer arranque encontró un límite de descargas anónimas del registro. La configuración usa ahora el registro oficial GHCR mediante `SUPABASE_INTERNAL_IMAGE_REGISTRY=ghcr.io`, admitido por el [resolver oficial de CLI3.1.0](https://github.com/supabase/cli/blob/v3.1.0/apps/cli/src/command-internal/docker-registry.ts). El token efímero del job solo tiene lectura de contenido/paquetes y se entrega a `docker login` por stdin; no se reutiliza ninguna credencial del conector, ni se solicita cuenta nueva. El login se retira al terminar. Las etiquetas del proveedor se mantienen y no se desactiva TLS.
 
 ## Barreras de aislamiento
 

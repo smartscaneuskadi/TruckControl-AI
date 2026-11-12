@@ -111,7 +111,9 @@ def safe_diagnostics(raw: bytes) -> dict:
         "configuration_invalid": "failed to parse config",
     }.items() if pattern in text.lower()]
     return {"last_migration": migrations[-1] if migrations else None,
-            "sqlstates": states, "identifiers": identifiers, "codes": signatures}
+            "sqlstates": states, "identifiers": identifiers, "codes": signatures,
+            "all_registry_candidates_failed": "failed to pull docker image from all registries" in text.lower(),
+            "images": sorted(set(re.findall(r"(?:public\.ecr\.aws|ghcr\.io|docker\.io)/supabase/[a-z0-9._/-]+:[a-zA-Z0-9._-]+", text)))}
 
 
 def command(args: list[str], *, data: bytes | None = None, timeout: int = 60,
@@ -545,7 +547,8 @@ def main():
         (RESULTS / "receipt.json").write_text(json.dumps(REPORT, indent=2) + "\n")
         # No dumps, JWTs, passwords, keys, raw SMTP messages or CLI logs in output.
         print(json.dumps({"passed_checks": len(REPORT["checks"]), "all_passed": REPORT.get("all_passed"),
-                          "managed_platform_restore_verified": False, "external_provider_calls": 0}), flush=True)
+                          "managed_platform_restore_verified": False, "external_provider_calls": 0,
+                          "diagnostics": REPORT.get("command_diagnostics")}), flush=True)
     return 0 if REPORT.get("all_passed") and not REPORT.get("cleanup_failed") else 1
 
 

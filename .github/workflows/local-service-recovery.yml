@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 concurrency:
   group: local-service-recovery-${{ github.ref }}
@@ -31,10 +32,17 @@ jobs:
         run: |
           npx --yes supabase@3.1.0 --version
           python3 -m py_compile scripts/verify-local-service-recovery.py
+      - name: Authenticate official public GHCR packages with this job's temporary read token
+        env:
+          GHCR_READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$GHCR_READ_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
       - name: Actual Auth, RLS, private file bytes and isolated restore
         env:
           TRUCKCONTROL_LOCAL_SERVICE_ACCEPTANCE: synthetic-only
           SUPABASE_TELEMETRY_DISABLED: "1"
+          # Supported by CLI3.1's official docker-registry resolver. Same
+          # Supabase service tags, no third-party mirror or TLS changes.
+          SUPABASE_INTERNAL_IMAGE_REGISTRY: ghcr.io
         run: python3 scripts/verify-local-service-recovery.py
       - name: Preserve only sanitized service recovery receipt
         if: always()
@@ -44,3 +52,6 @@ jobs:
           path: local-service-recovery-results/receipt.json
           if-no-files-found: warn
           retention-days: 7
+      - name: Remove the ephemeral registry login
+        if: always()
+        run: docker logout ghcr.io
