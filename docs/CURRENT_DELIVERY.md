@@ -1,3 +1,9 @@
+## Renovación Stripe sandbox verificada · 12/11/2026 UTC
+
+PR101 integrado en a73f0708c502d4b9542830be725375e558668904 tras ambos CI correctos del head0f4999f; recuperación67/67 repetida correctamente en main/Actions43139567891. Producción40/demo6 y Native65 conservados.
+
+Nuevo ensayo Stripe real: **17/17 controles**, dos mensualidades con tareas independientes, replay sin duplicados/regresión y firma inválida rechazada. Adaptadores productivos, API/firmas auténticas mediante CLI oficial, persistencia PGlite local; reloj, cliente y suscripción propios eliminados. Seis barreras nuevas pasan; regresión completa de esta rama pendiente. [Recibo saneado](verification/stripe-renewal-sandbox-20261112.json). No acredita Checkout comercial, clave/receptor productivo, factura TicketBAI ni entrega. CobrosOFF, IA0nueva, compras/compromisos0EUR; saldo histórico200EUR sin conciliar.
+
 ## Estado vigente confirmado · 12/11/2026 UTC
 
 Producción40/app0.5.22-rc.1 y demo6 conservadas. Main1a1be188ab9e0984702aaadf67803f6ad06c073d integró PR100 con ambos CI correctos;1426 unitarias/SQL y los64 originales/11hashes intactos. Supabase65; fiscal3/incidentes2 verificados, negocioOFF; no volver a desplegar esos cambios ni repetir migraciones o #37. El [checkpoint final](verification/commercial-final-checkpoint-20261112.json) y [comentario6810872922](https://github.com/smartscaneuskadi/TruckControl-AI/issues/3#issuecomment-6810872922) sustituyen los estados CI/Edge pendientes de notas anteriores.
