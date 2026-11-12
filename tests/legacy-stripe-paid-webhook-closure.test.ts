@@ -312,7 +312,10 @@ describe("production legacy paid-webhook closure", () => {
       expect(source).toContain('server: createLegacyStripeServer("' + channel + '"');
       expect(source).toContain('from "../_shared/subscription-legacy-payment-gate.ts"');
       expect(source).not.toContain("async server<T>");
-      expect((source.match(/client\.rpc\(/g)??[])).toHaveLength(1);
+      const allowed = ["tc_manual_stripe_checkout_ready", channel === "one_time" ? "tc_platform_server" : "tc_recurring_billing"];
+      const actual = [...source.matchAll(/client\.rpc\(\s*"([^"]+)"/g)].map(match => match[1]);
+      expect(actual.sort()).toEqual(allowed.sort());
+      expect((source.match(/client\.rpc\(/g) ?? []).length).toBe(actual.length);
     }
   });
 });

@@ -189,6 +189,16 @@ async function webhook(
   );
 }
 describe("suscripciones mensuales opcionales", () => {
+  it("vuelve a comprobar el canal manual aunque el último estado permitiera suscribirse", async () => {
+    const f = fixture();
+    const ready = vi.fn().mockResolvedValueOnce(true).mockResolvedValueOnce(false).mockResolvedValueOnce(true);
+    const handler = createRecurringHandler({ ...f.gateway, manualCheckoutReady: ready },
+      { ...config, invoicingVerified: false }, f.fetcher);
+    expect(await (await handler(request({ action: "status" }))).json()).toMatchObject({ configured: true, invoice_delivery_ready: true });
+    expect((await handler(checkout())).status).toBe(503);
+    expect(f.fetcher).not.toHaveBeenCalled();
+    expect((await handler(checkout())).status).toBe(200);
+  });
   it("solo libera una reserva cuando Stripe confirma la caducidad de ese checkout", async () => {
     const f = fixture();
     const session = {
