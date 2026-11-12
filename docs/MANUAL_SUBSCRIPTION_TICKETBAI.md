@@ -1,3 +1,9 @@
+## Confirmación del titular · 12 de noviembre de 2026
+
+ELEVADANCOR S.L. confirma que ha comprobado el circuito manual de suscripciones consultado: Administración emite en GDTaller con TicketBAI y el cliente recibe la factura en PDF en 24–48 horas tras el pago. La confirmación procede del titular. La API de GDTaller no es necesaria para esta operativa.
+
+La cuenta Stripe de producción de ELEVADANCOR admite cargos y transferencias. En la consulta del 12 de noviembre no había receptores de webhook ni destinos de eventos registrados en esa cuenta. En el proyecto Supabase de TruckControl el registro está abierto y hay cero canales de pago activos. Quedan por conectar la notificación de Stripe con la licencia y la tarea de facturación y por verificar el recorrido completo desde el pago de un cliente.
+
 # Release 1.0 — Facturación manual asistida de suscripciones (decisión 07/11/2026)
 
 ## Estado nativo verificado · 8 de noviembre de 2026
