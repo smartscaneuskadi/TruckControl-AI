@@ -1,0 +1,51 @@
+name: Isolated Auth and Storage recovery
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/local-service-recovery.yml"
+      - "scripts/verify-local-service-recovery.py"
+      - "tests/python/test_local_service_recovery.py"
+  pull_request:
+    paths:
+      - ".github/workflows/local-service-recovery.yml"
+      - "scripts/verify-local-service-recovery.py"
+      - "tests/python/test_local_service_recovery.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: local-service-recovery-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  recover-services:
+    if: github.repository == 'smartscaneuskadi/TruckControl-AI' && !github.event.repository.private
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: 24
+      - name: Verify pinned CLI and Python syntax
+        run: |
+          npx --yes supabase@3.1.0 --version
+          python3 -m py_compile scripts/verify-local-service-recovery.py
+      - name: Actual Auth, RLS, private file bytes and isolated restore
+        env:
+          TRUCKCONTROL_LOCAL_SERVICE_ACCEPTANCE: synthetic-only
+          SUPABASE_TELEMETRY_DISABLED: "1"
+        run: python3 scripts/verify-local-service-recovery.py
+      - name: Preserve only sanitized service recovery receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: isolated-service-recovery-${{ github.sha }}
+          path: local-service-recovery-results/receipt.json
+          if-no-files-found: warn
+          retention-days: 7
