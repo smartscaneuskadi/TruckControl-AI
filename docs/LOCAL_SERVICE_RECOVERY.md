@@ -12,6 +12,8 @@ Una reproducción mínima confirmó que Docker28 no publica puertos de una red `
 
 La copia usa la ruta real `/mnt` del backend de archivos de CLI3, validada contra el volumen con nombre del proyecto. Los valores literales `pending` que crean las migraciones no se consideran credenciales configuradas; su contenido nunca sale de PostgreSQL, solo se consulta un contador. También se comprueba que IA, receptor y cobros locales sigan apagados.
 
+El dump/restauración integral usa el rol local existente `supabase_admin` mediante `docker exec` exclusivamente sobre los dos contenedores comprobados. El rol de aplicación `postgres` no es propietario de los triggers de infraestructura de PostgREST y no puede restaurarlos. No se elevan privilegios ni se modifica ningún rol de producción. Se congelan primero los servicios y después se calcula la huella de referencia.
+
 ## Barreras de aislamiento
 
 - Proyectos y redes desechables con nombres propios e identificador aleatorio; se rechazan proyectos enlazados.
@@ -25,7 +27,7 @@ La copia usa la ruta real `/mnt` del backend de archivos de CLI3, validada contr
 
 Alta y confirmación mediante el correo SMTP local, enlace de un uso, contraseña y sesión real de GoTrue; provisión Básico; autorización REST/RLS de dos empresas; subida/descarga de bytes PDF privados y rechazo de otro inquilino/URL pública; recuperación de contraseña; congelación de servicios, copia PostgreSQL y objetos, restauración en el segundo stack y coincidencia de tablas; nueva autenticación en el destino, rechazo del token del origen y cierre global con pérdida inmediata del acceso privado.
 
-El PDF lleva explícitamente `SYNTHETIC RECOVERY TEST - NOT A FISCAL INVOICE`. La empresa sintética obtiene Full solo dentro del fixture después de comprobar el alta Básico para probar documentos. Esa modificación no afecta planes o usuarios reales.
+El PDF lleva explícitamente `SYNTHETIC RECOVERY TEST - NOT A FISCAL INVOICE`. Ambas empresas sintéticas obtienen Full solo dentro del fixture después de comprobar el alta Básico. Se verifica su acceso positivo a archivos propios para que el rechazo de documentos ajenos acredite aislamiento y no un módulo deshabilitado. Esa modificación no afecta planes o usuarios reales.
 
 ## Límites
 

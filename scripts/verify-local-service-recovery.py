@@ -364,6 +364,8 @@ class Stack:
         check(self.project + ": all containers owned, offline and loopback bound",
               all(container_allowed(c, self.project, self.network) for c in self.containers))
         self.db = next(c["Id"] for c in self.containers if c["Name"].startswith("/supabase_db_"))
+        check(self.project + ": local restore role is available without changing privileges",
+              self.scalar("select rolsuper from pg_roles where rolname='supabase_admin'") is True)
         storage = next(c for c in self.containers if c["Name"].startswith("/supabase_storage_"))
         self.storage = storage["Id"]
         # CLI3's official storage service mounts its file backend at /mnt.
@@ -572,8 +574,10 @@ def exercise(source: Stack, target: Stack):
     pdf = synthetic_pdf()
     document = str(uuid.uuid4())
     path = a["org"] + "/" + document + "/document.pdf"
-    # Full is granted ONLY in the disposable fixture after Basic was asserted.
-    source.sql("update private.tc_customers set trial_plan_id='full' where user_id=" + quote(a["user"]) + ";")
+    # Both firms receive Full ONLY in this disposable fixture after their Basic
+    # assertions. Cross-company denial must not be caused by a disabled module.
+    source.sql("update private.tc_customers set trial_plan_id='full' where user_id in ("
+               + quote(a["user"]) + "," + quote(b["user"]) + ");")
     status, _ = source.http("POST", "/storage/v1/object/truckcontrol-documents/" + path, pdf,
                             token=a["token"], content_type="application/pdf")
     check("authorized company uploads actual private PDF bytes", status in (200, 201))
@@ -583,6 +587,17 @@ def exercise(source: Stack, target: Stack):
             "category": "other", "status": "active", "expires_on": None, "remind_days": 30}}, a["token"])
     status, content = source.http("GET", "/storage/v1/object/authenticated/truckcontrol-documents/" + path, token=a["token"])
     check("authorized download matches PDF bytes exactly", status == 200 and content == pdf)
+    own_document = str(uuid.uuid4())
+    own_path = b["org"] + "/" + own_document + "/document.pdf"
+    status, _ = source.http("POST", "/storage/v1/object/truckcontrol-documents/" + own_path, pdf,
+                            token=b["token"], content_type="application/pdf")
+    check("second company can upload to its own private namespace", status in (200, 201))
+    source.rpc("tc_register_document", {"p_org": b["org"], "p_document": {
+        "id": own_document, "name": "SYNTHETIC B - NOT FISCAL.pdf", "object_path": own_path,
+        "content_type": "application/pdf", "size_bytes": len(pdf), "truck_id": None, "driver_id": None},
+        "p_tracking": {"category": "other", "status": "active", "expires_on": None, "remind_days": 30}}, b["token"])
+    status, content = source.http("GET", "/storage/v1/object/authenticated/truckcontrol-documents/" + own_path, token=b["token"])
+    check("second company has working authorized private downloads", status == 200 and content == pdf)
     status, _ = source.http("GET", "/storage/v1/object/authenticated/truckcontrol-documents/" + path, token=b["token"])
     check("another company cannot download the private original", status >= 400)
     status, _ = source.http("GET", "/storage/v1/object/public/truckcontrol-documents/" + path)
@@ -611,7 +626,10 @@ def exercise(source: Stack, target: Stack):
     # Consistent snapshot: freeze non-DB services, then dump schema+data and raw objects.
     source.freeze()
     before = snapshot(source)
-    dump = docker("exec", source.db, "pg_dump", "-U", "postgres", "-d", "postgres", "-Fc",
+    # The image's existing local administrator owns infrastructure event
+    # triggers. The application role cannot restore them. No role is elevated
+    # or changed, and docker exec targets only these two verified containers.
+    dump = docker("exec", source.db, "pg_dump", "-U", "supabase_admin", "-d", "postgres", "-Fc",
                   timeout=120, failure="source_dump_failed").stdout
     storage = docker("cp", source.storage + ":" + source.storage_path + "/.", "-", timeout=60, failure="storage_backup_failed").stdout
     with tarfile.open(fileobj=io.BytesIO(storage)) as archive:
@@ -624,7 +642,7 @@ def exercise(source: Stack, target: Stack):
     REPORT["private_backup"] = {"database_sha256": hashlib.sha256(dump).hexdigest(), "database_bytes": len(dump),
         "storage_sha256": hashlib.sha256(storage).hexdigest(), "storage_bytes": len(storage), "raw_artifacts_uploaded": False}
     target.freeze()
-    docker("exec", "-i", target.db, "pg_restore", "-U", "postgres", "-d", "postgres", "--clean", "--if-exists", "--exit-on-error",
+    docker("exec", "-i", target.db, "pg_restore", "-U", "supabase_admin", "-d", "postgres", "--clean", "--if-exists", "--exit-on-error",
            data=dump, timeout=180, failure="destination_restore_failed")
     docker("cp", "-a", "-", target.storage + ":" + target.storage_path + "/", data=storage, timeout=60, failure="storage_restore_failed")
     after = snapshot(target)
@@ -641,6 +659,8 @@ def exercise(source: Stack, target: Stack):
     check("restored authenticated download preserves the original bytes", status == 200 and content == pdf)
     status, second = target.http("POST", "/auth/v1/token?grant_type=password", {"email": b["email"], "password": b["password"]})
     check("second company also authenticates after restoration", status == 200)
+    status, content = target.http("GET", "/storage/v1/object/authenticated/truckcontrol-documents/" + own_path, token=second["access_token"])
+    check("second company's own restored private download also works", status == 200 and content == pdf)
     status, _ = target.http("GET", "/storage/v1/object/authenticated/truckcontrol-documents/" + path, token=second["access_token"])
     check("cross-company Storage isolation survives restoration", status >= 400)
     status, _ = target.http("POST", "/auth/v1/logout?scope=global", token=fresh)
