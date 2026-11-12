@@ -136,6 +136,22 @@ describe("manual Stripe webhook adapter: durable acknowledgement and closed swit
       expect(fetcher).not.toHaveBeenCalled();
       expect(applyPayment).not.toHaveBeenCalled();
     });
+    it("records only operator classifications once without exposing credentials in the response or logs", async () => {
+      const info = vi.spyOn(console, "info").mockImplementation(() => {});
+      const privateKey = "rk_test_syntheticMarkerOnly", secret = "whsec_otherSyntheticMarker";
+      const handler = createManualStripeWebhookHandler({ applyPayment: vi.fn() },
+        { ...checkConfig, stripeKey: privateKey, webhookSecret: secret }, vi.fn());
+      try {
+        for (let i = 0; i < 2; i++) {
+          const result = await handler(new Request("https://edge.example/webhook?verify=delivery", {
+            method: "POST", headers: { "content-type": "application/json" }, body: "{}",
+          }));
+          expect(await result.json()).toEqual({ error: "manual_stripe_pipeline_unavailable" });
+        }
+        expect(info.mock.calls).toEqual([["truckcontrol_stripe_delivery_setup",
+          { apiState: "test_mode", signingState: "signing_format" }]]);
+      } finally { info.mockRestore(); }
+    });
   });
   it.each(["disabled", "schema_pending"])("fails closed before provider or SQL when %s", async reason => {
     const f = fixture();

@@ -24,6 +24,7 @@ export function createManualStripeWebhookHandler(
   config: ManualStripeWebhookConfig,
   fetcher: typeof fetch = fetch,
 ) {
+  let setupReported = false;
   return async (request: Request): Promise<Response> => {
     const respond = (body: unknown, status: number) => new Response(JSON.stringify(body), {
       status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store",
@@ -39,6 +40,17 @@ export function createManualStripeWebhookHandler(
     try {
       const raw = await rawBody(request);
       if (deliveryCheck) {
+        // Private operator log once per isolate. Never return credential details to the caller.
+        if (!setupReported) {
+          setupReported = true;
+          const key = config.stripeKey, signing = config.webhookSecret;
+          const apiState = !key ? "missing" : key.trim() !== key ? "surrounding_whitespace" :
+            /^(sk|rk)_live_[A-Za-z0-9]+$/.test(key) ? "live_format" :
+            /^(sk|rk)_test_/.test(key) ? "test_mode" : key.startsWith("pk_") ? "publishable_key" : "unexpected_format";
+          const signingState = !signing ? "missing" : signing.trim() !== signing ? "surrounding_whitespace" :
+            /^whsec_[A-Za-z0-9]+$/.test(signing) ? "signing_format" : "unexpected_format";
+          console.info("truckcontrol_stripe_delivery_setup", { apiState, signingState });
+        }
         const envelope = await canonicalStripeEnvelope(raw, request.headers.get("stripe-signature"),
           { ...config, expectedAccountId: config.deliveryCheckAccountId!, mode: "live" },
           new Set(["product.created", "product.updated"]), fetcher);
