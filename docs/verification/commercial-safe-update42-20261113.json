@@ -1,0 +1,115 @@
+{
+  "verified_at": "2026-11-13T21:13:37.523905+00:00",
+  "public_url": "https://truckcontrolai.com",
+  "app_version": "0.5.24-rc.1",
+  "sites_version": 42,
+  "site_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "saved_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31634449e85081918da94437494884ac",
+  "deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
+  "deployment_status": "succeeded",
+  "source_commit": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
+  "source_branch": "deploy/commercial-acceptance-20261113",
+  "source_ci_run": 43487806846,
+  "package_ci_run": 43487806792,
+  "archive_sha256": "0220b57a435f8503fbbeeeb5eb5a4b68edb805651ee59da6873857b92699757d",
+  "source_sent_with_official_ephemeral_credential": true,
+  "credential_persisted": false,
+  "checks": {
+    "unit_sql": 1630,
+    "python": 103,
+    "demo_browser": 94,
+    "company_browser": 54,
+    "saas_browser": 240,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "retained_original_tests": 64,
+    "retained_files": 11,
+    "published_https_hashes": 75,
+    "published_browser": 42,
+    "published_browser_skipped": 0,
+    "published_browser_flaky": 0,
+    "published_pwa_profiles": 6,
+    "billing_http_denials": 6,
+    "isolated_postgres_schema_restore": 93,
+    "isolated_financial_concurrency_restore": 96,
+    "real_independent_races": 9,
+    "real_android_jvm": 5,
+    "release_aab_manifest_verified": true,
+    "public_health": 5
+  },
+  "proof_limits": {
+    "browser_transport": "real pinned SDK; private HTTP fixtures; unmatched private HTTP and WebSocket blocked",
+    "devices": "Android Pixel7 and Windows Desktop Chrome emulation only",
+    "physical_devices": false,
+    "commercial_android_signed": false,
+    "play_published": false,
+    "real_stripe_provider_acceptance": false,
+    "managed_auth_storage_vault_restore": false,
+    "new_ai_calls": 0,
+    "ai_task37": "previous eight-profile acceptance retained, not repeated"
+  },
+  "backend": {
+    "project_id": "kkkemaycedexymrpaqtp",
+    "billing": 21,
+    "company_gmail": 18,
+    "personal_mail": 4,
+    "subscriptions": 18,
+    "incidents": 5,
+    "fiscal": 8,
+    "runtime_source_match": {
+      "billing": "12 runtime files; deno config is not returned by provider",
+      "gmail": "9 runtime files; deno config is not returned by provider",
+      "personal_mail": "7 files exact"
+    },
+    "migration_count": 67,
+    "applied_once": {
+      "local": "20261113084134_subscription_dispute_id_prefix.sql",
+      "remote": "20261113084134_subscription_dispute_id_prefix",
+      "sha256": "158638e469e78962011d78169cae9d22d466ca623a28ef33f08e2560949cda73"
+    },
+    "unapplied": [
+      "20261113185620_subscription_snapshot_ordering.sql",
+      "20261113185634_subscription_unlinked_incident_review.sql"
+    ],
+    "unapplied_reason": "Official Supabase confirmation card expired; no alternate execution or bypass",
+    "schema_snapshot_columns": 0,
+    "schema_unlinked_tables": 0,
+    "payments_enabled": false,
+    "registration_open": true,
+    "security_advisors_warnings": 0,
+    "security_advisors_errors": 0
+  },
+  "preserved": {
+    "production_rollback": 41,
+    "production_rollback_source": "a33ed6f073392984a5de4de9f073734097db3a8d",
+    "demo": 6,
+    "demo_id": "appgprj_6adfbdfa388481919121d43f0fd9c242",
+    "historical_sql": "unchanged",
+    "fixpilot": "untouched"
+  },
+  "commercial_ready": false,
+  "remaining": [
+    "Official confirmation and deployment acceptance of pending SQL68/69 plus their dependent workers",
+    "Native Stripe credential and signed payment to licence and fiscal task acceptance; receiver remains disabled",
+    "Actual GDTaller fiscal PDF and private delivery evidence; operator manual model already confirmed",
+    "Google public data-scope verification and enterprise Gmail acceptance",
+    "Managed recovery/custody and external legal review",
+    "Production Android signing, Play and physical-device testing"
+  ],
+  "costs": {
+    "new_purchases_eur": 0,
+    "new_commitments_eur": 0,
+    "new_paid_model_calls": 0,
+    "authorized_global_eur": 200,
+    "historical_spend": "not reconciled",
+    "remaining_eur": null,
+    "ai_monthly_cap_usd": 10,
+    "ai_company_call_cap": 100
+  },
+  "copilot_health": {
+    "configured": true,
+    "enabled": true,
+    "profiles": 8,
+    "provider_probe_performed": false
+  }
+}

@@ -1,3 +1,13 @@
+## Publicación segura42 comprobada · 13/11/2026 UTC
+
+https://truckcontrolai.com está en **Sites42/app0.5.24-rc.1**, fuente94c719a72f2548b0ec3c0889cea49ae8156952b7, despliegue appgdep_6af77bdd7b0c819191c1a367230964e8 SUCCEEDED. Se conservan41 y demo6. [Recibo](verification/commercial-safe-update42-20261113.json).
+
+CI de la fuente exacta43487806846 SUCCESS:1630unitarias/SQL,103Python,94demo,54empresa,240SaaS,20candidata y20producción;64originales/11hashes intactos. PostgreSQL aislado93+96 controles, nueve carreras reales y restore de archivos guardados. Android compila5JVM y AAB real inspeccionado; sin firma comercial/Play ni hardware físico. Después de publicar:75hashes HTTPS,42recorridos de navegador sin omisiones/flaky,6perfilesPWA y6denegaciones HTTP correctos. SDK real con transporte privado ficticio y llamadas no interceptadas bloqueadas; no es una aceptación nueva de proveedores.
+
+Native billing21/company-gmail18/personal-mail4 ACTIVE y fuentes runtime verificadas; subscriptions18/incidents5/fiscal8 conservados. **Supabase67**: #67 aplicada una vez y ruta/bytes reconciliados. **68/69 no aplicadas**: las tarjetas oficiales caducaron; no ejecutar por otra vía. Las identidades pendientes20261113185620/20261113185634 mantienen los bytes SQL ensayados y orden posterior a#67. La cola y el CAS nuevos están preparados; no se declaran activos. Registro abierto, cobrosOFF,0WARN/ERROR de seguridad. No repetir#37 ni sus llamadasIA.
+
+El modelo manual GDTaller/TicketBAI ya está confirmado por el titular. Siguen pendientes aceptación Native Stripe→licencia/tarea/factura/entrega, Google público/Gmail empresarial, restore gestionado, firma/Play/hardware y revisión externa. La actualización pública segura **no equivale a lanzamiento comercial completo**. IA10USD/mes–100llamadas/empresa intacta. Compras/compromisos/llamadasIA nuevos0; histórico del techo200EUR sin conciliar, saldo desconocido. Main conserva manifiestoDEMO: publicación solo desde checkout de producción.
+
 ## Candidata en preparación · 13/11/2026 UTC
 
 Producción comprobada: **Sites41/app0.5.23-rc.1**, fuente a33ed6f073392984a5de4de9f073734097db3a8d; demo6 conservada. Main dfe56b7 incluye PR110; Native billing19/subscriptions18/fiscal8/incidents5, Supabase66 migraciones. Los estados v32/PR60/CI434 del encargo son históricos: PR60 ya está integrado. No repetirlo ni repetir #37.
