@@ -10,6 +10,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import html
+import importlib.util
 import io
 import ipaddress
 import json
@@ -31,6 +32,10 @@ import urllib.request
 import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
+backup_spec = importlib.util.spec_from_file_location("recovery_backup", ROOT / "scripts/recovery_backup.py")
+assert backup_spec and backup_spec.loader
+backup = importlib.util.module_from_spec(backup_spec)
+backup_spec.loader.exec_module(backup)
 CLI = ["npx", "--yes", "supabase@3.1.0"]
 DOCKER = ["docker", "--host=unix:///var/run/docker.sock"]
 RESULTS = ROOT / "local-service-recovery-results"
@@ -497,6 +502,8 @@ class Stack:
         # Only the two newly owned workdirs/project IDs; never --all or remote.
         if self.relays:
             self.relays.close()
+        if not (self.folder / "supabase/config.toml").is_file():
+            return
         if self.project.startswith("tc-recovery-") and self.folder.is_relative_to(PRIVATE):
             self.cli("stop", "--no-backup", "--project-id", self.project,
                      timeout=120, allow_failure=True)
@@ -569,6 +576,29 @@ def snapshot(stack: Stack) -> dict:
     return result
 
 
+def restore_saved_backup(target: Stack, manifest_sha256: str, pdf: bytes, source_key_digest: bytes) -> None:
+    verified = backup.read_backup(PRIVATE, "service-backup.manifest.json", manifest_sha256, {
+        "database.private.dump": "postgresql", "storage.private.tar": "storage_objects",
+    })
+    dump, storage = verified["database.private.dump"], verified["storage.private.tar"]
+    with tarfile.open(fileobj=io.BytesIO(storage), mode="r:") as archive:
+        members = archive.getmembers()
+        check("storage archive contains no symlinks, devices or escaping paths", all(
+            not m.name.startswith("/") and ".." not in Path(m.name).parts and (m.isdir() or m.isfile()) for m in members))
+        check("backup contains the actual original PDF", any(
+            member.isfile() and archive.extractfile(member).read() == pdf for member in members))
+    REPORT["private_backup"] = {"database_sha256": hashlib.sha256(dump).hexdigest(), "database_bytes": len(dump),
+        "storage_sha256": hashlib.sha256(storage).hexdigest(), "storage_bytes": len(storage), "raw_artifacts_uploaded": False,
+        "saved_artifacts_verified": True, "manifest_sha256": manifest_sha256}
+    # All saved files and archive members are verified before touching the target.
+    target.prepare()
+    check("source and destination have distinct asymmetric signing keys", source_key_digest != target.key_digest)
+    target.freeze()
+    docker("exec", "-i", target.db, "pg_restore", "-U", "supabase_admin", "-d", "postgres", "--clean", "--if-exists", "--exit-on-error",
+           data=dump, timeout=180, failure="destination_restore_failed")
+    docker("cp", "-a", "-", target.storage + ":" + target.storage_path + "/", data=storage, timeout=60, failure="storage_restore_failed")
+
+
 def exercise(source: Stack, target: Stack):
     a, b = signup(source, "A"), signup(source, "B")
     pdf = synthetic_pdf()
@@ -632,19 +662,11 @@ def exercise(source: Stack, target: Stack):
     dump = docker("exec", source.db, "pg_dump", "-U", "supabase_admin", "-d", "postgres", "-Fc",
                   timeout=120, failure="source_dump_failed").stdout
     storage = docker("cp", source.storage + ":" + source.storage_path + "/.", "-", timeout=60, failure="storage_backup_failed").stdout
-    with tarfile.open(fileobj=io.BytesIO(storage)) as archive:
-        members = archive.getmembers()
-        check("storage archive contains no symlinks, devices or escaping paths", all(
-            not m.name.startswith("/") and ".." not in Path(m.name).parts and (m.isdir() or m.isfile()) for m in members))
-        check("backup contains the actual original PDF", any(m.isfile() and archive.extractfile(m).read() == pdf for m in members))
-    (PRIVATE / "database.private.dump").write_bytes(dump)
-    (PRIVATE / "storage.private.tar").write_bytes(storage)
-    REPORT["private_backup"] = {"database_sha256": hashlib.sha256(dump).hexdigest(), "database_bytes": len(dump),
-        "storage_sha256": hashlib.sha256(storage).hexdigest(), "storage_bytes": len(storage), "raw_artifacts_uploaded": False}
-    target.freeze()
-    docker("exec", "-i", target.db, "pg_restore", "-U", "supabase_admin", "-d", "postgres", "--clean", "--if-exists", "--exit-on-error",
-           data=dump, timeout=180, failure="destination_restore_failed")
-    docker("cp", "-a", "-", target.storage + ":" + target.storage_path + "/", data=storage, timeout=60, failure="storage_restore_failed")
+    manifest_sha256 = backup.save_backup(PRIVATE, "service-backup.manifest.json", {
+        "database.private.dump": ("postgresql", dump), "storage.private.tar": ("storage_objects", storage),
+    })
+    del dump, storage
+    restore_saved_backup(target, manifest_sha256, pdf, source.key_digest)
     after = snapshot(target)
     check("restored Auth, company, document and Storage metadata match the snapshot exactly", before == after)
     target.resume()
@@ -685,14 +707,12 @@ def main():
     REPORT["started_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     try:
         check("runner has at least 8GB free for disposable service images", shutil.disk_usage(PRIVATE).free >= 8 * 1024**3)
-        for stack in stacks:
-            stack.prepare()
-        check("source and destination have distinct asymmetric signing keys", stacks[0].key_digest != stacks[1].key_digest)
+        stacks[0].prepare()
         exercise(*stacks)
         REPORT["all_passed"] = True
     except (LabFailure, subprocess.TimeoutExpired, OSError, ValueError, KeyError, StopIteration) as error:
         REPORT["all_passed"] = False
-        REPORT["failure_code"] = str(error) if isinstance(error, LabFailure) else type(error).__name__
+        REPORT["failure_code"] = str(error) if isinstance(error, (LabFailure, backup.BackupIntegrityError)) else type(error).__name__
         print("FAIL " + REPORT["failure_code"], flush=True)
     finally:
         for stack in reversed(stacks):
