@@ -73,7 +73,14 @@ beforeAll(async () => {
   // feature, and their durability is exercised in a separate security suite.
   // Drop only these candidate tables in this disposable in-memory database;
   // NEVER disable their production triggers or weaken the security migration.
-  await db.exec(`drop table if exists private.tc_subscription_financial_entries cascade;
+  // Remove the new receipt trigger/helper first: its composite argument keeps
+  // the receipt table alive even though this unrelated fixture never uses it.
+  await db.exec(`drop trigger if exists tc_subscription_unlinked_receipt_inserted on private.tc_manual_stripe_bridge_receipts;
+    drop function if exists private.tc_subscription_unlinked_receipt_inserted();
+    drop function if exists private.tc_subscription_unlinked_link_receipt(private.tc_manual_stripe_bridge_receipts);
+    drop table if exists private.tc_subscription_unlinked_entries;
+    drop table if exists private.tc_subscription_unlinked_cases;
+    drop table if exists private.tc_subscription_financial_entries cascade;
     drop table if exists private.tc_subscription_financial_cases cascade;
     drop table if exists private.tc_manual_invoice_notice_audit;
     drop table if exists private.tc_manual_invoice_notice_outbox;
