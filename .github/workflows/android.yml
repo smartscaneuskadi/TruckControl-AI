@@ -14,9 +14,12 @@ jobs:
   compile:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    env:
-      TRUCKCONTROL_BUNDLETOOL_JAR: ${{ runner.temp }}/truckcontrol-bundletool-1.18.3.jar
     steps:
+      - name: Set temporary bundletool path after runner allocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'TRUCKCONTROL_BUNDLETOOL_JAR=%s/truckcontrol-bundletool-1.18.3.jar\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
       - name: Verify existing SDK and Java
         shell: bash
