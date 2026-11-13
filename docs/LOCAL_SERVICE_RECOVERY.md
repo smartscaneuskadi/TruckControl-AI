@@ -32,3 +32,9 @@ El PDF lleva explícitamente `SYNTHETIC RECOVERY TEST - NOT A FISCAL INVOICE`. A
 ## Límites
 
 Son servicios reales autohospedados de prueba, no una restauración de una copia de producción sobre la plataforma administrada. No comprueba recuperación del gestor secreto de producción, proveedores OAuth externos, correo Resend/Migadu, funciones Edge alojadas o dispositivos físicos. La aceptación comercial y la revisión fiscal/jurídica siguen pendientes por separado. No reemplazar estas dependencias por un recibo local verde.
+
+## Integridad de los archivos guardados · 13/11/2026
+
+El harness guarda el dump, el archivo de Storage y un manifiesto local de inventario/tamaños/SHA256. Después vuelve a leer y verificar esos archivos mediante `scripts/recovery_backup.py`; solo esos bytes verificados llegan a la restauración. Se comprueban formato, metadatos estables de archivos regulares, rutas sin enlaces ni escapes, inventario exacto y miembros/trailer del TAR. Los errores son códigos fijos, sin rutas o contenido privado. El digest del manifiesto se conserva en el proceso que captura la copia; no equivale a una firma independiente o a una prueba de retención.
+
+El destino desechable no se prepara ni se congela hasta terminar esas comprobaciones. Las pruebas nuevas usan archivos sintéticos y destinos ficticios, incluida corrupción después de verificar para confirmar que se restauran los bytes ya verificados. Este endurecimiento no vuelve a ejecutar ni reemplaza la aceptación 67/67 anterior, no acredita recuperación gestionada y no usa secretos, proyectos, datos o proveedores reales.

@@ -8,6 +8,7 @@ provider is contacted and no live payment/worker flag is enabled.
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -16,6 +17,10 @@ import subprocess
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
+backup_spec = importlib.util.spec_from_file_location("recovery_backup", ROOT / "scripts/recovery_backup.py")
+assert backup_spec and backup_spec.loader
+backup = importlib.util.module_from_spec(backup_spec)
+backup_spec.loader.exec_module(backup)
 RESULTS = ROOT / "postgres-recovery-results"
 DATABASES = {"postgres", "tc_acceptance", "tc_restored"}
 SOURCE = "tc_acceptance"
@@ -475,6 +480,16 @@ def truck_crew_acceptance():
              ";select jsonb_build_object('removed_test_truck',true)")
 
 
+def restore_saved_backup(manifest_sha256: str) -> None:
+    verified = backup.read_backup(RESULTS, "postgres-backup.manifest.json", manifest_sha256,
+                                  {"synthetic-postgres.dump": "postgresql"})
+    run(["docker", "exec", CONTAINER, "createdb", "-U", "postgres", "-T", "template0", RESTORED])
+    run(["docker", "exec", "-i", CONTAINER, "pg_restore", "-U", "postgres",
+         "-d", RESTORED, "--no-owner", "--exit-on-error"], data=verified["synthetic-postgres.dump"])
+    REPORT["saved_artifacts_verified"] = True
+    REPORT["backup_manifest_sha256"] = manifest_sha256
+
+
 def main():
     if os.environ.get("GITHUB_ACTIONS") != "true" or not re.fullmatch(r"[0-9a-f]{12,64}", CONTAINER):
         raise AssertionError("This harness only accepts an explicit GitHub Actions service container")
@@ -652,12 +667,12 @@ def main():
     before_raw_constraints = raw_constraint_snapshot(SOURCE)
     dump = run(["docker", "exec", CONTAINER, "pg_dump", "-U", "postgres",
                 "-d", SOURCE, "-Fc", "--no-owner"]).stdout
-    (RESULTS / "synthetic-postgres.dump").write_bytes(dump)
+    manifest_sha256 = backup.save_backup(RESULTS, "postgres-backup.manifest.json",
+                                         {"synthetic-postgres.dump": ("postgresql", dump)})
     REPORT["dump_sha256"] = hashlib.sha256(dump).hexdigest()
     REPORT["dump_bytes"] = len(dump)
-    run(["docker", "exec", CONTAINER, "createdb", "-U", "postgres", "-T", "template0", RESTORED])
-    run(["docker", "exec", "-i", CONTAINER, "pg_restore", "-U", "postgres",
-         "-d", RESTORED, "--no-owner", "--exit-on-error"], data=dump)
+    del dump
+    restore_saved_backup(manifest_sha256)
     after_restore = database_fingerprint(RESTORED)
     after_raw_acls = raw_acl_snapshot(RESTORED)
     after_raw_constraints = raw_constraint_snapshot(RESTORED)
