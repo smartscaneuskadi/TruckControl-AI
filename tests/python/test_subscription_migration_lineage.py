@@ -14,8 +14,8 @@ MIGRATIONS = Path(__file__).resolve().parents[2] / "supabase" / "migrations"
 APPLIED_67 = "20261113084134_subscription_dispute_id_prefix.sql"
 APPLIED_67_GIT_BLOB = "c8e85a223cab54be43be297d6dc38e29b6481a20"
 CANDIDATES = (
-    "20261113185620_subscription_snapshot_ordering.sql",
-    "20261113185634_subscription_unlinked_incident_review.sql",
+    "20261113233252_subscription_snapshot_ordering.sql",
+    "20261113233311_subscription_unlinked_incident_review.sql",
 )
 VERSIONS = re.compile(r"^(\d{14})_[a-z][a-z0-9_]*\.sql$")
 
@@ -25,6 +25,17 @@ class SubscriptionMigrationLineage(unittest.TestCase):
         source = (MIGRATIONS / APPLIED_67).read_bytes()
         blob = b"blob " + str(len(source)).encode("ascii") + b"\0" + source
         self.assertEqual(hashlib.sha1(blob).hexdigest(), APPLIED_67_GIT_BLOB)
+
+    def test_applied_68_and_69_bytes_immutable(self):
+        expected = {
+            "20261113233252_subscription_snapshot_ordering.sql": "23a525e242db280c390f52e94d6375290322201a",
+            "20261113233311_subscription_unlinked_incident_review.sql": "b722ed83152b559827c1c0e9f572249890d3c930",
+        }
+        for name, sha in expected.items():
+            with self.subTest(name=name):
+                source = (MIGRATIONS / name).read_bytes()
+                blob = b"blob " + str(len(source)).encode("ascii") + b"\0" + source
+                self.assertEqual(hashlib.sha1(blob).hexdigest(), sha)
 
     def test_only_the_correct_version_of_each_candidate_exists(self):
         for expected in (APPLIED_67, *CANDIDATES):

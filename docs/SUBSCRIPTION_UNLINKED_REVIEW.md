@@ -1,9 +1,9 @@
 # Revisión privada de incidencias anteriores a la tarea de pago
 
-Candidata local del13/11/2026. No aplicada ni desplegada; no activa cobros,
-canales, avisos ni llamadas a proveedores. La migración
-`20261113185634_subscription_unlinked_incident_review.sql` se generó con la
-CLI oficial Supabase3.0.0. Las migraciones y recibos históricos no se editan.
+SQL aplicado una vez por el canal oficial Supabase el13/11/2026 UTC,
+versión `20261113233311`, sin cambios de bytes respecto al candidato
+`20261113233311_subscription_unlinked_incident_review.sql` (CLI Supabase3.0.0).
+No activa cobros, canales, avisos ni llamadas a proveedores ni acredita Stripe LIVE. Las migraciones y recibos históricos no se editan.
 
 ## Problema y alcance
 
