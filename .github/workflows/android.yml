@@ -1,9 +1,9 @@
 name: Android package candidate
 on:
   push:
-    paths: ["android/**", ".github/workflows/android.yml"]
+    paths: ["android/**", ".github/workflows/android.yml", "scripts/verify_android_release.py", "tests/python/test_android_release_manifest.py"]
   pull_request:
-    paths: ["android/**", ".github/workflows/android.yml"]
+    paths: ["android/**", ".github/workflows/android.yml", "scripts/verify_android_release.py", "tests/python/test_android_release_manifest.py"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,6 +14,8 @@ jobs:
   compile:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      TRUCKCONTROL_BUNDLETOOL_JAR: ${{ runner.temp }}/truckcontrol-bundletool-1.18.3.jar
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
       - name: Verify existing SDK and Java
@@ -39,6 +41,17 @@ jobs:
               raise SystemExit("Installed Gradle differs from the approved 9.8.2 toolchain")
           print("Verified official runner toolchain: Gradle 9.8.2 and Java 21")
           PY
+      - name: Test release manifest policy against source contracts and rejected fixtures
+        run: python3 -m unittest discover -s tests/python -p 'test_android_release_manifest.py'
+      - name: Verify pinned official Google bundletool checksum and version
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 --max-time 60 \
+            https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar \
+            --output "$TRUCKCONTROL_BUNDLETOOL_JAR"
+          python3 scripts/verify_android_release.py --tool "$TRUCKCONTROL_BUNDLETOOL_JAR" --verify-tool-only
       - name: Compile, test, lint and prepare unsigned release
         shell: bash
         working-directory: android
@@ -81,10 +94,21 @@ jobs:
               raise SystemExit("Compiled Android API levels differ from verified policy")
           report = {"commercial_signed": False, "play_published": False, "physical_device_verified": False,
                     "unit_tests": tests, "failures": failures, "skipped": skipped, "permissions": permissions, "compiled_manifest_verified": True,
+                    "debug_compiled_manifest_verified": True, "release_aab_manifest_verified": False, "compiled_manifest_scope": ["debug_apk"],
                     "files": [{"name":p.name,"sha256":hashlib.sha256(p.read_bytes()).hexdigest(),"bytes":p.stat().st_size} for p in (apk,aab)]}
           pathlib.Path("app/build/outputs/android-candidate.json").write_text(json.dumps(report,indent=2))
           print(json.dumps(report))
           PY
+      - name: Inspect the actual unsigned release AAB manifest and TWA resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PATH="$JAVA_HOME_21_X64/bin:$PATH"
+          python3 scripts/verify_android_release.py \
+            --tool "$TRUCKCONTROL_BUNDLETOOL_JAR" \
+            --bundle android/app/build/outputs/bundle/release/app-release.aab \
+            --candidate-report android/app/build/outputs/android-candidate.json \
+            --evidence-dir android/app/build/outputs/release-manifest
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -93,6 +117,7 @@ jobs:
             android/app/build/outputs/apk/debug/*.apk
             android/app/build/outputs/bundle/release/*.aab
             android/app/build/outputs/android-candidate.json
+            android/app/build/outputs/release-manifest/
             android/app/build/reports/
             android/app/build/test-results/
           retention-days: 3
