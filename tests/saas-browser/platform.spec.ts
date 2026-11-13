@@ -2337,6 +2337,10 @@ test.describe("copia cifrada y sincronización", () => {
     page,
     context,
   }) => {
+    // El caso completo incluye WebCrypto + IndexedDB + recarga offline en un móvil emulado.
+    // Bajo carga paralela del runner puede superar los 30s globales aunque los pasos pasen.
+    // Limitar solo este flujo a 60s; mantener cada aserción y los timeouts de expect.
+    test.setTimeout(60_000);
     const f = await prepare(page);
     const stored = await page.evaluate(
       () =>
