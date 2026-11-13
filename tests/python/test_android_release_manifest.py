@@ -225,6 +225,11 @@ class InspectorBoundaryTests(unittest.TestCase):
         self.assertEqual(self.pin["version"], "1.18.3")
         self.assertEqual(self.pin["sha256"], "a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29")
         workflow = (ROOT / ".github/workflows/android.yml").read_text()
+        # Job env is evaluated before a runner exists; Actions rejects this
+        # context even when YAML syntax and the manifest verifier are valid.
+        job_header = workflow.split("    steps:", 1)[0]
+        self.assertNotRegex(job_header, r"(?i)\$\{\{\s*runner(?:\.|\[)")
+        self.assertIn('"$RUNNER_TEMP" >> "$GITHUB_ENV"', workflow)
         self.assertIn(self.pin["url"], workflow)
         self.assertIn("--bundle android/app/build/outputs/bundle/release/app-release.aab", workflow)
         self.assertIn(":app:testDebugUnitTest :app:lintRelease :app:assembleDebug :app:bundleRelease", workflow)
