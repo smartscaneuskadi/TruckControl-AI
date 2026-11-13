@@ -2809,5 +2809,14 @@
   "Vuelve a entrar para comprobar Stripe.": "Autentifică-te din nou pentru a verifica Stripe.",
   "Solo la administración global puede comprobar Stripe.": "Doar administratorii platformei pot verifica Stripe.",
   "No se ha podido comprobar Stripe. Inténtalo de nuevo.": "Stripe nu a putut fi verificat. Încearcă din nou.",
-  "La comprobación de Stripe no devolvió un resultado válido.": "Verificarea Stripe nu a returnat un rezultat valid."
+  "La comprobación de Stripe no devolvió un resultado válido.": "Verificarea Stripe nu a returnat un rezultat valid.",
+  "El servidor aún no ofrece el detalle de configuración de Stripe.": "Serverul nu oferă încă verificarea detaliată a configurării Stripe.",
+  "Falta guardar la clave de servidor de Stripe en el almacén seguro.": "Cheia de server Stripe lipsește din stocarea securizată.",
+  "La clave de Stripe guardada no tiene un formato válido. Debe corregirse en el almacén seguro del servidor.": "Cheia Stripe salvată are un format nevalid. Corecteaz-o în stocarea securizată a serverului.",
+  "Falta guardar el secreto de firma del receptor de pagos.": "Secretul de semnare al receptorului de plăți nu este salvat.",
+  "El secreto de firma guardado no tiene un formato válido.": "Secretul de semnare salvat are un format nevalid.",
+  "El servidor usa una clave de pruebas de Stripe; esta comprobación no habilita cobros reales.": "Serverul folosește o cheie de test Stripe; această verificare nu activează plăți reale.",
+  "La clave de Stripe pertenece a una cuenta diferente de ELEVADANCOR.": "Cheia Stripe aparține unui alt cont decât ELEVADANCOR.",
+  "La clave no permite revisar el receptor de pagos en Stripe.": "Cheia nu permite verificarea receptorului de plăți în Stripe.",
+  "La configuración del receptor de pagos no coincide con la prevista para TruckControl.": "Configurarea receptorului de plăți nu corespunde celei prevăzute pentru TruckControl."
 }

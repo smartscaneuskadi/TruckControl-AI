@@ -2809,5 +2809,14 @@
   "Vuelve a entrar para comprobar Stripe.": "Reconnectez-vous pour vérifier Stripe.",
   "Solo la administración global puede comprobar Stripe.": "Seule l’administration de la plateforme peut vérifier Stripe.",
   "No se ha podido comprobar Stripe. Inténtalo de nuevo.": "Impossible de vérifier Stripe. Réessayez.",
-  "La comprobación de Stripe no devolvió un resultado válido.": "La vérification de Stripe n’a pas renvoyé de résultat valide."
+  "La comprobación de Stripe no devolvió un resultado válido.": "La vérification de Stripe n’a pas renvoyé de résultat valide.",
+  "El servidor aún no ofrece el detalle de configuración de Stripe.": "Le serveur ne propose pas encore la vérification détaillée de Stripe.",
+  "Falta guardar la clave de servidor de Stripe en el almacén seguro.": "La clé serveur Stripe manque dans le stockage sécurisé.",
+  "La clave de Stripe guardada no tiene un formato válido. Debe corregirse en el almacén seguro del servidor.": "La clé Stripe enregistrée a un format incorrect. Corrigez-la dans le stockage sécurisé du serveur.",
+  "Falta guardar el secreto de firma del receptor de pagos.": "Le secret de signature du récepteur de paiements manque.",
+  "El secreto de firma guardado no tiene un formato válido.": "Le secret de signature enregistré a un format incorrect.",
+  "El servidor usa una clave de pruebas de Stripe; esta comprobación no habilita cobros reales.": "Le serveur utilise une clé de test Stripe ; cette vérification n’active pas les paiements réels.",
+  "La clave de Stripe pertenece a una cuenta diferente de ELEVADANCOR.": "La clé Stripe appartient à un autre compte que celui d’ELEVADANCOR.",
+  "La clave no permite revisar el receptor de pagos en Stripe.": "La clé ne permet pas de vérifier le récepteur de paiements Stripe.",
+  "La configuración del receptor de pagos no coincide con la prevista para TruckControl.": "La configuration du récepteur de paiements ne correspond pas à celle prévue pour TruckControl."
 }

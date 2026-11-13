@@ -17169,5 +17169,59 @@
     "contexts": [
       "src/components/StripeReadinessSettings.tsx:message"
     ]
+  },
+  {
+    "key": "El servidor aún no ofrece el detalle de configuración de Stripe.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "Falta guardar la clave de servidor de Stripe en el almacén seguro.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "La clave de Stripe guardada no tiene un formato válido. Debe corregirse en el almacén seguro del servidor.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "Falta guardar el secreto de firma del receptor de pagos.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "El secreto de firma guardado no tiene un formato válido.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "El servidor usa una clave de pruebas de Stripe; esta comprobación no habilita cobros reales.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "La clave de Stripe pertenece a una cuenta diferente de ELEVADANCOR.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "La clave no permite revisar el receptor de pagos en Stripe.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "La configuración del receptor de pagos no coincide con la prevista para TruckControl.",
+    "contexts": [
+      "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
   }
 ]

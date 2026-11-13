@@ -5403,7 +5403,8 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
 
 // Provider transport is synthetic here; native readiness requires the owner's verified session.
 const stripeReadinessFixture = () => ({
-  contract: "truckcontrol-stripe-readiness-v1",
+  contract: "truckcontrol-stripe-readiness-v2",
+  credential_state: "valid_format", signing_secret_state: "missing",
   checked_at: new Date().toISOString(),
   stripe_key_configured: true, key_mode: "live",
   fiscal_signing_secret_format_valid: false,
@@ -5423,7 +5424,7 @@ test.describe("Stripe privado", () => {
     let reads = 0;
     await page.route("**/functions/v1/truckcontrol-billing", async route => {
       if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization,apikey,content-type,x-client-info" } });
-      expect(route.request().postDataJSON()).toEqual({ action: "admin_readiness" });
+      expect(route.request().postDataJSON()).toEqual({ action: "admin_readiness_details" });
       const bearer = route.request().headers().authorization;
       expect(bearer).toMatch(/^Bearer /);
       expect(JSON.parse(Buffer.from(bearer.split(".")[1], "base64url").toString()).sub).toBe(admin);
@@ -5508,4 +5509,35 @@ test.describe("Stripe privado", () => {
     await expect(page.getByRole("button", { name: "Comprobar Stripe", exact: true })).toHaveCount(0);
     expect(reads).toBe(0);
   });
+});
+
+
+test("Stripe privado: identifica el formato inválido sin mostrar claves y conserva los borradores", async ({ page }) => {
+  await fixtures(page);
+  await page.route("**/functions/v1/truckcontrol-billing", async route => {
+    if (route.request().method() === "OPTIONS") return route.fulfill({ status:204, headers:{"access-control-allow-origin":"*","access-control-allow-headers":"authorization,apikey,content-type,x-client-info"} });
+    await route.fulfill({ json:{...stripeReadinessFixture(), credential_state:"invalid_format", stripe_key_configured:false, key_mode:null, account_checked:false, account_status:null, account_id:null, expected_account:false, charges_enabled:false, payouts_enabled:false, webhook_checked:false, webhook_status:null, webhook_id_matches:false, webhook_url_matches:false, webhook_events_match:false, webhook_api_version_matches:false, webhook_disabled:null }, headers:{"access-control-allow-origin":"*"} });
+  });
+  await openProviders(page);
+  await page.getByLabel("Secreto nuevo de Google").fill("synthetic-draft-preserved");
+  const card=page.getByRole("region",{name:"Conexión de Stripe",exact:true});
+  await card.getByRole("button",{name:"Comprobar Stripe",exact:true}).click();
+  await expect(card.getByRole("status")).toContainText("La clave de Stripe guardada no tiene un formato válido.");
+  await expect(page.getByLabel("Secreto nuevo de Google")).toHaveValue("synthetic-draft-preserved");
+});
+
+test("Stripe privado: mantiene el contrato anterior sin inventar un diagnóstico", async ({ page }) => {
+  await fixtures(page); const calls:string[]=[];
+  await page.route("**/functions/v1/truckcontrol-billing", async route => {
+    const headers={"access-control-allow-origin":"*","access-control-allow-headers":"authorization,apikey,content-type,x-client-info"};
+    if (route.request().method() === "OPTIONS") return route.fulfill({status:204,headers});
+    const action=route.request().postDataJSON().action;calls.push(action);
+    if(action === "admin_readiness_details") return route.fulfill({status:400,json:{error:"invalid_request"},headers});
+    const {credential_state:_,signing_secret_state:__,...legacy}=stripeReadinessFixture();
+    await route.fulfill({json:{...legacy,contract:"truckcontrol-stripe-readiness-v1"},headers});
+  });
+  await openProviders(page);const card=page.getByRole("region",{name:"Conexión de Stripe",exact:true});
+  await card.getByRole("button",{name:"Comprobar Stripe",exact:true}).click();
+  await expect(card.getByRole("status")).toContainText("El servidor aún no ofrece el detalle de configuración de Stripe.");
+  expect(calls).toEqual(["admin_readiness_details","admin_readiness"]);
 });
