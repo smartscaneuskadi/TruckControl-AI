@@ -121,7 +121,13 @@ descarta respuestas tardías y contrasta el ACK; navegador Windows/Android
 emulados para declaración, ACK perdido y revocación. No equivalen a Stripe real,
 emisión TicketBAI, entrega, aceptación nativa remota ni hardware físico.
 
-Los casos PGlite de esta cola prueban replay/CAS secuenciales. Los ensayos nativos
-anteriores de dos conexiones cubren el ledger financiero previo, no esta nueva
-cola; antes de habilitarla falta el ensayo PostgreSQL aislado de dos entregas
-concurrentes, proveedor contra revisión y commit de pago contra cuarentena.
+Los casos PGlite de esta cola prueban replay/CAS secuenciales. El arnés aislado
+PostgreSQL17 incorpora `tests/postgres/unlinked_contracts.py` antes de la
+recuperación lógica: doble ingesta de la misma incidencia, replay de una misma
+operación Root, proveedor contra CAS de revisión y pago contra cuarentena en
+ambos órdenes, con dos conexiones y contención real. Cuarentena primero exige
+un único enlace al recibo auténtico sin otra ingesta; pago primero utiliza el
+ledger financiero y no crea una fila artificial de cuarentena. Las incidencias,
+declaraciones y replays deben conservar el acceso y trabajo fiscal autorizados.
+El ensayo de estas nuevas carreras queda pendiente del CI del head integrado;
+una validación PGlite secuencial no lo sustituye.
