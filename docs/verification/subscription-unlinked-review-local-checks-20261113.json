@@ -1,0 +1,39 @@
+{
+  "contract": "subscription-unlinked-review-local-checks-v1",
+  "date_utc": "2026-11-13",
+  "candidate_commit": "e27582b6de9ca5fca34ce8a7e6529e2c29f8f956",
+  "supersedes_pending_local_status_in": "subscription-unlinked-review-candidate-20261113.json",
+  "final_candidate_validation": {
+    "new_cases": { "passed": 59, "failed": 0, "sql": 24, "runtime": 25, "client": 10 },
+    "existing_notice_sql": { "passed": 13, "failed": 0, "fixture_overlay": false },
+    "existing_financial_sql_same_run": {
+      "passed": 31,
+      "timeouts": 4,
+      "timeout_ms_unchanged": 5000,
+      "assertion_failures": 0,
+      "context": "shared executor CPU congestion; exact-head CI still required"
+    },
+    "combined_five_suite_run": { "passed": 103, "failed_by_timeout": 4, "exit_code": 1 },
+    "typecheck_and_build": {
+      "exit_code": 0,
+      "mode": "isolated local SaaS with synthetic localhost transport",
+      "deployment": false,
+      "artifact_directory": "/tmp/truckcontrol-unlinked-browser-20261113/dist"
+    },
+    "browser": {
+      "prepared_cases": 6,
+      "executed_cases": 0,
+      "status": "local preview startup exited before tests; pending CI",
+      "physical_hardware_acceptance": false
+    },
+    "native_two_connection_checks": "pending Root PostgreSQL CI; not inferred from PGlite",
+    "full_exact_head_ci": "pending Root integration"
+  },
+  "preservation": {
+    "historical_assertions_or_sql_edited": false,
+    "default_feature_flag": "OFF",
+    "remote_ddl_or_deployment": false,
+    "real_provider_payment_or_ai_or_email_operations": 0,
+    "new_purchases": 0
+  }
+}
