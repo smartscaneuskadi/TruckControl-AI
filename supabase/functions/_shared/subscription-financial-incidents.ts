@@ -46,7 +46,7 @@ export async function reconcileStripeFinancialIncident(
   };
   const type = String(event.type);
   const objectType = type.startsWith("refund.") ? "refund" : type.startsWith("charge.dispute.") ? "dispute" : "charge";
-  const prefix = objectType === "refund" ? "re" : objectType === "dispute" ? "du" : "ch";
+  const prefix = objectType === "refund" ? "re" : objectType === "dispute" ? "dp" : "ch";
   if (!id(snapshot.id, prefix) || snapshot.object !== objectType) return fail();
   mode(snapshot, objectType === "refund");
   const current = await get((objectType === "refund" ? "refunds/" : objectType === "dispute" ? "disputes/" : "charges/") + snapshot.id);

@@ -111,7 +111,7 @@ describe("financial incidents: real migrated SQL, synthetic PGlite database",()=
   const data=incidentObservation(p);
   if(kind==="full")Object.assign(data,{event_amount_cents:36300,current_amount_cents:36300,charge_amount_refunded_cents:36300});
   if(kind==="failed")Object.assign(data,{event_type:"refund.failed",status_at_event:"failed",current_status:"failed",charge_amount_refunded_cents:0});
-  if(kind==="dispute_mismatch")Object.assign(data,{object_type:"dispute",object_id:"du_"+p.pi.slice(3),
+  if(kind==="dispute_mismatch")Object.assign(data,{object_type:"dispute",object_id:"dp_"+p.pi.slice(3),
    event_type:"charge.dispute.created",status_at_event:"needs_response",current_status:"needs_response",
    event_amount_cents:40000,current_amount_cents:40000});
   const id=String((await recordObservation(db,data)).case_id);
