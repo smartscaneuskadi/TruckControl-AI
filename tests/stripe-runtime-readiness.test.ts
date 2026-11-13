@@ -21,11 +21,14 @@ const account = {
   payouts_enabled: true,
 };
 const hook = {
-  object: "webhook_endpoint",
+  object: "v2.core.event_destination",
   id: readinessEndpoint,
+  type: "webhook_endpoint",
   livemode: true,
-  url: readinessUrl,
-  api_version: "2025-03-31.basil",
+  event_payload: "snapshot",
+  events_from: ["@self"],
+  webhook_endpoint: { url: readinessUrl },
+  snapshot_api_version: "2025-03-31.basil",
   status: "disabled",
   enabled_events: [
     "invoice.paid",
@@ -33,7 +36,7 @@ const hook = {
     "checkout.session.async_payment_succeeded",
   ],
 };
-const transport = (a = account, h = hook) =>
+const transport = (a: unknown = account, h: unknown = hook) =>
   vi
     .fn<typeof fetch>()
     .mockImplementation(async (input) =>
@@ -65,12 +68,64 @@ describe("internal Stripe readiness inspection", () => {
     expect(data.payment_or_customer_mutations).toBe(0);
     expect(fetcher.mock.calls.map((x) => String(x[0]))).toEqual([
       "https://api.stripe.com/v1/account",
-      "https://api.stripe.com/v1/webhook_endpoints/" + readinessEndpoint,
+      "https://api.stripe.com/v2/core/event_destinations/" + readinessEndpoint +
+        "?include%5B%5D=webhook_endpoint.url",
+    ]);
+    const destination = new URL(String(fetcher.mock.calls[1][0]));
+    expect([...destination.searchParams]).toEqual([
+      ["include[]", "webhook_endpoint.url"],
     ]);
     for (const [, options] of fetcher.mock.calls) {
       expect(options?.method).toBe("GET");
       expect(options?.redirect).toBe("error");
+      expect(options?.headers).toMatchObject({
+        Accept: "application/json",
+        "Stripe-Version": "2026-09-30.endive",
+      });
     }
+  });
+  it("does not claim the real v2 destination URL matches when Stripe omits it", async () => {
+    const report = await inspectStripeReadiness(config(), transport(account, {
+      ...hook,
+      webhook_endpoint: { url: null },
+    }));
+    expect(report.webhook_checked).toBe(true);
+    expect(report.webhook_status).toBe(200);
+    expect(report.webhook_id_matches).toBe(true);
+    expect(report.webhook_url_matches).toBe(false);
+    expect(report.webhook_disabled).toBe(true);
+    expect(report.signature_delivery_verified).toBe(false);
+  });
+  it("rejects a v1 response or a foreign v2 event destination shape", async () => {
+    for (const malformed of [
+      { ...hook, object: "webhook_endpoint" },
+      { ...hook, type: "other" },
+      { ...hook, event_payload: "thin" },
+      { ...hook, events_from: ["@foreign"] },
+      { ...hook, livemode: false },
+    ]) {
+      const report = await inspectStripeReadiness(config(), transport(account, malformed));
+      expect(report.webhook_checked).toBe(true);
+      expect(report.webhook_status).toBe(200);
+      expect(report.webhook_id_matches).toBe(false);
+      expect(report.webhook_url_matches).toBe(false);
+      expect(report.webhook_events_match).toBe(false);
+      expect(report.webhook_api_version_matches).toBe(false);
+      expect(report.webhook_disabled).toBeNull();
+    }
+  });
+  it("reports a missing v2 destination as unavailable, never connected", async () => {
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async (input) =>
+      String(input).endsWith("/account") ? Response.json(account) :
+        new Response(null, { status: 404 }),
+    );
+    const report = await inspectStripeReadiness(config(), fetcher);
+    expect(report.expected_account).toBe(true);
+    expect(report.webhook_checked).toBe(true);
+    expect(report.webhook_status).toBe(404);
+    expect(report.webhook_id_matches).toBe(false);
+    expect(report.webhook_url_matches).toBe(false);
+    expect(report.webhook_disabled).toBeNull();
   });
   it("does not inspect a production endpoint with a sandbox key", async () => {
     const fetcher = transport();

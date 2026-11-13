@@ -8,6 +8,7 @@ import { canInspectProviderConfiguration } from "../_shared/provider-admin-acces
 import {
   cachedStripeReadiness,
   inspectStripeReadiness,
+  describeStripeReadiness,
 } from "../_shared/stripe-readiness.ts";
 import {
   productionBillingOrigin,
@@ -44,6 +45,10 @@ Deno.serve(
       canInspectProviders: (token) =>
         canInspectProviderConfiguration(client, token),
       stripeReadiness,
+      stripeReadinessDetails: async () => describeStripeReadiness(await stripeReadiness(), {
+        stripeKey: Deno.env.get("STRIPE_SECRET_KEY"),
+        fiscalSigningSecret: Deno.env.get("STRIPE_MANUAL_FISCAL_WEBHOOK_SECRET"),
+      }),
       server: createLegacyStripeServer("one_time", async (action, data) => {
         const result = await client.rpc("tc_platform_server", {
           p_action: action,

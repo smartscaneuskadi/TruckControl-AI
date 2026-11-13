@@ -6,7 +6,9 @@ on:
     paths:
       - ".github/workflows/local-service-recovery.yml"
       - "scripts/verify-local-service-recovery.py"
+      - "scripts/recovery_backup.py"
       - "tests/python/test_local_service_recovery.py"
+      - "tests/python/test_recovery_backup.py"
 
 permissions:
   contents: read

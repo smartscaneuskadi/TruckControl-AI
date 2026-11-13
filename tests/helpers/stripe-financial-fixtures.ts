@@ -7,7 +7,7 @@ export const financialStamp = Math.floor(Date.now() / 1000);
 export const financialAccount = "acct_FinancialSynthetic";
 export const financialQuery = "invoice_payments?payment%5Btype%5D=payment_intent&payment%5Bpayment_intent%5D=pi_FinancialOriginal&status=paid&limit=2";
 export const financialConfig: StripeReconciliationConfig = {
-  mode: "test", expectedAccountId: financialAccount, stripeKey: "rk_test_fixture",
+  mode: "test", expectedAccountId: financialAccount, stripeKey: "rk_test_synthetic_financial_fixture",
   webhookSecret: "synthetic-financial-webhook-only", now: financialStamp * 1000,
 };
 export function financialSignature(raw: string, at = financialStamp) {
@@ -28,7 +28,7 @@ export function financialFixture(type = "refund.created") {
     metadata: { customer_private_note: "DO-NOT-COPY-SYNTHETIC-NOTE" },
   };
   const dispute: FinancialObject = {
-    id: "du_FinancialOriginal", object: "dispute", livemode: false, amount: 10000, currency: "eur",
+    id: "dp_FinancialOriginal", object: "dispute", livemode: false, amount: 10000, currency: "eur",
     charge: charge.id, payment_intent: charge.payment_intent,
     status: type === "charge.dispute.closed" ? "won" : "needs_response",
     evidence: { customer_email_address: "private-synthetic@example.invalid" },
@@ -58,7 +58,7 @@ export function financialFixture(type = "refund.created") {
   const records: Record<string, FinancialObject> = {
     account: { id: financialAccount },
     "charges/ch_FinancialOriginal": charge, "refunds/re_FinancialOriginal": refund,
-    "disputes/du_FinancialOriginal": dispute, "invoices/in_FinancialOriginal": invoice,
+    "disputes/dp_FinancialOriginal": dispute, "invoices/in_FinancialOriginal": invoice,
     "subscriptions/sub_FinancialOriginal": subscription,
     "payment_intents/pi_FinancialOriginal": {
       id: "pi_FinancialOriginal", object: "payment_intent", livemode: false, currency: "eur",

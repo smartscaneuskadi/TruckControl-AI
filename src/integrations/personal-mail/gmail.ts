@@ -75,6 +75,7 @@ export class MailError extends Error {
       | "invalid"
       | "too_large"
       | "send_uncertain"
+      | "consent_required"
       | "sent_copy_failed",
   ) {
     super(code);

@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId } from "react";
 import { Field } from "./ui";
 import {
   mailPeriodBounds,
@@ -6,23 +6,28 @@ import {
   resolveMailPeriod,
 } from "../../supabase/functions/_shared/mail-period";
 import type { ReceivedPeriod } from "../../supabase/functions/_shared/mail-period";
+import type { InvoiceMailPreset } from "../domain/invoice-mail-period";
 
-type Preset = "30d" | "3m" | "6m" | "12m" | "custom";
 export function InvoiceMailPeriod({
   value,
   onChange,
+  preset,
+  onPresetChange,
   disabled,
 }: {
   value: ReceivedPeriod;
   onChange(period: ReceivedPeriod): void;
+  preset: InvoiceMailPreset;
+  onPresetChange(preset: InvoiceMailPreset): void;
   disabled: boolean;
 }) {
-  const [preset, setPreset] = useState<Preset>("30d");
   const id = useId();
   const bounds = mailPeriodBounds();
   let valid = true;
   try {
-    resolveMailPeriod(value);
+    // Relative presets are resolved again when import confirmation is requested.
+    // A stored overnight 12m selection must not disable that explicit action.
+    if (preset === "custom") resolveMailPeriod(value);
   } catch {
     valid = false;
   }
@@ -39,8 +44,8 @@ export function InvoiceMailPeriod({
             value={preset}
             disabled={disabled}
             onChange={(event) => {
-              const next = event.target.value as Preset;
-              setPreset(next);
+              const next = event.target.value as InvoiceMailPreset;
+              onPresetChange(next);
               if (next !== "custom") onChange(presetReceivedPeriod(next));
             }}
           >

@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { getSupabaseClient } from "../integrations/supabase/client";
 import {
-  checkStripeReadiness,
+  checkStripeReadinessDetails,
+  stripeReadinessMessages,
   type StripeReadiness,
+  type StripeReadinessDiagnostics,
 } from "../integrations/supabase/stripe-readiness";
 import { Badge, Button } from "./ui";
 import { t } from "../i18n/runtime";
@@ -11,6 +13,8 @@ import { t } from "../i18n/runtime";
 export function StripeReadinessSettings() {
   const client = getSupabaseClient();
   const [report, setReport] = useState<StripeReadiness | null>(null);
+  const [diagnostics, setDiagnostics] =
+    useState<StripeReadinessDiagnostics | null>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const lock = useRef(false);
@@ -20,6 +24,7 @@ export function StripeReadinessSettings() {
       generation.current++;
       lock.current = false;
       setReport(null);
+      setDiagnostics(null);
       setError("");
       setBusy(false);
     };
@@ -45,9 +50,13 @@ export function StripeReadinessSettings() {
     setBusy(true);
     setError("");
     setReport(null);
+    setDiagnostics(null);
     try {
-      const result = await checkStripeReadiness(client);
-      if (generation.current === current) setReport(result);
+      const result = await checkStripeReadinessDetails(client);
+      if (generation.current === current) {
+        setReport(result.report);
+        setDiagnostics(result.diagnostics);
+      }
     } catch (error) {
       if (generation.current === current)
         setError(
@@ -95,6 +104,9 @@ export function StripeReadinessSettings() {
       )}
       {report && (
         <div role="status" aria-live="polite">
+          {stripeReadinessMessages(report, diagnostics).map((message) => (
+            <p key={message}>{t(message)}</p>
+          ))}
           <div className="settings-grid">
             {[
               {

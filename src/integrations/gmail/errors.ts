@@ -5,6 +5,7 @@ const known = new Set([
   "admin_required",
   "invalid_google_credentials",
   "authorization_not_configured",
+  "gmail_reauthorization_required",
 ]);
 
 /** Never show provider response bodies or arbitrary SDK error messages. */
@@ -33,6 +34,10 @@ export async function gmailFailureCode(data: unknown, error: unknown) {
 }
 
 export function gmailFailureMessage(code: string | undefined) {
+  if (code === "gmail_reauthorization_required")
+    return t(
+      "Google solicita renovar el permiso. Conecta de nuevo esta cuenta.",
+    );
   if (code === "google_client_rejected")
     return t(
       "Google rechaza las credenciales de Gmail empresarial. La administración debe corregir el ID y el secreto del cliente antes de volver a conectar.",

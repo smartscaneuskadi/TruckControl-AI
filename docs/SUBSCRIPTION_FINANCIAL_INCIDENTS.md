@@ -1,3 +1,26 @@
+## Corrección candidata de identificadores de disputa · 13/11/2026
+
+Stripe identifica las disputas mediante `dp_`. El runtime y la validación SQL64
+usaban por error `du_`, mientras que el DTO administrativo ya exigía `dp_`.
+La migración aditiva local
+`20261113064846_subscription_dispute_id_prefix.sql`, generada con la CLI oficial
+3.0.0, sustituye únicamente esa validación mediante `CREATE OR REPLACE`.
+No se modifica la migración64 ni se convierte, borra o reinterpreta evidencia
+histórica. Se conservan la identidad y permisos de la función, RLS, firmas,
+conciliación de cuenta/pago/empresa y todas las barreras de cobro existentes.
+
+Los fixtures actuales de disputas pasan de `du_` a `dp_`; las aserciones previas
+y los SQL históricos no cambian. No fue necesario un overlay de cargadores.
+Nueve regresiones nuevas cubren `created/updated/closed`, replay, rechazo `du_`,
+cuenta ajena y evento reutilizado entre empresas, compatibilidad con el DTO y
+conservación de OID/ACL e historial previo en una base PGlite efímera.
+Validación local: 132 pruebas focalizadas en seis suites, typecheck correcto,
+11 hashes protegidos y los 43 SQL locales previos más 30 SQL históricos intactos.
+
+Esta corrección no está aplicada ni desplegada en el proyecto remoto. No ejecuta
+una aceptación real, devolución, cambio de licencia, emisión fiscal, correo o IA.
+El inventario remoto66 y los controles de lanzamiento siguen sin cambios.
+
 # Incidencias financieras de suscripciones
 
 Candidato64 sin aplicar ni activar. Subsana la ausencia de observaciones durables de devoluciones y disputas posteriores a un pago ya registrado. No ejecuta reembolsos, movimientos de dinero, suspensión de licencias ni emisión fiscal. No altera migraciones62/63, precios, trial o datos de clientes. La aceptación real de Stripe, credenciales y entorno aislado sigue pendiente.

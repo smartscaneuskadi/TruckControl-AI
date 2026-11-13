@@ -4,6 +4,7 @@ import {
 } from "../_shared/subscription-stripe-reconciliation.ts";
 import { canonicalStripeEnvelope, StripeProviderBodyLimit as BodyLimit, readStripeRawBody as rawBody } from "../_shared/stripe-provider-reader.ts";
 import { knownStripePaymentReplay, type KnownStripePaymentEvent } from "../_shared/subscription-paid-replay.ts";
+import { stripeServerKeyMode } from "../_shared/stripe-server-key.ts";
 
 export interface ManualStripePaymentGateway {
   /** The implementation MUST call a single transactional RPC, never separate billing/intake writes. */
@@ -24,6 +25,7 @@ export function createManualStripeWebhookHandler(
   config: ManualStripeWebhookConfig,
   fetcher: typeof fetch = fetch,
 ) {
+  let setupReported = false;
   return async (request: Request): Promise<Response> => {
     const respond = (body: unknown, status: number) => new Response(JSON.stringify(body), {
       status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store",
@@ -39,6 +41,20 @@ export function createManualStripeWebhookHandler(
     try {
       const raw = await rawBody(request);
       if (deliveryCheck) {
+        // Private operator log once per isolate. Never return credential details to the caller.
+        if (!setupReported) {
+          setupReported = true;
+          const key = config.stripeKey, signing = config.webhookSecret;
+          const mode = stripeServerKeyMode(key);
+          const apiState = !key ? "missing" : key.trim() !== key ? "surrounding_whitespace" :
+            mode === "live" ? "live_format" : mode === "test" ? "test_mode" :
+            key.startsWith("pk_") ? "publishable_key" : key.startsWith("whsec_") ? "signing_key_in_api_field" :
+            key.startsWith("rk_live_") || key.startsWith("sk_live_") ? "incomplete_live_key" :
+            "unexpected_format";
+          const signingState = !signing ? "missing" : signing.trim() !== signing ? "surrounding_whitespace" :
+            /^whsec_[A-Za-z0-9]+$/.test(signing) ? "signing_format" : "unexpected_format";
+          console.info("truckcontrol_stripe_delivery_setup", { apiState, signingState });
+        }
         const envelope = await canonicalStripeEnvelope(raw, request.headers.get("stripe-signature"),
           { ...config, expectedAccountId: config.deliveryCheckAccountId!, mode: "live" },
           new Set(["product.created", "product.updated"]), fetcher);

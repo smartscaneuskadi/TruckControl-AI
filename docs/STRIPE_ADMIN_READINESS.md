@@ -1,3 +1,11 @@
+## Diagnóstico candidato · 13/11/2026
+
+Producción sigue41; backend observado billing19 trasPR110. La candidata0.5.24 añade `admin_readiness_details` privado/opt-in con estados de formato cerrados, sin valores/longitudes/huellas; conserva el contrato v1 y autorización real SQL/SID. Fallback únicamente ante rechazo explícito de acción desconocida por un servidor antiguo; errores de transporte se sustituyen por mensajes fijos, sin reintentos inciertos.
+
+PR111 y su corrección revisada usan GET `/v2/core/event_destinations/{id}?include%5B%5D=webhook_endpoint.url`, no v1 para ese receptor. La consulta oficial del13/11 confirma la URL de `truckcontrol-stripe-fiscal`, snapshot Basil/@self/3eventos y estado **disabled**. No acredita la credencial del backend, firma o entrega. [Lectura de proveedor](verification/stripe-event-destination-read-20261113.json). La preparación del nuevo despliegue conserva41; no recuperar40 automáticamente por esta candidata.
+
+Publicado en Sites41/app0.5.23-rc.1 el12/11/2026. Billing18 verificado, PR108 integrado, cobros cerrados. La comprobación positiva con sesión real del propietario sigue pendiente. [Recibo](verification/admin-stripe-readiness-published-20261112.json).
+
 # Comprobación privada de Stripe
 
 La administración global dispone de **Servicios → Comprobar Stripe**. El enlace directo es https://truckcontrolai.com/#/admin?section=providers. La pantalla requiere entrar con la cuenta administradora habitual; nunca pide copiar claves o códigos.
@@ -19,6 +27,12 @@ El contrato del navegador es estricto. No acepta propiedades añadidas ni una af
 - Estado del receptor y capacidad de cargos de la cuenta son informativos. **No abren la contratación ni cambian los controles fiscales.**
 
 El chequeo completo positivo requiere la sesión real del propietario. Las pruebas automatizadas del navegador emplean transporte ficticio y no se presentan como comprobación de credenciales reales. El PR105, preservado, prepara de forma independiente una entrega real de marcador firmada con los cobros cerrados; su resultado debe registrarse con evidencias del proveedor.
+
+## URL del destino v2 · 13/11/2026
+
+El receptor existente se inspecciona con `GET /v2/core/event_destinations/{id}?include%5B%5D=webhook_endpoint.url`. La [referencia oficial para la versión 2026-09-30.endive](https://docs.stripe.com/api/v2/core/event-destinations/retrieve?api-version=2026-09-30.endive) documenta el parámetro `include` con el valor `webhook_endpoint.url`: **“Include the normally redacted webhook_endpoint.url in the response.”** Se comprobó mediante Stripe Docs CLI 1.55.11, sin cuenta ni credenciales. Un `url=null` en una lectura que no solicita ese campo no demuestra que la URL guardada esté vacía o sea incorrecta.
+
+Solo se incluye la URL; no se solicita el secreto de firma. Si Stripe sigue devolviendo `null`, no se acredita coincidencia de URL. El estado `disabled` se conserva como deshabilitado, y `signature_delivery_verified=false` sigue siendo obligatorio: una lectura de configuración no prueba una entrega firmada ni activa el receptor o los cobros. El esquema y las categorías de diagnóstico existentes no cambian.
 
 ## Despliegue y recuperación
 

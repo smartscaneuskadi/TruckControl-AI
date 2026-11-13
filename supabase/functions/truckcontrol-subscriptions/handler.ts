@@ -96,10 +96,7 @@ export function createRecurringHandler(
     }
   })();
   const checkoutConfigured = Boolean(
-    config.enabled &&
-    config.stripeKey &&
-    config.termsVersion &&
-    termsUrl,
+    config.enabled && config.stripeKey && config.termsVersion && termsUrl,
   );
   async function stripe(
     path: string,
@@ -174,107 +171,135 @@ export function createRecurringHandler(
       id = payload.id;
     } else return;
     if (!providerId(id, "sub")) throw new Error("invalid_subscription");
-    // Fetch current provider state rather than trusting delivery order or client metadata.
-    const subscription = await stripe(`subscriptions/${id}`);
-    const metadata = object(subscription.metadata);
-    const items = object(subscription.items);
-    const item = object(
-      Array.isArray(items.data) && items.data.length === 1
-        ? items.data[0]
-        : null,
-    );
-    const price = object(item.price);
-    const recurring = object(price.recurring);
-    const periodEnd =
-      item.current_period_end ?? subscription.current_period_end;
-    if (
-      !isUuid(metadata.tc_user_id) ||
-      !isUuid(metadata.tc_request_id) ||
-      subscription.id !== id ||
-      !providerId(subscription.customer, "cus") ||
-      items.has_more === true ||
-      item.quantity !== 1 ||
-      recurring.interval !== "month" ||
-      recurring.interval_count !== 1 ||
-      recurring.usage_type === "metered" ||
-      price.currency !== "eur" ||
-      !Number.isSafeInteger(price.unit_amount) ||
-      Number(price.unit_amount) < 100 ||
-      !seconds(periodEnd) ||
-      !states.has(String(subscription.status))
-    )
-      throw new Error("invalid_subscription");
-    let paid = false;
-    let start: number | undefined, end: number | undefined;
-    if (type === "invoice.paid" && invoice) {
-      const lines = object(invoice.lines);
-      const line = object(
-        Array.isArray(lines.data) && lines.data.length === 1
-          ? lines.data[0]
+    const applySnapshot = async (snapshotRevision?: string): Promise<Obj> => {
+      // Fetch current provider state rather than trusting delivery order or client metadata.
+      const subscription = await stripe(`subscriptions/${id}`);
+      const metadata = object(subscription.metadata);
+      const items = object(subscription.items);
+      const item = object(
+        Array.isArray(items.data) && items.data.length === 1
+          ? items.data[0]
           : null,
       );
-      const linePrice = object(
-        object(object(line.pricing).price_details).price,
-      );
-      const linePriceId =
-        object(object(line.pricing).price_details).price ??
-        object(line.price).id;
-      const period = object(line.period);
+      const price = object(item.price);
+      const recurring = object(price.recurring);
+      const periodEnd =
+        item.current_period_end ?? subscription.current_period_end;
       if (
-        invoice.customer !== subscription.customer ||
-        invoice.status !== "paid" ||
-        invoice.currency !== "eur" ||
-        !["subscription_create", "subscription_cycle"].includes(
-          String(invoice.billing_reason),
-        )
-      ) {
-        throw new Error("invalid_paid_invoice");
-      }
-      // A zero-value trial invoice grants nothing; the application's own trial remains authoritative.
-      if (invoice.amount_paid !== 0 || invoice.total !== 0) {
+        !isUuid(metadata.tc_user_id) ||
+        !isUuid(metadata.tc_request_id) ||
+        subscription.id !== id ||
+        !providerId(subscription.customer, "cus") ||
+        items.has_more === true ||
+        item.quantity !== 1 ||
+        recurring.interval !== "month" ||
+        recurring.interval_count !== 1 ||
+        recurring.usage_type === "metered" ||
+        price.currency !== "eur" ||
+        !Number.isSafeInteger(price.unit_amount) ||
+        Number(price.unit_amount) < 100 ||
+        !seconds(periodEnd) ||
+        !states.has(String(subscription.status))
+      )
+        throw new Error("invalid_subscription");
+      let paid = false;
+      let start: number | undefined, end: number | undefined;
+      if (type === "invoice.paid" && invoice) {
+        const lines = object(invoice.lines);
+        const line = object(
+          Array.isArray(lines.data) && lines.data.length === 1
+            ? lines.data[0]
+            : null,
+        );
+        const linePrice = object(
+          object(object(line.pricing).price_details).price,
+        );
+        const linePriceId =
+          object(object(line.pricing).price_details).price ??
+          object(line.price).id;
+        const period = object(line.period);
         if (
-          lines.has_more === true ||
-          line.quantity !== 1 ||
-          invoice.amount_paid !== price.unit_amount ||
-          invoice.total !== price.unit_amount ||
-          (typeof linePriceId === "string" ? linePriceId : linePrice.id) !==
-            price.id ||
-          !seconds(period.start) ||
-          !seconds(period.end) ||
-          period.end <= period.start ||
-          period.end - period.start < 27 * 86400 ||
-          period.end - period.start > 32 * 86400
+          invoice.customer !== subscription.customer ||
+          invoice.status !== "paid" ||
+          invoice.currency !== "eur" ||
+          !["subscription_create", "subscription_cycle"].includes(
+            String(invoice.billing_reason),
+          )
         ) {
-          throw new Error("invoice_price_or_period_mismatch");
+          throw new Error("invalid_paid_invoice");
         }
-        paid = true;
-        start = period.start;
-        end = period.end;
-      }
-    }
-    await gateway.server("event", {
-      user_id: metadata.tc_user_id,
-      request_id: metadata.tc_request_id,
-      subscription_id: id,
-      customer_id: subscription.customer,
-      event_id: event.id,
-      event_type: type,
-      event_created: event.created,
-      state: subscription.status,
-      cancel_at_period_end: subscription.cancel_at_period_end === true,
-      period_end: periodEnd,
-      unit_amount: price.unit_amount,
-      currency: "EUR",
-      invoice_paid: paid,
-      ...(paid && invoice
-        ? {
-            invoice_id: invoice.id,
-            invoice_amount: invoice.amount_paid,
-            invoice_period_start: start,
-            invoice_period_end: end,
+        // A zero-value trial invoice grants nothing; the application's own trial remains authoritative.
+        if (invoice.amount_paid !== 0 || invoice.total !== 0) {
+          if (
+            lines.has_more === true ||
+            line.quantity !== 1 ||
+            invoice.amount_paid !== price.unit_amount ||
+            invoice.total !== price.unit_amount ||
+            (typeof linePriceId === "string" ? linePriceId : linePrice.id) !==
+              price.id ||
+            !seconds(period.start) ||
+            !seconds(period.end) ||
+            period.end <= period.start ||
+            period.end - period.start < 27 * 86400 ||
+            period.end - period.start > 32 * 86400
+          ) {
+            throw new Error("invoice_price_or_period_mismatch");
           }
-        : {}),
-    });
+          paid = true;
+          start = period.start;
+          end = period.end;
+        }
+      }
+      return await gateway.server<Obj>("event", {
+        user_id: metadata.tc_user_id,
+        request_id: metadata.tc_request_id,
+        subscription_id: id,
+        customer_id: subscription.customer,
+        event_id: event.id,
+        event_type: type,
+        event_created: event.created,
+        ...(snapshotRevision === undefined
+          ? {}
+          : { snapshot_revision: snapshotRevision }),
+        state: subscription.status,
+        cancel_at_period_end: subscription.cancel_at_period_end === true,
+        period_end: periodEnd,
+        unit_amount: price.unit_amount,
+        currency: "EUR",
+        invoice_paid: paid,
+        ...(paid && invoice
+          ? {
+              invoice_id: invoice.id,
+              invoice_amount: invoice.amount_paid,
+              invoice_period_start: start,
+              invoice_period_end: end,
+            }
+          : {}),
+      });
+    };
+    // Paid events belong to the separate atomic fiscal bridge in production.
+    // Its compatibility path can flag an ambiguous unversioned snapshot while
+    // committing the independently verified invoice; it cannot grant lifecycle
+    // webhooks permission to extend access.
+    if (type === "invoice.paid") {
+      await applySnapshot();
+      return;
+    }
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const observed = await gateway.server<Obj>("observe", {
+        subscription_id: id,
+      });
+      if (
+        typeof observed.snapshot_revision !== "string" ||
+        !/^(0|[1-9][0-9]{0,18})$/.test(observed.snapshot_revision)
+      )
+        throw new Error("invalid_subscription_revision");
+      const result = await applySnapshot(observed.snapshot_revision);
+      if (result.reconcile_required !== true) return;
+    }
+    // Do not acknowledge a state that lost every CAS attempt. Provider retry
+    // begins with a new observation and canonical GET.
+    throw new Error("subscription_reconciliation_required");
   }
   return async (request: Request): Promise<Response> => {
     const requestOrigin = request.headers.get("origin");
@@ -336,8 +361,12 @@ export function createRecurringHandler(
       } catch {
         return json({ error: "invalid_request" }, 400);
       }
-      const checkFiscal = body.action === "status" || body.action === "checkout" || body.action === "resume";
-      const invoiceReady = config.invoicingVerified === true ||
+      const checkFiscal =
+        body.action === "status" ||
+        body.action === "checkout" ||
+        body.action === "resume";
+      const invoiceReady =
+        config.invoicingVerified === true ||
         (checkFiscal && (await gateway.manualCheckoutReady?.()) === true);
       const configured = checkoutConfigured && invoiceReady;
       if (body.action === "status") {

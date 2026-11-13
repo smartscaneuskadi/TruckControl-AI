@@ -89,6 +89,15 @@ def original(payment):
   "),'task',(select to_jsonb(t) from private.tc_manual_subscription_invoice_tasks t where id="+q(payment["task"])+
   "),'receipts',(select jsonb_agg(to_jsonb(b) order by provider_event_id) from private.tc_manual_stripe_bridge_receipts b where task_id="+q(payment["task"])+
   "),'notices',(select jsonb_agg(to_jsonb(n) order by id) from private.tc_manual_invoice_notice_outbox n where task_id="+q(payment["task"])+"))")
+def restore_saved_backup(manifest_sha256: str) -> None:
+ verified=pg.backup.read_backup(pg.RESULTS,"incidents-backup.manifest.json",manifest_sha256,
+  {"synthetic-financial-incidents.dump":"postgresql"})
+ pg.run(["docker","exec",pg.CONTAINER,"createdb","-U","postgres","-T","template0",RESTORED])
+ pg.run(["docker","exec","-i",pg.CONTAINER,"pg_restore","-U","postgres","-d",RESTORED,"--no-owner","--exit-on-error"],
+  data=verified["synthetic-financial-incidents.dump"])
+ pg.REPORT["saved_artifacts_verified"]=True
+ pg.REPORT["backup_manifest_sha256"]=manifest_sha256
+
 def main():
  if os.environ.get("GITHUB_ACTIONS")!="true" or not re.fullmatch(r"[0-9a-f]{12,64}",pg.CONTAINER):
   raise AssertionError("Only the explicit isolated CI service container is accepted")
@@ -149,10 +158,11 @@ def main():
  before=pg.database_fingerprint(pg.SOURCE)
  dump=pg.run(["docker","exec",pg.CONTAINER,"pg_dump","-U","postgres","-d",pg.SOURCE,"-Fc","--no-owner"]).stdout
  pg.RESULTS.mkdir(exist_ok=True)
- (pg.RESULTS/"synthetic-financial-incidents.dump").write_bytes(dump)
+ manifest_sha256=pg.backup.save_backup(pg.RESULTS,"incidents-backup.manifest.json",
+  {"synthetic-financial-incidents.dump":("postgresql",dump)})
  pg.REPORT["dump_sha256"]=hashlib.sha256(dump).hexdigest()
- pg.run(["docker","exec",pg.CONTAINER,"createdb","-U","postgres","-T","template0",RESTORED])
- pg.run(["docker","exec","-i",pg.CONTAINER,"pg_restore","-U","postgres","-d",RESTORED,"--no-owner","--exit-on-error"],data=dump)
+ del dump
+ restore_saved_backup(manifest_sha256)
  after=pg.database_fingerprint(RESTORED)
  if before!=after:
   pg.REPORT["restore_differences"]=pg.fingerprint_differences(before,after)

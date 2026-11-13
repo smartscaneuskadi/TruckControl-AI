@@ -1,3 +1,4 @@
+import { stripeServerKeyMode } from "./stripe-server-key.ts";
 /** Internal read-only provider inspection. Called only after human session/admin authorization. */
 export const readinessAccount = "acct_1UZSsJCWctKw8slH";
 export const readinessEndpoint = "we_1Ub5lBCWctKw8slHXmnq0PZd";
@@ -34,6 +35,47 @@ export interface StripeReadinessReport {
   signature_delivery_verified: false;
   payment_or_customer_mutations: 0;
 }
+export type CredentialConfigurationState =
+  "missing" | "invalid_format" | "valid_format";
+export interface StripeReadinessDetails extends Omit<
+  StripeReadinessReport,
+  "contract"
+> {
+  contract: "truckcontrol-stripe-readiness-v2";
+  credential_state: CredentialConfigurationState;
+  signing_secret_state: CredentialConfigurationState;
+}
+/** Fixed categories only; no credential value, fragment, length or fingerprint leaves this function. */
+export function describeStripeReadiness(
+  report: StripeReadinessReport,
+  config: StripeReadinessConfig,
+): StripeReadinessDetails {
+  const mode = stripeServerKeyMode(config.stripeKey);
+  const credential_state: CredentialConfigurationState = !config.stripeKey
+    ? "missing"
+    : mode
+      ? "valid_format"
+      : "invalid_format";
+  const signing_secret_state: CredentialConfigurationState =
+    !config.fiscalSigningSecret
+      ? "missing"
+      : /^whsec_[A-Za-z0-9]{16,240}$/.test(config.fiscalSigningSecret)
+        ? "valid_format"
+        : "invalid_format";
+  if (
+    report.stripe_key_configured !== (credential_state === "valid_format") ||
+    report.key_mode !== mode ||
+    report.fiscal_signing_secret_format_valid !==
+      (signing_secret_state === "valid_format")
+  )
+    throw Error("stripe_readiness_unavailable");
+  return {
+    ...report,
+    contract: "truckcontrol-stripe-readiness-v2",
+    credential_state,
+    signing_secret_state,
+  };
+}
 async function providerObject(response: Response) {
   const reader = response.body?.getReader();
   if (!reader) throw Error("missing_body");
@@ -66,14 +108,12 @@ export async function inspectStripeReadiness(
   fetcher: typeof fetch,
   clock: () => number = Date.now,
 ): Promise<StripeReadinessReport> {
-  const match = config.stripeKey?.match(
-    /^(?:sk|rk)_(live|test)_[A-Za-z0-9_]{16,240}$/,
-  );
+  const mode = stripeServerKeyMode(config.stripeKey);
   const result: StripeReadinessReport = {
     contract: "truckcontrol-stripe-readiness-v1",
     checked_at: new Date(clock()).toISOString(),
-    stripe_key_configured: Boolean(match),
-    key_mode: match ? (match[1] as "live" | "test") : null,
+    stripe_key_configured: mode !== null,
+    key_mode: mode,
     fiscal_signing_secret_format_valid: /^whsec_[A-Za-z0-9]{16,240}$/.test(
       config.fiscalSigningSecret ?? "",
     ),
@@ -93,9 +133,9 @@ export async function inspectStripeReadiness(
     signature_delivery_verified: false,
     payment_or_customer_mutations: 0,
   };
-  if (!match) return result;
+  if (!mode) return result;
   const get = async (path: string) => {
-    const response = await fetcher("https://api.stripe.com/v1/" + path, {
+    const response = await fetcher("https://api.stripe.com/" + path, {
       method: "GET",
       redirect: "error",
       signal: AbortSignal.timeout(8000),
@@ -112,7 +152,7 @@ export async function inspectStripeReadiness(
     return { status: 200, value: await providerObject(response) };
   };
   try {
-    const account = await get("account");
+    const account = await get("v1/account");
     result.account_checked = true;
     result.account_status = account.status;
     if (
@@ -121,20 +161,30 @@ export async function inspectStripeReadiness(
     ) {
       result.account_id = account.value.id;
       result.expected_account =
-        account.value.id === readinessAccount && match[1] === "live";
+        account.value.id === readinessAccount && mode === "live";
       result.charges_enabled = account.value.charges_enabled === true;
       result.payouts_enabled = account.value.payouts_enabled === true;
     }
     if (!result.expected_account) return result;
-    const hook = await get("webhook_endpoints/" + readinessEndpoint);
+    // The configured `we_` receiver is a Stripe v2 Event Destination, not a v1 webhook endpoint.
+    // Stripe normally redacts this URL unless the field is explicitly included.
+    const hook = await get(
+      "v2/core/event_destinations/" + readinessEndpoint +
+        "?include%5B%5D=webhook_endpoint.url",
+    );
     result.webhook_checked = true;
     result.webhook_status = hook.status;
     if (
-      hook.value?.object === "webhook_endpoint" &&
-      hook.value.livemode === true
+      hook.value?.object === "v2.core.event_destination" &&
+      hook.value.type === "webhook_endpoint" &&
+      hook.value.livemode === true &&
+      hook.value.event_payload === "snapshot" &&
+      Array.isArray(hook.value.events_from) &&
+      hook.value.events_from.length === 1 &&
+      hook.value.events_from[0] === "@self"
     ) {
       result.webhook_id_matches = hook.value.id === readinessEndpoint;
-      result.webhook_url_matches = hook.value.url === readinessUrl;
+      result.webhook_url_matches = hook.value.webhook_endpoint?.url === readinessUrl;
       result.webhook_disabled =
         hook.value.status === "disabled"
           ? true
@@ -142,7 +192,7 @@ export async function inspectStripeReadiness(
             ? false
             : null;
       result.webhook_api_version_matches =
-        hook.value.api_version === "2025-03-31.basil";
+        hook.value.snapshot_api_version === "2025-03-31.basil";
       result.webhook_events_match =
         Array.isArray(hook.value.enabled_events) &&
         JSON.stringify([...hook.value.enabled_events].sort()) ===

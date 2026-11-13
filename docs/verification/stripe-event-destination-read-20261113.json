@@ -1,0 +1,25 @@
+{
+  "verified_at": "2026-11-13T08:00:43.741Z",
+  "source": "Official Stripe connector, GET existing v2 event destination with include webhook_endpoint.url",
+  "account_id": "acct_1UZSsJCWctKw8slH",
+  "livemode": true,
+  "id": "we_1Ub5lBCWctKw8slHXmnq0PZd",
+  "object": "v2.core.event_destination",
+  "status": "disabled",
+  "disabled_reason": "user",
+  "event_payload": "snapshot",
+  "events_from": [
+    "@self"
+  ],
+  "snapshot_api_version": "2025-03-31.basil",
+  "enabled_events": [
+    "checkout.session.completed",
+    "checkout.session.async_payment_succeeded",
+    "invoice.paid"
+  ],
+  "webhook_url": "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/truckcontrol-stripe-fiscal",
+  "provider_writes": 0,
+  "payment_tests": 0,
+  "signature_delivery_verified": false,
+  "native_backend_key_verified": false
+}
