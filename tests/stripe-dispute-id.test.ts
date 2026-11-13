@@ -20,7 +20,7 @@ import {
 } from "./helpers/subscription-financial-db";
 
 const migrationPath =
-  "supabase/migrations/20261113064846_subscription_dispute_id_prefix.sql";
+  "supabase/migrations/20261113084134_subscription_dispute_id_prefix.sql";
 const priorMigrationPath =
   "supabase/migrations/20261108134217_subscription_payment_incidents.sql";
 const dispute = (
