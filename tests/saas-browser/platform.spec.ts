@@ -2791,6 +2791,7 @@ test.describe("contratación y renovación mensual", () => {
             currency: "EUR",
             period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
             cancel_at_period_end: false,
+            reconciliation_required: false,
           }
         : null,
       invoices: [],
