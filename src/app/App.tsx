@@ -428,6 +428,7 @@ function Workspace() {
               type="button"
               disabled={signingOut}
               aria-busy={signingOut}
+              aria-label={signingOut ? "Cerrando sesión de TruckControl…" : "Cerrar sesión de TruckControl"}
               onClick={async () => {
                 if (signOutPending.current) return;
                 signOutPending.current = true;

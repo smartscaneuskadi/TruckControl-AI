@@ -2,7 +2,7 @@
 
 Candidata local del13/11/2026. No aplicada ni desplegada; no activa cobros,
 canales, avisos ni llamadas a proveedores. La migración
-`20261113070406_subscription_unlinked_incident_review.sql` se generó con la
+`20261113185634_subscription_unlinked_incident_review.sql` se generó con la
 CLI oficial Supabase3.0.0. Las migraciones y recibos históricos no se editan.
 
 ## Problema y alcance
