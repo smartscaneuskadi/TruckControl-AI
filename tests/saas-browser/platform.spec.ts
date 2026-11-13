@@ -2395,6 +2395,18 @@ test.describe("copia cifrada y sincronización", () => {
   });
   test("cerrar sesión bloquea la clave offline y conserva únicamente la copia cifrada", async ({ page, context }) => {
     await prepare(page);
+    // La activación guarda rev.1; OfflineCacheSync termina el primer sellado
+    // autorizado en segundo plano. El baseline debe representar una copia estable,
+    // no una transacción de inicio todavía pendiente.
+    await expect.poll(async () => page.evaluate(() => new Promise<number>((resolve, reject) => {
+      const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
+      r.onsuccess = () => {
+        const tx = r.result.transaction("vaults", "readonly");
+        const q = tx.objectStore("vaults").getAll();
+        tx.oncomplete = () => { resolve(q.result[0]?.revision ?? 0); r.result.close(); };
+      };
+      r.onerror = () => reject(r.error);
+    })), { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
     const encryptedBefore = await page.evaluate(() => new Promise<string>((resolve, reject) => {
       const r = indexedDB.open("truckcontrol-encrypted-offline-v1", 1);
       r.onsuccess = () => {
