@@ -39,6 +39,11 @@ async function fixture(
     connectionState?: "connected" | "reauthorize";
     connectionReadFails?: boolean;
     tickets?: string[];
+    syncResponses?: {
+      status: number;
+      body: Record<string, unknown>;
+      connectionState?: "connected" | "reauthorize";
+    }[];
   } = {},
 ) {
   const calls: {
@@ -47,6 +52,8 @@ async function fixture(
     actor: string | null;
   }[] = [];
   let connected = Boolean(options.connectionState);
+  let connectionState = options.connectionState ?? "connected";
+  let syncIndex = 0;
   const metadata = new Map<string, Record<string, unknown>>();
   const fixtureUser = (id: string) => ({
     ...user(id),
@@ -113,7 +120,7 @@ async function fixture(
           ? [
               {
                 email: "company-a2@example.com",
-                status: options.connectionState ?? "connected",
+                status: connectionState,
                 connected_at: "2026-11-01T00:00:00Z",
                 last_sync_at: null,
               },
@@ -137,7 +144,10 @@ async function fixture(
         body = result;
       } else if (data.action === "sync_period") {
         expect(periodReady).toBe(true);
-        body = {
+        const result = options.syncResponses?.[syncIndex++];
+        if (result?.connectionState) connectionState = result.connectionState;
+        responseStatus = result?.status ?? 200;
+        body = result?.body ?? {
           imported: 1,
           scanned: 1,
           has_more: false,
@@ -641,6 +651,48 @@ test("el cliente bloquea períodos inválidos y un servidor anterior sin el filt
     ),
   ).toBe(false);
 });
+
+for (const failure of [
+  { code: "google_client_rejected", status: 503, connectionState: "connected", badge: "Gmail sin comprobar", message: "Google rechaza las credenciales de Gmail empresarial." },
+  { code: "gmail_reauthorization_required", status: 409, connectionState: "reauthorize", badge: "Renovar permiso de Gmail", message: "Google solicita renovar el permiso." },
+] as const) {
+  test(`un fallo de importación ${failure.code} actualiza el estado y conserva su aviso`, async ({ page }) => {
+    const calls = await fixture(page, true, {
+      connectionState: "connected",
+      syncResponses: [
+        { status: failure.status, body: { error: failure.code, imported: 0 }, connectionState: failure.connectionState },
+        { status: 200, body: { imported: 0, scanned: 0, has_more: false } },
+      ],
+    });
+    await signIn(page);
+    await page.getByLabel("Empresa activa").selectOption(orgA2);
+    await page.goto("/#/invoices");
+    await expect(page.getByText("Gmail vinculado", { exact: true })).toBeVisible();
+    const readsBefore = calls.filter((c) => c.path === "/rest/v1/rpc/get_company_gmail").length;
+    const startImport = async () => {
+      await page.getByRole("button", { name: "Importar facturas", exact: true }).click();
+      await page.getByRole("dialog", { name: "Confirmar lectura de facturas del correo" })
+        .getByRole("button", { name: "Confirmar importación", exact: true }).click();
+    };
+    await startImport();
+    await expect(page.getByText(failure.badge, { exact: true })).toBeVisible();
+    await expect(page.getByRole("alert").filter({ hasText: failure.message })).toBeVisible();
+    await expect.poll(() => calls.filter((c) => c.path === "/rest/v1/rpc/get_company_gmail").length).toBeGreaterThan(readsBefore);
+    await page.getByRole("button", { name: "Comprobar conexión", exact: true }).click();
+    await expect(page.getByRole("alert").filter({ hasText: failure.message })).toBeVisible();
+    await expect(page.getByText("Gmail vinculado", { exact: true })).toHaveCount(0);
+    expect(calls.some((c) => c.data?.action === "start")).toBe(false);
+    if (failure.code === "google_client_rejected") {
+      // After administration repairs credentials, retrying import can confirm recovery
+      // without replacing the mailbox grant or starting another OAuth consent.
+      await startImport();
+      await expect(page.getByText("Gmail vinculado", { exact: true })).toBeVisible();
+      await expect(page.getByRole("alert").filter({ hasText: failure.message })).toHaveCount(0);
+    } else {
+      await expect(page.getByRole("button", { name: "Importar facturas", exact: true })).toBeDisabled();
+    }
+  });
+}
 
 test("una preferencia de otra empresa no concede acceso al cambiar de usuario", async ({
   page,

@@ -1,0 +1,72 @@
+{
+  "checked_at": "2026-11-13T07:51:35.815073+00:00",
+  "status": "local_candidate_not_published",
+  "base_commit": "dfe56b71b2693e66ce7df17395d7989671fb9425",
+  "branch": "fix/gmail-period-runtime-20261113",
+  "scope": "Rolling invoice-mail presets at explicit confirmation and refresh-time credential error classification/state reconciliation",
+  "period_policy_unchanged": {
+    "default_days": 30,
+    "max_calendar_months": 12,
+    "time_zone": "Europe/Madrid",
+    "server_filter_before_content": true,
+    "custom_dates_never_expanded": true,
+    "displayed_confirmation_not_recomputed": true
+  },
+  "refresh_errors": {
+    "invalid_client": "503/google_client_rejected; reauthorize=false",
+    "unauthorized_client": "503/google_client_rejected; reauthorize=false",
+    "invalid_grant": "409/gmail_reauthorization_required; reauthorize=true",
+    "temporary_errors": "502/gmail_import_unavailable; reauthorize=false",
+    "raw_provider_data_returned": false
+  },
+  "ui": {
+    "rolling_clock": "Date.now() at Importar facturas confirmation action",
+    "client_fault_badge": "amber/unverified",
+    "operation_error_preserved_during_reconciliation": true,
+    "authorized_connection_and_documents_reloaded_after_sync_error": true,
+    "automatic_oauth_or_reconsent": false,
+    "configured_presence_not_treated_as_credential_validation": true
+  },
+  "checks": {
+    "focused_unit_files": 5,
+    "focused_unit_passed": 68,
+    "focused_unit_failed": 0,
+    "max_workers": 1,
+    "app_typecheck": "passed",
+    "edge_handler_strict_typecheck": "passed",
+    "build": "passed",
+    "retained_original_tests": 64,
+    "retained_file_hashes_verified": 11,
+    "git_diff_check": "passed",
+    "mock_browser_cases_listed": 4,
+    "browser_cases_executed": 0,
+    "full_local_suite": "not run; single integrated regression/CI is coordinated by parent"
+  },
+  "preserved": {
+    "production_sites": 41,
+    "demo": 6,
+    "applied_migrations": 66,
+    "ai_usd_month": 10,
+    "ai_company_call_quota": 100,
+    "payments_enabled": false,
+    "global_legal_version": "2026-11-02",
+    "gmail_personal_owner_acceptance": true,
+    "existing_google_project": "468881730124"
+  },
+  "acceptance": {
+    "enterprise_gmail_verified": false,
+    "last_real_credential_observation": "prior401/invalid_client; not repeated",
+    "google_public_review_verified": false
+  },
+  "safety": {
+    "deployed": false,
+    "pushed": false,
+    "live_mail_calls": 0,
+    "live_google_calls": 0,
+    "live_ai_calls": 0,
+    "browser_runs": 0,
+    "new_costs": 0,
+    "new_accounts_or_credentials": false,
+    "new_migrations": 0
+  }
+}

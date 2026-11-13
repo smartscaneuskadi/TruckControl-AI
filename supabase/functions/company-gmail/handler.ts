@@ -511,14 +511,17 @@ export function createGmailHandler(
       });
     } catch (e) {
       reauthorize = e instanceof GmailAuthorizationError;
+      const clientRejected = e instanceof GoogleClientError;
       return json(
         {
-          error: reauthorize
-            ? "gmail_reauthorization_required"
-            : "gmail_import_unavailable",
+          error: clientRejected
+            ? "google_client_rejected"
+            : reauthorize
+              ? "gmail_reauthorization_required"
+              : "gmail_import_unavailable",
           imported,
         },
-        reauthorize ? 409 : 502,
+        clientRejected ? 503 : reauthorize ? 409 : 502,
       );
     } finally {
       await gateway.server("finish_sync", {
