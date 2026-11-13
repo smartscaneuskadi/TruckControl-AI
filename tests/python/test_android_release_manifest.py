@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
+import textwrap
 import unittest
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
@@ -240,6 +241,21 @@ class InspectorBoundaryTests(unittest.TestCase):
         with patch.object(op.subprocess, "run") as run, self.assertRaisesRegex(op.ReleaseManifestError, "^android_tool_checksum_mismatch$"):
             op.verify_tool(tool)
         run.assert_not_called()
+
+    def test_untrusted_cached_gradle_cannot_be_extracted_or_added_to_path(self):
+        workflow = (ROOT / ".github/workflows/android.yml").read_text()
+        installation = workflow.split("      - name: Install approved Gradle 9.8.2", 1)[1].split("      - name:", 1)[0]
+        script = textwrap.dedent(installation.split("        run: |\n", 1)[1])
+        self.assertIn("https://services.gradle.org/distributions/gradle-9.8.2-bin.zip", script)
+        self.assertIn("https://downloads.gradle.org/distributions/gradle-9.8.2-bin.zip", script)
+        self.assertIn("21bd5da2de49b642904077f38c0efdc7778e92b3ed0889392dca61b97e389607", script)
+        (self.root / "truckcontrol-gradle-9.8.2-bin.zip").write_bytes(b"untrusted cached distribution")
+        github_path = self.root / "github-path"
+        result = subprocess.run(["bash", "-c", script], capture_output=True, text=True,
+                                env={"RUNNER_TEMP": str(self.root), "GITHUB_PATH": str(github_path)})
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(github_path.exists())
+        self.assertFalse((self.root / "truckcontrol-gradle").exists())
 
     def test_matching_fixture_checksum_still_requires_exact_version(self):
         tool = self.root / "fixture.jar"; tool.write_bytes(b"synthetic jar")
