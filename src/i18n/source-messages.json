@@ -17250,5 +17250,221 @@
     "contexts": [
       "src/components/RecurringSubscription.tsx:text"
     ]
+  },
+  {
+    "key": "Incidencias sin tarea vinculada",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Actualizar revisión",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Observaciones de compras propias contrastadas con Stripe cuyo pago todavía no tiene una tarea fiscal vinculada.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisar o descartar solo registra una declaración administrativa. No resuelve el pago, la licencia ni las obligaciones fiscales y no emite una factura.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Conéctate para revisar estas incidencias. El registro no se guarda sin conexión.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprobando el registro de revisión…",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "registros en esta página.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "No hay incidencias en esta página.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Pedido",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Vínculo con un pago registrado disponible",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Sin tarea fiscal nativa vinculada",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisar registro",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisión del pedido",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Referencia de pago",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Checkout contrastado",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Empresa interna",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Ver tarea fiscal existente",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Declarar descarte de revisión",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Declaración de revisión",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Declaración de descarte",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Motivo",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Referencia de evidencia",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Confirmo que esta declaración no modifica el pago, la licencia ni ninguna factura.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "El resultado anterior requiere confirmación. Un reintento conserva exactamente la misma declaración.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Registrar declaración",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Cancelar declaración",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Historial de revisión",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Vínculo con tarea existente",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Descarte declarado",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Tarea",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Evidencia:",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Ver historial anterior",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Registro de revisión incoherente.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "No se ha podido contrastar el registro. Actualiza antes de continuar.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Indica el motivo y una referencia verificable de la evidencia.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
+  },
+  {
+    "key": "Declaración registrada. El pago, la licencia y las obligaciones fiscales requieren su propia conciliación.",
+    "contexts": [
+      "src/components/UnlinkedIncidentReview.tsx:message"
+    ]
   }
 ]
