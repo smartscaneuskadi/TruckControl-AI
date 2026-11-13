@@ -1,3 +1,4 @@
+import { stripeServerKeyMode } from "./stripe-server-key.ts";
 /** Internal read-only provider inspection. Called only after human session/admin authorization. */
 export const readinessAccount = "acct_1UZSsJCWctKw8slH";
 export const readinessEndpoint = "we_1Ub5lBCWctKw8slHXmnq0PZd";
@@ -66,14 +67,12 @@ export async function inspectStripeReadiness(
   fetcher: typeof fetch,
   clock: () => number = Date.now,
 ): Promise<StripeReadinessReport> {
-  const match = config.stripeKey?.match(
-    /^(?:sk|rk)_(live|test)_[A-Za-z0-9_]{16,240}$/,
-  );
+  const mode = stripeServerKeyMode(config.stripeKey);
   const result: StripeReadinessReport = {
     contract: "truckcontrol-stripe-readiness-v1",
     checked_at: new Date(clock()).toISOString(),
-    stripe_key_configured: Boolean(match),
-    key_mode: match ? (match[1] as "live" | "test") : null,
+    stripe_key_configured: mode !== null,
+    key_mode: mode,
     fiscal_signing_secret_format_valid: /^whsec_[A-Za-z0-9]{16,240}$/.test(
       config.fiscalSigningSecret ?? "",
     ),
@@ -93,7 +92,7 @@ export async function inspectStripeReadiness(
     signature_delivery_verified: false,
     payment_or_customer_mutations: 0,
   };
-  if (!match) return result;
+  if (!mode) return result;
   const get = async (path: string) => {
     const response = await fetcher("https://api.stripe.com/v1/" + path, {
       method: "GET",
@@ -121,7 +120,7 @@ export async function inspectStripeReadiness(
     ) {
       result.account_id = account.value.id;
       result.expected_account =
-        account.value.id === readinessAccount && match[1] === "live";
+        account.value.id === readinessAccount && mode === "live";
       result.charges_enabled = account.value.charges_enabled === true;
       result.payouts_enabled = account.value.payouts_enabled === true;
     }

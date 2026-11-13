@@ -92,7 +92,7 @@ async function requestFor(f: ReturnType<typeof fixture>) {
 describe("manual Stripe webhook adapter: durable acknowledgement and closed switches", () => {
   describe("delivery check with commercial processing disabled", () => {
     const checkConfig: ManualStripeWebhookConfig = { ...config, enabled: false, schemaAccepted: false,
-      stripeKey: "rk_live_synthetic", deliveryCheckAccountId: config.expectedAccountId };
+      stripeKey: "rk_live_synthetic_delivery_fixture", deliveryCheckAccountId: config.expectedAccountId };
     const product = { object: "product", id: "prod_TruckControlDeliveryCheck", active: false, default_price: null };
     const marker = { object: "event", id: "evt_CheckProduct", type: "product.created", livemode: true,
       created: stamp, data: { object: product } };

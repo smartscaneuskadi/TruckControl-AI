@@ -4,6 +4,7 @@ import {
 } from "../_shared/subscription-stripe-reconciliation.ts";
 import { canonicalStripeEnvelope, StripeProviderBodyLimit as BodyLimit, readStripeRawBody as rawBody } from "../_shared/stripe-provider-reader.ts";
 import { knownStripePaymentReplay, type KnownStripePaymentEvent } from "../_shared/subscription-paid-replay.ts";
+import { stripeServerKeyMode } from "../_shared/stripe-server-key.ts";
 
 export interface ManualStripePaymentGateway {
   /** The implementation MUST call a single transactional RPC, never separate billing/intake writes. */
@@ -44,9 +45,12 @@ export function createManualStripeWebhookHandler(
         if (!setupReported) {
           setupReported = true;
           const key = config.stripeKey, signing = config.webhookSecret;
+          const mode = stripeServerKeyMode(key);
           const apiState = !key ? "missing" : key.trim() !== key ? "surrounding_whitespace" :
-            /^(sk|rk)_live_[A-Za-z0-9]+$/.test(key) ? "live_format" :
-            /^(sk|rk)_test_/.test(key) ? "test_mode" : key.startsWith("pk_") ? "publishable_key" : "unexpected_format";
+            mode === "live" ? "live_format" : mode === "test" ? "test_mode" :
+            key.startsWith("pk_") ? "publishable_key" : key.startsWith("whsec_") ? "signing_key_in_api_field" :
+            key.startsWith("rk_live_") || key.startsWith("sk_live_") ? "incomplete_live_key" :
+            "unexpected_format";
           const signingState = !signing ? "missing" : signing.trim() !== signing ? "surrounding_whitespace" :
             /^whsec_[A-Za-z0-9]+$/.test(signing) ? "signing_format" : "unexpected_format";
           console.info("truckcontrol_stripe_delivery_setup", { apiState, signingState });

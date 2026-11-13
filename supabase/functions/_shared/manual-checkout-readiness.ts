@@ -1,4 +1,5 @@
 import { manualStripeRuntimeAllowed } from "./subscription-stripe-runtime.ts";
+import { stripeServerKeyMode } from "./stripe-server-key.ts";
 
 /** Independent release switches plus native, account-specific approval. Read on each new checkout. */
 export function manualCheckoutReadiness(
@@ -14,7 +15,7 @@ export function manualCheckoutReadiness(
         env("TRUCKCONTROL_MANUAL_STRIPE_PIPELINE_ENABLED") !== "true" ||
         env("TRUCKCONTROL_MANUAL_STRIPE_SCHEMA_ACCEPTED") !== "true" ||
         !/^acct_[A-Za-z0-9]+$/.test(account) ||
-        !/^(sk|rk)_live_[A-Za-z0-9]+$/.test(env("STRIPE_SECRET_KEY") ?? "") ||
+        stripeServerKeyMode(env("STRIPE_SECRET_KEY")) !== "live" ||
         !/^whsec_[A-Za-z0-9]+$/.test(env("STRIPE_MANUAL_FISCAL_WEBHOOK_SECRET") ?? ""))
       return false;
     if (channel === "recurring" && !/^whsec_[A-Za-z0-9]+$/.test(env("STRIPE_RECURRING_WEBHOOK_SECRET") ?? ""))
