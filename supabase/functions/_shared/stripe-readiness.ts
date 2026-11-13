@@ -135,7 +135,7 @@ export async function inspectStripeReadiness(
   };
   if (!mode) return result;
   const get = async (path: string) => {
-    const response = await fetcher("https://api.stripe.com/v1/" + path, {
+    const response = await fetcher("https://api.stripe.com/" + path, {
       method: "GET",
       redirect: "error",
       signal: AbortSignal.timeout(8000),
@@ -152,7 +152,7 @@ export async function inspectStripeReadiness(
     return { status: 200, value: await providerObject(response) };
   };
   try {
-    const account = await get("account");
+    const account = await get("v1/account");
     result.account_checked = true;
     result.account_status = account.status;
     if (
@@ -166,15 +166,25 @@ export async function inspectStripeReadiness(
       result.payouts_enabled = account.value.payouts_enabled === true;
     }
     if (!result.expected_account) return result;
-    const hook = await get("webhook_endpoints/" + readinessEndpoint);
+    // The configured `we_` receiver is a Stripe v2 Event Destination, not a v1 webhook endpoint.
+    // Stripe normally redacts this URL unless the field is explicitly included.
+    const hook = await get(
+      "v2/core/event_destinations/" + readinessEndpoint +
+        "?include%5B%5D=webhook_endpoint.url",
+    );
     result.webhook_checked = true;
     result.webhook_status = hook.status;
     if (
-      hook.value?.object === "webhook_endpoint" &&
-      hook.value.livemode === true
+      hook.value?.object === "v2.core.event_destination" &&
+      hook.value.type === "webhook_endpoint" &&
+      hook.value.livemode === true &&
+      hook.value.event_payload === "snapshot" &&
+      Array.isArray(hook.value.events_from) &&
+      hook.value.events_from.length === 1 &&
+      hook.value.events_from[0] === "@self"
     ) {
       result.webhook_id_matches = hook.value.id === readinessEndpoint;
-      result.webhook_url_matches = hook.value.url === readinessUrl;
+      result.webhook_url_matches = hook.value.webhook_endpoint?.url === readinessUrl;
       result.webhook_disabled =
         hook.value.status === "disabled"
           ? true
@@ -182,7 +192,7 @@ export async function inspectStripeReadiness(
             ? false
             : null;
       result.webhook_api_version_matches =
-        hook.value.api_version === "2025-03-31.basil";
+        hook.value.snapshot_api_version === "2025-03-31.basil";
       result.webhook_events_match =
         Array.isArray(hook.value.enabled_events) &&
         JSON.stringify([...hook.value.enabled_events].sort()) ===
