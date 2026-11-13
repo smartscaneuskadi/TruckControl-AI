@@ -6,6 +6,7 @@ import {
   messageRef,
   parseMessageRef,
   validateDraft,
+  mailConnectorConsentVersion,
 } from "../supabase/functions/personal-mail/contract";
 import { createPersonalMailHandler } from "../supabase/functions/personal-mail/handler";
 import { createImapMailbox } from "../src/integrations/personal-mail/imap";
@@ -18,6 +19,10 @@ const config = {
   imapHost: "imap.porkbun.com",
   smtpHost: "smtp.porkbun.com",
 };
+const consent = {
+  version: mailConnectorConsentVersion,
+  accepted: true,
+} as const;
 function request(body: unknown, headers: Record<string, string> = {}) {
   return new Request("https://example.supabase.co/functions/v1/personal-mail", {
     method: "POST",
@@ -97,7 +102,12 @@ describe("conexión personal IMAP/SMTP", () => {
       [origin],
     );
     const response = await handler(
-      request({ organization_id: org, action: "verify", connection: config }),
+      request({
+        organization_id: org,
+        action: "verify",
+        connection: config,
+        consent,
+      }),
     );
     expect(response.status).toBe(401);
     expect(operate).not.toHaveBeenCalled();
@@ -115,21 +125,24 @@ describe("conexión personal IMAP/SMTP", () => {
       (await handler(request({}, { Origin: "https://other.example" }))).status,
     ).toBe(403);
     const response = await handler(
-      request({ organization_id: org, action: "verify", connection: config }),
+      request({
+        organization_id: org,
+        action: "verify",
+        connection: config,
+        consent,
+      }),
     );
     expect(response.status).toBe(502);
     expect(await response.json()).toEqual({ error: "unavailable" });
     expect(response.headers.get("Cache-Control")).toBe("no-store");
   });
   it("no declara conexión sin comprobar lectura y SMTP", async () => {
-    const invoke = vi
-      .fn()
-      .mockResolvedValue({
-        email: config.email,
-        reading: true,
-        sending: false,
-      });
-    const mailbox = createImapMailbox(config, org, invoke);
+    const invoke = vi.fn().mockResolvedValue({
+      email: config.email,
+      reading: true,
+      sending: false,
+    });
+    const mailbox = createImapMailbox(config, org, consent, invoke);
     await expect(mailbox.profile()).rejects.toThrow();
     mailbox.dispose();
   });
@@ -141,7 +154,7 @@ describe("conexión personal IMAP/SMTP", () => {
           resolve = r;
         }),
     );
-    const mailbox = createImapMailbox(config, org, invoke);
+    const mailbox = createImapMailbox(config, org, consent, invoke);
     const result = mailbox.profile();
     mailbox.dispose();
     resolve({ email: config.email, reading: true, sending: true });
@@ -154,7 +167,7 @@ describe("conexión personal IMAP/SMTP", () => {
   });
   it("no reintenta un envío incierto ni el mismo identificador", async () => {
     const invoke = vi.fn().mockRejectedValue(new Error("response lost"));
-    const mailbox = createImapMailbox(config, org, invoke);
+    const mailbox = createImapMailbox(config, org, consent, invoke);
     const draft = {
       to: "recipient@example.com",
       cc: "",

@@ -1,7 +1,14 @@
 import { MailError, validateMailDraft } from "./gmail";
 import type { Mailbox, MailDraft, MailMessage, MailSummary } from "./gmail";
-import { connectionConfig } from "../../../supabase/functions/personal-mail/contract";
-import type { MailConnection } from "../../../supabase/functions/personal-mail/contract";
+import {
+  connectionConfig,
+  connectionConsent,
+  mailConnectorConsentVersion,
+} from "../../../supabase/functions/personal-mail/contract";
+import type {
+  MailConnection,
+  MailConnectorConsent,
+} from "../../../supabase/functions/personal-mail/contract";
 import { getSupabaseClient } from "../supabase/client";
 export type { MailConnection };
 export type MailInvoker = (
@@ -29,6 +36,7 @@ export async function invokePersonalMail(
           "invalid",
           "too_large",
           "send_uncertain",
+          "consent_required",
         ].includes(value?.error)
       )
         throw new MailError(value.error);
@@ -41,8 +49,15 @@ export async function invokePersonalMail(
 export function createImapMailbox(
   input: MailConnection,
   organization: string,
+  acknowledgement: MailConnectorConsent,
   invoke: MailInvoker = invokePersonalMail,
 ): Mailbox & { dispose(): void } {
+  let consent: MailConnectorConsent;
+  try {
+    consent = connectionConsent(acknowledgement);
+  } catch {
+    throw new MailError("consent_required");
+  }
   let config: MailConnection | null = connectionConfig(input);
   const session = new AbortController();
   const attempted = new Set<string>();
@@ -57,6 +72,7 @@ export function createImapMailbox(
       {
         action,
         organization_id: organization,
+        consent: { ...consent },
         connection: { ...config },
         data,
       },
@@ -68,6 +84,8 @@ export function createImapMailbox(
   return {
     async profile(signal) {
       const r = await call("verify", {}, signal);
+      if (r.consent_version !== mailConnectorConsentVersion)
+        throw new MailError("consent_required");
       if (r.email !== config?.email || r.reading !== true || r.sending !== true)
         throw new MailError("unavailable");
       return String(r.email);

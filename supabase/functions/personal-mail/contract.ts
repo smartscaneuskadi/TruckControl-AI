@@ -5,10 +5,33 @@ export interface MailConnection {
   imapHost: string;
   smtpHost: string;
 }
+/** This optional connector has its own disclosure; registration terms keep their version. */
+export const mailConnectorConsentVersion = "2026-11-13" as const;
+export interface MailConnectorConsent {
+  version: typeof mailConnectorConsentVersion;
+  accepted: true;
+}
+export function connectionConsent(value: unknown): MailConnectorConsent {
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new ConnectionError("consent_required");
+  const consent = value as Record<string, unknown>;
+  if (
+    consent.version !== mailConnectorConsentVersion ||
+    consent.accepted !== true ||
+    Object.keys(consent).some((key) => !["version", "accepted"].includes(key))
+  )
+    throw new ConnectionError("consent_required");
+  return { version: mailConnectorConsentVersion, accepted: true };
+}
 export class ConnectionError extends Error {
   constructor(
     readonly code:
-      "invalid" | "denied" | "unavailable" | "too_large" | "send_uncertain",
+      | "invalid"
+      | "denied"
+      | "unavailable"
+      | "too_large"
+      | "send_uncertain"
+      | "consent_required",
   ) {
     super(code);
   }
