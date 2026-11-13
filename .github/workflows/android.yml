@@ -28,7 +28,26 @@ jobs:
           test -f "$ANDROID_HOME/platforms/android-36/android.jar"
           test -x "$ANDROID_HOME/build-tools/36.0.0/apksigner"
           test -x "$JAVA_HOME_21_X64/bin/javac"
-      - name: Verify pinned Gradle already installed in the official runner image
+      - name: Install approved Gradle 9.8.2 from a checksum-verified official distribution
+        shell: bash
+        run: |
+          set -euo pipefail
+          TRUCKCONTROL_GRADLE_ZIP="$RUNNER_TEMP/truckcontrol-gradle-9.8.2-bin.zip"
+          if [ ! -f "$TRUCKCONTROL_GRADLE_ZIP" ]; then
+            curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 --max-time 60 \
+              https://services.gradle.org/distributions/gradle-9.8.2-bin.zip \
+              --output "$TRUCKCONTROL_GRADLE_ZIP" || \
+            curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 --max-time 60 \
+              https://downloads.gradle.org/distributions/gradle-9.8.2-bin.zip \
+              --output "$TRUCKCONTROL_GRADLE_ZIP"
+          fi
+          printf '%s  %s\n' 21bd5da2de49b642904077f38c0efdc7778e92b3ed0889392dca61b97e389607 "$TRUCKCONTROL_GRADLE_ZIP" | sha256sum --check --strict
+          TRUCKCONTROL_GRADLE_ROOT="$RUNNER_TEMP/truckcontrol-gradle"
+          mkdir -p "$TRUCKCONTROL_GRADLE_ROOT"
+          unzip -q -o "$TRUCKCONTROL_GRADLE_ZIP" -d "$TRUCKCONTROL_GRADLE_ROOT"
+          test -x "$TRUCKCONTROL_GRADLE_ROOT/gradle-9.8.2/bin/gradle"
+          printf '%s\n' "$TRUCKCONTROL_GRADLE_ROOT/gradle-9.8.2/bin" >> "$GITHUB_PATH"
+      - name: Verify installed approved Gradle version
         shell: bash
         run: |
           set -euo pipefail
@@ -36,13 +55,13 @@ jobs:
           import os, re, shutil, subprocess
           binary = shutil.which("gradle")
           if not binary:
-              raise SystemExit("Pinned Gradle 9.8.2 is missing from the official runner")
+              raise SystemExit("Pinned Gradle 9.8.2 is missing from the job environment")
           env = os.environ.copy()
           env["JAVA_HOME"] = env["JAVA_HOME_21_X64"]
           version = subprocess.run([binary, "--version", "--console=plain"], check=True, capture_output=True, text=True, env=env).stdout
           if not re.search(r"^Gradle 9\.8\.2\s*$", version, re.MULTILINE):
               raise SystemExit("Installed Gradle differs from the approved 9.8.2 toolchain")
-          print("Verified official runner toolchain: Gradle 9.8.2 and Java 21")
+          print("Verified approved toolchain: Gradle 9.8.2 and Java 21")
           PY
       - name: Test release manifest policy against source contracts and rejected fixtures
         run: python3 -m unittest discover -s tests/python -p 'test_android_release_manifest.py'
