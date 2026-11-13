@@ -29,7 +29,7 @@ Los recuentos focalizados pueden compartir pruebas: **no sumarlos como total ún
 
 ## Bloqueos comerciales externos
 
-- Stripe: último diagnóstico Native STRIPE_SECRET_KEY unexpected_format. El conector no administra/recupera claves. Receptor we_1Ub5lBCWctKw8slHXmnq0PZd existente v2/snapshot/@self deshabilitado; URL no acreditada, no hay entrega firmada. No usar tokens de CLI/MCP como clave de backend ni adivinar/normalizar credenciales. Pagos permanecen desactivados.
+- Stripe: último diagnóstico Native STRIPE_SECRET_KEY unexpected_format. El conector no administra/recupera claves. Receptor we_1Ub5lBCWctKw8slHXmnq0PZd existente v2/snapshot/@self deshabilitado; URL exacta de truckcontrol-stripe-fiscal verificada mediante GET oficial con include, sin entrega firmada. No usar tokens de CLI/MCP como clave de backend ni adivinar/normalizar credenciales. Pagos permanecen desactivados.
 - Conectar un pago firmado real con licencia y tarea fiscal y probar conciliación/fallos. La aceptación sandbox anterior17/17 se conserva; no equivale a aceptación Native comercial.
 - GDTaller/TicketBAI manual ya confirmado por el titular: no pedir API o reconfirmar el modelo. Falta evidencia operativa completa de un PDF fiscal auténtico y su entrega privada; no inventarlo.
 - Gmail empresarial: credencial/verificación pública de Google y consentimiento real comprobable pendientes; la aceptación de correo personal del propietario se conserva.
