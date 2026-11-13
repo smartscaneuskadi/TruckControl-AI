@@ -1,6 +1,6 @@
 # Orden de eventos del ciclo de suscripción
 
-Propuesta local de 13/11/2026; no aplicada ni desplegada. La migración aditiva `20261113065440_subscription_snapshot_ordering.sql` fue creada con Supabase CLI oficial 3.0.0. Conserva las migraciones aplicadas y la identidad, permisos y modo invoker del RPC existente.
+Propuesta local de 13/11/2026; no aplicada ni desplegada. La migración aditiva `20261113185620_subscription_snapshot_ordering.sql` fue creada con Supabase CLI oficial 3.0.0. Conserva las migraciones aplicadas y la identidad, permisos y modo invoker del RPC existente.
 
 Stripe `event.created` tiene resolución de segundos. Dos eventos distintos del mismo segundo no prueban el orden de cancelación o reanudación; el ID del evento tampoco es una versión del estado.
 
