@@ -1,8 +1,16 @@
 # Mi correo — acceso personal sin aprobación de TruckControl
 
+## Alcance vigente de los conectores · información de 13/11/2026
+
+El recorrido **Gmail con Google** descrito abajo usa OAuth y llamadas directas desde el navegador; no pide contraseña en TruckControl. Desde Sites37 también existe **Correo mediante IMAP/SMTP**, incluido Gmail con contraseña de aplicación cuando el proveedor lo admite. En este segundo recorrido, cuenta, servidores, contraseña y contenido solicitado pasan por el backend de TruckControl en Supabase, mediante HTTPS y TLS hacia el proveedor. La contraseña vive en RAM del navegador hasta una hora y temporalmente en el servidor por petición; no se persiste en BD, registros de aplicación, WebStorage o copias offline. No se envía el correo a IA.
+
+La candidata de privacidad añade la información pública complementaria **2026-11-13** y una aceptación explícita por configuración y sesión. Cambiar cualquier dato de conexión retira la casilla; salir, cambiar usuario/empresa o recargar elimina la conexión temporal. Los envíos conservan su confirmación individual. Ver [Correo y sus conectores](MAIL_WORKSPACE.md) y [el alcance de esta actualización](MAIL_CONNECTOR_PRIVACY.md). No cambia la versión contractual de registro `2026-11-02`, sus recibos inmutables ni licencias/pruebas existentes. Es una descripción técnica; no acredita revisión jurídica externa ni aceptación de un buzón real.
+
+Las referencias inferiores a ausencia de contraseñas, adaptadores pendientes y acceso exclusivamente local describen **solo el recorrido OAuth Google original**, no el conector IMAP/SMTP vigente.
+
 Mi correo se introdujo en 0.5.12-rc.1 / v23 y se conserva en la entrega vigente. El ID Google está configurado y la entrada a la autorización oficial comprobada; el titular confirmó el 03/11 que lo ha probado y enviado correo real. Es una aceptación comunicada por el titular; la verificación pública de Google sigue pendiente. Consultar [entrega vigente](CURRENT_DELIVERY.md) para la publicación comprobada; no confundir pruebas con fixtures y autorización real de Google.
 
-## Cómo funciona
+## Cómo funciona Gmail con Google
 
 **Mi correo** es independiente del módulo **Correo y facturas**. Cada usuario con cuenta de empresa activa, también Básico y consulta, elige su propio Gmail/Google Workspace y da permiso directamente a Google. No solicita aprobación al superadministrador ni al administrador de la empresa. No cambia los permisos sobre datos empresariales: una cuenta suspendida o sin licencia no obtiene acceso a la aplicación por esta vía.
 
@@ -34,7 +42,7 @@ También deben estar habilitados Gmail API, los orígenes JavaScript que se usar
 
 ## Límites de esta entrega
 
-Solo Gmail/Google Workspace tiene adaptador directo. Outlook/Microsoft 365, Yahoo y servidores IMAP/SMTP siguen pendientes de sus adaptadores y autorizaciones; seleccionar una marca no concede acceso. El reenvío de facturas desde distintos proveedores continúa disponible. No se presenta como acceso completo a esos buzones.
+Gmail/Google Workspace conserva el adaptador OAuth directo del navegador. Yahoo y buzones compatibles ya disponen del conector IMAP/SMTP por backend descrito arriba; Microsoft 365/Outlook sigue necesitando su integración OAuth específica. Seleccionar una marca no concede acceso. El reenvío de facturas continúa separado.
 
 Se envía texto; todavía no se adjuntan archivos salientes ni se guardan/actualizan borradores en Google. Se pueden leer los borradores existentes. El texto que se está redactando se conserva solo en esa pantalla: no se debe cerrar, recargar o salir con trabajo sin guardar. La empresa y el correo necesitan conexión. No hay sincronización de correo offline ni lectura automática por IA en segundo plano.
 

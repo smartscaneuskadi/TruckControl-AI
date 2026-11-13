@@ -292,7 +292,6 @@
   {
     "key": "nav-link {0}",
     "contexts": [
-      "src/app/App.tsx:template",
       "src/app/App.tsx:template"
     ]
   },
@@ -373,7 +372,6 @@
   {
     "key": "DF",
     "contexts": [
-      "src/app/App.tsx:message",
       "src/app/App.tsx:message"
     ]
   },
@@ -872,7 +870,6 @@
   {
     "key": "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.",
     "contexts": [
-      "src/app/CompanyAccess.tsx:message",
       "src/app/CompanyAccess.tsx:message"
     ]
   },
@@ -1014,7 +1011,6 @@
   {
     "key": "Crear cuenta",
     "contexts": [
-      "src/app/CompanyAccess.tsx:message",
       "src/app/CompanyAccess.tsx:message"
     ]
   },
@@ -1358,7 +1354,6 @@
   {
     "key": "Espera a que termine la operación actual.",
     "contexts": [
-      "src/app/OperationsProvider.tsx:message",
       "src/app/OperationsProvider.tsx:message"
     ]
   },
@@ -1419,7 +1414,6 @@
   {
     "key": "La sesión de correo ha caducado. Vuelve a entrar con Google.",
     "contexts": [
-      "src/app/PersonalMailProvider.tsx:message",
       "src/app/PersonalMailProvider.tsx:message"
     ]
   },
@@ -1929,7 +1923,6 @@
   {
     "key": "Asistente de empresa",
     "contexts": [
-      "src/components/CompanyCopilot.tsx:attribute",
       "src/components/CompanyCopilot.tsx:attribute"
     ]
   },
@@ -1942,7 +1935,6 @@
   {
     "key": "Tu asistente por voz y texto",
     "contexts": [
-      "src/components/CompanyCopilot.tsx:text",
       "src/components/CompanyCopilot.tsx:text"
     ]
   },
@@ -2598,7 +2590,6 @@
   {
     "key": "Opciones de facturación de la empresa",
     "contexts": [
-      "src/components/CompanyFiscalSettings.tsx:attribute",
       "src/components/CompanyFiscalSettings.tsx:attribute"
     ]
   },
@@ -2611,7 +2602,6 @@
   {
     "key": "Facturación de tu empresa",
     "contexts": [
-      "src/components/CompanyFiscalSettings.tsx:text",
       "src/components/CompanyFiscalSettings.tsx:text"
     ]
   },
@@ -3339,7 +3329,6 @@
   {
     "key": "Sin vincular",
     "contexts": [
-      "src/components/DemoDocuments.tsx:text",
       "src/components/DemoDocuments.tsx:text"
     ]
   },
@@ -4241,7 +4230,6 @@
   {
     "key": "rotate({0} 86 82)",
     "contexts": [
-      "src/components/FleetInstruments.tsx:template",
       "src/components/FleetInstruments.tsx:template"
     ]
   },
@@ -4302,7 +4290,6 @@
   {
     "key": "km",
     "contexts": [
-      "src/components/FleetInstruments.tsx:text",
       "src/components/FleetInstruments.tsx:text"
     ]
   },
@@ -4662,7 +4649,6 @@
   {
     "key": "EUR",
     "contexts": [
-      "src/components/InvoiceRegister.tsx:message",
       "src/components/InvoiceRegister.tsx:message"
     ]
   },
@@ -5000,7 +4986,6 @@
   {
     "key": "ZodError",
     "contexts": [
-      "src/components/ManualSubscriptionInvoices.tsx:message",
       "src/components/ManualSubscriptionInvoices.tsx:message"
     ]
   },
@@ -5533,7 +5518,6 @@
   {
     "key": "Km contabilizados",
     "contexts": [
-      "src/components/OperatingReport.tsx:message",
       "src/components/OperatingReport.tsx:message"
     ]
   },
@@ -5547,7 +5531,6 @@
   {
     "key": "Viajes finalizados",
     "contexts": [
-      "src/components/OperatingReport.tsx:message",
       "src/components/OperatingReport.tsx:message"
     ]
   },
@@ -5560,7 +5543,6 @@
   {
     "key": "Litros repostados",
     "contexts": [
-      "src/components/OperatingReport.tsx:message",
       "src/components/OperatingReport.tsx:message"
     ]
   },
@@ -6415,7 +6397,6 @@
   {
     "key": "Razón social",
     "contexts": [
-      "src/components/SubscriptionBillingDetails.tsx:text",
       "src/components/SubscriptionBillingDetails.tsx:text"
     ]
   },
@@ -6428,7 +6409,6 @@
   {
     "key": "Domicilio fiscal",
     "contexts": [
-      "src/components/SubscriptionBillingDetails.tsx:text",
       "src/components/SubscriptionBillingDetails.tsx:text"
     ]
   },
@@ -6448,7 +6428,6 @@
   {
     "key": "Sin completar",
     "contexts": [
-      "src/components/SubscriptionBillingDetails.tsx:message",
       "src/components/SubscriptionBillingDetails.tsx:message"
     ]
   },
@@ -6480,7 +6459,6 @@
   {
     "key": "Sin permiso",
     "contexts": [
-      "src/components/TripFinanceDialog.tsx:message",
       "src/components/TripFinanceDialog.tsx:message"
     ]
   },
@@ -6634,7 +6612,6 @@
   {
     "key": "Apuntes registrados, pagados o pendientes",
     "contexts": [
-      "src/components/TripFinanceDialog.tsx:message",
       "src/components/TripFinanceDialog.tsx:message"
     ]
   },
@@ -6653,7 +6630,6 @@
   {
     "key": "Movimientos revisados por tu equipo",
     "contexts": [
-      "src/components/TripFinanceDialog.tsx:message",
       "src/components/TripFinanceDialog.tsx:message"
     ]
   },
@@ -7103,7 +7079,6 @@
   {
     "key": "Desactivar recepción",
     "contexts": [
-      "src/components/UniversalMailIntake.tsx:text",
       "src/components/UniversalMailIntake.tsx:text"
     ]
   },
@@ -7526,7 +7501,6 @@
   {
     "key": "AES-GCM",
     "contexts": [
-      "src/data/company-backup.ts:message",
       "src/data/company-backup.ts:message"
     ]
   },
@@ -7583,7 +7557,6 @@
   {
     "key": "La copia supera 20 MB. No se ha generado una copia parcial.",
     "contexts": [
-      "src/data/company-backup.ts:message",
       "src/data/company-backup.ts:message"
     ]
   },
@@ -8027,7 +8000,6 @@
   {
     "key": "PBKDF2",
     "contexts": [
-      "src/data/offline-vault.ts:message",
       "src/data/offline-vault.ts:message"
     ]
   },
@@ -8052,14 +8024,12 @@
   {
     "key": "La copia está bloqueada.",
     "contexts": [
-      "src/data/offline-vault.ts:message",
       "src/data/offline-vault.ts:message"
     ]
   },
   {
     "key": "No hay una copia para esta cuenta.",
     "contexts": [
-      "src/data/offline-vault.ts:message",
       "src/data/offline-vault.ts:message"
     ]
   },
@@ -8175,7 +8145,6 @@
   {
     "key": "Estación Demo",
     "contexts": [
-      "src/data/operations.ts:message",
       "src/data/operations.ts:message"
     ]
   },
@@ -8248,7 +8217,6 @@
   {
     "key": "El viaje ya no está disponible.",
     "contexts": [
-      "src/data/trip-finance-demo.ts:message",
       "src/data/trip-finance-demo.ts:message"
     ]
   },
@@ -8285,7 +8253,6 @@
   {
     "key": "La demostración pertenece a otra empresa.",
     "contexts": [
-      "src/data/tyres.ts:message",
       "src/data/tyres.ts:message"
     ]
   },
@@ -9358,7 +9325,6 @@
   {
     "key": "Remolque",
     "contexts": [
-      "src/domain/operation-fields.ts:label",
       "src/domain/operation-fields.ts:label"
     ]
   },
@@ -9395,7 +9361,6 @@
   {
     "key": "Finalizado",
     "contexts": [
-      "src/domain/operation-fields.ts:message",
       "src/domain/operation-fields.ts:message"
     ]
   },
@@ -9891,14 +9856,12 @@
   {
     "key": "INBOX",
     "contexts": [
-      "src/integrations/personal-mail/demo.ts:message",
       "src/integrations/personal-mail/demo.ts:message"
     ]
   },
   {
     "key": "UNREAD",
     "contexts": [
-      "src/integrations/personal-mail/demo.ts:message",
       "src/integrations/personal-mail/demo.ts:message"
     ]
   },
@@ -9935,7 +9898,6 @@
   {
     "key": "STARRED",
     "contexts": [
-      "src/integrations/personal-mail/demo.ts:message",
       "src/integrations/personal-mail/demo.ts:message"
     ]
   },
@@ -9948,7 +9910,6 @@
   {
     "key": "SENT",
     "contexts": [
-      "src/integrations/personal-mail/demo.ts:message",
       "src/integrations/personal-mail/demo.ts:message"
     ]
   },
@@ -9962,7 +9923,6 @@
   {
     "key": "TRASH",
     "contexts": [
-      "src/integrations/personal-mail/demo.ts:message",
       "src/integrations/personal-mail/demo.ts:message"
     ]
   },
@@ -10048,7 +10008,6 @@
   {
     "key": "Adjunto",
     "contexts": [
-      "src/integrations/personal-mail/gmail.ts:message",
       "src/integrations/personal-mail/gmail.ts:message"
     ]
   },
@@ -10068,7 +10027,6 @@
   {
     "key": "POST",
     "contexts": [
-      "src/integrations/personal-mail/gmail.ts:message",
       "src/integrations/personal-mail/gmail.ts:message"
     ]
   },
@@ -10436,7 +10394,6 @@
   {
     "key": "El resultado no corresponde a esta consulta.",
     "contexts": [
-      "src/integrations/supabase/copilot.ts:message",
       "src/integrations/supabase/copilot.ts:message"
     ]
   },
@@ -10461,28 +10418,24 @@
   {
     "key": "Tables",
     "contexts": [
-      "src/integrations/supabase/database.generated.ts:message",
       "src/integrations/supabase/database.generated.ts:message"
     ]
   },
   {
     "key": "Views",
     "contexts": [
-      "src/integrations/supabase/database.generated.ts:message",
       "src/integrations/supabase/database.generated.ts:message"
     ]
   },
   {
     "key": "Enums",
     "contexts": [
-      "src/integrations/supabase/database.generated.ts:message",
       "src/integrations/supabase/database.generated.ts:message"
     ]
   },
   {
     "key": "CompositeTypes",
     "contexts": [
-      "src/integrations/supabase/database.generated.ts:message",
       "src/integrations/supabase/database.generated.ts:message"
     ]
   },
@@ -10681,7 +10634,6 @@
   {
     "key": "Cache-Control",
     "contexts": [
-      "src/integrations/supabase/manual-fiscal-documents.ts:message",
       "src/integrations/supabase/manual-fiscal-documents.ts:message"
     ]
   },
@@ -10790,7 +10742,6 @@
   {
     "key": "Row",
     "contexts": [
-      "src/integrations/supabase/repository.ts:message",
       "src/integrations/supabase/repository.ts:message"
     ]
   },
@@ -10809,7 +10760,6 @@
   {
     "key": "Insert",
     "contexts": [
-      "src/integrations/supabase/repository.ts:message",
       "src/integrations/supabase/repository.ts:message"
     ]
   },
@@ -10924,7 +10874,6 @@
   {
     "key": "UTC",
     "contexts": [
-      "src/lib/format.ts:message",
       "src/lib/format.ts:message"
     ]
   },
@@ -13081,21 +13030,18 @@
   {
     "key": "Yahoo Mail",
     "contexts": [
-      "src/pages/MailWorkspace.tsx:text",
       "src/pages/MailWorkspace.tsx:text"
     ]
   },
   {
     "key": "Porkbun",
     "contexts": [
-      "src/pages/MailWorkspace.tsx:text",
       "src/pages/MailWorkspace.tsx:text"
     ]
   },
   {
     "key": "Otro proveedor IMAP/SMTP",
     "contexts": [
-      "src/pages/MailWorkspace.tsx:text",
       "src/pages/MailWorkspace.tsx:text"
     ]
   },
@@ -14871,7 +14817,6 @@
   {
     "key": "Bases sin IVA",
     "contexts": [
-      "src/pages/Reports.tsx:message",
       "src/pages/Reports.tsx:message"
     ]
   },
@@ -15449,7 +15394,6 @@
   {
     "key": "Retirar acceso",
     "contexts": [
-      "src/pages/Team.tsx:text",
       "src/pages/Team.tsx:text"
     ]
   },
@@ -15582,7 +15526,6 @@
   {
     "key": "Medida",
     "contexts": [
-      "src/pages/Tyres.tsx:message",
       "src/pages/Tyres.tsx:message"
     ]
   },
@@ -17222,6 +17165,66 @@
     "key": "La configuración del receptor de pagos no coincide con la prevista para TruckControl.",
     "contexts": [
       "src/integrations/supabase/stripe-readiness.ts:message"
+    ]
+  },
+  {
+    "key": "Correo personal mediante IMAP/SMTP",
+    "contexts": [
+      "src/domain/mail-privacy.ts:title"
+    ]
+  },
+  {
+    "key": "Con IMAP/SMTP, la dirección, el usuario, la contraseña del buzón o de aplicación, los servidores y los mensajes que solicitas leer, gestionar o enviar pasan por el backend de TruckControl en Supabase. Se transmiten por HTTPS a TruckControl y mediante TLS al proveedor de correo que elijas.",
+    "contexts": [
+      "src/domain/mail-privacy.ts:summary"
+    ]
+  },
+  {
+    "key": "La contraseña se mantiene en memoria del navegador durante la conexión, como máximo una hora, y en memoria temporal del servidor durante cada petición. Este conector no guarda contraseñas ni contenido del correo en la base de datos, registros de aplicación, WebStorage o copias offline, ni los envía a la IA.",
+    "contexts": [
+      "src/domain/mail-privacy.ts:retention"
+    ]
+  },
+  {
+    "key": "Puedes retirar esta autorización desconectando el buzón. Cerrar sesión, cambiar de usuario o empresa, recargar o salir de la página también elimina la conexión temporal. Esto no borra mensajes ni revoca una contraseña de aplicación en tu proveedor; puedes revocarla desde la seguridad de esa cuenta. Los mensajes enviados y sus copias permanecen en el proveedor de correo.",
+    "contexts": [
+      "src/domain/mail-privacy.ts:withdrawal"
+    ]
+  },
+  {
+    "key": "Gmail con Google utiliza su autorización OAuth y llama a Google directamente desde el navegador. Gmail con contraseña de aplicación utiliza el recorrido IMAP/SMTP descrito aquí. La importación empresarial de facturas es una función separada; conectar correo personal no la activa ni activa IA.",
+    "contexts": [
+      "src/domain/mail-privacy.ts:distinction"
+    ]
+  },
+  {
+    "key": "Autorizo a TruckControl a conectar este buzón mediante su backend para leer, gestionar y enviar mis mensajes, tras leer la información de privacidad de IMAP/SMTP.",
+    "contexts": [
+      "src/domain/mail-privacy.ts:consentLabel"
+    ]
+  },
+  {
+    "key": "Información de privacidad de IMAP/SMTP ·",
+    "contexts": [
+      "src/components/MailConnectorDisclosure.tsx:text"
+    ]
+  },
+  {
+    "key": "Privacidad de IMAP/SMTP y retirada de la autorización",
+    "contexts": [
+      "src/components/MailConnectorDisclosure.tsx:text"
+    ]
+  },
+  {
+    "key": "Actualiza TruckControl y acepta la información de privacidad de IMAP/SMTP antes de volver a conectar este buzón.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:error"
+    ]
+  },
+  {
+    "key": "Tus contraseñas y mensajes no se guardan en copias offline. Los datos de acceso se envían por HTTPS al backend de TruckControl en Supabase. La contraseña permanece en memoria del navegador hasta una hora y en memoria temporal del servidor durante cada petición.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
     ]
   }
 ]

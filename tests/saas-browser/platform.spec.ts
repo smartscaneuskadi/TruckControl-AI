@@ -5238,6 +5238,7 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
   let reject = false;
   await page.route("**/functions/v1/personal-mail", async (route) => {
     const body = route.request().postDataJSON();
+    expect(body.consent).toEqual({ version: "2026-11-13", accepted: true });
     const email = body.connection.email;
     calls.push({ action: body.action, email });
     const headers = {
@@ -5268,7 +5269,7 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
     };
     const data =
       body.action === "verify"
-        ? { email, reading: true, sending: true }
+        ? { email, reading: true, sending: true, consent_version: "2026-11-13" }
         : body.action === "list"
           ? { messages: [message], next: null }
           : body.action === "read"
@@ -5297,15 +5298,18 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
   await expect(page.locator("main iframe")).toHaveCount(0);
   const pages = context.pages().length;
   async function fill(email: string) {
+    const consent = page.getByLabel("Autorizo a TruckControl a conectar este buzón", { exact: false });
+    await expect(consent).not.toBeChecked();
     await page.getByLabel("Correo electrónico", { exact: true }).fill(email);
     await page
       .getByLabel("Contraseña del buzón o de aplicación", { exact: true })
       .fill("app-password-ficticia-no-real");
-    await page
-      .getByLabel("Autorizo a TruckControl a conectar este buzón", {
-        exact: false,
-      })
-      .check();
+    await consent.check();
+    // Accepting one configuration must not cover a changed server or credential.
+    await page.getByLabel("Servidor de salida SMTP", { exact: false }).fill("smtp.changed.example.com");
+    await expect(consent).not.toBeChecked();
+    await page.getByLabel("Servidor de salida SMTP", { exact: false }).fill("smtp.porkbun.com");
+    await consent.check();
     await page
       .getByRole("button", { name: "Conectar y verificar buzón", exact: true })
       .click();
@@ -5400,6 +5404,57 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
   ).toHaveCount(0);
 });
 
+
+test("IMAP/SMTP: la salida de sesión limpia la aceptación y descarta una verificación tardía", async ({ page }) => {
+  await fixtures(page);
+  let release!: () => void;
+  let returned = false;
+  const wait = new Promise<void>((resolve) => { release = resolve; });
+  await page.route("**/functions/v1/personal-mail", async (route) => {
+    const body = route.request().postDataJSON();
+    expect(body).toMatchObject({
+      action: "verify",
+      consent: { version: "2026-11-13", accepted: true },
+      connection: {
+        email: "late@example.invalid",
+        username: "late@example.invalid",
+        password: "synthetic-late-password",
+        imapHost: "imap.porkbun.com",
+        smtpHost: "smtp.porkbun.com",
+      },
+    });
+    await wait;
+    try {
+      await route.fulfill({
+        headers: { "Access-Control-Allow-Origin": "*" },
+        json: { email: "late@example.invalid", reading: true, sending: true, consent_version: "2026-11-13" },
+      });
+    } catch {
+      // The production exit event aborts the in-flight browser request.
+    } finally {
+      returned = true;
+    }
+  });
+  await login(page, "customer@example.com");
+  await page.evaluate(() => { location.hash = "/mailbox"; });
+  await page.getByLabel("Correo electrónico", { exact: true }).fill("late@example.invalid");
+  await page.getByLabel("Contraseña del buzón o de aplicación", { exact: true }).fill("synthetic-late-password");
+  const consent = page.getByLabel("Autorizo a TruckControl a conectar este buzón", { exact: false });
+  await expect(consent).not.toBeChecked();
+  await consent.check();
+  const pending = page.waitForRequest("**/functions/v1/personal-mail");
+  await page.getByRole("button", { name: "Conectar y verificar buzón", exact: true }).click();
+  await pending;
+  // Logout, user/company changes and page exit all use this production cleanup.
+  await page.evaluate(() => window.dispatchEvent(new Event("truckcontrol:session-exit")));
+  await expect(consent).not.toBeChecked();
+  await expect(page.getByLabel("Correo electrónico", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("Contraseña del buzón o de aplicación", { exact: true })).toHaveValue("");
+  release();
+  await expect.poll(() => returned).toBe(true);
+  await expect(page.getByRole("navigation", { name: "Correos conectados" })).toHaveCount(0);
+  expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toMatch(/synthetic-late-password|late@example.invalid/);
+});
 
 // Provider transport is synthetic here; native readiness requires the owner's verified session.
 const stripeReadinessFixture = () => ({

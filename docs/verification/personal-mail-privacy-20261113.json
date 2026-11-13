@@ -1,0 +1,70 @@
+{
+  "checked_at": "2026-11-13T07:40:59.834505+00:00",
+  "status": "local_candidate_not_published",
+  "base_commit": "dfe56b71b2693e66ce7df17395d7989671fb9425",
+  "branch": "fix/personal-mail-privacy-20261113",
+  "scope": "Supplemental technical privacy disclosure and explicit consent for optional IMAP/SMTP only",
+  "supplement_version": "2026-11-13",
+  "global_registration_legal_version_unchanged": "2026-11-02",
+  "historical_receipts_licences_trials_unchanged": true,
+  "google_browser_oauth_unchanged": true,
+  "checks": {
+    "focused_unit_tests": {
+      "passed": 41,
+      "failed": 0,
+      "files": [
+        "tests/personal-mail-connectors.test.ts",
+        "tests/personal-mail-privacy.test.ts",
+        "tests/interface-languages.test.ts"
+      ]
+    },
+    "app_typecheck": "passed",
+    "build": "passed",
+    "edge_handler_strict_typecheck": "passed",
+    "retained_original_tests": 64,
+    "retained_file_hashes_verified": 11,
+    "git_diff_check": "passed",
+    "browser_tests": {
+      "new_cases_listed": 2,
+      "executed": 0,
+      "reason": "No browser launch authorized for this task"
+    },
+    "redundant_full_suite": {
+      "status": "interrupted_no_pass_claim",
+      "final_counts_available": false,
+      "observed_failure_marker": true,
+      "context": "Parent stopped redundant concurrent full regressions after shared CPU contention; original process and tool session are no longer available. No timeout or assertion changes. Parent will run one integrated regression."
+    }
+  },
+  "runtime_contract": {
+    "missing_or_unsupported_consent_status": 428,
+    "safe_error": "consent_required",
+    "before_credentials_and_transport": true,
+    "verify_response_requires_consent_version": true,
+    "persisted_consent": false
+  },
+  "rollout": "Backend first, then exact frontend. Cached IMAP/SMTP clients must update and explicitly accept the supplement. No global registration/billing acceptance requirement.",
+  "preserved": {
+    "sites_production": 41,
+    "demo": 6,
+    "applied_migrations": 66,
+    "ai_usd_per_month": 10,
+    "ai_calls_per_company": 100,
+    "payments_enabled": false
+  },
+  "external_acceptance": {
+    "mailbox_or_delivery_proven": false,
+    "google_public_approval_proven": false,
+    "external_legal_approval_proven": false
+  },
+  "safety": {
+    "deployed": false,
+    "pushed": false,
+    "live_mail_calls": 0,
+    "live_google_calls": 0,
+    "live_ai_calls": 0,
+    "browser_runs": 0,
+    "new_costs": 0,
+    "new_accounts_or_credentials": false
+  }
+}
