@@ -24,6 +24,10 @@ contracts_spec = importlib.util.spec_from_file_location("subscription_contracts"
 assert contracts_spec and contracts_spec.loader
 contracts = importlib.util.module_from_spec(contracts_spec)
 contracts_spec.loader.exec_module(contracts)
+unlinked_spec = importlib.util.spec_from_file_location("unlinked_contracts", ROOT / "tests/postgres/unlinked_contracts.py")
+assert unlinked_spec and unlinked_spec.loader
+unlinked_contracts = importlib.util.module_from_spec(unlinked_spec)
+unlinked_spec.loader.exec_module(unlinked_contracts)
 q, sql, value, check = pg.quote, pg.sql, pg.value, pg.check
 ACCOUNT = "acct_IncidentPostgres"
 ADMIN = "fd110000-0000-4000-8000-000000000001"
@@ -48,7 +52,7 @@ def admin(statement):
   +q(ADMIN)+",true);perform set_config('request.jwt.claims',"+q(claims)+",true);end $claims$;"+statement)
 def result(statement,database=pg.SOURCE):
  return value("begin;"+statement+";commit;",database)
-def create_payment(n, monthly=False):
+def create_payment(n, monthly=False, *, commit_payment=True):
  registration={"truckcontrol_registration":{"contact_name":"Synthetic operator","company_name":"Synthetic PG company "+str(n),
   "tax_id":"SYNTHETIC-PG-INCIDENT-"+str(n),"address":"Synthetic isolated address 123",
   "phone":"+12025557"+str(100+n),"requested_plan":"limited"}}
@@ -69,8 +73,8 @@ def create_payment(n, monthly=False):
    "invoice_period_start":pg.REPORT["epoch"]-30*86400,"invoice_period_end":pg.REPORT["epoch"],
    "subscription_current_period_end":pg.REPORT["epoch"],"unit_amount":36300,"subscription_state":"active",
    "cancel_at_period_end":False,"billing_reason":"subscription_create"})
- paid=result(service(rpc("tc_manual_subscription_apply_payment",q("subscription_invoice" if monthly else "initial_payment"),q(ACCOUNT),js(data))))
- return {"n":n,"data":data,"task":paid["task_id"],"monthly":monthly}
+ paid=result(service(rpc("tc_manual_subscription_apply_payment",q("subscription_invoice" if monthly else "initial_payment"),q(ACCOUNT),js(data)))) if commit_payment else None
+ return {"n":n,"data":data,"task":paid["task_id"] if paid else None,"monthly":monthly}
 def observation(payment, suffix="A"):
  n=payment["n"];monthly=payment["monthly"];data=payment["data"]
  return {"event_id":"evt_IncidentPGRefund"+str(n)+suffix,"event_type":"refund.created",
@@ -166,6 +170,7 @@ def main():
  # The new migrations use the same verified service and will be included in
  # the existing complete logical restore below, with no provider access.
  contracts.run(pg, SimpleNamespace(**globals()))
+ unlinked_contracts.run(pg, SimpleNamespace(**globals()))
  # Actual dump/restore AFTER the new ledger and reviews exist.
  before=pg.database_fingerprint(pg.SOURCE)
  dump=pg.run(["docker","exec",pg.CONTAINER,"pg_dump","-U","postgres","-d",pg.SOURCE,"-Fc","--no-owner"]).stdout

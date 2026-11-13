@@ -35,6 +35,7 @@ import { ProviderSetup } from "../components/ProviderSetup";
 import { FiscalAdminSettings } from "../components/FiscalAdminSettings";
 import { ManualSubscriptionInvoices } from "../components/ManualSubscriptionInvoices";
 import { SubscriptionIncidents } from "../components/SubscriptionIncidents";
+import { UnlinkedIncidentReview } from "../components/UnlinkedIncidentReview";
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
 
 export function AdminConsole({
@@ -337,6 +338,7 @@ export function AdminConsole({
             />
           )}
           {tab === "subscription_incidents" && (
+            <>
             <SubscriptionIncidents
               key={userId}
               userId={userId}
@@ -345,6 +347,10 @@ export function AdminConsole({
                 setTab("subscription_invoices");
               }}
             />
+            <UnlinkedIncidentReview key={userId + ":unlinked"} userId={userId} onOpenTask={(taskId) => {
+              setFiscalTaskId(taskId); setTab("subscription_invoices");
+            }} />
+            </>
           )}
           {tab === "fiscal" && (
             <FiscalAdminSettings onSaved={() => setRevision((n) => n + 1)} />

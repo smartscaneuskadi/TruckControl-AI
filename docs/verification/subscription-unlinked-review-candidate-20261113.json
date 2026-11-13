@@ -1,0 +1,54 @@
+{
+  "contract": "subscription-unlinked-review-candidate-v1",
+  "date_utc": "2026-11-13",
+  "base_commit": "19e5a561dcca5fc9cfe9b8ef3eda5ba9b2db9d85",
+  "branch": "feat/stripe-unlinked-review-20261113",
+  "state": "local_candidate_not_applied_or_deployed",
+  "migration": "20261113070406_subscription_unlinked_incident_review.sql",
+  "migration_created_by": "Official Supabase CLI 3.0.0 migration new",
+  "existing_applied_sql_edited": false,
+  "new_capability_default": "OFF",
+  "feature_flag": "TRUCKCONTROL_STRIPE_UNLINKED_REVIEW_SCHEMA_ACCEPTED",
+  "scope": {
+    "canonical_owned_checkout_required": true,
+    "durable_atomic_receipt_required_before_http_2xx": true,
+    "review_and_link_states_independent": true,
+    "auto_link_from_actual_service_role_paid_receipt": true,
+    "link_evidence": ["actual_task_id", "actual_receipt_event_id", "queued_canonical_event_id"],
+    "ambiguous_or_contradictory_identity": "keep_pending_without_blocking_actual_receipt",
+    "payment_or_license_or_fiscal_task_creation_from_review": false,
+    "raw_provider_bodies_or_customer_pii_stored": false,
+    "early_fraud_warning_support": false
+  },
+  "validation": {
+    "earlier_iteration_before_auto_link_trigger": {
+      "seven_targeted_suites": "154/154 passed; not final-candidate acceptance",
+      "runtime_and_client_subset": "35/35 passed",
+      "isolated_original_recurring_suite": "13/13 passed with unchanged 30s beforeAll",
+      "typecheck": "passed before final link DTO/trigger extension",
+      "build": "passed in /tmp before final link DTO/trigger extension"
+    },
+    "final_candidate": {
+      "new_unit_sql_runtime_client_cases_prepared": 59,
+      "browser_cases_prepared": 6,
+      "unit_sql_checks": "pending final completion; execution congested",
+      "typecheck_build": "pending; own repeated build/type processes cancelled to free CPU",
+      "browser": "pending; local preview startup did not complete",
+      "native_two_connection_races": "pending Root isolated PostgreSQL CI; never inferred from PGlite",
+      "full_exact_head_ci": "pending Root integration"
+    },
+    "historical_checks": {
+      "protected_test_file_hashes": "11 unchanged",
+      "historical_sql_and_receipts": "preserved; no fixture-loader overlay or historical assertion changes"
+    }
+  },
+  "limits": {
+    "remote_ddl_or_deployment": 0,
+    "account_or_customer_or_secret_reads": 0,
+    "real_payment_or_refund_or_invoice_or_email_operations": 0,
+    "new_ai_calls": 0,
+    "new_purchases": 0,
+    "provider_access": "public Stripe documentation only; canonical account/payment transports in tests are synthetic",
+    "known_real_sandbox_renewal_and_recovery_acceptance": "preserved without repeating"
+  }
+}
