@@ -122,6 +122,10 @@ export interface Database {
         Args: { p_action: string; p_case_id?: string | null; p_expected?: number | null; p_operation_id?: string | null; p_data?: Json; p_after?: string | null };
         Returns: Json;
       };
+      tc_admin_subscription_unlinked: {
+        Args: { p_action: string; p_case_id?: string | null; p_expected?: number | null; p_operation_id?: string | null; p_data?: Json; p_after?: string | null };
+        Returns: Json;
+      };
       tc_admin_manual_subscription_invoices: {
         Args: {
           p_action: string;
