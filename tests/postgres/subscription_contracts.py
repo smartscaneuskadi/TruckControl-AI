@@ -11,7 +11,7 @@ import json
 import os
 import re
 
-DISPUTE_MIGRATION = "20261113064846_subscription_dispute_id_prefix.sql"
+DISPUTE_MIGRATION = "20261113084134_subscription_dispute_id_prefix.sql"
 ORDERING_MIGRATION = "20261113065440_subscription_snapshot_ordering.sql"
 LOCAL_LABEL = "subscription-ordering-20261113"
 EXTERNAL_CREDENTIALS = (
