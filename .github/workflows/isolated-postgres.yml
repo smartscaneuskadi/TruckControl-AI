@@ -9,6 +9,7 @@ on:
       - "scripts/verify-financial-incidents-postgres.py"
       - "scripts/recovery_backup.py"
       - "tests/python/test_recovery_backup.py"
+      - "tests/python/test_subscription_postgres_scope.py"
       - "tests/postgres/**"
       - "supabase/migrations/**"
   pull_request:
@@ -18,6 +19,7 @@ on:
       - "scripts/verify-financial-incidents-postgres.py"
       - "scripts/recovery_backup.py"
       - "tests/python/test_recovery_backup.py"
+      - "tests/python/test_subscription_postgres_scope.py"
       - "tests/postgres/**"
       - "supabase/migrations/**"
 
@@ -51,7 +53,9 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate harness syntax
-        run: python3 -m py_compile scripts/verify-isolated-postgres.py scripts/verify-financial-incidents-postgres.py
+        run: python3 -m py_compile scripts/verify-isolated-postgres.py scripts/verify-financial-incidents-postgres.py tests/postgres/subscription_contracts.py
+      - name: Validate disposable local target isolation without Docker or SQL
+        run: python3 -m unittest discover -s tests/python -p 'test_subscription_postgres_scope.py'
       - name: Migrations, two connections, session revocation and logical restore
         env:
           TRUCKCONTROL_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
