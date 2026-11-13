@@ -1,4 +1,5 @@
 import { verifyStripeSignature } from "../truckcontrol-billing/handler.ts";
+import { stripeServerKeyMode } from "./stripe-server-key.ts";
 import { StripeReconciliationError, type StripeReconciliationConfig } from "./subscription-stripe-reconciliation.ts";
 import { stripeEventMatchesAccount } from "./stripe-event-scope.ts";
 
@@ -66,9 +67,7 @@ export async function canonicalStripeEnvelope(
   try {
     if (new TextEncoder().encode(raw).byteLength > 65536 || !Number.isFinite(now) ||
         !stripeId(config.expectedAccountId, "acct") || !["test", "live"].includes(config.mode) ||
-        !/^(sk|rk)_(test|live)_[A-Za-z0-9]+$/.test(config.stripeKey) ||
-        !(config.stripeKey.startsWith((config.mode === "live" ? "sk_live_" : "sk_test_")) ||
-          config.stripeKey.startsWith((config.mode === "live" ? "rk_live_" : "rk_test_"))) ||
+        stripeServerKeyMode(config.stripeKey) !== config.mode ||
         !config.webhookSecret) return fail("configuration_unavailable");
     if (!await verifyStripeSignature(raw, signature, config.webhookSecret, now))
       return fail("invalid_signature");

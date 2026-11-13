@@ -7,7 +7,7 @@ export const financialStamp = Math.floor(Date.now() / 1000);
 export const financialAccount = "acct_FinancialSynthetic";
 export const financialQuery = "invoice_payments?payment%5Btype%5D=payment_intent&payment%5Bpayment_intent%5D=pi_FinancialOriginal&status=paid&limit=2";
 export const financialConfig: StripeReconciliationConfig = {
-  mode: "test", expectedAccountId: financialAccount, stripeKey: "rk_test_fixture",
+  mode: "test", expectedAccountId: financialAccount, stripeKey: "rk_test_synthetic_financial_fixture",
   webhookSecret: "synthetic-financial-webhook-only", now: financialStamp * 1000,
 };
 export function financialSignature(raw: string, at = financialStamp) {

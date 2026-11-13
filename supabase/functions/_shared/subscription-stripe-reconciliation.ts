@@ -1,4 +1,5 @@
 import { isUuid } from "./invoice.ts";
+import { stripeServerKeyMode } from "./stripe-server-key.ts";
 import { verifyStripeSignature } from "../truckcontrol-billing/handler.ts";
 import { stripeEventMatchesAccount } from "./stripe-event-scope.ts";
 
@@ -93,9 +94,7 @@ export async function reconcileStripeManualInvoicePayment(
     if (new TextEncoder().encode(raw).byteLength > 65536 ||
         !Number.isFinite(now) || !id(config.expectedAccountId, "acct") ||
         config.mode !== "test" && config.mode !== "live" ||
-        !/^(sk|rk)_(test|live)_[A-Za-z0-9]+$/.test(config.stripeKey) ||
-        !config.stripeKey.startsWith(config.mode === "live" ? "sk_live_" : "sk_test_") &&
-        !config.stripeKey.startsWith(config.mode === "live" ? "rk_live_" : "rk_test_") ||
+        stripeServerKeyMode(config.stripeKey) !== config.mode ||
         !config.webhookSecret) return fail("configuration_unavailable");
     if (!await verifyStripeSignature(raw, signature, config.webhookSecret, now))
       return fail("invalid_signature");

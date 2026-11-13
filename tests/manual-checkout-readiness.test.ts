@@ -10,7 +10,7 @@ const readyEnv: Record<string, string> = {
   BILLING_INVOICING_VERIFIED: "true",
   TRUCKCONTROL_MANUAL_STRIPE_PIPELINE_ENABLED: "true",
   TRUCKCONTROL_MANUAL_STRIPE_SCHEMA_ACCEPTED: "true",
-  STRIPE_SECRET_KEY: "rk_live_synthetic",
+  STRIPE_SECRET_KEY: "rk_live_synthetic_checkout_fixture",
   STRIPE_MANUAL_FISCAL_WEBHOOK_SECRET: "whsec_synthetic",
 };
 
