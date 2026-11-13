@@ -68,7 +68,12 @@ describe("internal Stripe readiness inspection", () => {
     expect(data.payment_or_customer_mutations).toBe(0);
     expect(fetcher.mock.calls.map((x) => String(x[0]))).toEqual([
       "https://api.stripe.com/v1/account",
-      "https://api.stripe.com/v2/core/event_destinations/" + readinessEndpoint,
+      "https://api.stripe.com/v2/core/event_destinations/" + readinessEndpoint +
+        "?include%5B%5D=webhook_endpoint.url",
+    ]);
+    const destination = new URL(String(fetcher.mock.calls[1][0]));
+    expect([...destination.searchParams]).toEqual([
+      ["include[]", "webhook_endpoint.url"],
     ]);
     for (const [, options] of fetcher.mock.calls) {
       expect(options?.method).toBe("GET");

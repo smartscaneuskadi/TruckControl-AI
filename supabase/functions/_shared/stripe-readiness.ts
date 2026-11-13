@@ -126,7 +126,11 @@ export async function inspectStripeReadiness(
     }
     if (!result.expected_account) return result;
     // The configured `we_` receiver is a Stripe v2 Event Destination, not a v1 webhook endpoint.
-    const hook = await get("v2/core/event_destinations/" + readinessEndpoint);
+    // Stripe normally redacts this URL unless the field is explicitly included.
+    const hook = await get(
+      "v2/core/event_destinations/" + readinessEndpoint +
+        "?include%5B%5D=webhook_endpoint.url",
+    );
     result.webhook_checked = true;
     result.webhook_status = hook.status;
     if (
