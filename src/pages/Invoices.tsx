@@ -30,6 +30,8 @@ import {
   resolveMailPeriod,
 } from "../../supabase/functions/_shared/mail-period";
 import type { ReceivedPeriod } from "../../supabase/functions/_shared/mail-period";
+import { requestedInvoiceMailPeriod } from "../domain/invoice-mail-period";
+import type { InvoiceMailPreset } from "../domain/invoice-mail-period";
 import type { ParsedMail } from "../../supabase/functions/_shared/mail.ts";
 
 const demoEntryId = "b1000000-0000-4000-8000-000000000001";
@@ -82,6 +84,8 @@ export function Invoices() {
   >([]);
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState("");
+  const [gmailOperationError, setGmailOperationError] = useState("");
+  const [gmailClientRejected, setGmailClientRejected] = useState(false);
   const [operationBusy, setBusy] = useState(false);
   const [authorizing, setAuthorizing] = useState(false);
   const busy = operationBusy || authorizing;
@@ -93,6 +97,7 @@ export function Invoices() {
   const [mailPeriod, setMailPeriod] = useState<ReceivedPeriod>(() =>
     presetReceivedPeriod(),
   );
+  const [mailPreset, setMailPreset] = useState<InvoiceMailPreset>("30d");
   const [syncPreview, setSyncPreview] = useState<
     (ReceivedPeriod & { scope: string }) | null
   >(null);
@@ -110,13 +115,16 @@ export function Invoices() {
     status.received_period_policy.time_zone === mailPeriodPolicy.time_zone;
   let periodValid = true;
   try {
-    resolveMailPeriod(mailPeriod);
+    if (mailPreset === "custom") resolveMailPeriod(mailPeriod);
   } catch {
     periodValid = false;
   }
   useEffect(() => {
     setMailPeriod(presetReceivedPeriod());
+    setMailPreset("30d");
     setSyncPreview(null);
+    setGmailOperationError("");
+    setGmailClientRejected(false);
   }, [org, access.user?.id]);
   const [callback, setCallback] = useState(readGmailCallback);
   useEffect(() => {
@@ -282,6 +290,7 @@ export function Invoices() {
         const checked = resolveMailPeriod(selectedPeriod ?? mailPeriod);
         chosen = { from: checked.from, to: checked.to };
       } catch {
+        setSyncPreview(null);
         setError(
           "El período debe estar dentro de los últimos 12 meses y terminar como máximo hoy.",
         );
@@ -292,6 +301,7 @@ export function Invoices() {
     operationLock.current = true;
     setBusy(true);
     setError("");
+    setGmailOperationError("");
     if (action === "start" || action === "disconnect") setCallbackError("");
     try {
       const { data, error } = await client.functions.invoke<{
@@ -307,14 +317,23 @@ export function Invoices() {
           ...(chosen ? { received_period: chosen } : {}),
         },
       });
-      if (error || data?.error)
+      // A failed sync can revoke a grant or save some originals before failing.
+      // Reconcile authorized state without erasing the separate operation error.
+      if (action === "sync") setRevision((n) => n + 1);
+      if (error || data?.error) {
+        const code = await gmailFailureCode(data, error);
+        if (code === "google_client_rejected") setGmailClientRejected(true);
         throw new Error(
           action === "start"
-            ? gmailFailureMessage(await gmailFailureCode(data, error))
+            ? gmailFailureMessage(code)
             : action === "disconnect"
               ? "No se ha podido confirmar la revocación en Google. La conexión no se ha marcado como desconectada. Vuelve a intentarlo."
-              : "No se ha podido completar la operación de Gmail. Revisa la conexión e inténtalo de nuevo.",
+              : code === "google_client_rejected" ||
+                  code === "gmail_reauthorization_required"
+                ? gmailFailureMessage(code)
+                : "No se ha podido completar la operación de Gmail. Revisa la conexión e inténtalo de nuevo.",
         );
+      }
       if (action === "start") {
         const url = new URL(data?.url ?? "");
         if (
@@ -324,9 +343,26 @@ export function Invoices() {
           throw new Error(
             "No se ha recibido una autorización válida de Google.",
           );
+        setGmailClientRejected(false);
         window.location.assign(url.href);
       } else {
-        setRevision((n) => n + 1);
+        if (action === "sync") {
+          const imported = data?.imported;
+          if (
+            typeof imported !== "number" ||
+            !Number.isInteger(imported) ||
+            imported < 0 ||
+            imported > 10 ||
+            typeof data?.has_more !== "boolean"
+          )
+            throw new Error(
+              "No se ha podido completar la operación de Gmail. Revisa la conexión e inténtalo de nuevo.",
+            );
+          setGmailClientRejected(false);
+        } else {
+          setRevision((n) => n + 1);
+          setGmailClientRejected(false);
+        }
         setDisconnect(false);
         notify(
           action === "sync"
@@ -334,15 +370,30 @@ export function Invoices() {
             : "Gmail desconectado de esta empresa.",
         );
         if (data?.failures)
-          setError(
+          setGmailOperationError(
             `${data.failures} adjuntos no se han podido guardar. Puedes volver a importar; las facturas ya guardadas no se duplicarán.`,
           );
       }
     } catch (e) {
-      setError(errorMessage(e));
+      setGmailOperationError(errorMessage(e));
     } finally {
       operationLock.current = false;
       setBusy(false);
+    }
+  }
+  function previewGmailImport() {
+    try {
+      const selected = requestedInvoiceMailPeriod(
+        mailPreset,
+        mailPeriod,
+        Date.now(),
+      );
+      setMailPeriod(selected);
+      setSyncPreview({ ...selected, scope: `${org}:${access.user?.id}` });
+    } catch {
+      setError(
+        "El período debe estar dentro de los últimos 12 meses y terminar como máximo hoy.",
+      );
     }
   }
   const sample: CompanyInvoice = {
@@ -578,7 +629,9 @@ export function Invoices() {
             tone={
               !cloud
                 ? "blue"
-                : !loading && connection?.status === "connected"
+                : !loading &&
+                    !gmailClientRejected &&
+                    connection?.status === "connected"
                   ? "green"
                   : "amber"
             }
@@ -587,13 +640,15 @@ export function Invoices() {
               ? "Demostración · datos ficticios"
               : loading
                 ? "Comprobando Gmail…"
-                : connection?.status === "reauthorize"
-                  ? "Renovar permiso de Gmail"
-                  : connection?.status === "connected"
-                    ? "Gmail vinculado"
-                    : status
-                      ? "Gmail sin conectar"
-                      : "Gmail sin comprobar"}
+                : gmailClientRejected
+                  ? "Gmail sin comprobar"
+                  : connection?.status === "reauthorize"
+                    ? "Renovar permiso de Gmail"
+                    : connection?.status === "connected"
+                      ? "Gmail vinculado"
+                      : status
+                        ? "Gmail sin conectar"
+                        : "Gmail sin comprobar"}
           </Badge>
         </div>
         <h2>De tu Gmail a tus gastos</h2>
@@ -632,6 +687,8 @@ export function Invoices() {
             key={`${org}:${access.user?.id}`}
             value={mailPeriod}
             onChange={setMailPeriod}
+            preset={mailPreset}
+            onPresetChange={setMailPreset}
             disabled={busy || !canWrite}
           />
         )}
@@ -694,12 +751,7 @@ export function Invoices() {
                       !periodReady ||
                       !periodValid
                     }
-                    onClick={() =>
-                      setSyncPreview({
-                        ...mailPeriod,
-                        scope: `${org}:${access.user?.id}`,
-                      })
-                    }
+                    onClick={previewGmailImport}
                   >
                     {busy ? "Importando…" : "Importar facturas"}
                   </Button>
@@ -770,6 +822,11 @@ export function Invoices() {
       {error && (
         <p role="alert" className="form-error">
           {error}
+        </p>
+      )}
+      {gmailOperationError && (
+        <p role="alert" className="form-error">
+          {gmailOperationError}
         </p>
       )}
       {aiNotice && (

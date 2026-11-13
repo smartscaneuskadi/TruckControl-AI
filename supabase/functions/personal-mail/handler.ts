@@ -1,4 +1,9 @@
-import { connectionConfig, ConnectionError } from "./contract.ts";
+import {
+  connectionConfig,
+  connectionConsent,
+  ConnectionError,
+  mailConnectorConsentVersion,
+} from "./contract.ts";
 import type { MailConnection } from "./contract.ts";
 export interface MailGateway {
   authorize(token: string, organization: string): Promise<boolean>;
@@ -100,6 +105,8 @@ export function createPersonalMailHandler(
         throw new ConnectionError("invalid");
       if (!(await gateway.authorize(token, body.organization_id)))
         return reply({ error: "expired" }, 401);
+      // Validate the current connector disclosure before credentials or transport are used.
+      connectionConsent(body.consent);
       const now = Date.now();
       // The budget key is a digest, never a bearer token, password or email address.
       const digest = await crypto.subtle.digest(
@@ -121,19 +128,29 @@ export function createPersonalMailHandler(
         body.action,
         body.data ?? {},
       );
+      if (body.action === "verify") {
+        if (!result || typeof result !== "object" || Array.isArray(result))
+          throw new ConnectionError("unavailable");
+        return reply({
+          ...result,
+          consent_version: mailConnectorConsentVersion,
+        });
+      }
       return reply(result);
     } catch (error) {
       const code =
         error instanceof ConnectionError ? error.code : "unavailable";
       return reply(
         { error: code },
-        code === "invalid"
-          ? 400
-          : code === "too_large"
-            ? 413
-            : code === "denied"
-              ? 403
-              : 502,
+        code === "consent_required"
+          ? 428
+          : code === "invalid"
+            ? 400
+            : code === "too_large"
+              ? 413
+              : code === "denied"
+                ? 403
+                : 502,
       );
     }
   };

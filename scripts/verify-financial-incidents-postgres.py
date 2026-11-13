@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extra migration64 acceptance, synthetic official PostgreSQL CI container only.
+"""Financial/dispute/CAS acceptance in a synthetic official PostgreSQL service.
 
 The preceding isolated-postgres step verifies the image digest and schema.
 This step uses real competing psql connections and a second logical restore;
@@ -12,12 +12,22 @@ import json
 import os
 from pathlib import Path
 import re
+import sys
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("isolated_postgres", ROOT / "scripts/verify-isolated-postgres.py")
 assert spec and spec.loader
 pg = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(pg)
+contracts_spec = importlib.util.spec_from_file_location("subscription_contracts", ROOT / "tests/postgres/subscription_contracts.py")
+assert contracts_spec and contracts_spec.loader
+contracts = importlib.util.module_from_spec(contracts_spec)
+contracts_spec.loader.exec_module(contracts)
+unlinked_spec = importlib.util.spec_from_file_location("unlinked_contracts", ROOT / "tests/postgres/unlinked_contracts.py")
+assert unlinked_spec and unlinked_spec.loader
+unlinked_contracts = importlib.util.module_from_spec(unlinked_spec)
+unlinked_spec.loader.exec_module(unlinked_contracts)
 q, sql, value, check = pg.quote, pg.sql, pg.value, pg.check
 ACCOUNT = "acct_IncidentPostgres"
 ADMIN = "fd110000-0000-4000-8000-000000000001"
@@ -42,7 +52,7 @@ def admin(statement):
   +q(ADMIN)+",true);perform set_config('request.jwt.claims',"+q(claims)+",true);end $claims$;"+statement)
 def result(statement,database=pg.SOURCE):
  return value("begin;"+statement+";commit;",database)
-def create_payment(n, monthly=False):
+def create_payment(n, monthly=False, *, commit_payment=True):
  registration={"truckcontrol_registration":{"contact_name":"Synthetic operator","company_name":"Synthetic PG company "+str(n),
   "tax_id":"SYNTHETIC-PG-INCIDENT-"+str(n),"address":"Synthetic isolated address 123",
   "phone":"+12025557"+str(100+n),"requested_plan":"limited"}}
@@ -63,8 +73,8 @@ def create_payment(n, monthly=False):
    "invoice_period_start":pg.REPORT["epoch"]-30*86400,"invoice_period_end":pg.REPORT["epoch"],
    "subscription_current_period_end":pg.REPORT["epoch"],"unit_amount":36300,"subscription_state":"active",
    "cancel_at_period_end":False,"billing_reason":"subscription_create"})
- paid=result(service(rpc("tc_manual_subscription_apply_payment",q("subscription_invoice" if monthly else "initial_payment"),q(ACCOUNT),js(data))))
- return {"n":n,"data":data,"task":paid["task_id"],"monthly":monthly}
+ paid=result(service(rpc("tc_manual_subscription_apply_payment",q("subscription_invoice" if monthly else "initial_payment"),q(ACCOUNT),js(data)))) if commit_payment else None
+ return {"n":n,"data":data,"task":paid["task_id"] if paid else None,"monthly":monthly}
 def observation(payment, suffix="A"):
  n=payment["n"];monthly=payment["monthly"];data=payment["data"]
  return {"event_id":"evt_IncidentPGRefund"+str(n)+suffix,"event_type":"refund.created",
@@ -89,6 +99,23 @@ def original(payment):
   "),'task',(select to_jsonb(t) from private.tc_manual_subscription_invoice_tasks t where id="+q(payment["task"])+
   "),'receipts',(select jsonb_agg(to_jsonb(b) order by provider_event_id) from private.tc_manual_stripe_bridge_receipts b where task_id="+q(payment["task"])+
   "),'notices',(select jsonb_agg(to_jsonb(n) order by id) from private.tc_manual_invoice_notice_outbox n where task_id="+q(payment["task"])+"))")
+def restore_saved_backup(manifest_sha256: str) -> None:
+ verified=pg.backup.read_backup(pg.RESULTS,"incidents-backup.manifest.json",manifest_sha256,
+  {"synthetic-financial-incidents.dump":"postgresql"})
+ pg.run(["docker","exec",pg.CONTAINER,"createdb","-U","postgres","-T","template0",RESTORED])
+ pg.run(["docker","exec","-i",pg.CONTAINER,"pg_restore","-U","postgres","-d",RESTORED,"--no-owner","--exit-on-error"],
+  data=verified["synthetic-financial-incidents.dump"])
+ pg.REPORT["saved_artifacts_verified"]=True
+ pg.REPORT["backup_manifest_sha256"]=manifest_sha256
+
+def seed_context():
+ pg.REPORT["epoch"]=value("select jsonb_build_object('epoch',extract(epoch from clock_timestamp())::bigint,'paid_at',clock_timestamp()-interval '20 seconds')")["epoch"]
+ pg.REPORT["paid_at"]=value("select jsonb_build_object('paid_at',to_timestamp("+str(pg.REPORT["epoch"]-20)+"))")["paid_at"]
+ sql("insert into auth.users(id,email,email_confirmed_at) values("+q(ADMIN)+",'incident-pg-admin@example.invalid',now());"+
+  "insert into auth.sessions(id,user_id) values("+q(SID)+","+q(ADMIN)+");"+
+  "insert into private.tc_admins(user_id) values("+q(ADMIN)+");"+
+  "insert into private.tc_manual_stripe_channels(provider_account_id,mode,enabled,isolated_test_instance) values("+q(ACCOUNT)+",'test',true,true);")
+
 def main():
  if os.environ.get("GITHUB_ACTIONS")!="true" or not re.fullmatch(r"[0-9a-f]{12,64}",pg.CONTAINER):
   raise AssertionError("Only the explicit isolated CI service container is accepted")
@@ -97,12 +124,7 @@ def main():
  pg.REPORT["source_commit"]=pg.run(["git","rev-parse","HEAD"]).stdout.decode().strip()
  check("Migration64 real function exists in the previously verified local PostgreSQL schema",
   value("select jsonb_build_object('present',to_regprocedure('public.tc_manual_subscription_record_incident(text,text,jsonb)') is not null)")["present"])
- pg.REPORT["epoch"]=value("select jsonb_build_object('epoch',extract(epoch from clock_timestamp())::bigint,'paid_at',clock_timestamp()-interval '20 seconds')")["epoch"]
- pg.REPORT["paid_at"]=value("select jsonb_build_object('paid_at',to_timestamp("+str(pg.REPORT["epoch"]-20)+"))")["paid_at"]
- sql("insert into auth.users(id,email,email_confirmed_at) values("+q(ADMIN)+",'incident-pg-admin@example.invalid',now());"+
-  "insert into auth.sessions(id,user_id) values("+q(SID)+","+q(ADMIN)+");"+
-  "insert into private.tc_admins(user_id) values("+q(ADMIN)+");"+
-  "insert into private.tc_manual_stripe_channels(provider_account_id,mode,enabled,isolated_test_instance) values("+q(ACCOUNT)+",'test',true,true);")
+ seed_context()
  a,b,c=create_payment(1),create_payment(2,True),create_payment(3)
  originals={p["task"]:original(p) for p in (a,b,c)}
  # Two real connections contend on the task; an exact duplicate commits once.
@@ -145,14 +167,19 @@ def main():
  capabilities=result(administrative("capabilities",case_a))
  check("Money movement, automatic licence policy and fiscal emission are unavailable",
   all(capabilities[key] is False for key in ("refunds_available","license_changes_available","rectification_emission_available")))
+ # The new migrations use the same verified service and will be included in
+ # the existing complete logical restore below, with no provider access.
+ contracts.run(pg, SimpleNamespace(**globals()))
+ unlinked_contracts.run(pg, SimpleNamespace(**globals()))
  # Actual dump/restore AFTER the new ledger and reviews exist.
  before=pg.database_fingerprint(pg.SOURCE)
  dump=pg.run(["docker","exec",pg.CONTAINER,"pg_dump","-U","postgres","-d",pg.SOURCE,"-Fc","--no-owner"]).stdout
  pg.RESULTS.mkdir(exist_ok=True)
- (pg.RESULTS/"synthetic-financial-incidents.dump").write_bytes(dump)
+ manifest_sha256=pg.backup.save_backup(pg.RESULTS,"incidents-backup.manifest.json",
+  {"synthetic-financial-incidents.dump":("postgresql",dump)})
  pg.REPORT["dump_sha256"]=hashlib.sha256(dump).hexdigest()
- pg.run(["docker","exec",pg.CONTAINER,"createdb","-U","postgres","-T","template0",RESTORED])
- pg.run(["docker","exec","-i",pg.CONTAINER,"pg_restore","-U","postgres","-d",RESTORED,"--no-owner","--exit-on-error"],data=dump)
+ del dump
+ restore_saved_backup(manifest_sha256)
  after=pg.database_fingerprint(RESTORED)
  if before!=after:
   pg.REPORT["restore_differences"]=pg.fingerprint_differences(before,after)
@@ -170,9 +197,15 @@ def main():
 
 if __name__=="__main__":
  pg.RESULTS.mkdir(exist_ok=True)
- try:main()
+ contract_only=sys.argv[1:]==["--synthetic-contract-only"]
+ try:
+  if sys.argv[1:] and not contract_only:
+   raise AssertionError("Only --synthetic-contract-only is supported; the default CI contract is unchanged")
+  if contract_only:contracts.run_local(pg,SimpleNamespace(**globals()))
+  else:main()
  except BaseException as error:
   pg.REPORT["passed"]=False;pg.REPORT["failure"]=str(error)[-2000:];raise
  finally:
   pg.REPORT["passed_checks"]=len(pg.REPORT["checks"])
-  (pg.RESULTS/"financial-incidents-report.json").write_text(json.dumps(pg.REPORT,indent=2)+"\n")
+  report="dp-cas-contract-report.json" if contract_only else "financial-incidents-report.json"
+  (pg.RESULTS/report).write_text(json.dumps(pg.REPORT,indent=2)+"\n")

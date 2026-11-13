@@ -118,7 +118,7 @@ describe("canonical Stripe financial observations, no external network", () => {
   });
   it("does not apply licence policy to a canonical disputed amount differing from the original charge", async () => {
     const f = financialFixture("charge.dispute.created");
-    snapshot(f).amount = f.records["disputes/du_FinancialOriginal"].amount = 40000;
+    snapshot(f).amount = f.records["disputes/dp_FinancialOriginal"].amount = 40000;
     expect((await reconcile(f)).data.current_amount_cents).toBe(40000);
   });
   it("acknowledges unsupported types without inventing an incident", async () => {

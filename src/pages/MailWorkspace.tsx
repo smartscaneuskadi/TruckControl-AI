@@ -10,6 +10,9 @@ import { createDemoMailbox } from "../integrations/personal-mail/demo";
 import { MailError } from "../integrations/personal-mail/gmail";
 import type { Mailbox } from "../integrations/personal-mail/gmail";
 import type { MailConnection } from "../integrations/personal-mail/imap";
+import { mailConnectorPrivacy } from "../domain/mail-privacy";
+import { MailConnectorDisclosure } from "../components/MailConnectorDisclosure";
+import { t } from "../i18n/runtime";
 
 type View = {
   id: string;
@@ -69,6 +72,7 @@ export function MailWorkspace({
     refs.current = [];
     setViews([]);
     setSelected(null);
+    setProvider("porkbun");
     setForm({ ...empty, ...presets.porkbun });
     setConsent(false);
     setBusy(false);
@@ -113,6 +117,10 @@ export function MailWorkspace({
     setError("");
     setConsent(false);
   }
+  function changeForm(value: MailConnection) {
+    setForm(value);
+    setConsent(false);
+  }
   async function connect() {
     if (busy || !online || !available || !cloud || !consent) return;
     setBusy(true);
@@ -128,9 +136,13 @@ export function MailWorkspace({
       imapHost: form.imapHost.trim(),
       smtpHost: form.smtpHost.trim(),
     };
+    setConsent(false);
     setForm((current) => ({ ...current, password: "" }));
     try {
-      mailbox = createImapMailbox(config, snapshot.organization.id);
+      mailbox = createImapMailbox(config, snapshot.organization.id, {
+        version: mailConnectorPrivacy.version,
+        accepted: true,
+      });
       const email = await mailbox.profile(controller.signal);
       if (controller.signal.aborted || generation.current !== version) {
         mailbox.dispose();
@@ -146,9 +158,11 @@ export function MailWorkspace({
         setError(
           reason instanceof MailError && reason.code === "denied"
             ? "El proveedor ha rechazado el acceso. Revisa el usuario y la contraseña del buzón o de aplicación; no uses la contraseña del panel de Porkbun."
-            : reason instanceof MailError && reason.code === "expired"
-              ? "La sesión de TruckControl ha caducado. Vuelve a entrar en tu cuenta."
-              : "No se ha conectado el buzón. Comprueba los servidores IMAP/SMTP, el permiso de acceso y la contraseña de aplicación. No se ha guardado tu contraseña.",
+            : reason instanceof MailError && reason.code === "consent_required"
+              ? "Actualiza TruckControl y acepta la información de privacidad de IMAP/SMTP antes de volver a conectar este buzón."
+              : reason instanceof MailError && reason.code === "expired"
+                ? "La sesión de TruckControl ha caducado. Vuelve a entrar en tu cuenta."
+                : "No se ha conectado el buzón. Comprueba los servidores IMAP/SMTP, el permiso de acceso y la contraseña de aplicación. No se ha guardado tu contraseña.",
         );
     } finally {
       config.password = "";
@@ -331,7 +345,7 @@ export function MailWorkspace({
                 maxLength={254}
                 value={form.email}
                 disabled={busy}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                onChange={(e) => changeForm({ ...form, email: e.target.value })}
                 autoComplete="email"
               />
               <label htmlFor="mail-username">
@@ -342,7 +356,9 @@ export function MailWorkspace({
                 maxLength={254}
                 value={form.username}
                 disabled={busy}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                onChange={(e) =>
+                  changeForm({ ...form, username: e.target.value })
+                }
                 autoComplete="off"
               />
               <label htmlFor="mail-password">
@@ -355,7 +371,9 @@ export function MailWorkspace({
                 maxLength={2048}
                 value={form.password}
                 disabled={busy}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                onChange={(e) =>
+                  changeForm({ ...form, password: e.target.value })
+                }
                 autoComplete="off"
               />
               <label htmlFor="mail-imap">
@@ -367,7 +385,9 @@ export function MailWorkspace({
                 maxLength={253}
                 value={form.imapHost}
                 disabled={busy}
-                onChange={(e) => setForm({ ...form, imapHost: e.target.value })}
+                onChange={(e) =>
+                  changeForm({ ...form, imapHost: e.target.value })
+                }
                 placeholder="imap.tuproveedor.com"
                 autoComplete="off"
               />
@@ -380,20 +400,23 @@ export function MailWorkspace({
                 maxLength={253}
                 value={form.smtpHost}
                 disabled={busy}
-                onChange={(e) => setForm({ ...form, smtpHost: e.target.value })}
+                onChange={(e) =>
+                  changeForm({ ...form, smtpHost: e.target.value })
+                }
                 placeholder="smtp.tuproveedor.com"
                 autoComplete="off"
               />
+              <MailConnectorDisclosure />
               <label className="mail-consent">
                 <input
                   type="checkbox"
                   required
                   checked={consent}
                   disabled={busy}
+                  aria-describedby="mail-connector-disclosure"
                   onChange={(e) => setConsent(e.target.checked)}
                 />{" "}
-                Autorizo a TruckControl a conectar este buzón para leer y enviar
-                mis mensajes mediante estos servidores.
+                {t(mailConnectorPrivacy.consentLabel)}
               </label>
               {provider === "yahoo" && (
                 <p className="muted">
@@ -442,8 +465,9 @@ export function MailWorkspace({
           <p className="mail-security">
             <ShieldCheck size={20} aria-hidden="true" /> Tus contraseñas y
             mensajes no se guardan en copias offline. Los datos de acceso se
-            envían cifrados al servidor de conexión y se conservan solo en
-            memoria durante esta sesión, hasta una hora.
+            envían por HTTPS al backend de TruckControl en Supabase. La
+            contraseña permanece en memoria del navegador hasta una hora y en
+            memoria temporal del servidor durante cada petición.
           </p>
           <p className="muted">
             Puedes conectar varias cuentas sin un máximo fijado por

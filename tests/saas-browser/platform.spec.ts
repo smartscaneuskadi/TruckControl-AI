@@ -2337,6 +2337,10 @@ test.describe("copia cifrada y sincronización", () => {
     page,
     context,
   }) => {
+    // El caso completo incluye WebCrypto + IndexedDB + recarga offline en un móvil emulado.
+    // Bajo carga paralela del runner puede superar los 30s globales aunque los pasos pasen.
+    // Limitar solo este flujo a 60s; mantener cada aserción y los timeouts de expect.
+    test.setTimeout(60_000);
     const f = await prepare(page);
     const stored = await page.evaluate(
       () =>
@@ -2803,6 +2807,7 @@ test.describe("contratación y renovación mensual", () => {
             currency: "EUR",
             period_end: new Date(Date.now() + 30 * 86400000).toISOString(),
             cancel_at_period_end: false,
+            reconciliation_required: false,
           }
         : null,
       invoices: [],
@@ -5250,6 +5255,7 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
   let reject = false;
   await page.route("**/functions/v1/personal-mail", async (route) => {
     const body = route.request().postDataJSON();
+    expect(body.consent).toEqual({ version: "2026-11-13", accepted: true });
     const email = body.connection.email;
     calls.push({ action: body.action, email });
     const headers = {
@@ -5280,7 +5286,7 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
     };
     const data =
       body.action === "verify"
-        ? { email, reading: true, sending: true }
+        ? { email, reading: true, sending: true, consent_version: "2026-11-13" }
         : body.action === "list"
           ? { messages: [message], next: null }
           : body.action === "read"
@@ -5309,15 +5315,18 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
   await expect(page.locator("main iframe")).toHaveCount(0);
   const pages = context.pages().length;
   async function fill(email: string) {
+    const consent = page.getByLabel("Autorizo a TruckControl a conectar este buzón", { exact: false });
+    await expect(consent).not.toBeChecked();
     await page.getByLabel("Correo electrónico", { exact: true }).fill(email);
     await page
       .getByLabel("Contraseña del buzón o de aplicación", { exact: true })
       .fill("app-password-ficticia-no-real");
-    await page
-      .getByLabel("Autorizo a TruckControl a conectar este buzón", {
-        exact: false,
-      })
-      .check();
+    await consent.check();
+    // Accepting one configuration must not cover a changed server or credential.
+    await page.getByLabel("Servidor de salida SMTP", { exact: false }).fill("smtp.changed.example.com");
+    await expect(consent).not.toBeChecked();
+    await page.getByLabel("Servidor de salida SMTP", { exact: false }).fill("smtp.porkbun.com");
+    await consent.check();
     await page
       .getByRole("button", { name: "Conectar y verificar buzón", exact: true })
       .click();
@@ -5413,9 +5422,61 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
 });
 
 
+test("IMAP/SMTP: la salida de sesión limpia la aceptación y descarta una verificación tardía", async ({ page }) => {
+  await fixtures(page);
+  let release!: () => void;
+  let returned = false;
+  const wait = new Promise<void>((resolve) => { release = resolve; });
+  await page.route("**/functions/v1/personal-mail", async (route) => {
+    const body = route.request().postDataJSON();
+    expect(body).toMatchObject({
+      action: "verify",
+      consent: { version: "2026-11-13", accepted: true },
+      connection: {
+        email: "late@example.invalid",
+        username: "late@example.invalid",
+        password: "synthetic-late-password",
+        imapHost: "imap.porkbun.com",
+        smtpHost: "smtp.porkbun.com",
+      },
+    });
+    await wait;
+    try {
+      await route.fulfill({
+        headers: { "Access-Control-Allow-Origin": "*" },
+        json: { email: "late@example.invalid", reading: true, sending: true, consent_version: "2026-11-13" },
+      });
+    } catch {
+      // The production exit event aborts the in-flight browser request.
+    } finally {
+      returned = true;
+    }
+  });
+  await login(page, "customer@example.com");
+  await page.evaluate(() => { location.hash = "/mailbox"; });
+  await page.getByLabel("Correo electrónico", { exact: true }).fill("late@example.invalid");
+  await page.getByLabel("Contraseña del buzón o de aplicación", { exact: true }).fill("synthetic-late-password");
+  const consent = page.getByLabel("Autorizo a TruckControl a conectar este buzón", { exact: false });
+  await expect(consent).not.toBeChecked();
+  await consent.check();
+  const pending = page.waitForRequest("**/functions/v1/personal-mail");
+  await page.getByRole("button", { name: "Conectar y verificar buzón", exact: true }).click();
+  await pending;
+  // Logout, user/company changes and page exit all use this production cleanup.
+  await page.evaluate(() => window.dispatchEvent(new Event("truckcontrol:session-exit")));
+  await expect(consent).not.toBeChecked();
+  await expect(page.getByLabel("Correo electrónico", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("Contraseña del buzón o de aplicación", { exact: true })).toHaveValue("");
+  release();
+  await expect.poll(() => returned).toBe(true);
+  await expect(page.getByRole("navigation", { name: "Correos conectados" })).toHaveCount(0);
+  expect(await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }))).not.toMatch(/synthetic-late-password|late@example.invalid/);
+});
+
 // Provider transport is synthetic here; native readiness requires the owner's verified session.
 const stripeReadinessFixture = () => ({
-  contract: "truckcontrol-stripe-readiness-v1",
+  contract: "truckcontrol-stripe-readiness-v2",
+  credential_state: "valid_format", signing_secret_state: "missing",
   checked_at: new Date().toISOString(),
   stripe_key_configured: true, key_mode: "live",
   fiscal_signing_secret_format_valid: false,
@@ -5435,7 +5496,7 @@ test.describe("Stripe privado", () => {
     let reads = 0;
     await page.route("**/functions/v1/truckcontrol-billing", async route => {
       if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization,apikey,content-type,x-client-info" } });
-      expect(route.request().postDataJSON()).toEqual({ action: "admin_readiness" });
+      expect(route.request().postDataJSON()).toEqual({ action: "admin_readiness_details" });
       const bearer = route.request().headers().authorization;
       expect(bearer).toMatch(/^Bearer /);
       expect(JSON.parse(Buffer.from(bearer.split(".")[1], "base64url").toString()).sub).toBe(admin);
@@ -5520,4 +5581,35 @@ test.describe("Stripe privado", () => {
     await expect(page.getByRole("button", { name: "Comprobar Stripe", exact: true })).toHaveCount(0);
     expect(reads).toBe(0);
   });
+});
+
+
+test("Stripe privado: identifica el formato inválido sin mostrar claves y conserva los borradores", async ({ page }) => {
+  await fixtures(page);
+  await page.route("**/functions/v1/truckcontrol-billing", async route => {
+    if (route.request().method() === "OPTIONS") return route.fulfill({ status:204, headers:{"access-control-allow-origin":"*","access-control-allow-headers":"authorization,apikey,content-type,x-client-info"} });
+    await route.fulfill({ json:{...stripeReadinessFixture(), credential_state:"invalid_format", stripe_key_configured:false, key_mode:null, account_checked:false, account_status:null, account_id:null, expected_account:false, charges_enabled:false, payouts_enabled:false, webhook_checked:false, webhook_status:null, webhook_id_matches:false, webhook_url_matches:false, webhook_events_match:false, webhook_api_version_matches:false, webhook_disabled:null }, headers:{"access-control-allow-origin":"*"} });
+  });
+  await openProviders(page);
+  await page.getByLabel("Secreto nuevo de Google").fill("synthetic-draft-preserved");
+  const card=page.getByRole("region",{name:"Conexión de Stripe",exact:true});
+  await card.getByRole("button",{name:"Comprobar Stripe",exact:true}).click();
+  await expect(card.getByRole("status")).toContainText("La clave de Stripe guardada no tiene un formato válido.");
+  await expect(page.getByLabel("Secreto nuevo de Google")).toHaveValue("synthetic-draft-preserved");
+});
+
+test("Stripe privado: mantiene el contrato anterior sin inventar un diagnóstico", async ({ page }) => {
+  await fixtures(page); const calls:string[]=[];
+  await page.route("**/functions/v1/truckcontrol-billing", async route => {
+    const headers={"access-control-allow-origin":"*","access-control-allow-headers":"authorization,apikey,content-type,x-client-info"};
+    if (route.request().method() === "OPTIONS") return route.fulfill({status:204,headers});
+    const action=route.request().postDataJSON().action;calls.push(action);
+    if(action === "admin_readiness_details") return route.fulfill({status:400,json:{error:"invalid_request"},headers});
+    const {credential_state:_,signing_secret_state:__,...legacy}=stripeReadinessFixture();
+    await route.fulfill({json:{...legacy,contract:"truckcontrol-stripe-readiness-v1"},headers});
+  });
+  await openProviders(page);const card=page.getByRole("region",{name:"Conexión de Stripe",exact:true});
+  await card.getByRole("button",{name:"Comprobar Stripe",exact:true}).click();
+  await expect(card.getByRole("status")).toContainText("El servidor aún no ofrece el detalle de configuración de Stripe.");
+  expect(calls).toEqual(["admin_readiness_details","admin_readiness"]);
 });

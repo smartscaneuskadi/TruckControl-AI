@@ -4,7 +4,7 @@ import { getSupabaseClient } from "../integrations/supabase/client";
 import { Badge, Button, Modal } from "./ui";
 import { money } from "../lib/format";
 
-const statusSchema = z.object({
+export const recurringStatusSchema = z.object({
   configured: z.boolean(),
   invoice_delivery_ready: z.boolean().default(false),
   management_available: z.boolean(),
@@ -27,6 +27,7 @@ const statusSchema = z.object({
       currency: z.literal("EUR"),
       period_end: z.iso.datetime({ offset: true }),
       cancel_at_period_end: z.boolean(),
+      reconciliation_required: z.boolean().default(false),
     })
     .nullable(),
   invoices: z.array(
@@ -39,7 +40,7 @@ const statusSchema = z.object({
     }),
   ),
 });
-export type RecurringStatus = z.infer<typeof statusSchema>;
+export type RecurringStatus = z.infer<typeof recurringStatusSchema>;
 export function useRecurringSubscription(userId: string) {
   const [status, setStatus] = useState<RecurringStatus | null>(null);
   const [revision, setRevision] = useState(0);
@@ -57,7 +58,7 @@ export function useRecurringSubscription(userId: string) {
       .invoke("truckcontrol-subscriptions", { body: { action: "status" } })
       .then(({ data, error }) => {
         if (!current) return;
-        const parsed = statusSchema.safeParse(data);
+        const parsed = recurringStatusSchema.safeParse(data);
         if (!error && parsed.success) {
           const url = parsed.data.terms_url
             ? new URL(parsed.data.terms_url)
@@ -110,6 +111,7 @@ export function RecurringSubscription({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const subscription = status?.subscription;
+  const pending = subscription?.reconciliation_required === true;
   if (!status || (!subscription && !status.invoices.length)) return null;
   async function manage(action: "cancel" | "resume") {
     if (!client || busy) return;
@@ -151,16 +153,34 @@ export function RecurringSubscription({
       {subscription && (
         <>
           <p>
-            <strong>{stateLabels[subscription.state]}</strong> ·{" "}
-            {money(subscription.monthly_cents)}/mes
+            <strong>
+              {pending
+                ? "Estado pendiente de confirmar"
+                : stateLabels[subscription.state]}
+            </strong>{" "}
+            · {money(subscription.monthly_cents)}/mes
           </p>
           <p>
-            {subscription.cancel_at_period_end
-              ? "Renovación desactivada. Fin del periodo"
-              : "Fin del periodo actual"}
+            {pending
+              ? "Fin del último periodo registrado"
+              : subscription.cancel_at_period_end
+                ? "Renovación desactivada. Fin del periodo"
+                : "Fin del periodo actual"}
             : {date(subscription.period_end)}.
           </p>
-          {subscription.state === "past_due" && (
+          {pending && (
+            <p role="status">
+              El estado de la suscripción está pendiente de confirmar con el
+              proveedor. Actualiza el estado.
+            </p>
+          )}
+          {pending && !open && (
+            <p>
+              Si el estado sigue pendiente, contacta con soporte antes de
+              gestionar esta suscripción.
+            </p>
+          )}
+          {!pending && subscription.state === "past_due" && (
             <p>
               Una renovación fallida no amplía el acceso. Se conserva el periodo
               que ya esté pagado.
@@ -172,15 +192,17 @@ export function RecurringSubscription({
               disabled={
                 busy ||
                 !status.management_available ||
-                (subscription.cancel_at_period_end && !canResume)
+                (!pending && subscription.cancel_at_period_end && !canResume)
               }
               onClick={() =>
                 setConfirm(
-                  subscription.cancel_at_period_end ? "resume" : "cancel",
+                  !pending && subscription.cancel_at_period_end
+                    ? "resume"
+                    : "cancel",
                 )
               }
             >
-              {subscription.cancel_at_period_end
+              {!pending && subscription.cancel_at_period_end
                 ? "Reactivar renovación"
                 : "Cancelar renovación"}
             </Button>

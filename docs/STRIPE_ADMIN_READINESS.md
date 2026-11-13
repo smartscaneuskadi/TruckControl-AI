@@ -1,3 +1,9 @@
+## Diagnóstico candidato · 13/11/2026
+
+Producción sigue41; backend observado billing19 trasPR110. La candidata0.5.24 añade `admin_readiness_details` privado/opt-in con estados de formato cerrados, sin valores/longitudes/huellas; conserva el contrato v1 y autorización real SQL/SID. Fallback únicamente ante rechazo explícito de acción desconocida por un servidor antiguo; errores de transporte se sustituyen por mensajes fijos, sin reintentos inciertos.
+
+PR111 y su corrección revisada usan GET `/v2/core/event_destinations/{id}?include%5B%5D=webhook_endpoint.url`, no v1 para ese receptor. La consulta oficial del13/11 confirma la URL de `truckcontrol-stripe-fiscal`, snapshot Basil/@self/3eventos y estado **disabled**. No acredita la credencial del backend, firma o entrega. [Lectura de proveedor](verification/stripe-event-destination-read-20261113.json). La preparación del nuevo despliegue conserva41; no recuperar40 automáticamente por esta candidata.
+
 Publicado en Sites41/app0.5.23-rc.1 el12/11/2026. Billing18 verificado, PR108 integrado, cobros cerrados. La comprobación positiva con sesión real del propietario sigue pendiente. [Recibo](verification/admin-stripe-readiness-published-20261112.json).
 
 # Comprobación privada de Stripe

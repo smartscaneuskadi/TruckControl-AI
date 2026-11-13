@@ -1,6 +1,7 @@
 import { legalDocuments, legalVersion, operator } from "../domain/legal";
 import type { LegalDocument } from "../domain/legal";
 import { Button } from "./ui";
+import { MailConnectorDisclosure } from "./MailConnectorDisclosure";
 export function LegalLinks() {
   return (
     <nav aria-label="Información legal" className="access-links">
@@ -41,6 +42,7 @@ export function LegalPage({ document }: { document: LegalDocument }) {
             <p>{s.text}</p>
           </section>
         ))}
+        {document === "privacy" && <MailConnectorDisclosure full />}
         <p>
           <a href={`mailto:${operator.email}`}>{operator.email}</a>
         </p>

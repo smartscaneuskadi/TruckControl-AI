@@ -82,7 +82,7 @@ export async function canonicalStripeEnvelope(
     if (typeof snapshot.id !== "string") return fail("invalid_event");
     const deadline = AbortSignal.timeout(25000);
     const get = async (path: string) => {
-      if (!/^(account|(?:events|charges|refunds|disputes|payment_intents|invoices|subscriptions)\/[A-Za-z0-9_]{3,205}|invoice_payments\?payment%5Btype%5D=payment_intent&payment%5Bpayment_intent%5D=pi_[A-Za-z0-9]{1,200}&status=paid&limit=2)$/.test(path))
+      if (!/^(account|(?:events|charges|refunds|disputes|payment_intents|invoices|subscriptions)\/[A-Za-z0-9_]{3,205}|invoice_payments\?payment%5Btype%5D=payment_intent&payment%5Bpayment_intent%5D=pi_[A-Za-z0-9]{1,200}&status=paid&limit=2|checkout\/sessions\?(?:payment_intent=pi_[A-Za-z0-9]{1,200}|subscription=sub_[A-Za-z0-9]{1,200})&limit=2)$/.test(path))
         return fail("invalid_event");
       const response = await fetcher("https://api.stripe.com/v1/" + path, {
         method: "GET", redirect: "error",

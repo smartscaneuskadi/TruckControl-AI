@@ -46,6 +46,8 @@ function errorMessage(error: unknown) {
       expired: "La sesión del buzón ha caducado. Vuelve a entrar con Google.",
       denied:
         "Google no ha autorizado esta operación. Comprueba los permisos del buzón.",
+      consent_required:
+        "Actualiza TruckControl y acepta la información de privacidad de IMAP/SMTP antes de volver a conectar este buzón.",
       invalid:
         "Comprueba destinatarios, asunto y mensaje. Usa direcciones de correo separadas por comas, hasta 20 destinatarios.",
       too_large:

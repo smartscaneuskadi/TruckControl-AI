@@ -1,11 +1,15 @@
 import { isUuid } from "../_shared/invoice.ts";
-import type { StripeReadinessReport } from "../_shared/stripe-readiness.ts";
+import type {
+  StripeReadinessReport,
+  StripeReadinessDetails,
+} from "../_shared/stripe-readiness.ts";
 export interface BillingGateway {
   manualCheckoutReady?(): Promise<boolean>;
   authenticate(token: string): Promise<{ id: string } | null>;
   server<T>(action: string, data: Record<string, unknown>): Promise<T>;
   canInspectProviders?(token: string): Promise<boolean>;
   stripeReadiness?(): Promise<StripeReadinessReport>;
+  stripeReadinessDetails?(): Promise<StripeReadinessDetails>;
 }
 export interface BillingConfig {
   appOrigin: string;
@@ -171,7 +175,10 @@ export function createBillingHandler(
       const user = await gateway.authenticate(token);
       if (!user) return json({ error: "authentication_required" }, 401);
       const body = JSON.parse(raw) as Record<string, unknown>;
-      if (body.action === "admin_readiness") {
+      if (
+        body.action === "admin_readiness" ||
+        body.action === "admin_readiness_details"
+      ) {
         if (Object.keys(body).some((key) => key !== "action"))
           return json({ error: "invalid_readiness_request" }, 400);
         if (
@@ -179,10 +186,14 @@ export function createBillingHandler(
           !(await gateway.canInspectProviders(token))
         )
           return json({ error: "platform_admin_required" }, 403);
-        if (!gateway.stripeReadiness)
+        const inspector =
+          body.action === "admin_readiness_details"
+            ? gateway.stripeReadinessDetails?.bind(gateway)
+            : gateway.stripeReadiness?.bind(gateway);
+        if (!inspector)
           return json({ error: "stripe_readiness_unavailable" }, 503);
         try {
-          return json(await gateway.stripeReadiness());
+          return json(await inspector());
         } catch {
           return json({ error: "stripe_readiness_unavailable" }, 503);
         }

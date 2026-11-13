@@ -35,6 +35,47 @@ export interface StripeReadinessReport {
   signature_delivery_verified: false;
   payment_or_customer_mutations: 0;
 }
+export type CredentialConfigurationState =
+  "missing" | "invalid_format" | "valid_format";
+export interface StripeReadinessDetails extends Omit<
+  StripeReadinessReport,
+  "contract"
+> {
+  contract: "truckcontrol-stripe-readiness-v2";
+  credential_state: CredentialConfigurationState;
+  signing_secret_state: CredentialConfigurationState;
+}
+/** Fixed categories only; no credential value, fragment, length or fingerprint leaves this function. */
+export function describeStripeReadiness(
+  report: StripeReadinessReport,
+  config: StripeReadinessConfig,
+): StripeReadinessDetails {
+  const mode = stripeServerKeyMode(config.stripeKey);
+  const credential_state: CredentialConfigurationState = !config.stripeKey
+    ? "missing"
+    : mode
+      ? "valid_format"
+      : "invalid_format";
+  const signing_secret_state: CredentialConfigurationState =
+    !config.fiscalSigningSecret
+      ? "missing"
+      : /^whsec_[A-Za-z0-9]{16,240}$/.test(config.fiscalSigningSecret)
+        ? "valid_format"
+        : "invalid_format";
+  if (
+    report.stripe_key_configured !== (credential_state === "valid_format") ||
+    report.key_mode !== mode ||
+    report.fiscal_signing_secret_format_valid !==
+      (signing_secret_state === "valid_format")
+  )
+    throw Error("stripe_readiness_unavailable");
+  return {
+    ...report,
+    contract: "truckcontrol-stripe-readiness-v2",
+    credential_state,
+    signing_secret_state,
+  };
+}
 async function providerObject(response: Response) {
   const reader = response.body?.getReader();
   if (!reader) throw Error("missing_body");

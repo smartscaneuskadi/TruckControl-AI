@@ -9,3 +9,5 @@ Genera un `pg_dump` lógico de las filas sintéticas, lo restaura con `pg_restor
 El artefacto `isolated-postgres-report` contiene el informe y la copia **exclusivamente sintética** durante siete días. No prueba recuperación gestionada de Supabase, PITR, GoTrue completo, firma de JWT en HTTP, originales binarios de Storage, ni aceptación real de Stripe/TicketBAI. Los roles ya existen en el clúster de destino: no se afirma un ensayo de recuperación de roles entre clústeres.
 
 Estado: implementación candidata. Sólo se considerará superado cuando el workflow del head exacto termine en SUCCESS; los resultados se registran en `report.json`.
+
+Endurecimiento offline · 13/11: ambos restores SQL vuelven a leer el dump guardado y su manifiesto mediante `scripts/recovery_backup.py`, exigiendo inventario exacto, tamaño, SHA256, formato y metadatos/rutas seguros antes de `createdb` o `pg_restore`. Los destinos ficticios de las pruebas Python exigen cero llamadas de mutación ante archivos inválidos y usan exclusivamente los bytes verificados. No se ha repetido aquí la aceptación de 117 controles ni se amplía su alcance a recuperación gestionada, retención o SLA.

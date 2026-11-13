@@ -96,6 +96,9 @@ function fixture() {
     authenticate: async (token) =>
       token === "synthetic-session" ? { id: user } : null,
     server: async <T>(action: string, data: Record<string, unknown>) => {
+      // CAS observation is read-only fixture metadata; action assertions below
+      // continue to describe the existing billing mutations and account reads.
+      if (action === "observe") return { snapshot_revision: "0" } as T;
       calls.push({ action, data });
       return (
         action === "prepare"
