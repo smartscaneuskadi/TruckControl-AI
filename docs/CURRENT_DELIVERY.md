@@ -1,3 +1,11 @@
+## Candidata en preparación · 13/11/2026 UTC
+
+Producción comprobada: **Sites41/app0.5.23-rc.1**, fuente a33ed6f073392984a5de4de9f073734097db3a8d; demo6 conservada. Main dfe56b7 incluye PR110; Native billing19/subscriptions18/fiscal8/incidents5, Supabase66 migraciones. Los estados v32/PR60/CI434 del encargo son históricos: PR60 ya está integrado. No repetirlo ni repetir #37.
+
+Se trabaja en `feat/commercial-acceptance-20261113`: prefijo real Stripe dp_, ordenación CAS de suscripciones, integridad de copias persistidas antes de restaurar, consentimiento específico IMAP/SMTP, periodos Gmail confirmados y clasificación de errores del servidor, diagnósticos Stripe privados compatibles y comprobación del AAB real de Android. [Plan y límites actuales](COMMERCIAL_ACCEPTANCE_20261113.md). Son cambios candidatos, **no publicados ni migrados todavía**.
+
+Cobros OFF. La clave Stripe del backend falla por formato; el destino existente está deshabilitado y su URL/entrega no están acreditadas. Se requiere aceptación nativa de pagos/licencias/facturación antes de abrir ventas. IA10USD/mes y100llamadas/empresa intactas; nuevas llamadas IA, compras y compromisos0. Histórico del techo200EUR sin conciliar; saldo desconocido. No declarar lanzamiento comercial completo.
+
 ## Vigente: Servicios privados de Stripe publicados · Sites41 · 12/11/2026 UTC
 
 https://truckcontrolai.com está en **Sites41/app0.5.23-rc.1**, fuente a33ed6f073392984a5de4de9f073734097db3a8d, despliegue appgdep_6af643bcca608191829fc7007605ab13 SUCCEEDED. PR108 integrado en2131e9c0cd42fead994dbfeb8ac57dabe994facd; PR103–107 conservados. Se mantienen40/39 y demo6. [Recibo final](verification/admin-stripe-readiness-published-20261112.json).
