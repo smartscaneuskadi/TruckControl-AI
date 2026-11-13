@@ -21,7 +21,9 @@ describe("Stripe inspection reuses the existing SQL global-admin/session boundar
       companySession,
       companyUser,
     ]);
-  });
+    // The isolated schema setup applies every retained migration, not a product request.
+    // Keep assertion timeouts unchanged while allowing setup on constrained CI workers.
+  }, 30_000);
   afterAll(async () => {
     await db?.close();
   });

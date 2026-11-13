@@ -2828,5 +2828,9 @@
   "Información de privacidad de IMAP/SMTP ·": "Informations de confidentialité IMAP/SMTP ·",
   "Privacidad de IMAP/SMTP y retirada de la autorización": "Confidentialité IMAP/SMTP et retrait de l’autorisation",
   "Actualiza TruckControl y acepta la información de privacidad de IMAP/SMTP antes de volver a conectar este buzón.": "Mettez TruckControl à jour et acceptez les informations de confidentialité IMAP/SMTP avant de reconnecter cette boîte.",
-  "Tus contraseñas y mensajes no se guardan en copias offline. Los datos de acceso se envían por HTTPS al backend de TruckControl en Supabase. La contraseña permanece en memoria del navegador hasta una hora y en memoria temporal del servidor durante cada petición.": "Vos mots de passe et messages ne sont pas conservés dans les copies hors ligne. Les identifiants sont transmis en HTTPS au backend TruckControl sur Supabase. Le mot de passe reste en mémoire dans le navigateur au maximum une heure et dans la mémoire temporaire du serveur pendant chaque requête."
+  "Tus contraseñas y mensajes no se guardan en copias offline. Los datos de acceso se envían por HTTPS al backend de TruckControl en Supabase. La contraseña permanece en memoria del navegador hasta una hora y en memoria temporal del servidor durante cada petición.": "Vos mots de passe et messages ne sont pas conservés dans les copies hors ligne. Les identifiants sont transmis en HTTPS au backend TruckControl sur Supabase. Le mot de passe reste en mémoire dans le navigateur au maximum une heure et dans la mémoire temporaire du serveur pendant chaque requête.",
+  "Estado pendiente de confirmar": "État en attente de confirmation",
+  "Fin del último periodo registrado": "Fin de la dernière période enregistrée",
+  "El estado de la suscripción está pendiente de confirmar con el proveedor. Actualiza el estado.": "L’état de l’abonnement est en attente de confirmation du prestataire. Actualisez l’état.",
+  "Si el estado sigue pendiente, contacta con soporte antes de gestionar esta suscripción.": "Si l’état reste en attente, contactez l’assistance avant de gérer cet abonnement."
 }

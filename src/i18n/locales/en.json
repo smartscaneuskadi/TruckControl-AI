@@ -2828,5 +2828,9 @@
   "Información de privacidad de IMAP/SMTP ·": "IMAP/SMTP privacy information ·",
   "Privacidad de IMAP/SMTP y retirada de la autorización": "IMAP/SMTP privacy and withdrawing authorization",
   "Actualiza TruckControl y acepta la información de privacidad de IMAP/SMTP antes de volver a conectar este buzón.": "Update TruckControl and accept the IMAP/SMTP privacy information before reconnecting this mailbox.",
-  "Tus contraseñas y mensajes no se guardan en copias offline. Los datos de acceso se envían por HTTPS al backend de TruckControl en Supabase. La contraseña permanece en memoria del navegador hasta una hora y en memoria temporal del servidor durante cada petición.": "Your passwords and messages are not saved in offline copies. Login details are sent over HTTPS to the TruckControl backend on Supabase. The password stays in browser memory for up to one hour and in temporary server memory during each request."
+  "Tus contraseñas y mensajes no se guardan en copias offline. Los datos de acceso se envían por HTTPS al backend de TruckControl en Supabase. La contraseña permanece en memoria del navegador hasta una hora y en memoria temporal del servidor durante cada petición.": "Your passwords and messages are not saved in offline copies. Login details are sent over HTTPS to the TruckControl backend on Supabase. The password stays in browser memory for up to one hour and in temporary server memory during each request.",
+  "Estado pendiente de confirmar": "Status awaiting confirmation",
+  "Fin del último periodo registrado": "End of the last recorded period",
+  "El estado de la suscripción está pendiente de confirmar con el proveedor. Actualiza el estado.": "The subscription status is awaiting confirmation from the provider. Refresh the status.",
+  "Si el estado sigue pendiente, contacta con soporte antes de gestionar esta suscripción.": "If the status remains pending, contact support before managing this subscription."
 }

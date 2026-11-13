@@ -17226,5 +17226,29 @@
     "contexts": [
       "src/pages/MailWorkspace.tsx:text"
     ]
+  },
+  {
+    "key": "Estado pendiente de confirmar",
+    "contexts": [
+      "src/components/RecurringSubscription.tsx:text"
+    ]
+  },
+  {
+    "key": "Fin del último periodo registrado",
+    "contexts": [
+      "src/components/RecurringSubscription.tsx:text"
+    ]
+  },
+  {
+    "key": "El estado de la suscripción está pendiente de confirmar con el proveedor. Actualiza el estado.",
+    "contexts": [
+      "src/components/RecurringSubscription.tsx:text"
+    ]
+  },
+  {
+    "key": "Si el estado sigue pendiente, contacta con soporte antes de gestionar esta suscripción.",
+    "contexts": [
+      "src/components/RecurringSubscription.tsx:text"
+    ]
   }
 ]

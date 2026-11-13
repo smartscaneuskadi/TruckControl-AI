@@ -165,6 +165,15 @@ describe("diagnostic route preserves the existing verified admin boundary", () =
 });
 
 describe("versioned client support and operator messages", () => {
+  it("hides a rejected transport exception and never retries the request", async () => {
+    const invoke = vi
+      .fn()
+      .mockRejectedValue(new Error("private transport detail"));
+    await expect(checkStripeReadinessDetails(client(invoke))).rejects.toThrow(
+      "No se ha podido comprobar Stripe. Inténtalo de nuevo.",
+    );
+    expect(invoke).toHaveBeenCalledTimes(1);
+  });
   it("requests opt-in diagnostics and returns only a validated local projection", async () => {
     const f = await fixture("invalid-private-value", signing);
     const invoke = vi.fn(async () => ({ data: f.details, error: null }));

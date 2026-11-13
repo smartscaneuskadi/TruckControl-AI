@@ -98,10 +98,16 @@ async function invokeReadiness(
   client: SupabaseClient<Database>,
   action: "admin_readiness" | "admin_readiness_details",
 ) {
-  const { data, error } = await client.functions.invoke(
-    "truckcontrol-billing",
-    { body: { action } },
-  );
+  const response = await (async () => {
+    try {
+      return await client.functions.invoke("truckcontrol-billing", {
+        body: { action },
+      });
+    } catch {
+      throw Error("No se ha podido comprobar Stripe. Inténtalo de nuevo.");
+    }
+  })();
+  const { data, error } = response;
   let code = typeof data?.error === "string" ? data.error : null;
   if (error) {
     const context = (error as { context?: unknown }).context;
