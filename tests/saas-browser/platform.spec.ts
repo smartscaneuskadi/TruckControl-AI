@@ -2407,7 +2407,7 @@ test.describe("copia cifrada y sincronización", () => {
     const open = page.getByRole("button", { name: "Abrir menú", exact: true });
     if (await open.isVisible()) await open.click();
     await page.getByRole("complementary", { name: "Navegación principal" })
-      .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+      .getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true }).click();
     await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
     await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
     await context.setOffline(true);
@@ -2447,7 +2447,7 @@ test.describe("copia cifrada y sincronización", () => {
     const open = other.getByRole("button", { name: "Abrir menú", exact: true });
     if (await open.isVisible()) await open.click();
     await other.getByRole("complementary", { name: "Navegación principal" })
-      .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+      .getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true }).click();
     await expect(other.getByLabel("Contraseña", { exact: true })).toBeVisible();
     // This notification is emitted by the real SDK through its browser channel.
     await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
@@ -5053,7 +5053,7 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     await page.getByRole("button", { name: "Entrar en CargoTrack", exact: true }).click();
     await expect(page.frameLocator("iframe.cargotrack-frame").locator("body")).toContainText("Proveedor ficticio");
     await openMainMenu(page);
-    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await menu.getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true }).click();
     await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
     await expect(page.locator("iframe.cargotrack-frame")).toHaveCount(0);
     await page.getByLabel("Correo electrónico", { exact: true }).fill("customer@example.com");
@@ -5099,7 +5099,7 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     await expect(page.locator(".workspace-label")).toContainText("Empresa ficticia SaaS");
     const menu = await openMainMenu(page);
     const settings = menu.getByRole("link", { name: "Configuración", exact: true });
-    const logout = menu.getByRole("button", { name: "Cerrar sesión", exact: true });
+    const logout = menu.getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true });
     expect(await settings.evaluate((element) => element.nextElementSibling?.textContent?.trim())).toBe("Cerrar sesión");
     let finish!: () => Promise<void>;
     let started!: () => void;
@@ -5116,7 +5116,7 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     });
     await logout.click();
     await requestStarted;
-    const pending = menu.getByRole("button", { name: "Cerrando sesión…", exact: true });
+    const pending = menu.getByRole("button", { name: "Cerrando sesión de TruckControl…", exact: true });
     await expect(pending).toBeDisabled();
     await expect(pending).toHaveAttribute("aria-busy", "true");
     await pending.evaluate((button) => { (button as HTMLButtonElement).click(); (button as HTMLButtonElement).click(); });
@@ -5138,7 +5138,7 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     await page.evaluate(() => { location.hash = "/cargotrack"; });
     await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
     const menu = await openMainMenu(page);
-    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await menu.getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true }).click();
     await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
     const callsAfterLogout = f.calls.length;
     await page.goBack();
@@ -5169,7 +5169,7 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
         body: deny ? JSON.stringify({ code: "synthetic_rejection", message: "Private provider diagnostic must not be displayed" }) : "{}",
       });
     });
-    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await menu.getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true }).click();
     const notice = page.getByRole("alert").filter({ hasText: "Tu sesión en este dispositivo se ha cerrado" });
     await expect(notice).toContainText("no hemos podido confirmar el cierre en el servidor");
     await expect(page.locator("body")).not.toContainText("Private provider diagnostic");
@@ -5186,7 +5186,7 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     await expect(notice).toHaveCount(0);
     deny = false;
     await openMainMenu(page);
-    await menu.getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    await menu.getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true }).click();
     await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
     expect(requests).toBe(2);
   });
@@ -5197,7 +5197,7 @@ test.describe("CargoTrack y cierre de sesión del menú", () => {
     await page.getByRole("button", { name: "Explorar la demo", exact: true }).click();
     await expect(page.locator(".workspace-label")).toContainText("Flota de demostración");
     const menu = await openMainMenu(page);
-    await expect(menu.getByRole("button", { name: "Cerrar sesión", exact: true })).toHaveCount(0);
+    await expect(menu.getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true })).toHaveCount(0);
     await menu.getByRole("link", { name: "CargoTrack", exact: true }).click();
     await expect(page.getByRole("heading", { name: "CargoTrack", exact: true })).toBeVisible();
   });
@@ -5221,7 +5221,7 @@ test("una página restaurada de la caché exige verificar la sesión antes de mo
   const open = page.getByRole("button", { name: "Abrir menú", exact: true });
   if (await open.isVisible()) await open.click();
   await page.getByRole("complementary", { name: "Navegación principal" })
-    .getByRole("button", { name: "Cerrar sesión", exact: true }).click();
+    .getByRole("button", { name: "Cerrar sesión de TruckControl", exact: true }).click();
   await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true })));
   await expect(page.getByLabel("Contraseña", { exact: true })).toBeVisible();
