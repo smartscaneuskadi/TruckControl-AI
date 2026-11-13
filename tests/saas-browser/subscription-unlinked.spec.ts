@@ -321,7 +321,6 @@ test("la revocación administrativa limpia los datos y no acepta una declaració
 }) => {
   const f = await fixture(page),
     panel = await open(page);
-  f.controls.denied = true;
   await panel
     .getByRole("button", { name: "Declarar revisión", exact: true })
     .click();
@@ -332,6 +331,9 @@ test("la revocación administrativa limpia los datos y no acepta una declaració
     .getByLabel("Referencia de evidencia", { exact: true })
     .fill("Synthetic revoked reference");
   await panel.getByRole("checkbox").check();
+  // Revoke at the write boundary: the operator must be able to open the form
+  // before permissions are withdrawn, but the submitted RPC must be denied.
+  f.controls.denied = true;
   await panel.getByRole("button", { name: "Registrar declaración" }).click();
   await expect(panel.getByRole("alert")).toContainText("sesión");
   expect(f.count()).toBe(0);
