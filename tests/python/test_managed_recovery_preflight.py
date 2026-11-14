@@ -12,6 +12,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "managed_recovery_preflight.py"
 spec = importlib.util.spec_from_file_location("managed_recovery_preflight", SCRIPT)
@@ -160,6 +161,28 @@ class RecoveryPreflightTests(unittest.TestCase):
             item["sha256"] = hashlib.sha256(foreign.read_bytes()).hexdigest()
             with self.assertRaisesRegex(gate.PreflightError, "hardlinked evidence"):
                 self.inspect()
+
+    def test_rejects_file_swap_after_path_stat_even_with_identical_bytes(self) -> None:
+        # An attacker can replace a file after the initial stat but before open.
+        # A matching checksum alone must not excuse the changed inode.
+        target = self.root / self.manifest["artifacts"][0]["path"]
+        moved = self.root / "original-artifact.bin"
+        real_open = os.open
+        swapped = False
+
+        def swap_before_open(path: os.PathLike[str] | str, flags: int, *args: object, **kwargs: object) -> int:
+            nonlocal swapped
+            if Path(path) == target and not swapped:
+                swapped = True
+                target.rename(moved)
+                target.write_bytes(moved.read_bytes())
+            return real_open(path, flags, *args, **kwargs)
+
+        self.save()
+        with mock.patch.object(gate.os, "open", side_effect=swap_before_open):
+            with self.assertRaisesRegex(gate.PreflightError, "changed during validation"):
+                gate.inspect(self.root / "manifest.json", SOURCE)
+        self.assertTrue(swapped)
 
     def test_rejects_oversized_manifest_without_loading_unbounded_json(self) -> None:
         manifest_file = self.root / "manifest.json"
