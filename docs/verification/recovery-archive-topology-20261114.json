@@ -1,0 +1,31 @@
+{
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "base_commit": "1fbdf733c99b4e806bf33aca0c49ca7f1dff1edf",
+  "branch": "fix/recovery-storage-topology-20261114",
+  "scope": "offline saved Storage archive topology validation",
+  "defect": "a regular file and one of its descendants were both accepted, although no filesystem can preserve both",
+  "validation": {
+    "python_command": "python3 -B -m unittest discover -s tests/python -p 'test_*.py'",
+    "python_tests_passed": 130,
+    "backup_tests_included": 24,
+    "local_service_guard_tests_included": 9,
+    "conflict_orders_tested": ["ancestor_first", "descendant_first"],
+    "valid_hash_invalid_archive_rejected_before_target_mutation": true,
+    "explicit_and_implicit_directories_preserved": true,
+    "git_diff_check": "passed",
+    "complete_ci": "pending",
+    "actual_isolated_auth_storage_restore": "pending"
+  },
+  "synthetic_data_only": true,
+  "certifies_managed_restore": false,
+  "remote_migrations_applied": 0,
+  "provider_api_calls": 0,
+  "ai_calls": 0,
+  "new_charges_or_recurring_commitments": 0,
+  "public_release_unchanged": "Sites44 / 0.5.26-rc.1",
+  "payments_enabled": false,
+  "limitations": [
+    "managed Auth/Storage/Vault custody and provider restoration remain independently unverified",
+    "no physical Android or Windows device was tested"
+  ]
+}
