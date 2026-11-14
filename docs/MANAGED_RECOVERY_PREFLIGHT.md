@@ -17,7 +17,8 @@ una **recuperación lógica parcial**, no un backup de toda la infraestructura.
   desactivadas, correo saliente desactivado y consistencia de datos;
 - origen esperado `kkkemaycedexymrpaqtp`, destino diferente marcado como
   `isolated_test`, timestamps con zona horaria y duración observada;
-- rechazo de rutas que salen del directorio, artefactos incompletos,
+- rechazo de rutas que salen del directorio, archivos de evidencia vacíos,
+  artefactos incompletos,
   alterados, enlaces simbólicos internos o externos (también en el manifiesto),
   enlaces físicos/hardlinks a un mismo inode o archivo ajeno al directorio,
   o reutilización de un mismo archivo como prueba de varios controles;
