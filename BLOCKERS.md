@@ -1,3 +1,7 @@
+## Migraciones #68 y #69 aplicadas oficialmente · 13/11/2026 23:33 UTC
+
+Supabase TruckControl `kkkemaycedexymrpaqtp` confirma **69 migraciones**. Las dos nuevas son `20261113233252_subscription_snapshot_ordering` y `20261113233311_subscription_unlinked_incident_review`, aplicadas una sola vez con `apply_migration` oficial. SQL idéntico a las candidatas ensayadas; archivos renombrados para coincidir con el historial. Comprobadas las columnas `snapshot_revision` y `reconciliation_required`, dos tablas privadas, funciones y 0 avisos WARN/ERROR de seguridad (2 INFO deny-all anteriores). Flags intactos: `payments_enabled=false`, `prices_are_examples=true`, `registration_open=true`, `enforce_access=true`. **No existe aceptación Stripe LIVE, emisión fiscal real ni despliegue nuevo**. Sites42/demo6/rollback41 se conservan. No volver a ejecutar estas migraciones. [Recibo](docs/verification/supabase-migrations-68-69-20261113.json).
+
 ## Publicación segura42 comprobada · 13/11/2026 UTC
 
 https://truckcontrolai.com está en **Sites42/app0.5.24-rc.1**, fuente94c719a72f2548b0ec3c0889cea49ae8156952b7, despliegue appgdep_6af77bdd7b0c819191c1a367230964e8 SUCCEEDED. Se conservan41 y demo6. [Recibo](docs/verification/commercial-safe-update42-20261113.json).

@@ -215,7 +215,7 @@ describe("subscription lifecycle snapshot ordering in local PostgreSQL", () => {
         count = await receipts(p);
       await db.exec(
         readFileSync(
-          "supabase/migrations/20261113185620_subscription_snapshot_ordering.sql",
+          "supabase/migrations/20261113233252_subscription_snapshot_ordering.sql",
           "utf8",
         ),
       );

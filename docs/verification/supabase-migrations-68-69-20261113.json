@@ -1,0 +1,47 @@
+{
+  "verified_utc": "2026-11-13T23:33:23Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "method": "official Supabase apply_migration",
+  "applied_once": [
+    {
+      "version": "20261113233252",
+      "name": "subscription_snapshot_ordering",
+      "local_file": "20261113233252_subscription_snapshot_ordering.sql",
+      "blob": "23a525e242db280c390f52e94d6375290322201a",
+      "candidate_file": "20261113185620_subscription_snapshot_ordering.sql"
+    },
+    {
+      "version": "20261113233311",
+      "name": "subscription_unlinked_incident_review",
+      "local_file": "20261113233311_subscription_unlinked_incident_review.sql",
+      "blob": "b722ed83152b559827c1c0e9f572249890d3c930",
+      "candidate_file": "20261113185634_subscription_unlinked_incident_review.sql"
+    }
+  ],
+  "verified": {
+    "migration_count": 69,
+    "columns_snapshot_revision": true,
+    "columns_reconciliation_required": true,
+    "table_unlinked_cases": true,
+    "table_unlinked_entries": true,
+    "functions_ingest_and_recurring": true,
+    "security_WARN_ERROR": 0,
+    "security_INFO": 2,
+    "health_lints": 0,
+    "flags": {
+      "payments_enabled": false,
+      "prices_are_examples": true,
+      "registration_open": true,
+      "enforce_access": true
+    }
+  },
+  "no_new_purchases_or_paid_provider_calls": true,
+  "limitations": [
+    "No production Stripe signed webhook acceptance",
+    "No GDTaller/TicketBAI authentic invoice",
+    "No live published application GET from this runtime",
+    "No managed restore/physical device or Play signing",
+    "Commercial launch still blocked"
+  ],
+  "historical_sites42_receipt_unchanged": true
+}

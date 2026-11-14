@@ -1,6 +1,6 @@
 # Orden de eventos del ciclo de suscripción
 
-Propuesta local de 13/11/2026; no aplicada ni desplegada. La migración aditiva `20261113185620_subscription_snapshot_ordering.sql` fue creada con Supabase CLI oficial 3.0.0. Conserva las migraciones aplicadas y la identidad, permisos y modo invoker del RPC existente.
+Migración aplicada una vez mediante el canal oficial Supabase el 13/11/2026 UTC (versión remota `20261113233252`). El SQL se conserva idéntico; archivo local `20261113233252_subscription_snapshot_ordering.sql`. La propuesta original se creó con Supabase CLI oficial 3.0.0. Este DDL no acredita Stripe LIVE ni lanzamiento comercial. Conserva las migraciones aplicadas y la identidad, permisos y modo invoker del RPC existente.
 
 Stripe `event.created` tiene resolución de segundos. Dos eventos distintos del mismo segundo no prueban el orden de cancelación o reanudación; el ID del evento tampoco es una versión del estado.
 
@@ -12,7 +12,7 @@ El ciclo de suscripción por sí solo no concede acceso ni crea factura fiscal. 
 
 Una suscripción guardada como terminal (`canceled` o `incomplete_expired`) conserva la regla de gestión existente: no se ofrece cancelar ni reanudar ese identificador. Si también está pendiente de confirmar, la interfaz evita afirmar un estado definitivo e indica actualizar el estado o contactar con soporte. Requiere conciliación canónica; esta entrega no añade una petición explícita de conciliación al botón de actualizar.
 
-La prueba local cubre actualización con datos existentes y conservación de OID/ACL, eventos anteriores/posteriores/del mismo segundo, cancelación y reanudación solapadas, duplicados y propiedad, mensualidad pagada ambigua, errores y límite de reintentos. Usa PostgreSQL PGlite y transportes ficticios; no acredita concurrencia de conexiones PostgreSQL independientes ni aceptación real de Stripe. Para una futura publicación, revisar y aplicar primero la migración autorizada, y después publicar el handler compatible.
+La prueba local cubre actualización con datos existentes y conservación de OID/ACL, eventos anteriores/posteriores/del mismo segundo, cancelación y reanudación solapadas, duplicados y propiedad, mensualidad pagada ambigua, errores y límite de reintentos. Usa PostgreSQL PGlite y transportes ficticios; no acredita concurrencia de conexiones PostgreSQL independientes ni aceptación real de Stripe. DDL aplicado; pendiente verificar el handler nativo en entorno de aceptación y las pruebas externas antes de habilitar cobros.
 
 El arnés aislado de CI `scripts/verify-financial-incidents-postgres.py` incorpora los contratos de `tests/postgres/subscription_contracts.py`: disputas canónicas `dp_`, conservación de evidencia histórica `du_`, actualización transaccional, dos conexiones con contención real para cancelar y reanudar en el mismo segundo, carrera contra el bridge pagado y rollback ante fallos del recibo o auditoría. Se ejecutan antes de la recuperación lógica existente. Los IDs de evento no deciden el orden.
 
