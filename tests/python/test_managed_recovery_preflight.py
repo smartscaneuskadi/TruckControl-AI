@@ -69,6 +69,14 @@ class RecoveryPreflightTests(unittest.TestCase):
         self.assertEqual(result["observed_restore_duration_seconds"], 1200)
         self.assertEqual(len(result["checked_controls"]), len(gate.CHECKS))
 
+    def test_manifest_schema_version_requires_json_integer_not_bool_or_float(self) -> None:
+        # Python considers True == 1 and 1.0 == 1; JSON schema must not.
+        for invalid in (True, 1.0, "1", None):
+            with self.subTest(schema_version=invalid):
+                self.manifest["schema_version"] = invalid
+                with self.assertRaisesRegex(gate.PreflightError, "unsupported manifest schema"):
+                    self.inspect()
+
     def test_prevents_wrong_source_or_live_destination(self) -> None:
         self.manifest["source_project_ref"] = "another-project"
         with self.assertRaises(gate.PreflightError):
