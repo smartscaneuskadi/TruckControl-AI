@@ -25,6 +25,8 @@ CHECKS = {
     "data_consistency",
 }
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
+# Bound untrusted JSON before decoding; individual evidence blobs remain streamed.
+MAX_MANIFEST_BYTES = 1024 * 1024
 SENSITIVE_KEYS = {"password", "secret", "token", "api_key", "private_key", "credential"}
 
 
@@ -130,8 +132,11 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     manifest_file = manifest_file.resolve(strict=True)
     root = manifest_file.parent
     try:
+        with manifest_file.open("rb") as source:
+            payload = source.read(MAX_MANIFEST_BYTES + 1)
+        _require(len(payload) <= MAX_MANIFEST_BYTES, "recovery manifest exceeds size limit")
         manifest = json.loads(
-            manifest_file.read_text(encoding="utf-8"),
+            payload.decode("utf-8"),
             object_pairs_hook=_unique_json_object,
         )
     except PreflightError:
