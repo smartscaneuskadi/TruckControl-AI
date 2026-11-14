@@ -223,6 +223,22 @@ class RecoveryPreflightTests(unittest.TestCase):
         with self.assertRaisesRegex(gate.PreflightError, "unexpected or missing"):
             self.inspect()
 
+    def test_unhashable_artifact_kinds_fail_closed(self) -> None:
+        # Lists and objects from JSON are unhashable; the CLI must reject them
+        # without an uncaught TypeError or a traceback.
+        for invalid in ([], {}, ["postgresql"], {"kind": "postgresql"}, None, True, 1):
+            with self.subTest(kind=invalid):
+                self.manifest["artifacts"][0]["kind"] = invalid
+                with self.assertRaisesRegex(gate.PreflightError, "invalid or duplicated artifact kind"):
+                    self.inspect()
+
+    def test_deep_json_fails_closed_without_recursion_traceback(self) -> None:
+        # A bounded-byte manifest can still have pathological nesting.
+        manifest_file = self.root / "manifest.json"
+        manifest_file.write_text("[" * 50000 + "0" + "]" * 50000, encoding="utf-8")
+        with self.assertRaises(gate.PreflightError):
+            gate.inspect(manifest_file, SOURCE)
+
     def test_no_secrets_or_personal_data_backups_in_manifest(self) -> None:
         self.manifest["api_token"] = "not-a-real-token"
         with self.assertRaises(gate.PreflightError):

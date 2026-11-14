@@ -141,10 +141,13 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
         )
     except PreflightError:
         raise
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, RecursionError) as exc:
         raise PreflightError("cannot read JSON manifest") from exc
     _require(isinstance(manifest, dict), "manifest must be an object")
-    _no_secrets(manifest)
+    try:
+        _no_secrets(manifest)
+    except RecursionError as exc:
+        raise PreflightError("recovery manifest nesting exceeds limit") from exc
     _strict_fields(manifest, MANIFEST_FIELDS)
     # bool and float compare equal to 1 in Python; JSON schema versions must be integers.
     _require(type(manifest.get("schema_version")) is int and manifest["schema_version"] == 1, "unsupported manifest schema")
@@ -170,7 +173,8 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
         _require(isinstance(item, dict), "invalid artifact")
         _strict_fields(item, ARTIFACT_FIELDS)
         kind = item.get("kind")
-        _require(kind in ARTIFACTS and kind not in kinds, "invalid or duplicated artifact kind")
+        # Untrusted JSON may supply a list/object; never let set lookup raise TypeError.
+        _require(isinstance(kind, str) and kind in ARTIFACTS and kind not in kinds, "invalid or duplicated artifact kind")
         relative = item.get("path")
         _require(isinstance(relative, str) and bool(relative), "missing evidence filename")
         key = Path(relative).as_posix()
