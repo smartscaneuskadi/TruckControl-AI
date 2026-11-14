@@ -170,5 +170,20 @@
     "First Gmail-specific CI setup inherited concrete prices from the separate financial fixture; fixed only the verified disposable setup, then all7races passed",
     "Old15minute PR quality expired during its last public check; complete source push already passed and new25minute PR/source runs both passed",
     "First local health monitor still expected app0.5.25; corrected its expected deployment metadata to actual0.5.26 without weakening identity assertions"
-  ]
+  ],
+  "isolated_postgres": {
+    "total_checks": 287,
+    "schema_checks": 96,
+    "financial_checks": 155,
+    "gmail_checks": 36,
+    "real_contention_pairs": 35,
+    "logical_restores": 2,
+    "managed_restore": false
+  },
+  "new_checkout_real_sandbox_acceptance": {
+    "status": "blocked_before_mutation",
+    "reason": "Official CLI1.55.10 with explicit TruckControl-QA could not authenticate its canonical GET /v1/account; exact sandbox identity and mode unproven. No new authentication requested, no Checkout created and no payment. This does not diagnose revocation of backend credentials.",
+    "new_provider_writes": 0,
+    "new_payment_operations": 0
+  }
 }

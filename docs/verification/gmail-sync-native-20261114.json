@@ -53,7 +53,7 @@
     "conclusion": "success",
     "new_real_contention_pairs": 7,
     "new_checks": 36,
-    "existing_checks": 250,
+    "existing_checks": 251,
     "existing_real_contention_pairs": 28,
     "logical_restores": 2,
     "managed_restore": false,
@@ -62,7 +62,11 @@
       "id": 43620407334,
       "conclusion": "failure",
       "cause": "The new Gmail harness assumed example prices were enabled after the separate financial fixture intentionally used concrete prices. Fixed only the verified disposable setup; no production switch or existing acceptance was weakened."
-    }
+    },
+    "total_checks": 287,
+    "schema_checks": 96,
+    "financial_checks": 155,
+    "count_note": "The existing schema runner now includes one additional migration-file validation:96+155+36=287. Counts verified from the exact successful CI job log."
   },
   "real_google_mailbox_acceptance": false,
   "real_stripe_payment_acceptance": false,
