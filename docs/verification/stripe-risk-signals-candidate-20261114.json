@@ -1,6 +1,6 @@
 {
   "contract": "truckcontrol-stripe-risk-signals-candidate-v1",
-  "checked_at": "2026-11-14T08:27:00Z",
+  "checked_at": "2026-11-14T08:25:29Z",
   "repository": "smartscaneuskadi/TruckControl-AI",
   "base_commit": "2aa2eebbe9ee408c4b1e7b5f7d4e12c8aff75f40",
   "implementation_commit": "97d857f0c2463e36e7ae7841d0a13e68ef0da7c6",
