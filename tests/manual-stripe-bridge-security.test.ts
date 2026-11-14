@@ -209,7 +209,12 @@ describe("atomic Stripe-to-manual-fiscal proposal: isolated PGlite only", () => 
     for(const command of [
       "update private.tc_manual_stripe_bridge_receipts set proof_sha256=repeat('0',64)",
       "delete from private.tc_manual_stripe_bridge_receipts",
-      "truncate private.tc_manual_stripe_bridge_receipts",
+      "truncate private.tc_manual_stripe_bridge_receipts cascade",
     ]) await expect(db.exec(command)).rejects.toThrow("manual_invoice_intake_immutable");
+  });
+  it("also rejects non-cascading TRUNCATE through the risk ledger foreign key without losing evidence", async () => {
+    const before = (await db.query("select * from private.tc_manual_stripe_bridge_receipts order by provider_event_id")).rows;
+    await expect(db.exec("truncate private.tc_manual_stripe_bridge_receipts")).rejects.toThrow("cannot truncate a table referenced in a foreign key constraint");
+    expect((await db.query("select * from private.tc_manual_stripe_bridge_receipts order by provider_event_id")).rows).toEqual(before);
   });
 });

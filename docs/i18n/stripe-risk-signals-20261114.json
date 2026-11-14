@@ -1,0 +1,175 @@
+{
+  "contract": "truckcontrol-i18n-additions-v1",
+  "source": "src/components/SubscriptionRiskSignals.tsx",
+  "note": "Merge these normalized keys into source-messages.json and the three locale dictionaries. Existing translations remain unchanged.",
+  "messages": [
+    {
+      "es": "Señales tempranas de fraude",
+      "en": "Early fraud warnings",
+      "ro": "Avertizări timpurii de fraudă",
+      "fr": "Alertes précoces de fraude"
+    },
+    {
+      "es": "Solo información",
+      "en": "Information only",
+      "ro": "Doar informativ",
+      "fr": "À titre informatif"
+    },
+    {
+      "es": "Una señal de Stripe no confirma fraude, un contracargo ni una pérdida. No se ejecutan reembolsos, cambios de licencia ni facturas.",
+      "en": "A Stripe warning does not confirm fraud, a chargeback or a loss. No refunds, licence changes or invoices are executed.",
+      "ro": "O avertizare Stripe nu confirmă frauda, o contestare a plății sau o pierdere. Nu se execută rambursări, modificări de licență sau facturi.",
+      "fr": "Une alerte Stripe ne confirme ni fraude, ni contestation, ni perte. Aucun remboursement, changement de licence ou facture n’est exécuté."
+    },
+    {
+      "es": "Este registro no acredita que el receptor esté activado. Los datos reflejan la última observación guardada, no una consulta en tiempo real.",
+      "en": "This register does not prove that the receiver is enabled. Data reflects the last saved observation, not a real-time query.",
+      "ro": "Acest registru nu dovedește că receptorul este activat. Datele reflectă ultima observație salvată, nu o interogare în timp real.",
+      "fr": "Ce registre ne prouve pas que le récepteur est activé. Les données reflètent la dernière observation enregistrée, pas une consultation en temps réel."
+    },
+    {
+      "es": "Actualizar señales",
+      "en": "Refresh warnings",
+      "ro": "Actualizează avertizările",
+      "fr": "Actualiser les alertes"
+    },
+    {
+      "es": "Las señales privadas no están disponibles sin conexión.",
+      "en": "Private warnings are unavailable offline.",
+      "ro": "Avertizările private nu sunt disponibile offline.",
+      "fr": "Les alertes privées sont indisponibles hors ligne."
+    },
+    {
+      "es": "Comprobando registro de señales…",
+      "en": "Checking warning register…",
+      "ro": "Se verifică registrul avertizărilor…",
+      "fr": "Vérification du registre des alertes…"
+    },
+    {
+      "es": "El registro de señales todavía no está disponible.",
+      "en": "The warning register is not available yet.",
+      "ro": "Registrul avertizărilor nu este încă disponibil.",
+      "fr": "Le registre des alertes n’est pas encore disponible."
+    },
+    {
+      "es": "No hay observaciones guardadas en esta página. Esto no certifica ausencia de riesgo.",
+      "en": "There are no saved observations on this page. This does not certify the absence of risk.",
+      "ro": "Nu există observații salvate pe această pagină. Acest lucru nu certifică absența riscului.",
+      "fr": "Aucune observation n’est enregistrée sur cette page. Cela ne certifie pas l’absence de risque."
+    },
+    {
+      "es": "Entorno de prueba",
+      "en": "Test environment",
+      "ro": "Mediu de testare",
+      "fr": "Environnement de test"
+    },
+    {
+      "es": "Entorno real",
+      "en": "Live environment",
+      "ro": "Mediu real",
+      "fr": "Environnement réel"
+    },
+    {
+      "es": "Ver señal",
+      "en": "View warning",
+      "ro": "Vezi avertizarea",
+      "fr": "Voir l’alerte"
+    },
+    {
+      "es": "Señal observada",
+      "en": "Observed warning",
+      "ro": "Avertizare observată",
+      "fr": "Alerte observée"
+    },
+    {
+      "es": "Importe original del pago:",
+      "en": "Original payment amount:",
+      "ro": "Suma inițială a plății:",
+      "fr": "Montant initial du paiement :"
+    },
+    {
+      "es": ". Este importe no representa una pérdida.",
+      "en": ". This amount does not represent a loss.",
+      "ro": ". Această sumă nu reprezintă o pierdere.",
+      "fr": ". Ce montant ne représente pas une perte."
+    },
+    {
+      "es": "Declarar revisión de señal",
+      "en": "Declare warning review",
+      "ro": "Declară verificarea avertizării",
+      "fr": "Déclarer la vérification de l’alerte"
+    },
+    {
+      "es": "Historial de señales y revisiones",
+      "en": "Warning and review history",
+      "ro": "Istoricul avertizărilor și verificărilor",
+      "fr": "Historique des alertes et vérifications"
+    },
+    {
+      "es": "Ver entradas anteriores",
+      "en": "View earlier entries",
+      "ro": "Vezi înregistrările anterioare",
+      "fr": "Voir les entrées précédentes"
+    },
+    {
+      "es": "Esta declaración no confirma fraude ni resuelve el pago. No cambia el acceso del cliente.",
+      "en": "This declaration does not confirm fraud or resolve the payment. It does not change customer access.",
+      "ro": "Această declarație nu confirmă frauda și nu soluționează plata. Nu modifică accesul clientului.",
+      "fr": "Cette déclaration ne confirme pas une fraude et ne résout pas le paiement. Elle ne modifie pas l’accès du client."
+    },
+    {
+      "es": "Nota de revisión",
+      "en": "Review note",
+      "ro": "Notă de verificare",
+      "fr": "Note de vérification"
+    },
+    {
+      "es": "El resultado es incierto. Reintentar conserva la misma identidad, versión y nota. Al cerrar se vuelve a comprobar el registro.",
+      "en": "The result is uncertain. Retrying preserves the same identity, version and note. Closing checks the register again.",
+      "ro": "Rezultatul este incert. Reîncercarea păstrează aceeași identitate, versiune și notă. La închidere se verifică din nou registrul.",
+      "fr": "Le résultat est incertain. Réessayer conserve la même identité, version et note. La fermeture vérifie à nouveau le registre."
+    },
+    {
+      "es": "Confirmar revisión de señal",
+      "en": "Confirm warning review",
+      "ro": "Confirmă verificarea avertizării",
+      "fr": "Confirmer la vérification de l’alerte"
+    },
+    {
+      "es": "Evento y fecha",
+      "en": "Event and date",
+      "ro": "Eveniment și dată",
+      "fr": "Événement et date"
+    },
+    {
+      "es": "Señal accionable al ocurrir / al observar",
+      "en": "Actionable warning at event / observation",
+      "ro": "Avertizare acționabilă la eveniment / observare",
+      "fr": "Alerte exploitable lors de l’événement / observation"
+    },
+    {
+      "es": "Tipo comunicado por el emisor",
+      "en": "Type reported by the issuer",
+      "ro": "Tip comunicat de emitent",
+      "fr": "Type communiqué par l’émetteur"
+    },
+    {
+      "es": "Observación guardada",
+      "en": "Saved observation",
+      "ro": "Observație salvată",
+      "fr": "Observation enregistrée"
+    },
+    {
+      "es": "Revisa la nota antes de continuar.",
+      "en": "Check the note before continuing.",
+      "ro": "Verifică nota înainte de a continua.",
+      "fr": "Vérifiez la note avant de continuer."
+    },
+    {
+      "es": "Revisión declarada. No modifica el pago ni el acceso.",
+      "en": "Review declared. The payment and access are unchanged.",
+      "ro": "Verificare declarată. Plata și accesul rămân neschimbate.",
+      "fr": "Vérification déclarée. Le paiement et l’accès restent inchangés."
+    }
+  ]
+}

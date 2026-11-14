@@ -3,8 +3,17 @@ import { verifyStripeSignature } from "../truckcontrol-billing/handler.ts";
 
 export interface RecurringGateway {
   manualCheckoutReady?(): Promise<boolean>;
-  authenticate(token: string): Promise<{ id: string } | null>;
+  authenticate(
+    token: string,
+  ): Promise<{ id: string; session_id?: string } | null>;
   server<T>(action: string, data: Record<string, unknown>): Promise<T>;
+  refreshReady?(): Promise<boolean>;
+  refresh?<T>(
+    action: "observe" | "commit",
+    actor: { id: string; session_id: string },
+    operation: string,
+    data: Record<string, unknown>,
+  ): Promise<T>;
 }
 export interface RecurringConfig {
   appOrigin: string;
@@ -16,6 +25,8 @@ export interface RecurringConfig {
   termsUrl?: string;
   /** Release gate, set only after fiscal issuance and automatic delivery pass acceptance. */
   invoicingVerified?: boolean;
+  /** Optional kill switch; the native RPC capability must ALSO be present. */
+  snapshotRefreshAccepted?: boolean;
 }
 type Obj = Record<string, unknown>;
 interface Order {
@@ -98,10 +109,24 @@ export function createRecurringHandler(
   const checkoutConfigured = Boolean(
     config.enabled && config.stripeKey && config.termsVersion && termsUrl,
   );
+  async function refreshReady() {
+    if (
+      config.snapshotRefreshAccepted === false ||
+      !config.stripeKey ||
+      !gateway.refresh
+    )
+      return false;
+    try {
+      return (await gateway.refreshReady?.()) === true;
+    } catch {
+      return false;
+    }
+  }
   async function stripe(
     path: string,
     form?: URLSearchParams,
     idempotency?: string,
+    budget?: AbortSignal,
   ): Promise<Obj> {
     if (!config.stripeKey) throw new Error("provider_not_configured");
     const response = await fetcher(`https://api.stripe.com/v1/${path}`, {
@@ -115,7 +140,9 @@ export function createRecurringHandler(
         ...(idempotency ? { "Idempotency-Key": idempotency } : {}),
       },
       ...(form ? { body: form } : {}),
-      signal: AbortSignal.timeout(20000),
+      signal: budget
+        ? AbortSignal.any([budget, AbortSignal.timeout(20000)])
+        : AbortSignal.timeout(20000),
       redirect: "error",
     });
     if (!response.ok) throw new Error("provider_unavailable");
@@ -361,6 +388,117 @@ export function createRecurringHandler(
       } catch {
         return json({ error: "invalid_request" }, 400);
       }
+      if (body.action === "refresh") {
+        if (
+          !isUuid(body.operation_id) ||
+          Object.keys(body).some(
+            (key) => key !== "action" && key !== "operation_id",
+          )
+        )
+          return json({ error: "invalid_request" }, 400);
+        if (!isUuid(user.session_id))
+          return json({ error: "authentication_required" }, 401);
+        if (!gateway.refresh || !(await refreshReady()))
+          return json({ error: "subscription_refresh_unavailable" }, 503);
+        const actor = { id: user.id, session_id: user.session_id };
+        const deadline = AbortSignal.timeout(25000);
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const saved = await gateway.refresh<Obj>(
+            "observe",
+            actor,
+            body.operation_id,
+            {},
+          );
+          if (saved.throttled === true)
+            return json(
+              {
+                error: "subscription_refresh_rate_limited",
+                retry_after_seconds: 60,
+              },
+              429,
+            );
+          if (saved.refreshed === true && saved.duplicate === true)
+            return json({ refreshed: true, duplicate: true });
+          if (saved.available !== true)
+            return json({ error: "subscription_not_available" }, 409);
+          if (
+            saved.user_id !== actor.id ||
+            !isUuid(saved.request_id) ||
+            !providerId(saved.subscription_id, "sub") ||
+            !providerId(saved.customer_id, "cus") ||
+            typeof saved.snapshot_revision !== "string" ||
+            !/^(0|[1-9][0-9]{0,18})$/.test(saved.snapshot_revision) ||
+            saved.currency !== "EUR" ||
+            !Number.isSafeInteger(saved.unit_amount) ||
+            Number(saved.unit_amount) < 100
+          )
+            throw new Error("subscription_refresh_binding_invalid");
+          const canonical = await stripe(
+            `subscriptions/${saved.subscription_id}`,
+            undefined,
+            undefined,
+            deadline,
+          );
+          const metadata = object(canonical.metadata),
+            items = object(canonical.items);
+          const item = object(
+            Array.isArray(items.data) && items.data.length === 1
+              ? items.data[0]
+              : null,
+          );
+          const price = object(item.price),
+            recurring = object(price.recurring);
+          const periodEnd =
+            item.current_period_end ?? canonical.current_period_end;
+          if (
+            canonical.id !== saved.subscription_id ||
+            canonical.customer !== saved.customer_id ||
+            metadata.tc_user_id !== actor.id ||
+            metadata.tc_request_id !== saved.request_id ||
+            items.has_more === true ||
+            item.quantity !== 1 ||
+            price.currency !== "eur" ||
+            price.unit_amount !== saved.unit_amount ||
+            recurring.interval !== "month" ||
+            recurring.interval_count !== 1 ||
+            recurring.usage_type === "metered" ||
+            !seconds(periodEnd) ||
+            !states.has(String(canonical.status)) ||
+            typeof canonical.cancel_at_period_end !== "boolean"
+          )
+            throw new Error("subscription_refresh_canonical_invalid");
+          // Do not save a provider response into a session that was closed while
+          // GET was pending. The SQL commit also locks/rechecks these Auth rows.
+          const live = await gateway.authenticate(token!);
+          if (live?.id !== actor.id || live.session_id !== actor.session_id)
+            return json({ error: "authentication_required" }, 401);
+          const result = await gateway.refresh<Obj>(
+            "commit",
+            actor,
+            body.operation_id,
+            {
+              request_id: saved.request_id,
+              subscription_id: saved.subscription_id,
+              customer_id: saved.customer_id,
+              snapshot_revision: saved.snapshot_revision,
+              state: canonical.status,
+              cancel_at_period_end: canonical.cancel_at_period_end,
+              period_end: periodEnd,
+              unit_amount: price.unit_amount,
+              currency: "EUR",
+            },
+          );
+          if (
+            result.refreshed === true &&
+            typeof result.duplicate === "boolean"
+          )
+            return json({ refreshed: true, duplicate: result.duplicate });
+          if (result.reconcile_required !== true)
+            throw new Error("subscription_refresh_not_saved");
+          // A CAS conflict always starts a NEW observation and canonical GET.
+        }
+        return json({ error: "subscription_refresh_retry_required" }, 409);
+      }
       const checkFiscal =
         body.action === "status" ||
         body.action === "checkout" ||
@@ -378,6 +516,7 @@ export function createRecurringHandler(
           configured,
           invoice_delivery_ready: invoiceReady,
           management_available: Boolean(config.stripeKey),
+          refresh_available: await refreshReady(),
           terms_version: config.termsVersion ?? null,
           terms_url: termsUrl,
         });

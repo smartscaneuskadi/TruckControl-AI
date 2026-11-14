@@ -1,0 +1,101 @@
+{
+  "checked_at": "2026-11-14T08:05:06.603515+00:00",
+  "project": "kkkemaycedexymrpaqtp",
+  "source": "2aa2eebbe9ee408c4b1e7b5f7d4e12c8aff75f40",
+  "remote_migrations": 69,
+  "migrations_reapplied": false,
+  "functions": [
+    {
+      "slug": "truckcontrol-subscriptions",
+      "previous_version": 18,
+      "version": 19,
+      "status": "ACTIVE",
+      "verified_runtime_files": 11
+    },
+    {
+      "slug": "truckcontrol-stripe-incidents",
+      "previous_version": 5,
+      "version": 6,
+      "status": "ACTIVE",
+      "verified_runtime_files": 13
+    }
+  ],
+  "tests": {
+    "focused": 105,
+    "deno": "2.9.6 PASS",
+    "https_denials": 6
+  },
+  "business": {
+    "payments_enabled": false,
+    "prices_are_examples": true,
+    "enabled_channels": 0,
+    "unlinked_worker_activation_verified": false
+  },
+  "production": {
+    "site": 42,
+    "application": "0.5.24-rc.1",
+    "unchanged": true,
+    "demo_site": 6,
+    "rollback_site": 41
+  },
+  "costs": {
+    "new_purchases_eur": 0,
+    "new_commitments_eur": 0,
+    "new_model_calls": 0,
+    "historical_200eur_ledger_reconciled": false,
+    "remaining_budget_eur": null
+  },
+  "commercial_acceptance": false,
+  "https_denials": {
+    "checked_at": "2026-11-14T08:05:06.603515+00:00",
+    "results": [
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "method",
+        "status": 405,
+        "code": "method_not_allowed",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "missing_session",
+        "status": 401,
+        "code": "authentication_required",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "invalid_session",
+        "status": 401,
+        "code": "authentication_required",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "foreign_origin",
+        "status": 403,
+        "code": "origin_not_allowed",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-stripe-incidents",
+        "check": "method",
+        "status": 405,
+        "code": "method_not_allowed",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-stripe-incidents",
+        "check": "browser_denied",
+        "status": 403,
+        "code": "provider_webhook_only",
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "provider_calls": 0,
+    "model_calls": 0,
+    "data_mutations": 0,
+    "authenticated_acceptance": false
+  }
+}
