@@ -1,3 +1,7 @@
+## Continuación verificada · 14/11/2026 22:45 UTC
+
+El conector oficial `apply_migration` devolvió `expired`: "This confirmation expired after 2 minutes. Call `apply_migration` again to get a new confirmation." Supabase mantiene72 y prosrc anterior8ba277d1...; no es un error SQL ni una73 aplicada. La confirmación de esa tarjeta requiere al titular; no usar SQL/CLI alternativos para eludirla. Código y CI de PR133 ya integrados y correctos. Las otras puertas comerciales externas permanecen documentadas; cobrosOFF. [Recibo y límites](docs/verification/commercial-continuation-20261114.json).
+
 ## Actualización segura44 publicada y verificada · 14/11/2026 UTC
 
 https://truckcontrolai.com: **Sites44 / 0.5.26-rc.1**, fuente `43f9b2215424eb58c7a980d25b516d7fd9f4051b`, despliegue `appgdep_6af8a1d3905c81919699fbc3108d44a8` SUCCEEDED. PR128 integrado en `dd2b5309f45cb4feb11d15a1d46f3796e6630bad`; PR127 independiente conservado en main y en esta entrega documental. Gmail importa adjuntos posteriores al quinto y protege reconexiones; Checkout guardado se recupera sin recrear otro pago.

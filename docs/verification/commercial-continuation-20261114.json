@@ -1,0 +1,113 @@
+{
+  "recorded_at": "2026-11-14T22:46:38.456197+00:00",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "base_main_preserved": "e54c9a96b82d7386a6eff1486ad1a0d91093f1a2",
+  "merged_prs_this_execution": {
+    "130": "1fbdf733c99b4e806bf33aca0c49ca7f1dff1edf",
+    "131": "a33ffbd65d89f7398e7784588983463a805b64fb",
+    "132": "e2c9abf170c441baa571805656bb63c4f72cf9f0",
+    "133": "ef55b28cb5012b97f649b04ebf531d5761c0a8c5"
+  },
+  "independent_pr_134_preserved": true,
+  "public": {
+    "url": "https://truckcontrolai.com",
+    "sites_version": 44,
+    "app_version": "0.5.26-rc.1",
+    "source_commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
+    "active_verified": true,
+    "demo_version_preserved": 6,
+    "new_frontend_deployment": false
+  },
+  "implemented": [
+    "reject implausible isolated restore destination identifiers",
+    "strict recovery manifest JSON parser",
+    "reject normalized regular-file ancestors before preparing a Storage restore target",
+    "recover only the same saved and unexpired recurring Checkout after original quote age"
+  ],
+  "verification": {
+    "exact_source": "54693136299991eb35423f0344a0115992f24791",
+    "main_code_commit": "ef55b28cb5012b97f649b04ebf531d5761c0a8c5",
+    "main_quality_run": 43640320545,
+    "main_postgres_run": 43640320581,
+    "composed_pr_quality_run": 43639171381,
+    "composed_source_quality_run": 43639165451,
+    "composed_pr_postgres_run": 43639171392,
+    "composed_source_postgres_run": 43639165404,
+    "all_these_runs_completed_success": true,
+    "unit_and_sql_tests_per_exact_source_run": 1831,
+    "unit_files": 152,
+    "python_tests_in_exact_main133_run": 131,
+    "later_independent_pr134_python_changes_preserved_not_inferred_from_this_count": true,
+    "browser_per_exact_source_run": {
+      "demo": 94,
+      "company": 62,
+      "saas": 258,
+      "candidate": 20,
+      "production_build": 20
+    },
+    "sql_checks_by_phase": {
+      "schema": 97,
+      "financial": 196,
+      "gmail": 36
+    },
+    "sql_checks_total": 329,
+    "real_independent_backend_contention_pairs": 38,
+    "new_quote_races_included": 3,
+    "logical_dump_restore_roundtrips": 2,
+    "new_migration_ddl_rollback_verified": true,
+    "actual_auth_storage_restore_run": 43637623308,
+    "actual_auth_storage_restore_checks": 67,
+    "composed_auth_storage_restore_run": 43639165420,
+    "composed_auth_storage_restore_success": true,
+    "original_tests_preserved": 64,
+    "frozen_hashes_preserved": 11,
+    "new_live_provider_acceptance": false,
+    "physical_android_or_windows_tests": false,
+    "certifies_managed_restore": false
+  },
+  "supabase": {
+    "project": "kkkemaycedexymrpaqtp",
+    "observed_migrations": 72,
+    "last_applied_migration": "20261114173557_gmail_sync_lease_fencing",
+    "candidate_path": "supabase/migrations/20261114203240_subscription_reserved_quote_recovery.sql",
+    "candidate_sql_sha256": "66ee43f73b8b0f6c5c329874d4a56c66f5e4409d5a8791ca7b1f3a5dfee0664d",
+    "candidate_remote_applied": false,
+    "official_apply_first_attempt": "interrupted; no history or function change",
+    "official_apply_retry": {
+      "status": "expired",
+      "message": "This confirmation expired after 2 minutes. Call `apply_migration` again to get a new confirmation."
+    },
+    "observed_function_oid": 18420,
+    "observed_function_body_md5": "8ba277d1bfa7c1fbe33d7d50678103c1",
+    "candidate_function_body_md5": "414a74828f8a133afc705ac84baea010",
+    "anon_execute": false,
+    "authenticated_execute": false,
+    "service_role_execute": true,
+    "security_warnings_or_errors": 0,
+    "intentional_deny_all_info": 2,
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false,
+    "prices_are_examples": true,
+    "data_migrations_or_customer_mutations": 0
+  },
+  "budget": {
+    "new_purchases_or_charges": 0,
+    "new_recurring_commitments": 0,
+    "new_project_ai_calls": 0,
+    "cumulative_cap_eur": 200,
+    "historically_reconciled_remaining_eur": null,
+    "existing_ai_monthly_usd": 10,
+    "existing_ai_company_call_quota": 100
+  },
+  "commercial_launch_complete": false,
+  "next_owner_action": "When available to click within two minutes, request a fresh official Supabase approval card; no key, command or console work is required.",
+  "remaining_external_gates": [
+    "official connector confirmation for the tested saved-Checkout migration",
+    "native Stripe credential and signed payment-to-license-to-real-GDTaller/TicketBAI-PDF-and-delivery acceptance",
+    "public Google restricted-scope verification and authorized company Gmail acceptance",
+    "managed Auth/Storage/Vault backup custody and restoration",
+    "commercial Android signing/Play and physical Android/Windows acceptance",
+    "external legal and fiscal signoff and historical budget reconciliation"
+  ]
+}
