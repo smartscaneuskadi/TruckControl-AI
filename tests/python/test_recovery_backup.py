@@ -47,6 +47,17 @@ def archive(entries=None):
     return result.getvalue()
 
 
+def file_ancestor_conflicts():
+    return [
+        [("./tenant", tarfile.REGTYPE, PDF), ("tenant/document.pdf", tarfile.REGTYPE, PDF)],
+        [("tenant/archive", tarfile.REGTYPE, PDF),
+         ("tenant/archive/2026/11/document.pdf", tarfile.REGTYPE, PDF)],
+        [("tenant", tarfile.REGTYPE, PDF), ("tenant/archive", tarfile.DIRTYPE, b""),
+         ("tenant/archive/2026/document.pdf", tarfile.REGTYPE, PDF)],
+        [("tenant", tarfile.AREGTYPE, b""), ("./tenant/document.pdf", tarfile.REGTYPE, PDF)],
+    ]
+
+
 def rewrite_manifest(root, name, mutate):
     path = root / name
     value = json.loads(path.read_bytes())
@@ -85,6 +96,26 @@ class SavedBackupTests(unittest.TestCase):
             opened.getmembers()
             end = opened.offset
         backup.validate_storage_archive(data[:end + 1024])
+
+    def test_storage_regular_files_cannot_occupy_ancestor_directories_in_any_order(self):
+        for case, entries in enumerate(file_ancestor_conflicts()):
+            for reverse in (False, True):
+                with self.subTest(case=case, reverse=reverse), self.assertRaisesRegex(
+                        backup.BackupIntegrityError, "^backup_storage_archive_invalid$"):
+                    backup.validate_storage_archive(archive(entries[::-1] if reverse else entries))
+
+    def test_storage_explicit_and_implicit_directories_are_valid_in_any_order(self):
+        cases = [
+            [(".", tarfile.DIRTYPE, b""), ("./tenant", tarfile.DIRTYPE, b""),
+             ("tenant/archive/2026/document.pdf", tarfile.REGTYPE, PDF)],
+            [("tenant/archive/2026/one.pdf", tarfile.REGTYPE, PDF),
+             ("tenant/archive/2026/two.pdf", tarfile.REGTYPE, PDF)],
+            [("tenant", tarfile.REGTYPE, PDF), ("tenant-other/document.pdf", tarfile.REGTYPE, PDF)],
+        ]
+        for case, entries in enumerate(cases):
+            for reverse in (False, True):
+                with self.subTest(case=case, reverse=reverse):
+                    backup.validate_storage_archive(archive(entries[::-1] if reverse else entries))
 
     def test_truncation_empty_file_and_appended_bytes_fail_size_check(self):
         path = self.root / "database.dump"
@@ -340,6 +371,18 @@ class RestoreBoundaryTests(unittest.TestCase):
                 lambda value: value["artifacts"]["storage.private.tar"].update({
                     "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}))
         self.attempt(self.cases()[0], mutate)
+
+    def test_storage_ancestor_conflicts_with_valid_hash_never_mutate_target(self):
+        for case, entries in enumerate(file_ancestor_conflicts()):
+            for reverse in (False, True):
+                def mutate(root, manifest, files):
+                    data = archive(entries[::-1] if reverse else entries)
+                    (root / "storage.private.tar").write_bytes(data)
+                    return rewrite_manifest(root, manifest,
+                        lambda value: value["artifacts"]["storage.private.tar"].update({
+                            "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}))
+                with self.subTest(case=case, reverse=reverse):
+                    self.attempt(self.cases()[0], mutate)
 
     def test_invalid_backup_skips_cleanup_commands_for_unprepared_target(self):
         temporary = tempfile.TemporaryDirectory(prefix="tc-unprepared-target-test-")
