@@ -2898,5 +2898,6 @@
   "Tipo comunicado por el emisor": "Type communiqué par l’émetteur",
   "Observación guardada": "Observation enregistrée",
   "Revisa la nota antes de continuar.": "Vérifiez la note avant de continuer.",
-  "Revisión declarada. No modifica el pago ni el acceso.": "Vérification déclarée. Le paiement et l’accès restent inchangés."
+  "Revisión declarada. No modifica el pago ni el acceso.": "Vérification déclarée. Le paiement et l’accès restent inchangés.",
+  "La conexión de Gmail ha cambiado durante la importación. Se conservan los documentos guardados. Actualiza el estado y vuelve a importar desde la conexión actual.": "La connexion Gmail a changé pendant l’importation. Les documents enregistrés sont conservés. Actualisez l’état et relancez l’importation avec la connexion actuelle."
 }

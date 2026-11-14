@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import type { CompanyInvoice } from "../../src/integrations/supabase/database.types";
 import {
   mailPeriodBounds,
   mailPeriodPolicy,
@@ -38,11 +39,14 @@ async function fixture(
     completeStatus?: number;
     connectionState?: "connected" | "reauthorize";
     connectionReadFails?: boolean;
+    invoiceRows?: CompanyInvoice[];
     tickets?: string[];
     syncResponses?: {
       status: number;
       body: Record<string, unknown>;
       connectionState?: "connected" | "reauthorize";
+      connectionEmail?: string;
+      beforeReply?: () => Promise<void>;
     }[];
   } = {},
 ) {
@@ -53,6 +57,7 @@ async function fixture(
   }[] = [];
   let connected = Boolean(options.connectionState);
   let connectionState = options.connectionState ?? "connected";
+  let connectionEmail = "company-a2@example.com";
   let syncIndex = 0;
   const metadata = new Map<string, Record<string, unknown>>();
   const fixtureUser = (id: string) => ({
@@ -119,7 +124,7 @@ async function fixture(
         connected && data.p_organization_id === orgA2
           ? [
               {
-                email: "company-a2@example.com",
+                email: connectionEmail,
                 status: connectionState,
                 connected_at: "2026-11-01T00:00:00Z",
                 last_sync_at: null,
@@ -130,6 +135,13 @@ async function fixture(
         responseStatus = 503;
         body = { message: "Synthetic connection read unavailable" };
       }
+    } else if (url.pathname === "/rest/v1/rpc/tc_invoice_page") {
+      expect(actor === ownerA ? [orgA, orgA2] : [orgB]).toContain(data.p_org);
+      body = (options.invoiceRows ?? []).filter(
+        (row) =>
+          row.organization_id === data.p_org &&
+          (!data.p_after || row.id > String(data.p_after)),
+      );
     } else if (url.pathname === "/functions/v1/company-gmail") {
       expect(actor === ownerA ? [orgA, orgA2] : [orgB]).toContain(
         data.organization_id,
@@ -146,6 +158,8 @@ async function fixture(
         expect(periodReady).toBe(true);
         const result = options.syncResponses?.[syncIndex++];
         if (result?.connectionState) connectionState = result.connectionState;
+        if (result?.connectionEmail) connectionEmail = result.connectionEmail;
+        await result?.beforeReply?.();
         responseStatus = result?.status ?? 200;
         body = result?.body ?? {
           imported: 1,
@@ -407,6 +421,264 @@ test("el retorno de Google en una ventana ya abierta finaliza una sola vez", asy
   ).toBeEnabled();
   expect(calls.filter((c) => c.data?.action === "complete")).toHaveLength(1);
 });
+
+const supersededTranslations = [
+  {
+    language: "es",
+    import: "Importar facturas",
+    confirm: "Confirmar importación",
+    check: "Comprobar conexión",
+    badge: "Gmail vinculado",
+    message:
+      "La conexión de Gmail ha cambiado durante la importación. Se conservan los documentos guardados. Actualiza el estado y vuelve a importar desde la conexión actual.",
+  },
+  {
+    language: "en",
+    import: "Import invoices",
+    confirm: "Confirm import",
+    check: "Check connection",
+    badge: "Gmail linked",
+    message:
+      "The Gmail connection changed during the import. Saved documents are preserved. Refresh the status and import again using the current connection.",
+  },
+  {
+    language: "ro",
+    import: "Importă facturile",
+    confirm: "Confirmă importul",
+    check: "Verifică conexiunea",
+    badge: "Gmail asociat",
+    message:
+      "Conexiunea Gmail s-a schimbat în timpul importului. Documentele salvate se păstrează. Actualizează starea și importă din nou folosind conexiunea actuală.",
+  },
+  {
+    language: "fr",
+    import: "Importer les factures",
+    confirm: "Confirmer l’importation",
+    check: "Vérifier la connexion",
+    badge: "Gmail lié",
+    message:
+      "La connexion Gmail a changé pendant l’importation. Les documents enregistrés sont conservés. Actualisez l’état et relancez l’importation avec la connexion actuelle.",
+  },
+] as const;
+
+function preservedInvoice(): CompanyInvoice {
+  return {
+    id: "a7600000-0000-4000-8000-000000000001",
+    organization_id: orgA2,
+    message_id: "synthetic-preserved-message",
+    attachment_id: "synthetic-preserved-attachment",
+    content_hash: "a".repeat(64),
+    document_id: "a7610000-0000-4000-8000-000000000001",
+    supplier: "Proveedor conservado ficticio",
+    invoice_number: "CONSERVADA-2026-01",
+    invoice_date: "2026-11-01",
+    net_cents: 123450,
+    tax_cents: 25925,
+    total_cents: 149375,
+    currency: "EUR",
+    status: "approved",
+    review_note: "Datos fiscales revisados previamente",
+    finance_entry_id: "a7620000-0000-4000-8000-000000000001",
+    created_at: "2026-11-01T00:00:00Z",
+    import_source: "gmail",
+  };
+}
+
+async function blockGmailProviders(page: Page) {
+  const external: string[] = [];
+  await page.route("**/*", async (route) => {
+    const url = new URL(route.request().url());
+    if (
+      ["http://127.0.0.1:4184", "http://127.0.0.1:9999"].includes(url.origin)
+    )
+      return route.fallback();
+    external.push(url.href);
+    return route.abort("blockedbyclient");
+  });
+  return external;
+}
+
+async function chooseGmailTheme(page: Page, theme: "light" | "cockpit") {
+  await page
+    .getByRole("button", { name: "Cambiar apariencia", exact: true })
+    .click();
+  const appearance = page.getByRole("dialog", {
+    name: "Apariencia de TruckControl",
+  });
+  await appearance
+    .getByRole("radio", {
+      name: theme === "light" ? "Fleet Light" : "Fleet Cockpit",
+      exact: true,
+    })
+    .check();
+  await appearance.getByRole("button", { name: "Aplicar apariencia" }).click();
+  await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+}
+
+function expectNoGmailSideEffects(calls: Awaited<ReturnType<typeof fixture>>) {
+  expect(
+    calls.some(
+      (c) =>
+        /approve_company_invoice|tc_book_record|company-assistant|company-copilot/.test(
+          c.path,
+        ) ||
+        (c.path === "/rest/v1/finance_entries" && c.data !== null) ||
+        ["start", "complete", "analyze_invoice", "reserve_ai"].includes(
+          String(c.data?.action),
+        ),
+    ),
+  ).toBe(false);
+}
+
+for (const theme of ["light", "cockpit"] as const) {
+  test(`Gmail sustituido: aviso traducido y estado actualizado conservan las facturas (${theme})`, async ({
+    page,
+  }) => {
+    const external = await blockGmailProviders(page);
+    const invoiceRows = [preservedInvoice()];
+    const original = structuredClone(invoiceRows);
+    const calls = await fixture(page, true, {
+      connectionState: "connected",
+      invoiceRows,
+      syncResponses: supersededTranslations.map(({ language }) => ({
+        status: 409,
+        body: {
+          error: "gmail_sync_superseded",
+          imported: 1,
+          details: "SYNTHETIC_PRIVATE_PROVIDER_DETAIL",
+        },
+        connectionEmail: `current-${language}@example.invalid`,
+      })),
+    });
+    await signIn(page);
+    await page.getByLabel("Empresa activa").selectOption(orgA2);
+    await page.goto("/#/invoices");
+    await expect(page.getByText("Gmail vinculado", { exact: true })).toBeVisible();
+    await chooseGmailTheme(page, theme);
+    const card = page.locator(".document-card").filter({
+      has: page.getByRole("heading", { name: invoiceRows[0].supplier }),
+    });
+    for (const copy of supersededTranslations) {
+      await page.locator(".language-switcher select").selectOption(copy.language);
+      await expect(page.locator("html")).toHaveAttribute("lang", copy.language);
+      await expect(card).toContainText(invoiceRows[0].invoice_number);
+      const amounts = await card.locator(".invoice-amounts").textContent();
+      const readsBefore = calls.filter(
+        (c) => c.path === "/rest/v1/rpc/get_company_gmail",
+      ).length;
+      await page.getByRole("button", { name: copy.import, exact: true }).click();
+      await page
+        .getByRole("dialog")
+        .getByRole("button", { name: copy.confirm, exact: true })
+        .click();
+      const alert = page.getByRole("alert").filter({ hasText: copy.message });
+      await expect(alert).toHaveText(copy.message);
+      await expect(
+        page.getByText(`current-${copy.language}@example.invalid`, { exact: true }),
+      ).toBeVisible();
+      await expect(page.getByText(copy.badge, { exact: true })).toBeVisible();
+      await expect
+        .poll(
+          () =>
+            calls.filter((c) => c.path === "/rest/v1/rpc/get_company_gmail")
+              .length,
+        )
+        .toBeGreaterThan(readsBefore);
+      await page.getByRole("button", { name: copy.check, exact: true }).click();
+      await expect(alert).toHaveText(copy.message);
+      await expect(card.locator(".invoice-amounts")).toHaveText(amounts!);
+      await expect(card).toContainText(invoiceRows[0].review_note);
+      await expect(page.locator("body")).not.toContainText(
+        "SYNTHETIC_PRIVATE_PROVIDER_DETAIL",
+      );
+      await expect(page.locator("body")).not.toContainText("gmail_sync_superseded");
+    }
+    expect(calls.filter((c) => c.data?.action === "sync_period")).toHaveLength(4);
+    expect(invoiceRows).toEqual(original);
+    expectNoGmailSideEffects(calls);
+    expect(external).toEqual([]);
+  });
+
+  test(`Gmail sustituido: doble confirmación envía una sola importación y permite reintento explícito (${theme})`, async ({
+    page,
+  }) => {
+    const external = await blockGmailProviders(page);
+    let release!: () => void;
+    const pending = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const invoiceRows = [preservedInvoice()];
+    const original = structuredClone(invoiceRows);
+    const calls = await fixture(page, true, {
+      connectionState: "connected",
+      invoiceRows,
+      syncResponses: [
+        {
+          status: 409,
+          body: { error: "gmail_sync_superseded", imported: 0 },
+          connectionEmail: "replacement@example.invalid",
+          beforeReply: () => pending,
+        },
+        { status: 200, body: { imported: 0, scanned: 1, has_more: false } },
+      ],
+    });
+    await signIn(page);
+    await page.getByLabel("Empresa activa").selectOption(orgA2);
+    await page.goto("/#/invoices");
+    await expect(page.getByText("Gmail vinculado", { exact: true })).toBeVisible();
+    await chooseGmailTheme(page, theme);
+    const syncCalls = () => calls.filter((c) => c.data?.action === "sync_period");
+    const importButton = page.getByRole("button", {
+      name: "Importar facturas",
+      exact: true,
+    });
+    const doubleConfirm = async () => {
+      await importButton.click();
+      await page
+        .getByRole("dialog", { name: "Confirmar lectura de facturas del correo" })
+        .getByRole("button", { name: "Confirmar importación", exact: true })
+        .evaluate((button: HTMLButtonElement) => {
+          // Dispatch both clicks before React commits its disabled state.
+          button.click();
+          button.click();
+        });
+    };
+    try {
+      await doubleConfirm();
+      await expect.poll(() => syncCalls().length).toBe(1);
+      await expect(page.locator(".gmail-actions button").first()).toBeDisabled();
+      expectNoGmailSideEffects(calls);
+    } finally {
+      release();
+    }
+    const alert = page.getByRole("alert").filter({
+      hasText: supersededTranslations[0].message,
+    });
+    await expect(alert).toBeVisible();
+    await expect(
+      page.getByText("replacement@example.invalid", { exact: true }),
+    ).toBeVisible();
+    await expect(importButton).toBeEnabled();
+    expect(syncCalls()).toHaveLength(1);
+    await doubleConfirm();
+    await expect.poll(() => syncCalls().length).toBe(2);
+    await expect(importButton).toBeEnabled();
+    await expect(alert).toHaveCount(0);
+    await expect(page.getByText("Gmail vinculado", { exact: true })).toBeVisible();
+    await expect(
+      page.locator(".document-card").filter({ hasText: invoiceRows[0].supplier }),
+    ).toContainText(invoiceRows[0].review_note);
+    expect(
+      syncCalls().every(
+        (c) => c.actor === ownerA && c.data?.organization_id === orgA2,
+      ),
+    ).toBe(true);
+    expect(invoiceRows).toEqual(original);
+    expectNoGmailSideEffects(calls);
+    expect(external).toEqual([]);
+  });
+}
 
 for (const failure of [
   {

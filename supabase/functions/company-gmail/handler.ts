@@ -55,6 +55,8 @@ export interface GmailConfig {
   now?: () => number;
   enforceCompanyRoles?: boolean;
   enforceEntitlements?: boolean;
+  /** Native deployments bind every import to its current connection lease. */
+  enforceSyncLease?: boolean;
   appOrigin: string;
   additionalOrigins?: string[];
   callbackUrl: string;
@@ -84,6 +86,7 @@ interface Part {
   parts?: Part[];
 }
 class GmailAuthorizationError extends Error {}
+class GmailSyncSupersededError extends Error {}
 class GoogleClientError extends Error {}
 class GoogleRequestError extends Error {
   constructor(readonly status: number) {
@@ -261,8 +264,19 @@ export function createGmailHandler(
     oauth: GmailOAuthConfig,
     period?: MailReadWindow,
   ) {
-    const locked = await gateway.server<boolean>("lock_sync", {
+    const lease = {
       organization_id: organizationId,
+      user_id: userId,
+      sync_lease_id: crypto.randomUUID(),
+    };
+    const server = <T>(action: string, data: Data = {}) =>
+      gateway.server<T>(action, { ...data, ...lease });
+    const assertCurrent = async () => {
+      if (config.enforceSyncLease && (await server("assert_sync")) !== true)
+        throw new GmailSyncSupersededError();
+    };
+    const locked = await gateway.server<boolean>("lock_sync", {
+      ...lease,
     });
     if (!locked) return json({ error: "sync_busy" }, 409);
     let reauthorize = false;
@@ -273,10 +287,8 @@ export function createGmailHandler(
     let pageToken = "";
     let hasMore = false;
     try {
-      const credentials = await gateway.server<Credentials | null>(
-        "credentials",
-        { organization_id: organizationId },
-      );
+      await assertCurrent();
+      const credentials = await server<Credentials | null>("credentials");
       if (!credentials) throw new GmailAuthorizationError();
       const refreshToken = await unseal(
         credentials.refresh_token_cipher,
@@ -292,6 +304,7 @@ export function createGmailHandler(
         }),
       );
       if (!token.access_token) throw new GmailAuthorizationError();
+      await assertCurrent();
       const auth = {
         headers: { Authorization: `Bearer ${token.access_token}` },
       };
@@ -302,6 +315,7 @@ export function createGmailHandler(
       let scanned = 0;
       let cursorRetried = false;
       do {
+        await assertCurrent();
         const query = new URLSearchParams({
           q: period?.query ?? "has:attachment newer_than:30d {factura invoice}",
           maxResults: "10",
@@ -367,15 +381,13 @@ export function createGmailHandler(
             skipped++;
             continue;
           }
-          const attachments = parts(msg.payload ?? {})
-            .filter(
-              (p) =>
-                p.filename &&
-                p.body?.attachmentId &&
-                p.body.size &&
-                p.body.size <= 10 * 1024 * 1024,
-            )
-            .slice(0, 5);
+          const attachments = parts(msg.payload ?? {}).filter(
+            (p) =>
+              p.filename &&
+              p.body?.attachmentId &&
+              p.body.size &&
+              p.body.size <= 10 * 1024 * 1024,
+          );
           for (const attachment of attachments) {
             if (imported >= 10 || Date.now() > deadline) {
               pageComplete = false;
@@ -387,7 +399,7 @@ export function createGmailHandler(
               message_id: message.id,
               attachment_id: attachmentId,
             };
-            if (await gateway.server<boolean>("exists", identity)) {
+            if (await server<boolean>("exists", identity)) {
               skipped++;
               continue;
             }
@@ -410,7 +422,7 @@ export function createGmailHandler(
             }
             const contentHash = await hash(bytes);
             if (
-              await gateway.server<boolean>("exists", {
+              await server<boolean>("exists", {
                 ...identity,
                 content_hash: contentHash,
               })
@@ -419,6 +431,7 @@ export function createGmailHandler(
               continue;
             }
             let invoice = emptyInvoice();
+            await assertCurrent();
             const ai = config.resolveAI
               ? await config.resolveAI(organizationId, userId)
               : config.ai;
@@ -433,10 +446,7 @@ export function createGmailHandler(
                 )))
             ) {
               const reserved =
-                ai.atomicQuota ||
-                (await gateway.server<boolean>("reserve_ai", {
-                  organization_id: organizationId,
-                }));
+                ai.atomicQuota || (await server<boolean>("reserve_ai"));
               if (reserved)
                 try {
                   invoice = await extractInvoice(
@@ -455,9 +465,10 @@ export function createGmailHandler(
             }
             const documentId = crypto.randomUUID();
             const path = `${organizationId}/${documentId}/document.${extension(type)}`;
+            await assertCurrent();
             await gateway.upload(path, bytes, type);
             try {
-              await gateway.server("record_invoice", {
+              await server("record_invoice", {
                 ...identity,
                 content_hash: contentHash,
                 ...invoice,
@@ -476,6 +487,7 @@ export function createGmailHandler(
             } catch {
               await gateway.remove(path);
               failures++;
+              await assertCurrent();
             }
           }
         }
@@ -511,21 +523,34 @@ export function createGmailHandler(
       });
     } catch (e) {
       reauthorize = e instanceof GmailAuthorizationError;
-      const clientRejected = e instanceof GoogleClientError;
+      let superseded = e instanceof GmailSyncSupersededError;
+      let clientRejected = e instanceof GoogleClientError;
+      if (!superseded && config.enforceSyncLease) {
+        try {
+          await assertCurrent();
+        } catch (leaseError) {
+          // An obsolete provider failure cannot diagnose the new connection.
+          // An unavailable lease check also cannot prove reauthorization.
+          reauthorize = false;
+          clientRejected = false;
+          superseded = leaseError instanceof GmailSyncSupersededError;
+        }
+      }
       return json(
         {
-          error: clientRejected
-            ? "google_client_rejected"
-            : reauthorize
-              ? "gmail_reauthorization_required"
-              : "gmail_import_unavailable",
+          error: superseded
+            ? "gmail_sync_superseded"
+            : clientRejected
+              ? "google_client_rejected"
+              : reauthorize
+                ? "gmail_reauthorization_required"
+                : "gmail_import_unavailable",
           imported,
         },
-        clientRejected ? 503 : reauthorize ? 409 : 502,
+        superseded ? 409 : clientRejected ? 503 : reauthorize ? 409 : 502,
       );
     } finally {
-      await gateway.server("finish_sync", {
-        organization_id: organizationId,
+      await server("finish_sync", {
         reauthorize,
         succeeded,
         page_token: period

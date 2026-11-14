@@ -15,7 +15,9 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # The complete retained + SQL + Android/Windows browser suite now needs
+    # about fifteen minutes. Preserve every check with a bounded safety margin.
+    timeout-minutes: 25
     env:
       VITE_COMMERCIAL_MODE: "false"
       VITE_SUPABASE_URL: ""

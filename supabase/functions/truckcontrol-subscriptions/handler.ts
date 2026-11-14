@@ -1,4 +1,5 @@
 import { isUuid } from "../_shared/invoice.ts";
+import { stripeServerKeyMode } from "../_shared/stripe-server-key.ts";
 import { verifyStripeSignature } from "../truckcontrol-billing/handler.ts";
 
 export interface RecurringGateway {
@@ -39,6 +40,7 @@ interface Order {
   trial_end: string;
   expires_at: string;
   customer_id?: string | null;
+  checkout_id?: string | null;
 }
 const states = new Set([
   "incomplete",
@@ -546,6 +548,71 @@ export function createRecurringHandler(
           order.quoted_cents < 100
         )
           return json({ error: "order_not_available" }, 409);
+        if (order.checkout_id != null) {
+          const mode = stripeServerKeyMode(config.stripeKey);
+          if (!mode || !/^cs_[A-Za-z0-9_]{1,200}$/.test(order.checkout_id))
+            throw new Error("invalid_checkout");
+          // Retrieve the saved session with the same account-scoped credential.
+          // Recreating it can change trial_end after the 48-hour threshold and
+          // conflict with the original Stripe idempotency key. A failed read
+          // must never release this reservation or start another subscription.
+          const session = await stripe(
+            `checkout/sessions/${order.checkout_id}?expand%5B%5D=line_items`,
+          );
+          const metadata = object(session.metadata),
+            lines = object(session.line_items);
+          const line = object(
+            Array.isArray(lines.data) && lines.data.length === 1
+              ? lines.data[0]
+              : null,
+          );
+          const price = object(line.price),
+            recurring = object(price.recurring);
+          const url =
+            typeof session.url === "string" ? new URL(session.url) : null;
+          const expires = Math.floor(Date.parse(order.expires_at) / 1000);
+          if (
+            session.id !== order.checkout_id ||
+            session.object !== "checkout.session" ||
+            session.livemode !== (mode === "live") ||
+            session.mode !== "subscription" ||
+            session.status !== "open" ||
+            !["unpaid", "no_payment_required"].includes(
+              String(session.payment_status),
+            ) ||
+            session.subscription != null ||
+            session.payment_intent != null ||
+            metadata.tc_user_id !== user.id ||
+            metadata.tc_request_id !== order.id ||
+            metadata.tc_terms_version !== config.termsVersion ||
+            (order.customer_id != null &&
+              session.customer !== order.customer_id) ||
+            (session.customer != null &&
+              !providerId(session.customer, "cus")) ||
+            session.currency !== "eur" ||
+            (session.amount_total !== 0 &&
+              session.amount_total !== order.quoted_cents) ||
+            session.amount_subtotal !== session.amount_total ||
+            !seconds(expires) ||
+            session.expires_at !== expires ||
+            expires <= Date.now() / 1000 ||
+            lines.has_more !== false ||
+            line.quantity !== 1 ||
+            line.currency !== "eur" ||
+            price.currency !== "eur" ||
+            !providerId(price.id, "price") ||
+            price.unit_amount !== order.quoted_cents ||
+            recurring.interval !== "month" ||
+            recurring.interval_count !== 1 ||
+            recurring.usage_type !== "licensed" ||
+            !url ||
+            url.origin !== "https://checkout.stripe.com" ||
+            url.username ||
+            url.password
+          )
+            throw new Error("invalid_checkout");
+          return json({ url: url.href });
+        }
         const form = new URLSearchParams({
           mode: "subscription",
           success_url: `${origin}/?subscription_return=1`,

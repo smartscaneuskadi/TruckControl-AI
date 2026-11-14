@@ -2898,5 +2898,6 @@
   "Tipo comunicado por el emisor": "Type reported by the issuer",
   "Observación guardada": "Saved observation",
   "Revisa la nota antes de continuar.": "Check the note before continuing.",
-  "Revisión declarada. No modifica el pago ni el acceso.": "Review declared. The payment and access are unchanged."
+  "Revisión declarada. No modifica el pago ni el acceso.": "Review declared. The payment and access are unchanged.",
+  "La conexión de Gmail ha cambiado durante la importación. Se conservan los documentos guardados. Actualiza el estado y vuelve a importar desde la conexión actual.": "The Gmail connection changed during the import. Saved documents are preserved. Refresh the status and import again using the current connection."
 }

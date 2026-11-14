@@ -329,7 +329,8 @@ export function Invoices() {
             : action === "disconnect"
               ? "No se ha podido confirmar la revocación en Google. La conexión no se ha marcado como desconectada. Vuelve a intentarlo."
               : code === "google_client_rejected" ||
-                  code === "gmail_reauthorization_required"
+                  code === "gmail_reauthorization_required" ||
+                  code === "gmail_sync_superseded"
                 ? gmailFailureMessage(code)
                 : "No se ha podido completar la operación de Gmail. Revisa la conexión e inténtalo de nuevo.",
         );
