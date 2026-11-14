@@ -5,7 +5,7 @@ import { join, resolve, relative } from "node:path";
 const siteId = "appgprj_6ae655e56db481918fe18adfe9df8b66";
 const origin = "https://truckcontrolai.com";
 const supabase = "https://kkkemaycedexymrpaqtp.supabase.co";
-const expectedBaseline = "a33ed6f073392984a5de4de9f073734097db3a8d";
+const expectedBaseline = "94c719a72f2548b0ec3c0889cea49ae8156952b7";
 const root = resolve(".");
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 if (!/^[a-f0-9]{40}$/.test(sha)) throw Error("Missing exact source commit.");
@@ -112,6 +112,8 @@ if (!["Comprobar Stripe", "admin_readiness", "stripe-readiness-v1"].every((value
   throw Error("Private Stripe readiness is missing from the production bundle.");
 if (!["admin_readiness_details", "truckcontrol-stripe-readiness-v2", "Correo personal mediante IMAP/SMTP", "2026-11-13"].every((value) => bundle.includes(value)))
   throw Error("The reviewed Stripe and personal-mail privacy changes are missing.");
+if (!["refresh_available", "tc_admin_subscription_risk", "subscription-risk-v1"].every((value) => bundle.includes(value)))
+  throw Error("Canonical subscription refresh or informational risk review is missing.");
 const archivePath = join(process.env.RUNNER_TEMP || "/tmp", "truckcontrol-production-" + sha + ".tar.gz");
 const tar = spawnSync("tar", ["-czf", archivePath, ".openai/hosting.json", "dist"], { stdio: "inherit", shell: false });
 if (tar.status !== 0) throw Error("Production packaging failed.");
