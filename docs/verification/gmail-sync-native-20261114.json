@@ -1,0 +1,129 @@
+{
+  "recorded_at": "2026-11-14T17:41:54.089331+00:00",
+  "project_ref": "kkkemaycedexymrpaqtp",
+  "runtime_source_commit": "69f4bcbca2b6f3236ca57e26a812030ddf237a28",
+  "remote_migrations": 72,
+  "new_migration": {
+    "version": "20261114173557",
+    "name": "gmail_sync_lease_fencing",
+    "sha256": "1bc5583b3aec16f6a7f442227afa3536556a828d75b6eea4c00b984b36a6d916",
+    "applied_once": true,
+    "original_cli_candidate": "20261114170031_gmail_sync_lease_fencing.sql",
+    "local_name_reconciled_without_sql_change": true
+  },
+  "functions": [
+    {
+      "slug": "company-gmail",
+      "version": 19,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "runtime_files_verified": 9,
+      "ezbr_sha256": "cea70796308c5e846e6fd4ba5ab3d6d362d94cd6da1fd168c08b391f0672a7a4"
+    },
+    {
+      "slug": "truckcontrol-subscriptions",
+      "version": 21,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "runtime_files_verified": 11,
+      "ezbr_sha256": "c74da0aa08dfb12799d93670f45a4b2bf7cb715392b0d7553ca799727fb8ef1d"
+    }
+  ],
+  "previous_functions_preserved": {
+    "company-gmail": 18,
+    "truckcontrol-subscriptions": 20
+  },
+  "database_security": {
+    "anonymous_rpc": false,
+    "authenticated_rpc": false,
+    "service_rpc": true,
+    "lease_columns_hidden_from_browser": true,
+    "previous_status_read_preserved": true,
+    "security_warn": 0,
+    "security_error": 0,
+    "security_info_deny_all_findings": 2
+  },
+  "flags": {
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false
+  },
+  "isolated_postgres": {
+    "workflow_run": 43621294206,
+    "conclusion": "success",
+    "new_real_contention_pairs": 7,
+    "new_checks": 36,
+    "existing_checks": 250,
+    "existing_real_contention_pairs": 28,
+    "logical_restores": 2,
+    "managed_restore": false,
+    "provider_calls": 0,
+    "first_candidate_run": {
+      "id": 43620407334,
+      "conclusion": "failure",
+      "cause": "The new Gmail harness assumed example prices were enabled after the separate financial fixture intentionally used concrete prices. Fixed only the verified disposable setup; no production switch or existing acceptance was weakened."
+    }
+  },
+  "real_google_mailbox_acceptance": false,
+  "real_stripe_payment_acceptance": false,
+  "new_ai_calls": 0,
+  "new_purchases_or_commitments_eur": 0,
+  "web_at_native_rollout": {
+    "sites_version": 43,
+    "app_version": "0.5.25-rc.1",
+    "url": "https://truckcontrolai.com"
+  },
+  "commercial_launch_complete": false,
+  "native_http_denials": {
+    "checked_at": "2026-11-14T17:42:48.175909+00:00",
+    "results": [
+      {
+        "function": "company-gmail",
+        "check": "missing_session",
+        "status": 401,
+        "code": "authentication_required",
+        "passed": true
+      },
+      {
+        "function": "company-gmail",
+        "check": "invalid_session",
+        "status": 401,
+        "code": "authentication_required",
+        "passed": true
+      },
+      {
+        "function": "company-gmail",
+        "check": "foreign_origin",
+        "status": 403,
+        "code": "origin_not_allowed",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "missing_session",
+        "status": 401,
+        "code": "authentication_required",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "invalid_session",
+        "status": 401,
+        "code": "authentication_required",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "foreign_origin",
+        "status": 403,
+        "code": "origin_not_allowed",
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "provider_calls": 0,
+    "model_calls": 0,
+    "data_mutations": 0,
+    "authenticated_acceptance": false
+  }
+}
