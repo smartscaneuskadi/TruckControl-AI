@@ -1,0 +1,189 @@
+{
+  "recorded_at": "2026-11-14T18:11:51.497426+00:00",
+  "url": "https://truckcontrolai.com",
+  "app_version": "0.5.26-rc.1",
+  "site": {
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version": 44,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_90e9d2f5c3288191aa9f77715547d23f",
+    "deployment_id": "appgdep_6af8a1d3905c81919699fbc3108d44a8",
+    "status": "succeeded",
+    "deployed_at": "2026-11-14T18:01:06.519158+00:00",
+    "audience": "public"
+  },
+  "source": {
+    "branch": "deploy/gmail-account-production-20261114-sync",
+    "commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
+    "reviewed_head": "4880e2d4414b86c19a0a0904fcd517a25915f50d",
+    "runtime_base": "69f4bcbca2b6f3236ca57e26a812030ddf237a28",
+    "merged_pr": 128,
+    "merged_commit": "dd2b5309f45cb4feb11d15a1d46f3796e6630bad",
+    "runtime_matches_merged_main": true,
+    "differences_from_merged_main": [
+      "Production hosting identity",
+      "Production-only package workflow/helper and three source delivery records",
+      "Independent offline managed-restore preflight PR127 and its Python tests are preserved on main/delivery branch; they are not shipped in the static app"
+    ]
+  },
+  "archive": {
+    "gzip_sha256": "dbca94eeca76bfcc6390db48be161cbe0488fccef68e520e4f2b8df4a8482a04",
+    "gzip_bytes": 1516398,
+    "public_files": 25,
+    "stored_tar_sha256": "7424f9f239fe27ed49e544e7e98e32aeb4339cc59c78d053187c94e770eeef03",
+    "stored_tar_bytes": 3317760,
+    "stored_tar_files": 26
+  },
+  "changes": [
+    "All Gmail attachments are eligible across bounded deduplicated batches;23 PDFs verified as10+10+3",
+    "Company/actor lease fences stale Gmail status, cursor, errors, AI decisions and private document commits across reconnection",
+    "Saved recurring Checkout is retrieved and validated instead of recreating a changed trial payload with the same idempotency key",
+    "Same full CI now has25minute bounded margin; no checks removed"
+  ],
+  "ci": {
+    "source_quality": {
+      "run": 43622942100,
+      "conclusion": "success"
+    },
+    "source_package": {
+      "run": 43622942088,
+      "conclusion": "success"
+    },
+    "pr_quality": {
+      "run": 43622918927,
+      "conclusion": "success"
+    },
+    "pr_postgres": {
+      "run": 43622918956,
+      "conclusion": "success"
+    },
+    "pr_android": {
+      "run": 43622918934,
+      "conclusion": "success"
+    },
+    "source_sql_before_ci_timeout_only_merge": {
+      "run": 43621563114,
+      "conclusion": "success",
+      "sql_bytes_unchanged": true
+    },
+    "source_android_before_ci_timeout_only_merge": {
+      "run": 43621563121,
+      "conclusion": "success",
+      "android_sources_unchanged": true
+    },
+    "retained_initial_tests": 64,
+    "retained_hashed_files": 11,
+    "unit_sql": 1799,
+    "unit_sql_files": 151,
+    "python": 124,
+    "demo_browser": 94,
+    "company_browser": 62,
+    "saas_browser": 258,
+    "candidate_browser": 20,
+    "production_build_browser": 20,
+    "previous_public_profiles": 6,
+    "counts_are_per_run_not_summed_across_retries": true
+  },
+  "post_publication": {
+    "https_hashes": {
+      "passed": 75,
+      "total": 75,
+      "origins": 3
+    },
+    "browser": {
+      "passed": 68,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "sdk": "real pinned SDK with fictitious intercepted private HTTP; all unmatched private/provider HTTP and WSS blocked",
+      "native_customer_or_provider_acceptance": false
+    },
+    "pwa_profiles": {
+      "passed": 6,
+      "origins": 3,
+      "profiles": ["Windows Chromium emulation", "Android Pixel7 emulation"],
+      "physical_devices": false
+    },
+    "native_negative_http": {
+      "passed": 6,
+      "total": 6,
+      "authenticated_acceptance": false
+    },
+    "health": {
+      "passed": true,
+      "checks": 5,
+      "provider_probe_performed": false
+    }
+  },
+  "native_receipt": "docs/verification/gmail-sync-native-20261114.json",
+  "supabase": {
+    "project": "kkkemaycedexymrpaqtp",
+    "migrations": 72,
+    "gmail": 19,
+    "subscriptions": 21,
+    "security_warn": 0,
+    "security_error": 0,
+    "security_info_deny_all": 2,
+    "payments_enabled": false,
+    "registration_open": true,
+    "enforce_access": true
+  },
+  "android": {
+    "version_code": 5,
+    "version_name": "0.5.26-rc.1",
+    "jvm_tests": 5,
+    "debug_apk": true,
+    "unsigned_release_aab": true,
+    "commercial_signing": false,
+    "play_publication": false,
+    "physical_acceptance": false
+  },
+  "preserved": {
+    "previous_production": 43,
+    "additional_versions": [42, 41, 32, 31],
+    "demo_project": "appgprj_6adfbdfa388481919121d43f0fd9c242",
+    "demo_version": 6,
+    "previous_native_versions": {
+      "company-gmail": 18,
+      "truckcontrol-subscriptions": 20
+    }
+  },
+  "budget": {
+    "new_charges_or_recurring_commitments_eur": 0,
+    "new_model_calls_by_this_execution": 0,
+    "ai_monthly_limit_usd": 10,
+    "calls_per_company": 100,
+    "aggregate_authorized_ceiling_eur": 200,
+    "historic_total_reconciled": false,
+    "remaining_eur": null
+  },
+  "commercial_launch_complete": false,
+  "remaining_external_acceptances": [
+    "Native Stripe signed payment→license→fiscal invoice task→valid GDTaller/TicketBAI PDF and delivery acceptance",
+    "Google public restricted-scope review and real company mailbox acceptance",
+    "Managed Auth/Storage/Vault backup custody and restore",
+    "Commercial Android signing/Play and physical Android/Windows testing",
+    "External legal and fiscal signoff"
+  ],
+  "production_data_mutations_by_acceptance_tests": 0,
+  "new_ai_provider_acceptance_calls": 0,
+  "verification_notes": [
+    "First Gmail-specific CI setup inherited concrete prices from the separate financial fixture; fixed only the verified disposable setup, then all7races passed",
+    "Old15minute PR quality expired during its last public check; complete source push already passed and new25minute PR/source runs both passed",
+    "First local health monitor still expected app0.5.25; corrected its expected deployment metadata to actual0.5.26 without weakening identity assertions"
+  ],
+  "isolated_postgres": {
+    "total_checks": 287,
+    "schema_checks": 96,
+    "financial_checks": 155,
+    "gmail_checks": 36,
+    "real_contention_pairs": 35,
+    "logical_restores": 2,
+    "managed_restore": false
+  },
+  "new_checkout_real_sandbox_acceptance": {
+    "status": "blocked_before_mutation",
+    "reason": "Official CLI1.55.10 with explicit TruckControl-QA could not authenticate its canonical GET /v1/account; exact sandbox identity and mode unproven. No new authentication requested, no Checkout created and no payment. This does not diagnose revocation of backend credentials.",
+    "new_provider_writes": 0,
+    "new_payment_operations": 0
+  }
+}
