@@ -1,0 +1,40 @@
+{
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "project": "kkkemaycedexymrpaqtp",
+  "base_commit": "1fbdf733c99b4e806bf33aca0c49ca7f1dff1edf",
+  "branch": "fix/subscription-reserved-quote-age-20261114",
+  "candidate_migration": "20261114203240_subscription_reserved_quote_recovery.sql",
+  "migration_sha256": "66ee43f73b8b0f6c5c329874d4a56c66f5e4409d5a8791ca7b1f3a5dfee0664d",
+  "previous_function_prosrc_md5": "8ba277d1bfa7c1fbe33d7d50678103c1",
+  "candidate_function_prosrc_md5": "414a74828f8a133afc705ac84baea010",
+  "previous_function_verified_remote": true,
+  "before_remote_migration_count": 72,
+  "scope": "recover the exact saved and unexpired checkout after the original quote becomes one day old",
+  "validation": {
+    "red_before_green_reproduced": true,
+    "focused_tests_passed": 156,
+    "focused_files": 7,
+    "new_tests_included": 32,
+    "shared_sql_checks_passed_pglite": 27,
+    "isolated_target_python_checks_passed": 11,
+    "frozen_hashes_retained": 11,
+    "unrelated_function_branches_byte_identical": true,
+    "oid_acl_owner_search_path_and_ddl_rollback_tested": true,
+    "concurrent_source_drift_rejected": true,
+    "added_real_postgres_lock_races": 3,
+    "real_postgres_execution": "pending_CI",
+    "complete_ci": "pending"
+  },
+  "applied_remote": false,
+  "provider_calls": 0,
+  "new_ai_calls": 0,
+  "new_charges_or_recurring_commitments": 0,
+  "public_frontend_unchanged": "Sites44 / 0.5.26-rc.1",
+  "payments_enabled": false,
+  "certifies_live_stripe_or_fiscal_acceptance": false,
+  "limitations": [
+    "local Docker socket access is unavailable; real PostgreSQL acceptance must finish in the existing isolated Actions workflow",
+    "native payment-to-license-to-real-GDTaller-PDF-and-delivery acceptance remains pending",
+    "the accumulated 200 EUR budget is not historically reconciled"
+  ]
+}
