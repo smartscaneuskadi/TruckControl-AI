@@ -18,8 +18,8 @@ TAR defectuoso: debe rechazarse antes de preparar, congelar o ejecutar órdenes
 sobre el destino. Los datos son ficticios y no se extraen sobre producción.
 
 Validación local: 130 pruebas Python correctas, incluidas 24 de copias y 9 de
-barreras de servicios. CI y el ensayo real de Auth/Storage aislados deben
-terminar antes de integrar. Esta mejora no acredita la custodia ni una
+barreras de servicios. CI y el ensayo real de Auth/Storage aislados terminaron correctamente antes
+de integrar PR132; este último pasó 67 controles en Actions43637623308. Esta mejora no acredita la custodia ni una
 restauración del proyecto gestionado de Supabase.
 
 No necesita migración, cambio de Edge Functions ni publicación web. Sites44,

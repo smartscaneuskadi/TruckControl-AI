@@ -1,3 +1,10 @@
+# Estado de despliegue · 14/11/2026
+
+PR133 integrado y CI completa/PostgreSQL real correctos. La confirmación del
+conector oficial caducó a los dos minutos: la migración sigue **NO aplicada**,
+Supabase72 y función anterior conservados. No afirmar que la corrección SQL
+ya esté activa. Renovar la tarjeta solo cuando el titular pueda pulsarla.
+
 # Recuperar el Checkout reservado después de 24 horas
 
 Una solicitud creada en T0 podía abrir Checkout en T+23 h y reservarlo durante
