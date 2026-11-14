@@ -1,6 +1,8 @@
-## Pruebas comprobadas · 14/11/2026 UTC
+## Ampliaciones70/71 aplicadas y candidata en revisión · 14/11/2026 UTC
 
-Despliegue de backend del main2aa2eeb:105/105focalizadas, Deno2.9.6 y6/6denegaciones HTTPS reales; runtime subscriptions19(11/11)/incidents6(13/13) coincide. Refresco candidato:22nuevas SQL/HTTP;53focales con ordering/i18n;4/4recorridos Android/Windows emulados.11hashes y64pruebas originales conservados. Nuevas carreras PostgreSQL, regresión compuesta y aceptación nativa aún pendientes; ningún resultado ficticio acredita LIVE, hardware o emisión fiscal.
+Supabase TruckControl confirma **71 migraciones**: #70 `20261114083944_subscription_early_fraud_signals` y #71 `20261114084109_subscription_explicit_snapshot_refresh`, aplicadas una vez por el conector oficial. SHA256 idénticos a las candidatas CLI ensayadas; solo se renombraron los archivos para concordar con el historial. No repetir68/69/70/71. Tres ledgers privados/RLS, permisos anon/auth/service y0filas de ensayo verificados; cobrosOFF, precios de ejemplo, registro y enforce_accesstrue,0canales habilitados. [Recibo](docs/verification/supabase-migrations-70-71-20261114.json).
+
+PR121 contiene la candidata0.5.25-rc.1; regresión local1729/1729,107Python,Deno,64originales/11hashes y18navegadores focales emulados correctos. Actions43576215731 SUCCESS:250controles PostgreSQL(95+155),28contenciones reales y2restauraciones lógicas. CI completo/Android de la fuente final y promoción del frontend aún pendientes. Producción42/demo6/rollback41 intactas. La DDL no activa el receptor EFW ni acredita Stripe/factura/Gmail/hardware o recuperación gestionada. Gasto nuevo0; histórico200EUR sin conciliar, saldo desconocido.
 
 ## Migraciones #68 y #69 aplicadas oficialmente · 13/11/2026 23:33 UTC
 

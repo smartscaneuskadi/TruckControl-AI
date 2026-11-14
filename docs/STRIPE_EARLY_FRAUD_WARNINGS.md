@@ -1,3 +1,7 @@
+# Native schema checkpoint · 2026-11-14
+
+Migration70 is now applied once as `20261114083944_subscription_early_fraud_signals.sql`, with exactly the CLI candidate SQL hash. New ledger is empty, private and RLS protected; the receiver acceptance switch remains OFF. The integrated PostgreSQL run43576215731 passed250checks including28real contention checks and two logical restores. This does not establish provider delivery or commercial acceptance. [Native receipt](verification/supabase-migrations-70-71-20261114.json). The child-candidate history below retains its original timestamps.
+
 # Early fraud warning observations (candidate, OFF)
 
 This change adds a real implementation path for Radar warnings to the existing

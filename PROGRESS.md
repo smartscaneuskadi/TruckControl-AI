@@ -1,6 +1,8 @@
-## Ejecución activa · 14/11/2026 UTC
+## Ampliaciones70/71 aplicadas y candidata en revisión · 14/11/2026 UTC
 
-Backend subscriptions19/incidents6 desplegado desde main comprobado2aa2eeb;105pruebas, Deno,11/11 y13/13 fuentes y6/6denegaciones HTTPS correctos. Supabase69 intacta. Refresco canónico candidato resuelve terminales pendientes con sesión viva, CAS, UUID y registros inmutables, sin acceso/facturas/eventos inventados;22pruebas nuevas,53focales y4navegador emulado correctos. Regresión compuesta/PG y nueva DDL aún pendientes. Producción42/demo6 conservadas; cobrosOFF, gasto nuevo0EUR, saldo histórico desconocido.
+Supabase TruckControl confirma **71 migraciones**: #70 `20261114083944_subscription_early_fraud_signals` y #71 `20261114084109_subscription_explicit_snapshot_refresh`, aplicadas una vez por el conector oficial. SHA256 idénticos a las candidatas CLI ensayadas; solo se renombraron los archivos para concordar con el historial. No repetir68/69/70/71. Tres ledgers privados/RLS, permisos anon/auth/service y0filas de ensayo verificados; cobrosOFF, precios de ejemplo, registro y enforce_accesstrue,0canales habilitados. [Recibo](docs/verification/supabase-migrations-70-71-20261114.json).
+
+PR121 contiene la candidata0.5.25-rc.1; regresión local1729/1729,107Python,Deno,64originales/11hashes y18navegadores focales emulados correctos. Actions43576215731 SUCCESS:250controles PostgreSQL(95+155),28contenciones reales y2restauraciones lógicas. CI completo/Android de la fuente final y promoción del frontend aún pendientes. Producción42/demo6/rollback41 intactas. La DDL no activa el receptor EFW ni acredita Stripe/factura/Gmail/hardware o recuperación gestionada. Gasto nuevo0; histórico200EUR sin conciliar, saldo desconocido.
 
 ## Migraciones #68 y #69 aplicadas oficialmente · 13/11/2026 23:33 UTC
 
