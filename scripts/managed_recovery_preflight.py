@@ -155,11 +155,42 @@ def _date(value: object) -> datetime:
 
 def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     _require(not manifest_file.is_symlink(), "symlinked manifest is not permitted")
-    manifest_file = manifest_file.resolve(strict=True)
-    root = manifest_file.parent
     try:
-        with manifest_file.open("rb") as source:
+        manifest_file = manifest_file.resolve(strict=True)
+        root = manifest_file.parent
+        # Check the opened descriptor, not just the path: an untrusted manifest
+        # can be replaced between an initial symlink check and open().
+        initial_stat = manifest_file.stat()
+        _require(
+            stat.S_ISREG(initial_stat.st_mode) and initial_stat.st_nlink == 1,
+            "manifest is not a private regular file",
+        )
+        identity = (initial_stat.st_dev, initial_stat.st_ino)
+        flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
+        flags |= getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+        with os.fdopen(os.open(manifest_file, flags), "rb") as source:
+            fd_stat = os.fstat(source.fileno())
+            _require(stat.S_ISREG(fd_stat.st_mode), "manifest is not a regular file")
+            _require(
+                (fd_stat.st_dev, fd_stat.st_ino) == identity and fd_stat.st_nlink == 1,
+                "manifest changed during validation",
+            )
             payload = source.read(MAX_MANIFEST_BYTES + 1)
+            final_fd_stat = os.fstat(source.fileno())
+            _require(
+                final_fd_stat.st_size == fd_stat.st_size
+                and final_fd_stat.st_mtime_ns == fd_stat.st_mtime_ns,
+                "manifest changed during validation",
+            )
+        current_stat = manifest_file.stat()
+        _require(
+            not manifest_file.is_symlink()
+            and (current_stat.st_dev, current_stat.st_ino) == identity
+            and current_stat.st_nlink == 1
+            and current_stat.st_size == fd_stat.st_size
+            and current_stat.st_mtime_ns == fd_stat.st_mtime_ns,
+            "manifest changed during validation",
+        )
         _require(len(payload) <= MAX_MANIFEST_BYTES, "recovery manifest exceeds size limit")
         manifest = json.loads(
             payload.decode("utf-8"),
