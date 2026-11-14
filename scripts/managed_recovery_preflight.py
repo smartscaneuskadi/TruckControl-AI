@@ -215,8 +215,10 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     _require(
         manifest.get("destination_kind") == "isolated_test"
         and isinstance(manifest.get("destination_project_ref"), str)
-        and manifest["destination_project_ref"] != source_ref
-        and bool(manifest["destination_project_ref"]),
+        # A whitespace/URL/control-character placeholder is not an isolated project ID.
+        # This checks lexical plausibility only; it does not certify a managed restore.
+        and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{2,63}", manifest["destination_project_ref"]) is not None
+        and manifest["destination_project_ref"] != source_ref,
         "restore destination must be a different, isolated test project",
     )
     _require(manifest.get("synthetic_data_only") is True, "only synthetic-data rehearsals are accepted")
