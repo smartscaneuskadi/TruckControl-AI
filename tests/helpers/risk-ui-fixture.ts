@@ -1,0 +1,53 @@
+import { riskSignalCaseSchema } from "../../src/domain/subscription-risk-signals";
+export const riskUiActor = "ab110000-0000-4000-8000-000000000001";
+export const riskUiStamp = "2026-11-14T08:00:00Z";
+export function riskUiRow() {
+  return riskSignalCaseSchema.parse({
+    id: "ab220000-0000-4000-8000-000000000001",
+    task_id: "ab330000-0000-4000-8000-000000000001",
+    buyer_company_id: "ab440000-0000-4000-8000-000000000001",
+    buyer_company_name: "Empresa sintética Radar",
+    provider_payment_id: "pi_RiskOwned",
+    invoice_id: null,
+    period_start: null,
+    period_end: null,
+    amount_cents: 36300,
+    currency: "EUR",
+    mode: "test",
+    warning_id: "issfr_RiskOwned",
+    row_version: 2,
+    created_at: riskUiStamp,
+    review_state: "pending",
+    last_review: null,
+    latest_provider: {
+      id: "ab550000-0000-4000-8000-000000000001",
+      row_version: 2,
+      kind: "provider",
+      actor_id: null,
+      created_at: riskUiStamp,
+      note: null,
+      provider: {
+        event_id: "evt_RiskOwned",
+        event_type: "radar.early_fraud_warning.created",
+        event_created: riskUiStamp,
+        livemode: false,
+        warning_id: "issfr_RiskOwned",
+        warning_created: riskUiStamp,
+        actionable_at_event: true,
+        actionable_now: true,
+        fraud_type_at_event: "misc",
+        fraud_type_now: "misc",
+        payment_intent_id: "pi_RiskOwned",
+        charge_id: "ch_RiskOwned",
+        customer_id: "cus_RiskOwned",
+        charge_amount_cents: 36300,
+        currency: "EUR",
+        invoice_id: null,
+        subscription_id: null,
+        invoice_payment_id: null,
+        invoice_period_start: null,
+        invoice_period_end: null,
+      },
+    },
+  });
+}
