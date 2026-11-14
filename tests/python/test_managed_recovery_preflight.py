@@ -127,6 +127,29 @@ class RecoveryPreflightTests(unittest.TestCase):
         with self.assertRaises(gate.PreflightError):
             self.inspect()
 
+    def test_rejects_zero_byte_artifact_and_control_evidence(self) -> None:
+        # A matching SHA-256 of the empty byte string is not a usable backup
+        # or a meaningful attestation. Reject both inventory categories.
+        for category in ("artifact", "control"):
+            with self.subTest(category=category):
+                if category == "artifact":
+                    item = self.manifest["artifacts"][0]
+                    relative = item["path"]
+                else:
+                    item = self.manifest["checks"][sorted(gate.CHECKS)[0]]
+                    relative = item["evidence_path"]
+                target = self.root / relative
+                original = target.read_bytes()
+                original_sha = item["sha256"]
+                try:
+                    target.write_bytes(b"")
+                    item["sha256"] = hashlib.sha256(b"").hexdigest()
+                    with self.assertRaisesRegex(gate.PreflightError, "empty evidence file"):
+                        self.inspect()
+                finally:
+                    target.write_bytes(original)
+                    item["sha256"] = original_sha
+
     def test_rejects_tampering_and_missing_files(self) -> None:
         path = self.root / self.manifest["artifacts"][0]["path"]
         path.write_bytes(b"changed after recording the hash")
