@@ -1,3 +1,5 @@
+> 14/11/2026: Published safely in Sites43/incidents7, with native schema70 and private Root review. The provider receiver switch remains OFF; no live EFW/provider acceptance is claimed. [Final receipt](verification/commercial-safe-update43-20261114.json).
+
 # Native schema checkpoint · 2026-11-14
 
 Migration70 is now applied once as `20261114083944_subscription_early_fraud_signals.sql`, with exactly the CLI candidate SQL hash. New ledger is empty, private and RLS protected; the receiver acceptance switch remains OFF. The integrated PostgreSQL run43576215731 passed250checks including28real contention checks and two logical restores. This does not establish provider delivery or commercial acceptance. [Native receipt](verification/supabase-migrations-70-71-20261114.json). The child-candidate history below retains its original timestamps.

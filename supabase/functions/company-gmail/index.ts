@@ -114,6 +114,7 @@ const config: GmailConfig = {
   enforceCompanyRoles: true,
   enforceReceivedPeriod: true,
   enforceEntitlements: true,
+  enforceSyncLease: true,
   appOrigin,
   additionalOrigins: [
     ...productionGmailOrigins,

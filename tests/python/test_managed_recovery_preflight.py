@@ -12,6 +12,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "managed_recovery_preflight.py"
 spec = importlib.util.spec_from_file_location("managed_recovery_preflight", SCRIPT)
@@ -68,6 +69,14 @@ class RecoveryPreflightTests(unittest.TestCase):
         self.assertFalse(result["certified_managed_restore"])
         self.assertEqual(result["observed_restore_duration_seconds"], 1200)
         self.assertEqual(len(result["checked_controls"]), len(gate.CHECKS))
+
+    def test_manifest_schema_version_requires_json_integer_not_bool_or_float(self) -> None:
+        # Python considers True == 1 and 1.0 == 1; JSON schema must not.
+        for invalid in (True, 1.0, "1", None):
+            with self.subTest(schema_version=invalid):
+                self.manifest["schema_version"] = invalid
+                with self.assertRaisesRegex(gate.PreflightError, "unsupported manifest schema"):
+                    self.inspect()
 
     def test_prevents_wrong_source_or_live_destination(self) -> None:
         self.manifest["source_project_ref"] = "another-project"
@@ -153,6 +162,36 @@ class RecoveryPreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(gate.PreflightError, "hardlinked evidence"):
                 self.inspect()
 
+    def test_rejects_file_swap_after_path_stat_even_with_identical_bytes(self) -> None:
+        # An attacker can replace a file after the initial stat but before open.
+        # A matching checksum alone must not excuse the changed inode.
+        target = self.root / self.manifest["artifacts"][0]["path"]
+        moved = self.root / "original-artifact.bin"
+        real_open = os.open
+        swapped = False
+
+        def swap_before_open(path: os.PathLike[str] | str, flags: int, *args: object, **kwargs: object) -> int:
+            nonlocal swapped
+            if Path(path) == target and not swapped:
+                swapped = True
+                target.rename(moved)
+                target.write_bytes(moved.read_bytes())
+            return real_open(path, flags, *args, **kwargs)
+
+        self.save()
+        with mock.patch.object(gate.os, "open", side_effect=swap_before_open):
+            with self.assertRaisesRegex(gate.PreflightError, "changed during validation"):
+                gate.inspect(self.root / "manifest.json", SOURCE)
+        self.assertTrue(swapped)
+
+    def test_rejects_oversized_manifest_without_loading_unbounded_json(self) -> None:
+        manifest_file = self.root / "manifest.json"
+        manifest_file.write_bytes(
+            b'{"unused":"' + b"x" * (gate.MAX_MANIFEST_BYTES + 1) + b'"}'
+        )
+        with self.assertRaisesRegex(gate.PreflightError, "exceeds size limit"):
+            gate.inspect(manifest_file, SOURCE)
+
     def test_rejects_manifest_symlink(self) -> None:
         alias = self.root / "manifest-alias.json"
         alias.symlink_to(self.root / "manifest.json")
@@ -206,6 +245,22 @@ class RecoveryPreflightTests(unittest.TestCase):
         self.manifest["checks"]["auth_login"]["native_verified"] = True
         with self.assertRaisesRegex(gate.PreflightError, "unexpected or missing"):
             self.inspect()
+
+    def test_unhashable_artifact_kinds_fail_closed(self) -> None:
+        # Lists and objects from JSON are unhashable; the CLI must reject them
+        # without an uncaught TypeError or a traceback.
+        for invalid in ([], {}, ["postgresql"], {"kind": "postgresql"}, None, True, 1):
+            with self.subTest(kind=invalid):
+                self.manifest["artifacts"][0]["kind"] = invalid
+                with self.assertRaisesRegex(gate.PreflightError, "invalid or duplicated artifact kind"):
+                    self.inspect()
+
+    def test_deep_json_fails_closed_without_recursion_traceback(self) -> None:
+        # A bounded-byte manifest can still have pathological nesting.
+        manifest_file = self.root / "manifest.json"
+        manifest_file.write_text("[" * 50000 + "0" + "]" * 50000, encoding="utf-8")
+        with self.assertRaises(gate.PreflightError):
+            gate.inspect(manifest_file, SOURCE)
 
     def test_no_secrets_or_personal_data_backups_in_manifest(self) -> None:
         self.manifest["api_token"] = "not-a-real-token"

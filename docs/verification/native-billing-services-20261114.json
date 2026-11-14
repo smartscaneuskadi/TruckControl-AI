@@ -1,0 +1,117 @@
+{
+  "recorded_at": "2026-11-14T08:52:18.096130+00:00",
+  "source_commit": "67911f21588309f88cd7d6197734128862126d15",
+  "functions": [
+    {
+      "slug": "truckcontrol-subscriptions",
+      "version": 20,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "ezbr_sha256": "840602ef05d504cfbefdc0dca9ea9e2408f8f46d9e58f5cb2d9262ce9c6326f8",
+      "runtime_files": [
+        "truckcontrol-subscriptions/index.ts",
+        "_shared/auth-session.ts",
+        "_shared/subscription-legacy-payment-gate.ts",
+        "_shared/subscription-fiscal-gate.ts",
+        "_shared/manual-checkout-readiness.ts",
+        "_shared/subscription-stripe-runtime.ts",
+        "_shared/stripe-server-key.ts",
+        "truckcontrol-subscriptions/handler.ts",
+        "_shared/invoice.ts",
+        "truckcontrol-billing/handler.ts",
+        "_shared/billing-origins.ts"
+      ],
+      "runtime_files_verified": 11,
+      "omitted_type_or_config_files": [
+        "_shared/stripe-readiness.ts",
+        "truckcontrol-subscriptions/deno.json"
+      ]
+    },
+    {
+      "slug": "truckcontrol-stripe-incidents",
+      "version": 7,
+      "status": "ACTIVE",
+      "verify_jwt": false,
+      "ezbr_sha256": "af6a47544d3abc6c71a80e4d8945eb14337c3f2a17fb8891788ea37bf33fbae9",
+      "runtime_files": [
+        "truckcontrol-stripe-incidents/index.ts",
+        "truckcontrol-stripe-incidents/handler.ts",
+        "_shared/subscription-stripe-reconciliation.ts",
+        "_shared/invoice.ts",
+        "_shared/stripe-server-key.ts",
+        "truckcontrol-billing/handler.ts",
+        "_shared/stripe-event-scope.ts",
+        "_shared/subscription-financial-incidents.ts",
+        "_shared/stripe-provider-reader.ts",
+        "_shared/subscription-unlinked-ownership.ts",
+        "_shared/subscription-risk-signals.ts",
+        "_shared/subscription-financial-persistence.ts",
+        "_shared/subscription-stripe-runtime.ts",
+        "_shared/subscription-unlinked-persistence.ts",
+        "_shared/subscription-risk-persistence.ts"
+      ],
+      "runtime_files_verified": 15,
+      "omitted_type_or_config_files": [
+        "_shared/stripe-readiness.ts",
+        "_shared/subscription-paid-replay.ts",
+        "truckcontrol-stripe-incidents/deno.json"
+      ]
+    }
+  ],
+  "http_denials": {
+    "checked_at": "2026-11-14T08:51:13.167373+00:00",
+    "results": [
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "method",
+        "status": 405,
+        "code": "method_not_allowed",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "missing_session",
+        "status": 401,
+        "code": "authentication_required",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "invalid_session",
+        "status": 401,
+        "code": "authentication_required",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-subscriptions",
+        "check": "foreign_origin",
+        "status": 403,
+        "code": "origin_not_allowed",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-stripe-incidents",
+        "check": "method",
+        "status": 405,
+        "code": "method_not_allowed",
+        "passed": true
+      },
+      {
+        "function": "truckcontrol-stripe-incidents",
+        "check": "browser_denied",
+        "status": 403,
+        "code": "provider_webhook_only",
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "provider_calls": 0,
+    "model_calls": 0,
+    "data_mutations": 0,
+    "authenticated_acceptance": false
+  },
+  "new_model_calls": 0,
+  "new_stripe_provider_calls": 0,
+  "commercial_acceptance": false,
+  "risk_receiver_activated": false
+}
