@@ -1,0 +1,173 @@
+{
+  "contract": "truckcontrol-stripe-risk-signals-candidate-v1",
+  "checked_at": "2026-11-14T08:27:00Z",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "base_commit": "2aa2eebbe9ee408c4b1e7b5f7d4e12c8aff75f40",
+  "implementation_commit": "97d857f0c2463e36e7ae7841d0a13e68ef0da7c6",
+  "state": "implemented-and-isolated-tests-passed-not-active-not-published",
+  "runtime_api_version": "2025-03-31.basil",
+  "events": [
+    "radar.early_fraud_warning.created",
+    "radar.early_fraud_warning.updated"
+  ],
+  "entrypoint": "existing truckcontrol-stripe-incidents only",
+  "schema": {
+    "candidate": "20261114075854_subscription_early_fraud_signals.sql",
+    "sha256": "0f4637e777ec2913f33c7ac0a463cbc7d627dd64c5c4bbc2279fa833c0786dfa",
+    "remote_applied": false,
+    "previous_migrations_modified": false,
+    "existing_remote_count_from_parent": 69
+  },
+  "activation": {
+    "acceptance_flag": "TRUCKCONTROL_STRIPE_RISK_SIGNALS_SCHEMA_ACCEPTED",
+    "default": false,
+    "flags_changed": false,
+    "stripe_destinations_changed": false,
+    "commercial_collection_enabled": false
+  },
+  "financial_and_security_behavior": {
+    "informational_only": true,
+    "creates_payment": false,
+    "refund_command": false,
+    "creates_licence": false,
+    "creates_invoice_or_fiscal_task": false,
+    "separate_from_refund_dispute_ledger": true,
+    "maximum_provider_gets_per_delivery": 8,
+    "webhook_ack_requires_commit": true,
+    "unmapped_status": 503,
+    "root_live_sid_and_cas": true,
+    "append_only": true,
+    "private_offline_cache": false
+  },
+  "tests": {
+    "new_tests": 76,
+    "latest_focal_batch": {
+      "tests": 144,
+      "passed": 144,
+      "failed": 0,
+      "skipped": 0,
+      "workers": 1,
+      "files": [
+        {
+          "file": "interface-languages.test.ts",
+          "tests": 9,
+          "status": "passed"
+        },
+        {
+          "file": "subscription-financial-sql.test.ts",
+          "tests": 35,
+          "status": "passed"
+        },
+        {
+          "file": "subscription-risk-client.test.ts",
+          "tests": 17,
+          "status": "passed"
+        },
+        {
+          "file": "subscription-risk-handler.test.ts",
+          "tests": 11,
+          "status": "passed"
+        },
+        {
+          "file": "subscription-risk-signals.test.ts",
+          "tests": 26,
+          "status": "passed"
+        },
+        {
+          "file": "subscription-risk-sql.test.ts",
+          "tests": 22,
+          "status": "passed"
+        },
+        {
+          "file": "subscription-unlinked-sql.test.ts",
+          "tests": 24,
+          "status": "passed"
+        }
+      ],
+      "raw_report_sha256": "373d832a91935e0f6b3db96326eba77ed6c271eb433715f4957bfe26df1e2153"
+    },
+    "earlier_focal_batch": {
+      "tests": 157,
+      "passed": 157,
+      "failed": 0,
+      "workers": 1,
+      "add_to_latest_totals": false,
+      "scope": "new four risk files plus financial-handler,financial-incidents,unlinked-runtime regressions"
+    },
+    "browser": {
+      "tests": 14,
+      "passed": 14,
+      "failed": 0,
+      "workers": 1,
+      "suite": "tests/saas-browser/subscription-risk-signals.spec.ts",
+      "projects": [
+        "saas-windows",
+        "saas-android"
+      ],
+      "physical_devices": false,
+      "themes": [
+        "light",
+        "cockpit"
+      ],
+      "axe_passed": true,
+      "private_transport": "synthetic real Supabase SDK; non-local provider requests blocked",
+      "status_file": "passed",
+      "corrected_before_final_run": "ISO timestamp display used a date-only formatter; replaced by localizedDateFormat(Date)"
+    },
+    "typecheck": "passed",
+    "deno": "passed (2.9.6, existing incidents index)",
+    "retained_original_tests": 64,
+    "retained_hash_files": 11,
+    "retained_hash_verification": "passed",
+    "synthetic_build": "passed",
+    "python_contract_compile": "passed",
+    "postgresql_real_races": "prepared module, not executed by this child",
+    "full_composite_check": "not run by this child; parent integration owns it",
+    "github_ci": "not run by this child"
+  },
+  "build_provenance": {
+    "release_metadata": {
+      "app": "TruckControl AI",
+      "version": "0.5.24-rc.1",
+      "channel": "demo",
+      "sourceCommit": "2aa2eebbe9ee408c4b1e7b5f7d4e12c8aff75f40",
+      "sourceDirty": true,
+      "companyConnectionBundled": true,
+      "registrationForcedClosed": false,
+      "builtAt": "2026-11-14T08:19:47.765Z"
+    },
+    "uses_synthetic_backend": true,
+    "production_artifact": false,
+    "published": false
+  },
+  "external_calls": {
+    "stripe_private": 0,
+    "openai": 0,
+    "email": 0,
+    "supabase_remote_writes": 0,
+    "public_documentation_https": 2
+  },
+  "costs": {
+    "new_eur": 0,
+    "new_recurring_commitments_eur": 0,
+    "approved_aggregate_ceiling_eur": 200,
+    "historical_total_reconciled": false,
+    "remaining_budget_eur": null,
+    "ia_monthly_usd": 10,
+    "ia_calls_per_company": 100
+  },
+  "pending": [
+    "Parent review/integration and locale JSON merge from docs/i18n/stripe-risk-signals-20261114.json",
+    "Composite CI and real PostgreSQL concurrent contract/restore",
+    "Official acceptance of the new additive migration in the exclusive TruckControl project",
+    "Existing worker deployment, restricted read permissions and explicit provider receiver event acceptance",
+    "Real authorized sandbox delivery/native persistence/Root review before activation",
+    "Independent commercial Stripe/fiscal approvals and physical Android/Windows acceptance remain outside this child task"
+  ],
+  "preserved": {
+    "production": "Sites42 (parent baseline)",
+    "demo": "v6",
+    "rollback": "v41",
+    "fixpilot_modified": false
+  }
+}
