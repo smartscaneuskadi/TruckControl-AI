@@ -198,6 +198,39 @@ class RecoveryPreflightTests(unittest.TestCase):
         with self.assertRaisesRegex(gate.PreflightError, "symlinked manifest"):
             gate.inspect(alias, SOURCE)
 
+    def test_rejects_nonregular_manifest_before_open(self) -> None:
+        # A FIFO can hang indefinitely with a blocking open(); a directory
+        # is also not an acceptable JSON evidence manifest.
+        directory = self.root / "manifest-directory"
+        directory.mkdir()
+        with self.assertRaisesRegex(gate.PreflightError, "not a private regular file"):
+            gate.inspect(directory, SOURCE)
+
+        if hasattr(os, "mkfifo"):
+            fifo = self.root / "manifest.fifo"
+            os.mkfifo(fifo)
+            with self.assertRaisesRegex(gate.PreflightError, "not a private regular file"):
+                gate.inspect(fifo, SOURCE)
+
+    def test_rejects_manifest_inode_swap_even_with_identical_json(self) -> None:
+        manifest_path = self.root / "manifest.json"
+        original = self.root / "old-manifest.json"
+        real_open = os.open
+        swapped = False
+
+        def swap_before_open(path: os.PathLike[str] | str, flags: int, *args: object, **kwargs: object) -> int:
+            nonlocal swapped
+            if Path(path) == manifest_path and not swapped:
+                swapped = True
+                manifest_path.rename(original)
+                manifest_path.write_bytes(original.read_bytes())
+            return real_open(path, flags, *args, **kwargs)
+
+        with mock.patch.object(gate.os, "open", side_effect=swap_before_open):
+            with self.assertRaisesRegex(gate.PreflightError, "manifest changed during validation"):
+                gate.inspect(manifest_path, SOURCE)
+        self.assertTrue(swapped)
+
     def test_requires_distinct_files_for_each_inventory_and_check(self) -> None:
         first = self.manifest["artifacts"][0]
         second = self.manifest["artifacts"][1]
