@@ -36,6 +36,7 @@ import { FiscalAdminSettings } from "../components/FiscalAdminSettings";
 import { ManualSubscriptionInvoices } from "../components/ManualSubscriptionInvoices";
 import { SubscriptionIncidents } from "../components/SubscriptionIncidents";
 import { UnlinkedIncidentReview } from "../components/UnlinkedIncidentReview";
+import { SubscriptionRiskSignals } from "../components/SubscriptionRiskSignals";
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
 
 export function AdminConsole({
@@ -348,6 +349,9 @@ export function AdminConsole({
               }}
             />
             <UnlinkedIncidentReview key={userId + ":unlinked"} userId={userId} onOpenTask={(taskId) => {
+              setFiscalTaskId(taskId); setTab("subscription_invoices");
+            }} />
+            <SubscriptionRiskSignals key={userId + ":risk"} userId={userId} onOpenTask={(taskId) => {
               setFiscalTaskId(taskId); setTab("subscription_invoices");
             }} />
             </>

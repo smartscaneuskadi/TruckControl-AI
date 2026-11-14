@@ -1,0 +1,75 @@
+{
+  "checked_at": "2026-11-14T08:46:14.165183+00:00",
+  "project": "kkkemaycedexymrpaqtp",
+  "remote_migrations": 71,
+  "applied_once": [
+    {
+      "ordinal": 70,
+      "version": "20261114083944",
+      "name": "subscription_early_fraud_signals",
+      "cli_candidate_version": "20261114075854",
+      "sql_sha256": "0f4637e777ec2913f33c7ac0a463cbc7d627dd64c5c4bbc2279fa833c0786dfa"
+    },
+    {
+      "ordinal": 71,
+      "version": "20261114084109",
+      "name": "subscription_explicit_snapshot_refresh",
+      "cli_candidate_version": "20261114080429",
+      "sql_sha256": "d27bd6fe8aec2036828706802723afa60f3b92513dc8c72c45fc314b8d1d33f8"
+    }
+  ],
+  "channel": "official Supabase apply_migration",
+  "previous_migrations_reapplied": false,
+  "existing_business_rows_mutated": false,
+  "verification": {
+    "new_ledgers_rls": true,
+    "risk_rows": 0,
+    "refresh_rows": 0,
+    "refresh_attempts": 0,
+    "anonymous_risk_ingest": false,
+    "browser_risk_ingest": false,
+    "server_risk_ingest": true,
+    "service_root_review": false,
+    "anonymous_refresh": false,
+    "browser_refresh": false,
+    "server_refresh": true,
+    "service_only_capability_read_only": true
+  },
+  "business": {
+    "payments_enabled": false,
+    "prices_are_examples": true,
+    "registration_open": true,
+    "enforce_access": true,
+    "enabled_channels": 0
+  },
+  "isolated_acceptance": {
+    "commit": "c366792b4d707adf9f3b9ba516497040237a81ca",
+    "run": 43576215731,
+    "result": "SUCCESS",
+    "checks": 250,
+    "schema_checks": 95,
+    "financial_checks": 155,
+    "distinct_backend_contention_checks": 28,
+    "scope": "PostgreSQL17 isolated synthetic contracts and two logical dump/restores; not managed Supabase recovery"
+  },
+  "frontend": {
+    "site": 42,
+    "app": "0.5.24-rc.1",
+    "preserved_demo": 6,
+    "rollback": 41,
+    "candidate": "0.5.25-rc.1",
+    "candidate_deployed": false
+  },
+  "provider_acceptance": {
+    "new_live_payments": false,
+    "fiscal_invoice_issued": false,
+    "risk_receiver_active": false,
+    "new_model_calls": 0
+  },
+  "rollback": "Restore prior application/function source and leave new immutable ledgers untouched; no destructive down migration.",
+  "cost": {
+    "new_purchases_eur": 0,
+    "new_commitments_eur": 0,
+    "remaining_aggregate_budget_eur": null
+  }
+}

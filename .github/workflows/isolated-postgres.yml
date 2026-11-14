@@ -53,7 +53,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate harness syntax
-        run: python3 -m py_compile scripts/verify-isolated-postgres.py scripts/verify-financial-incidents-postgres.py tests/postgres/subscription_contracts.py tests/postgres/unlinked_contracts.py
+        run: python3 -m py_compile scripts/verify-isolated-postgres.py scripts/verify-financial-incidents-postgres.py tests/postgres/subscription_contracts.py tests/postgres/unlinked_contracts.py tests/postgres/snapshot_refresh_contracts.py tests/postgres/risk_signal_contracts.py
       - name: Validate disposable local target isolation without Docker or SQL
         run: python3 -m unittest discover -s tests/python -p 'test_subscription_postgres_scope.py'
       - name: Migrations, two connections, session revocation and logical restore

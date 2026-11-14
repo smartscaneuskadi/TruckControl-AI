@@ -1,3 +1,23 @@
+## Ampliaciones70/71 aplicadas y candidata en revisión · 14/11/2026 UTC
+
+Supabase TruckControl confirma **71 migraciones**: #70 `20261114083944_subscription_early_fraud_signals` y #71 `20261114084109_subscription_explicit_snapshot_refresh`, aplicadas una vez por el conector oficial. SHA256 idénticos a las candidatas CLI ensayadas; solo se renombraron los archivos para concordar con el historial. No repetir68/69/70/71. Tres ledgers privados/RLS, permisos anon/auth/service y0filas de ensayo verificados; cobrosOFF, precios de ejemplo, registro y enforce_accesstrue,0canales habilitados. [Recibo](verification/supabase-migrations-70-71-20261114.json).
+
+PR121 contiene la candidata0.5.25-rc.1; regresión local1729/1729,107Python,Deno,64originales/11hashes y18navegadores focales emulados correctos. Actions43576215731 SUCCESS:250controles PostgreSQL(95+155),28contenciones reales y2restauraciones lógicas. CI completo/Android de la fuente final y promoción del frontend aún pendientes. Producción42/demo6/rollback41 intactas. La DDL no activa el receptor EFW ni acredita Stripe/factura/Gmail/hardware o recuperación gestionada. Gasto nuevo0; histórico200EUR sin conciliar, saldo desconocido.
+
+## Migraciones #68 y #69 aplicadas oficialmente · 13/11/2026 23:33 UTC
+
+Supabase TruckControl `kkkemaycedexymrpaqtp` confirma **69 migraciones**. Las dos nuevas son `20261113233252_subscription_snapshot_ordering` y `20261113233311_subscription_unlinked_incident_review`, aplicadas una sola vez con `apply_migration` oficial. SQL idéntico a las candidatas ensayadas; archivos renombrados para coincidir con el historial. Comprobadas las columnas `snapshot_revision` y `reconciliation_required`, dos tablas privadas, funciones y 0 avisos WARN/ERROR de seguridad (2 INFO deny-all anteriores). Flags intactos: `payments_enabled=false`, `prices_are_examples=true`, `registration_open=true`, `enforce_access=true`. **No existe aceptación Stripe LIVE, emisión fiscal real ni despliegue nuevo**. Sites42/demo6/rollback41 se conservan. No volver a ejecutar estas migraciones. [Recibo](verification/supabase-migrations-68-69-20261113.json).
+
+## Publicación segura42 comprobada · 13/11/2026 UTC
+
+https://truckcontrolai.com está en **Sites42/app0.5.24-rc.1**, fuente94c719a72f2548b0ec3c0889cea49ae8156952b7, despliegue appgdep_6af77bdd7b0c819191c1a367230964e8 SUCCEEDED. Se conservan41 y demo6. [Recibo](verification/commercial-safe-update42-20261113.json).
+
+CI de la fuente exacta43487806846 SUCCESS:1630unitarias/SQL,103Python,94demo,54empresa,240SaaS,20candidata y20producción;64originales/11hashes intactos. PostgreSQL aislado93+96 controles, nueve carreras reales y restore de archivos guardados. Android compila5JVM y AAB real inspeccionado; sin firma comercial/Play ni hardware físico. Después de publicar:75hashes HTTPS,42recorridos de navegador sin omisiones/flaky,6perfilesPWA y6denegaciones HTTP correctos. SDK real con transporte privado ficticio y llamadas no interceptadas bloqueadas; no es una aceptación nueva de proveedores.
+
+Native billing21/company-gmail18/personal-mail4 ACTIVE y fuentes runtime verificadas; subscriptions18/incidents5/fiscal8 conservados. **Supabase67**: #67 aplicada una vez y ruta/bytes reconciliados. **68/69 no aplicadas**: las tarjetas oficiales caducaron; no ejecutar por otra vía. Las identidades pendientes20261113185620/20261113185634 mantienen los bytes SQL ensayados y orden posterior a#67. La cola y el CAS nuevos están preparados; no se declaran activos. Registro abierto, cobrosOFF,0WARN/ERROR de seguridad. No repetir#37 ni sus llamadasIA.
+
+El modelo manual GDTaller/TicketBAI ya está confirmado por el titular. Siguen pendientes aceptación Native Stripe→licencia/tarea/factura/entrega, Google público/Gmail empresarial, restore gestionado, firma/Play/hardware y revisión externa. La actualización pública segura **no equivale a lanzamiento comercial completo**. IA10USD/mes–100llamadas/empresa intacta. Compras/compromisos/llamadasIA nuevos0; histórico del techo200EUR sin conciliar, saldo desconocido. Main conserva manifiestoDEMO: publicación solo desde checkout de producción.
+
 ## Candidata en preparación · 13/11/2026 UTC
 
 Producción comprobada: **Sites41/app0.5.23-rc.1**, fuente a33ed6f073392984a5de4de9f073734097db3a8d; demo6 conservada. Main dfe56b7 incluye PR110; Native billing19/subscriptions18/fiscal8/incidents5, Supabase66 migraciones. Los estados v32/PR60/CI434 del encargo son históricos: PR60 ya está integrado. No repetirlo ni repetir #37.
