@@ -381,15 +381,13 @@ export function createGmailHandler(
             skipped++;
             continue;
           }
-          const attachments = parts(msg.payload ?? {})
-            .filter(
-              (p) =>
-                p.filename &&
-                p.body?.attachmentId &&
-                p.body.size &&
-                p.body.size <= 10 * 1024 * 1024,
-            )
-            .slice(0, 5);
+          const attachments = parts(msg.payload ?? {}).filter(
+            (p) =>
+              p.filename &&
+              p.body?.attachmentId &&
+              p.body.size &&
+              p.body.size <= 10 * 1024 * 1024,
+          );
           for (const attachment of attachments) {
             if (imported >= 10 || Date.now() > deadline) {
               pageComplete = false;
