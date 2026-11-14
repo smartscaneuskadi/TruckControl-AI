@@ -93,9 +93,8 @@ Deno.serve(
       webhookSecret: Deno.env.get("STRIPE_RECURRING_WEBHOOK_SECRET"),
       termsVersion: Deno.env.get("BILLING_TERMS_VERSION"),
       termsUrl: Deno.env.get("BILLING_TERMS_URL"),
-      invoicingVerified: subscriptionFiscalCheckoutAllowed(
-        Deno.env.get("BILLING_INVOICING_VERIFIED"),
-      ),
+      // prettier-ignore
+      invoicingVerified: subscriptionFiscalCheckoutAllowed(Deno.env.get("BILLING_INVOICING_VERIFIED")),
       snapshotRefreshAccepted:
         Deno.env.get("TRUCKCONTROL_SUBSCRIPTION_REFRESH_SCHEMA_ACCEPTED") !==
         "false",

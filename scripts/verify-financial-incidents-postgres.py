@@ -32,6 +32,10 @@ refresh_spec = importlib.util.spec_from_file_location("snapshot_refresh_contract
 assert refresh_spec and refresh_spec.loader
 refresh_contracts = importlib.util.module_from_spec(refresh_spec)
 refresh_spec.loader.exec_module(refresh_contracts)
+risk_spec = importlib.util.spec_from_file_location("risk_signal_contracts", ROOT / "tests/postgres/risk_signal_contracts.py")
+assert risk_spec and risk_spec.loader
+risk_contracts = importlib.util.module_from_spec(risk_spec)
+risk_spec.loader.exec_module(risk_contracts)
 q, sql, value, check = pg.quote, pg.sql, pg.value, pg.check
 ACCOUNT = "acct_IncidentPostgres"
 ADMIN = "fd110000-0000-4000-8000-000000000001"
@@ -176,6 +180,7 @@ def main():
  contracts.run(pg, SimpleNamespace(**globals()))
  unlinked_contracts.run(pg, SimpleNamespace(**globals()))
  refresh_contracts.run(pg, SimpleNamespace(**globals()))
+ risk_contracts.run(pg, SimpleNamespace(**globals()))
  # Actual dump/restore AFTER the new ledger and reviews exist.
  before=pg.database_fingerprint(pg.SOURCE)
  dump=pg.run(["docker","exec",pg.CONTAINER,"pg_dump","-U","postgres","-d",pg.SOURCE,"-Fc","--no-owner"]).stdout

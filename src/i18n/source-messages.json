@@ -17478,5 +17478,173 @@
     "contexts": [
       "src/components/RecurringSubscription.tsx:message"
     ]
+  },
+  {
+    "key": "Señales tempranas de fraude",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Solo información",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Una señal de Stripe no confirma fraude, un contracargo ni una pérdida. No se ejecutan reembolsos, cambios de licencia ni facturas.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Este registro no acredita que el receptor esté activado. Los datos reflejan la última observación guardada, no una consulta en tiempo real.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Actualizar señales",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Las señales privadas no están disponibles sin conexión.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprobando registro de señales…",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "El registro de señales todavía no está disponible.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "No hay observaciones guardadas en esta página. Esto no certifica ausencia de riesgo.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Entorno de prueba",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Entorno real",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Ver señal",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Señal observada",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Importe original del pago:",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": ". Este importe no representa una pérdida.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Declarar revisión de señal",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Historial de señales y revisiones",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Ver entradas anteriores",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Esta declaración no confirma fraude ni resuelve el pago. No cambia el acceso del cliente.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Nota de revisión",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "El resultado es incierto. Reintentar conserva la misma identidad, versión y nota. Al cerrar se vuelve a comprobar el registro.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Confirmar revisión de señal",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Evento y fecha",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Señal accionable al ocurrir / al observar",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Tipo comunicado por el emisor",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Observación guardada",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisa la nota antes de continuar.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisión declarada. No modifica el pago ni el acceso.",
+    "contexts": [
+      "src/components/SubscriptionRiskSignals.tsx:message"
+    ]
   }
 ]

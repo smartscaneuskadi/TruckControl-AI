@@ -134,5 +134,10 @@ create function public.tc_subscription_snapshot_refresh(
  select private.tc_subscription_snapshot_refresh(p_action,p_actor,p_session,p_operation,p_data);
 $wrapper$;
 revoke all on function public.tc_subscription_snapshot_refresh(text,uuid,uuid,uuid,jsonb) from public,anon,authenticated;
-grant execute on function private.tc_subscription_snapshot_refresh(text,uuid,uuid,uuid,jsonb),
- public.tc_subscription_snapshot_refresh(text,uuid,uuid,uuid,jsonb) to service_role;
+do $service_acl$
+begin
+ if exists(select 1 from pg_roles where rolname='service_role') then
+  grant execute on function private.tc_subscription_snapshot_refresh(text,uuid,uuid,uuid,jsonb),
+   public.tc_subscription_snapshot_refresh(text,uuid,uuid,uuid,jsonb) to service_role;
+ end if;
+end;$service_acl$;
