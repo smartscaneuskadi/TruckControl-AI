@@ -9,7 +9,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
+import stat
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -97,16 +99,40 @@ def _local_digest(
         file = (root / name).resolve(strict=True)
         file.relative_to(root)
         _require(file.is_file() and not file.is_symlink(), "evidence is not a regular file")
-        stat = file.stat()
-        # A hard link points at the same inode while bypassing the path/symlink
-        # checks. It can also refer to an unrelated file outside this folder.
-        _require(stat.st_nlink == 1, "hardlinked evidence is not permitted")
-        identity = (stat.st_dev, stat.st_ino)
+        initial_stat = file.stat()
+        # A hard link can refer to an unrelated file outside this folder.
+        _require(initial_stat.st_nlink == 1, "hardlinked evidence is not permitted")
+        identity = (initial_stat.st_dev, initial_stat.st_ino)
         _require(identity not in used_files, "evidence inode is reused")
         digest = hashlib.sha256()
-        with file.open("rb") as stream:
+        # Validate the descriptor actually opened, not only the earlier path.
+        # NOFOLLOW rejects a final symlink swap; NONBLOCK avoids FIFO stalls.
+        flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
+        flags |= getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+        with os.fdopen(os.open(file, flags), "rb") as stream:
+            fd_stat = os.fstat(stream.fileno())
+            _require(stat.S_ISREG(fd_stat.st_mode), "evidence is not a regular file")
+            _require(
+                (fd_stat.st_dev, fd_stat.st_ino) == identity and fd_stat.st_nlink == 1,
+                "evidence changed during validation",
+            )
             for block in iter(lambda: stream.read(1024 * 1024), b""):
                 digest.update(block)
+            final_fd_stat = os.fstat(stream.fileno())
+            _require(
+                final_fd_stat.st_size == fd_stat.st_size
+                and final_fd_stat.st_mtime_ns == fd_stat.st_mtime_ns,
+                "evidence changed during validation",
+            )
+        current_stat = file.stat()
+        _require(
+            not file.is_symlink()
+            and (current_stat.st_dev, current_stat.st_ino) == identity
+            and current_stat.st_nlink == 1
+            and current_stat.st_size == fd_stat.st_size
+            and current_stat.st_mtime_ns == fd_stat.st_mtime_ns,
+            "evidence changed during validation",
+        )
     except PreflightError:
         # Preserve explicit security failures (e.g. hardlinks) rather than
         # replacing them with a generic missing-file error.
