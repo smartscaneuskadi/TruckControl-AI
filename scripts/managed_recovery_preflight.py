@@ -146,7 +146,8 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     _require(isinstance(manifest, dict), "manifest must be an object")
     _no_secrets(manifest)
     _strict_fields(manifest, MANIFEST_FIELDS)
-    _require(manifest.get("schema_version") == 1, "unsupported manifest schema")
+    # bool and float compare equal to 1 in Python; JSON schema versions must be integers.
+    _require(type(manifest.get("schema_version")) is int and manifest["schema_version"] == 1, "unsupported manifest schema")
     _require(
         manifest.get("source_project_ref") == source_ref and bool(source_ref),
         "source Supabase project does not match the authorized reference",
