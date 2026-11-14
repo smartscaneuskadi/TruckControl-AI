@@ -118,6 +118,7 @@ def _local_digest(
         with os.fdopen(os.open(file, flags), "rb") as stream:
             fd_stat = os.fstat(stream.fileno())
             _require(stat.S_ISREG(fd_stat.st_mode), "evidence is not a regular file")
+            _require(fd_stat.st_size > 0, "empty evidence file is not permitted")
             _require(
                 (fd_stat.st_dev, fd_stat.st_ino) == identity and fd_stat.st_nlink == 1,
                 "evidence changed during validation",
