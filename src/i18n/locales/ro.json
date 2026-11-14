@@ -2868,5 +2868,7 @@
   "Registro de revisión incoherente.": "Înregistrare de verificare incoerentă.",
   "No se ha podido contrastar el registro. Actualiza antes de continuar.": "Înregistrarea nu a putut fi verificată. Actualizează înainte de a continua.",
   "Indica el motivo y una referencia verificable de la evidencia.": "Indică motivul și o referință verificabilă la dovezi.",
-  "Declaración registrada. El pago, la licencia y las obligaciones fiscales requieren su propia conciliación.": "Declarație înregistrată. Plata, licența și obligațiile fiscale necesită fiecare propria reconciliere."
+  "Declaración registrada. El pago, la licencia y las obligaciones fiscales requieren su propia conciliación.": "Declarație înregistrată. Plata, licența și obligațiile fiscale necesită fiecare propria reconciliere.",
+  "Estado consultado. Comprueba los datos actualizados de tu suscripción.": "Starea a fost consultată. Verifică datele actualizate ale abonamentului.",
+  "No se ha podido confirmar el estado con el proveedor. Se conservan los últimos datos registrados. Vuelve a intentarlo o contacta con soporte.": "Starea nu a putut fi confirmată la furnizor. Ultimele date înregistrate sunt păstrate. Încearcă din nou sau contactează asistența."
 }

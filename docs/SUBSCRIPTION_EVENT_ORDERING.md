@@ -1,5 +1,7 @@
 # Orden de eventos del ciclo de suscripción
 
+La candidata del14/11 añade [refresco canónico explícito](SUBSCRIPTION_CANONICAL_REFRESH.md), con nueva migración aditiva, sin modificar la68 aplicada. Sustituye la limitación histórica del botón de actualizar descrita más abajo cuando la capacidad nativa esté disponible. La aceptación de proveedor y el despliegue de esta candidata deben comprobarse por separado.
+
 Migración aplicada una vez mediante el canal oficial Supabase el 13/11/2026 UTC (versión remota `20261113233252`). El SQL se conserva idéntico; archivo local `20261113233252_subscription_snapshot_ordering.sql`. La propuesta original se creó con Supabase CLI oficial 3.0.0. Este DDL no acredita Stripe LIVE ni lanzamiento comercial. Conserva las migraciones aplicadas y la identidad, permisos y modo invoker del RPC existente.
 
 Stripe `event.created` tiene resolución de segundos. Dos eventos distintos del mismo segundo no prueban el orden de cancelación o reanudación; el ID del evento tampoco es una versión del estado.

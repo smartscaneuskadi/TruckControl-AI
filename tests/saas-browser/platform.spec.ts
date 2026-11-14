@@ -142,12 +142,15 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       configured: false,
       invoice_delivery_ready: false,
       management_available: false,
+      refresh_available: false,
       terms_version: null,
       terms_url: null,
       subscription: null,
       invoices: [],
     } as RecurringStatus,
     recurringFailure: false,
+    recurringRefreshUncertain: false,
+    recurringRefreshDelay: 0,
     checkoutUrl: "https://checkout.stripe.com/c/pay/synthetic",
     fiscalDenied: false,
     fiscalConflict: false,
@@ -1080,6 +1083,20 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
       else if (controls.recurringFailure) {
         status = 503;
         data = { error: "synthetic_provider_unavailable" };
+      } else if (
+        body?.action === "refresh" && controls.recurring.refresh_available
+      ) {
+        if (controls.recurringRefreshDelay) await new Promise(resolve => setTimeout(resolve, controls.recurringRefreshDelay));
+        if (controls.recurringRefreshUncertain) {
+          status = 503;
+          data = { error: "synthetic_refresh_result_uncertain" };
+        } else {
+          if (controls.recurring.subscription) {
+            controls.recurring.subscription.state = "active";
+            controls.recurring.subscription.reconciliation_required = false;
+          }
+          data = { refreshed: true, duplicate: false };
+        }
       } else if (
         body?.action === "checkout" &&
         controls.recurring.configured &&
@@ -2797,6 +2814,7 @@ test.describe("contratación y renovación mensual", () => {
       configured: true,
       invoice_delivery_ready: true,
       management_available: true,
+      refresh_available: false,
       terms_version: "synthetic-approved-v1",
       terms_url: "http://127.0.0.1:4194/legal/subscription",
       subscription: subscription
@@ -3032,6 +3050,41 @@ test.describe("contratación y renovación mensual", () => {
     ).toBeVisible();
     expect(f.controls.recurring.subscription!.cancel_at_period_end).toBe(false);
     expect(f.calls.some((c) => c.path.includes("delete"))).toBe(false);
+  });
+  test("refresco explícito concilia un terminal pendiente y evita dobles pulsaciones", async ({page}) => {
+    const f = await ready(page, true);
+    f.controls.recurring.refresh_available = true;
+    f.controls.recurring.subscription!.state = "canceled";
+    f.controls.recurring.subscription!.reconciliation_required = true;
+    await page.getByRole("button", {name:"Comprobar estado de mi cuenta",exact:true}).click();
+    const card = page.getByRole("region", {name:"Suscripción mensual"});
+    await expect(card).toContainText("Estado pendiente de confirmar");
+    expect(f.calls.filter(c=>c.body?.action==="refresh")).toHaveLength(0);
+    f.controls.recurringRefreshDelay = 500;
+    const button = card.getByRole("button",{name:"Actualizar suscripción",exact:true});
+    await button.click(); await expect(button).toBeDisabled();
+    await button.evaluate(element=>(element as HTMLButtonElement).click());
+    await expect(card.getByText("Activa",{exact:true})).toBeVisible();
+    expect(f.calls.filter(c=>c.body?.action==="refresh")).toHaveLength(1);
+    expect(f.calls.find(c=>c.body?.action==="refresh")?.body).toEqual({action:"refresh",operation_id:expect.stringMatching(/^[a-f0-9-]{36}$/)});
+    await expect(page.getByRole("heading", {name:"Elige cómo quieres continuar"})).toBeVisible();
+  });
+  test("refresco incierto conserva estado y reutiliza UUID sin afirmar conciliación", async ({page}) => {
+    const f = await ready(page, true);
+    f.controls.recurring.refresh_available = true;
+    f.controls.recurring.subscription!.reconciliation_required = true;
+    await page.getByRole("button", {name:"Comprobar estado de mi cuenta",exact:true}).click();
+    const card = page.getByRole("region", {name:"Suscripción mensual"});
+    f.controls.recurringRefreshUncertain = true;
+    await card.getByRole("button",{name:"Actualizar suscripción",exact:true}).click();
+    await expect(card.getByRole("alert")).toContainText("No se ha podido confirmar el estado");
+    await expect(card).toContainText("Estado pendiente de confirmar");
+    f.controls.recurringRefreshUncertain = false;
+    await card.getByRole("button",{name:"Actualizar suscripción",exact:true}).click();
+    await expect(card.getByText("Activa",{exact:true})).toBeVisible();
+    const calls=f.calls.filter(c=>c.body?.action==="refresh");
+    expect(calls).toHaveLength(2);expect(calls[1].body?.operation_id).toBe(calls[0].body?.operation_id);
+    expect(f.calls.some(c=>["checkout","resume"].includes(String(c.body?.action)))).toBe(false);
   });
   test("rechaza un destino de pago ajeno y mantiene al usuario dentro de su cuenta", async ({
     page,

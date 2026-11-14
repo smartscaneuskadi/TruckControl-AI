@@ -17466,5 +17466,17 @@
     "contexts": [
       "src/components/UnlinkedIncidentReview.tsx:message"
     ]
+  },
+  {
+    "key": "Estado consultado. Comprueba los datos actualizados de tu suscripción.",
+    "contexts": [
+      "src/components/RecurringSubscription.tsx:message"
+    ]
+  },
+  {
+    "key": "No se ha podido confirmar el estado con el proveedor. Se conservan los últimos datos registrados. Vuelve a intentarlo o contacta con soporte.",
+    "contexts": [
+      "src/components/RecurringSubscription.tsx:message"
+    ]
   }
 ]

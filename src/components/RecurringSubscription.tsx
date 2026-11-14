@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { getSupabaseClient } from "../integrations/supabase/client";
 import { Badge, Button, Modal } from "./ui";
@@ -8,6 +8,7 @@ export const recurringStatusSchema = z.object({
   configured: z.boolean(),
   invoice_delivery_ready: z.boolean().default(false),
   management_available: z.boolean(),
+  refresh_available: z.boolean().default(false),
   terms_version: z.string().nullable(),
   terms_url: z.url().nullable(),
   subscription: z
@@ -110,11 +111,50 @@ export function RecurringSubscription({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const refreshOperation = useRef<string | null>(null);
+  const running = useRef(false);
   const subscription = status?.subscription;
   const pending = subscription?.reconciliation_required === true;
   if (!status || (!subscription && !status.invoices.length)) return null;
+  async function refresh() {
+    if (running.current) return;
+    if (!client || !subscription || !status?.refresh_available) {
+      onRefresh();
+      return;
+    }
+    running.current = true;
+    setBusy(true);
+    setMessage("");
+    setError("");
+    // Retain this operation after an uncertain network result. Repeating it
+    // cannot reapply an already committed snapshot or clear a later warning.
+    refreshOperation.current ??= crypto.randomUUID();
+    try {
+      const response = await client.functions.invoke(
+        "truckcontrol-subscriptions",
+        {
+          body: { action: "refresh", operation_id: refreshOperation.current },
+        },
+      );
+      if (response.error || response.data?.refreshed !== true)
+        throw new Error("unavailable");
+      refreshOperation.current = null;
+      setMessage(
+        "Estado consultado. Comprueba los datos actualizados de tu suscripción.",
+      );
+    } catch {
+      setError(
+        "No se ha podido confirmar el estado con el proveedor. Se conservan los últimos datos registrados. Vuelve a intentarlo o contacta con soporte.",
+      );
+    } finally {
+      onRefresh();
+      running.current = false;
+      setBusy(false);
+    }
+  }
   async function manage(action: "cancel" | "resume") {
-    if (!client || busy) return;
+    if (!client || running.current) return;
+    running.current = true;
     setBusy(true);
     setError("");
     setMessage("");
@@ -137,6 +177,7 @@ export function RecurringSubscription({
         "No se ha podido confirmar el cambio. Actualiza el estado de la suscripción antes de volver a intentarlo o contacta con soporte.",
       );
     } finally {
+      running.current = false;
       setBusy(false);
     }
   }
@@ -238,7 +279,7 @@ export function RecurringSubscription({
           {error}
         </p>
       )}
-      <Button variant="ghost" disabled={busy} onClick={onRefresh}>
+      <Button variant="ghost" disabled={busy} onClick={() => void refresh()}>
         Actualizar suscripción
       </Button>
       {confirm && (

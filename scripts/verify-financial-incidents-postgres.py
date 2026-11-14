@@ -28,6 +28,10 @@ unlinked_spec = importlib.util.spec_from_file_location("unlinked_contracts", ROO
 assert unlinked_spec and unlinked_spec.loader
 unlinked_contracts = importlib.util.module_from_spec(unlinked_spec)
 unlinked_spec.loader.exec_module(unlinked_contracts)
+refresh_spec = importlib.util.spec_from_file_location("snapshot_refresh_contracts", ROOT / "tests/postgres/snapshot_refresh_contracts.py")
+assert refresh_spec and refresh_spec.loader
+refresh_contracts = importlib.util.module_from_spec(refresh_spec)
+refresh_spec.loader.exec_module(refresh_contracts)
 q, sql, value, check = pg.quote, pg.sql, pg.value, pg.check
 ACCOUNT = "acct_IncidentPostgres"
 ADMIN = "fd110000-0000-4000-8000-000000000001"
@@ -171,6 +175,7 @@ def main():
  # the existing complete logical restore below, with no provider access.
  contracts.run(pg, SimpleNamespace(**globals()))
  unlinked_contracts.run(pg, SimpleNamespace(**globals()))
+ refresh_contracts.run(pg, SimpleNamespace(**globals()))
  # Actual dump/restore AFTER the new ledger and reviews exist.
  before=pg.database_fingerprint(pg.SOURCE)
  dump=pg.run(["docker","exec",pg.CONTAINER,"pg_dump","-U","postgres","-d",pg.SOURCE,"-Fc","--no-owner"]).stdout

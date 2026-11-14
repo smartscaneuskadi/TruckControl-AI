@@ -2868,5 +2868,7 @@
   "Registro de revisión incoherente.": "Inconsistent review record.",
   "No se ha podido contrastar el registro. Actualiza antes de continuar.": "The record could not be checked. Refresh before continuing.",
   "Indica el motivo y una referencia verificable de la evidencia.": "Provide the reason and a verifiable evidence reference.",
-  "Declaración registrada. El pago, la licencia y las obligaciones fiscales requieren su propia conciliación.": "Declaration recorded. Payment, licence and tax obligations each require their own reconciliation."
+  "Declaración registrada. El pago, la licencia y las obligaciones fiscales requieren su propia conciliación.": "Declaration recorded. Payment, licence and tax obligations each require their own reconciliation.",
+  "Estado consultado. Comprueba los datos actualizados de tu suscripción.": "Status checked. Review your updated subscription details.",
+  "No se ha podido confirmar el estado con el proveedor. Se conservan los últimos datos registrados. Vuelve a intentarlo o contacta con soporte.": "The provider status could not be confirmed. The last recorded details are preserved. Try again or contact support."
 }

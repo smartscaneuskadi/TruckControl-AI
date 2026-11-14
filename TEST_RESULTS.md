@@ -1,3 +1,7 @@
+## Pruebas comprobadas · 14/11/2026 UTC
+
+Despliegue de backend del main2aa2eeb:105/105focalizadas, Deno2.9.6 y6/6denegaciones HTTPS reales; runtime subscriptions19(11/11)/incidents6(13/13) coincide. Refresco candidato:22nuevas SQL/HTTP;53focales con ordering/i18n;4/4recorridos Android/Windows emulados.11hashes y64pruebas originales conservados. Nuevas carreras PostgreSQL, regresión compuesta y aceptación nativa aún pendientes; ningún resultado ficticio acredita LIVE, hardware o emisión fiscal.
+
 ## Migraciones #68 y #69 aplicadas oficialmente · 13/11/2026 23:33 UTC
 
 Supabase TruckControl `kkkemaycedexymrpaqtp` confirma **69 migraciones**. Las dos nuevas son `20261113233252_subscription_snapshot_ordering` y `20261113233311_subscription_unlinked_incident_review`, aplicadas una sola vez con `apply_migration` oficial. SQL idéntico a las candidatas ensayadas; archivos renombrados para coincidir con el historial. Comprobadas las columnas `snapshot_revision` y `reconciliation_required`, dos tablas privadas, funciones y 0 avisos WARN/ERROR de seguridad (2 INFO deny-all anteriores). Flags intactos: `payments_enabled=false`, `prices_are_examples=true`, `registration_open=true`, `enforce_access=true`. **No existe aceptación Stripe LIVE, emisión fiscal real ni despliegue nuevo**. Sites42/demo6/rollback41 se conservan. No volver a ejecutar estas migraciones. [Recibo](docs/verification/supabase-migrations-68-69-20261113.json).

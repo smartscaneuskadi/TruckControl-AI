@@ -2868,5 +2868,7 @@
   "Registro de revisión incoherente.": "Enregistrement d’examen incohérent.",
   "No se ha podido contrastar el registro. Actualiza antes de continuar.": "L’enregistrement n’a pas pu être recoupé. Actualisez avant de continuer.",
   "Indica el motivo y una referencia verificable de la evidencia.": "Indiquez le motif et une référence vérifiable de la preuve.",
-  "Declaración registrada. El pago, la licencia y las obligaciones fiscales requieren su propia conciliación.": "Déclaration enregistrée. Le paiement, la licence et les obligations fiscales nécessitent chacun leur propre rapprochement."
+  "Declaración registrada. El pago, la licencia y las obligaciones fiscales requieren su propia conciliación.": "Déclaration enregistrée. Le paiement, la licence et les obligations fiscales nécessitent chacun leur propre rapprochement.",
+  "Estado consultado. Comprueba los datos actualizados de tu suscripción.": "État consulté. Vérifiez les informations actualisées de votre abonnement.",
+  "No se ha podido confirmar el estado con el proveedor. Se conservan los últimos datos registrados. Vuelve a intentarlo o contacta con soporte.": "Impossible de confirmer l’état auprès du fournisseur. Les dernières informations enregistrées sont conservées. Réessayez ou contactez l’assistance."
 }
