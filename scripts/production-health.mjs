@@ -108,7 +108,8 @@ export async function checkProduction(config, transport = fetch) {
             body.sourceCommit === config.published_commit &&
             body.version === config.app_version &&
             body.sourceDirty === false &&
-            body.companyConnectionBundled === true,
+            body.companyConnectionBundled === true &&
+            body.registrationForcedClosed === false,
           code: "release_identity_check",
         };
       const ids = [
