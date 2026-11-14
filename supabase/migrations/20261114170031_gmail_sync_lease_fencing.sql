@@ -2,7 +2,7 @@
 -- and encrypted credentials remain unchanged. No provider is contacted.
 alter table private.gmail_connections
   add column sync_lease_id uuid,
-  add column sync_lease_actor uuid references auth.users(id) on delete restrict;
+  add column sync_lease_actor uuid references auth.users(id) on delete set null;
 
 -- Keep existing status reads; the newly added worker capability is server-only.
 revoke select on private.gmail_connections from authenticated;
