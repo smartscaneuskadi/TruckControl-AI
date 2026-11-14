@@ -1,6 +1,6 @@
 # Sincronización de Gmail y recuperación de Checkout
 
-Estado: candidata 0.5.26-rc.1. Producción Sites43 y la demo6 se conservan hasta completar la aceptación. Esta entrega no abre cobros ni acredita la verificación pública de Google.
+Estado: publicada Sites44 / 0.5.26-rc.1, fuente43f9b2215424eb58c7a980d25b516d7fd9f4051b. Se conservan Sites43 y demo6. Migración72 aplicada una vez; Gmail19 y subscriptions21 verificados. [Recibo](verification/commercial-safe-update44-20261114.json). Esta entrega no abre cobros ni acredita la verificación pública de Google.
 
 ## Errores corregidos
 

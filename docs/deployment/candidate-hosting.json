@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_5028752643548191a071df9312d2ccdf",
-  "published_version_number": 43,
-  "deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
-  "previous_deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
+  "published_commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_90e9d2f5c3288191aa9f77715547d23f",
+  "published_version_number": 44,
+  "deployment_id": "appgdep_6af8a1d3905c81919699fbc3108d44a8",
+  "previous_deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,9 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-14T09:20:06.826815+00:00",
-  "expected_themes": [
-    "light",
-    "cockpit"
-  ],
-  "source_ci_run": 43578958439,
+  "deployed_at": "2026-11-14T18:01:06.519158+00:00",
+  "expected_themes": ["light", "cockpit"],
+  "source_ci_run": 43622942100,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +62,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
+  "source_ci_commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
   "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 42,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31634449e85081918da94437494884ac",
-    "source_commit": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
-    "deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
-    "app_version": "0.5.24-rc.1"
+    "version": 43,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_5028752643548191a071df9312d2ccdf",
+    "source_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
+    "deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
+    "app_version": "0.5.25-rc.1"
   },
   "source_deployment_ci_run": 43578958429,
-  "app_version": "0.5.25-rc.1",
+  "app_version": "0.5.26-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -265,7 +262,7 @@
   "expected_auth_mail_cors": true,
   "auth_mail_function_version": 7,
   "expected_document_tracking": true,
-  "gmail_function_version": 18,
+  "gmail_function_version": 19,
   "expected_mail_service_cors": true,
   "expected_invoice_inbox": true,
   "mail_function_version": 15,
@@ -484,14 +481,9 @@
       "post_publication_profiles": 6
     }
   ],
-  "expected_languages": [
-    "es",
-    "ro",
-    "en",
-    "fr"
-  ],
+  "expected_languages": ["es", "ro", "en", "fr"],
   "default_ui_language": "es",
-  "translation_catalog_keys": 2900,
+  "translation_catalog_keys": 2901,
   "prior_published_versions": [
     {
       "version": 38,
@@ -503,12 +495,29 @@
   ],
   "expected_second_driver": true,
   "expected_subscription_incidents": true,
-  "source_production_manifest_only_diff_scope": "Runtime src/public/tests/supabase/package/compiler/Android sources match reviewed67911f2 and merged mainc233a3c; only production identity, package workflow/helper and three preserved source-delivery records differ. Never deploy the demo manifest from main.",
+  "source_production_manifest_only_diff_scope": "Shipped runtime src/public/functions/package/compiler/Android sources match reviewed PR128 head4880e2d and merged maindd2b530. Production identity, package workflow/helper and three delivery records differ. Independent offline preflight PR127/Python tests are preserved on main and the delivery branch, outside the static bundle. Never deploy the demo manifest from main.",
   "expected_canonical_subscription_refresh": true,
   "expected_subscription_risk_review": true,
   "personal_mail_function_version": 4,
   "billing_function_version": 21,
-  "recurring_function_version": 20,
+  "recurring_function_version": 21,
   "stripe_incidents_function_version": 7,
-  "stripe_fiscal_function_version": 8
+  "stripe_fiscal_function_version": 8,
+  "preserved_production_versions": [
+    {
+      "version": 42,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31634449e85081918da94437494884ac",
+      "source_commit": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
+      "deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
+      "app_version": "0.5.24-rc.1"
+    },
+    {
+      "version": 43,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_5028752643548191a071df9312d2ccdf",
+      "source_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
+      "deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
+      "app_version": "0.5.25-rc.1"
+    }
+  ],
+  "supabase_migrations": 72
 }
