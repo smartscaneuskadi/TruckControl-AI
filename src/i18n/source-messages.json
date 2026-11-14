@@ -17646,5 +17646,11 @@
     "contexts": [
       "src/components/SubscriptionRiskSignals.tsx:message"
     ]
+  },
+  {
+    "key": "La conexión de Gmail ha cambiado durante la importación. Se conservan los documentos guardados. Actualiza el estado y vuelve a importar desde la conexión actual.",
+    "contexts": [
+      "src/integrations/gmail/errors.ts:message"
+    ]
   }
 ]

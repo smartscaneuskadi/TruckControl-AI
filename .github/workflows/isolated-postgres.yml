@@ -7,9 +7,11 @@ on:
       - ".github/workflows/isolated-postgres.yml"
       - "scripts/verify-isolated-postgres.py"
       - "scripts/verify-financial-incidents-postgres.py"
+      - "scripts/verify-gmail-sync-postgres.py"
       - "scripts/recovery_backup.py"
       - "tests/python/test_recovery_backup.py"
       - "tests/python/test_subscription_postgres_scope.py"
+      - "tests/python/test_gmail_sync_postgres_scope.py"
       - "tests/postgres/**"
       - "supabase/migrations/**"
   pull_request:
@@ -17,9 +19,11 @@ on:
       - ".github/workflows/isolated-postgres.yml"
       - "scripts/verify-isolated-postgres.py"
       - "scripts/verify-financial-incidents-postgres.py"
+      - "scripts/verify-gmail-sync-postgres.py"
       - "scripts/recovery_backup.py"
       - "tests/python/test_recovery_backup.py"
       - "tests/python/test_subscription_postgres_scope.py"
+      - "tests/python/test_gmail_sync_postgres_scope.py"
       - "tests/postgres/**"
       - "supabase/migrations/**"
 
@@ -53,9 +57,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate harness syntax
-        run: python3 -m py_compile scripts/verify-isolated-postgres.py scripts/verify-financial-incidents-postgres.py tests/postgres/subscription_contracts.py tests/postgres/unlinked_contracts.py tests/postgres/snapshot_refresh_contracts.py tests/postgres/risk_signal_contracts.py
+        run: python3 -m py_compile scripts/verify-isolated-postgres.py scripts/verify-financial-incidents-postgres.py scripts/verify-gmail-sync-postgres.py tests/postgres/subscription_contracts.py tests/postgres/unlinked_contracts.py tests/postgres/snapshot_refresh_contracts.py tests/postgres/risk_signal_contracts.py
       - name: Validate disposable local target isolation without Docker or SQL
         run: python3 -m unittest discover -s tests/python -p 'test_subscription_postgres_scope.py'
+      - name: Validate Gmail concurrency target isolation without Docker or SQL
+        run: python3 -m unittest discover -s tests/python -p 'test_gmail_sync_postgres_scope.py'
       - name: Migrations, two connections, session revocation and logical restore
         env:
           TRUCKCONTROL_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
@@ -64,6 +70,10 @@ jobs:
         env:
           TRUCKCONTROL_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
         run: python3 scripts/verify-financial-incidents-postgres.py
+      - name: Gmail sync fencing with independent PostgreSQL transactions
+        env:
+          TRUCKCONTROL_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+        run: python3 scripts/verify-gmail-sync-postgres.py
       - name: Preserve synthetic recovery evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

@@ -2898,5 +2898,6 @@
   "Tipo comunicado por el emisor": "Tip comunicat de emitent",
   "Observación guardada": "Observație salvată",
   "Revisa la nota antes de continuar.": "Verifică nota înainte de a continua.",
-  "Revisión declarada. No modifica el pago ni el acceso.": "Verificare declarată. Plata și accesul rămân neschimbate."
+  "Revisión declarada. No modifica el pago ni el acceso.": "Verificare declarată. Plata și accesul rămân neschimbate.",
+  "La conexión de Gmail ha cambiado durante la importación. Se conservan los documentos guardados. Actualiza el estado y vuelve a importar desde la conexión actual.": "Conexiunea Gmail s-a schimbat în timpul importului. Documentele salvate se păstrează. Actualizează starea și importă din nou folosind conexiunea actuală."
 }
