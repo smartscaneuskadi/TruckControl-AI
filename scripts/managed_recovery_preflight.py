@@ -67,6 +67,12 @@ ARTIFACT_FIELDS = {"kind", "path", "sha256"}
 CHECK_FIELDS = {"passed", "evidence_path", "sha256"}
 
 
+def _reject_nonfinite_json_constant(value: str) -> object:
+    # json.loads accepts NaN and Infinity by default, despite JSON forbidding
+    # them. Recovery manifests must use strict, portable JSON evidence.
+    raise PreflightError("non-standard JSON numeric constant is not permitted")
+
+
 def _unique_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
     result: dict[str, object] = {}
     for key, value in pairs:
@@ -195,6 +201,7 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
         manifest = json.loads(
             payload.decode("utf-8"),
             object_pairs_hook=_unique_json_object,
+            parse_constant=_reject_nonfinite_json_constant,
         )
     except PreflightError:
         raise

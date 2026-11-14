@@ -70,6 +70,19 @@ class RecoveryPreflightTests(unittest.TestCase):
         self.assertEqual(result["observed_restore_duration_seconds"], 1200)
         self.assertEqual(len(result["checked_controls"]), len(gate.CHECKS))
 
+    def test_rejects_nonstandard_json_numeric_constants(self) -> None:
+        # The default Python JSON decoder accepts these non-JSON tokens.
+        manifest_file = self.root / "manifest.json"
+        original = manifest_file.read_text(encoding="utf-8")
+        for invalid in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(nonstandard_value=invalid):
+                manifest_file.write_text(
+                    original.replace('"schema_version": 1', f'"schema_version": {invalid}', 1),
+                    encoding="utf-8",
+                )
+                with self.assertRaisesRegex(gate.PreflightError, "non-standard JSON numeric constant"):
+                    gate.inspect(manifest_file, SOURCE)
+
     def test_manifest_schema_version_requires_json_integer_not_bool_or_float(self) -> None:
         # Python considers True == 1 and 1.0 == 1; JSON schema must not.
         for invalid in (True, 1.0, "1", None):
