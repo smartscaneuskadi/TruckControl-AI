@@ -6,6 +6,7 @@ const known = new Set([
   "invalid_google_credentials",
   "authorization_not_configured",
   "gmail_reauthorization_required",
+  "gmail_sync_superseded",
 ]);
 
 /** Never show provider response bodies or arbitrary SDK error messages. */
@@ -34,6 +35,10 @@ export async function gmailFailureCode(data: unknown, error: unknown) {
 }
 
 export function gmailFailureMessage(code: string | undefined) {
+  if (code === "gmail_sync_superseded")
+    return t(
+      "La conexión de Gmail ha cambiado durante la importación. Se conservan los documentos guardados. Actualiza el estado y vuelve a importar desde la conexión actual.",
+    );
   if (code === "gmail_reauthorization_required")
     return t(
       "Google solicita renovar el permiso. Conecta de nuevo esta cuenta.",
