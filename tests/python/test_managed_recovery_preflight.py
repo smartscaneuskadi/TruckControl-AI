@@ -153,6 +153,14 @@ class RecoveryPreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(gate.PreflightError, "hardlinked evidence"):
                 self.inspect()
 
+    def test_rejects_oversized_manifest_without_loading_unbounded_json(self) -> None:
+        manifest_file = self.root / "manifest.json"
+        manifest_file.write_bytes(
+            b'{"unused":"' + b"x" * (gate.MAX_MANIFEST_BYTES + 1) + b'"}'
+        )
+        with self.assertRaisesRegex(gate.PreflightError, "exceeds size limit"):
+            gate.inspect(manifest_file, SOURCE)
+
     def test_rejects_manifest_symlink(self) -> None:
         alias = self.root / "manifest-alias.json"
         alias.symlink_to(self.root / "manifest.json")
