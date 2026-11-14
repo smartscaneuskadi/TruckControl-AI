@@ -34,6 +34,7 @@ function transport(change?: (url: string) => Response | undefined) {
           version: config.app_version,
           sourceDirty: false,
           companyConnectionBundled: true,
+          registrationForcedClosed: false,
         })
       : url.includes("/rest/")
         ? new Response("", { status: 401 })
@@ -78,6 +79,28 @@ describe("monitor público sin secretos ni consumo", () => {
     expect(
       r.checks.find((c: any) => c.name === "copilot_health"),
     ).toMatchObject({ configured: false, provider_probe_performed: false });
+  });
+  it("rechaza release de producción con registro forzado cerrado u omitido", async () => {
+    for (const invalid of [true, undefined]) {
+      const f = transport((url) =>
+        url.endsWith("/release.json")
+          ? Response.json({
+              app: "TruckControl AI",
+              channel: "production",
+              sourceCommit: sha,
+              version: config.app_version,
+              sourceDirty: false,
+              companyConnectionBundled: true,
+              ...(invalid === undefined ? {} : { registrationForcedClosed: invalid }),
+            })
+          : undefined,
+      );
+      const r = await checkProduction(config, f);
+      expect(r.passed).toBe(false);
+      expect(
+        r.checks.filter((c: any) => c.name === "release").every((c: any) => c.passed === false),
+      ).toBe(true);
+    }
   });
   it("rechaza fuentes diferentes y gateway abierto sin guardar datos", async () => {
     const r = await checkProduction(
