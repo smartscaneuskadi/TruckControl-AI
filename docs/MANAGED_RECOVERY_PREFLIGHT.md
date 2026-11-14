@@ -29,6 +29,8 @@ una **recuperación lógica parcial**, no un backup de toda la infraestructura.
   podría aceptar silenciosamente la última clave duplicada, creando
   ambigüedad para la revisión humana. La ampliación del esquema exige
   una versión nueva y pruebas, no campos arbitrarios en expedientes.
+  Las constantes numéricas no estándar `NaN`, `Infinity` y `-Infinity`
+  tampoco son JSON válido y se rechazan antes de validar el esquema.
 
 La herramienta verifica las evidencias solo por rutas e inodes locales; tampoco
 certifica la ausencia de montajes especiales ni la autoría del informe. Debe
