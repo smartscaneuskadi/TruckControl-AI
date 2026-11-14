@@ -21,7 +21,7 @@ assert spec and spec.loader
 pg = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(pg)
 q, sql, value, check = pg.quote, pg.sql, pg.value, pg.check
-MIGRATION = "20261114170031_gmail_sync_lease_fencing.sql"
+MIGRATION = "20261114173557_gmail_sync_lease_fencing.sql"
 EXTERNAL_CREDENTIALS = (
     "DATABASE_URL", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_ACCESS_TOKEN",
     "STRIPE_SECRET_KEY", "STRIPE_API_KEY", "STRIPE_WEBHOOK_SECRET", "OPENAI_API_KEY",
