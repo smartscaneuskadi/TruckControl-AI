@@ -91,6 +91,18 @@ class RecoveryPreflightTests(unittest.TestCase):
         with self.assertRaises(gate.PreflightError):
             self.inspect()
 
+    def test_rejects_non_project_destination_placeholders(self) -> None:
+        # Isolation must not pass merely because a whitespace/URL string is
+        # truthy and differs from the live project ref. These are synthetic.
+        for invalid in (" ", "\\t", "synthetic-test-destination ", " synthetic-test-destination",
+                        "https://project.example", "../other", "a", None, True, 42, [], {}):
+            with self.subTest(destination=invalid):
+                self.manifest["destination_project_ref"] = invalid
+                with self.assertRaisesRegex(gate.PreflightError, "restore destination must be"):
+                    self.inspect()
+        self.manifest["destination_project_ref"] = "synthetic_test_destination"
+        self.assertTrue(self.inspect()["preflight_passed"])
+
     def test_requires_all_backups_and_checks(self) -> None:
         self.manifest["artifacts"].pop()
         with self.assertRaises(gate.PreflightError):
