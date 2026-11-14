@@ -276,18 +276,37 @@ def run_races() -> None:
           and last_json(second) == {"result": False})
 
 
+def settings() -> dict:
+    return value("select jsonb_build_object('payments',(select payments_enabled from private.tc_settings where id),"
+                 "'prices_are_examples',(select prices_are_examples from private.tc_settings where id),"
+                 "'enforce_access',(select enforce_access from private.tc_settings where id))")
+
+
+def prepare_fixture_settings() -> dict:
+    initial = settings()
+    pg.REPORT["initial_settings"] = initial
+    check("The verified disposable database has charging disabled and access enforced",
+          initial.get("payments") is False and initial.get("enforce_access") is True)
+    # The preceding financial acceptance uses concrete synthetic prices, so
+    # prices_are_examples legitimately remains false. Only after verifying the
+    # fixed disposable target, strengthen this guard for the Gmail fixtures.
+    # No payment/access flag changes, and all races must preserve this baseline.
+    sql("update private.tc_settings set prices_are_examples=true where id=true;")
+    before = settings()
+    check("Gmail concurrency runs with commercial charging disabled and access enforced",
+          before == {**initial, "prices_are_examples": True}
+          == {"payments": False, "prices_are_examples": True, "enforce_access": True})
+    pg.REPORT["fixture_settings"] = before
+    return before
+
+
 def main() -> None:
     verify_ci_target()
-    before = value("select jsonb_build_object('payments',(select payments_enabled from private.tc_settings where id),"
-                   "'prices_are_examples',(select prices_are_examples from private.tc_settings where id),"
-                   "'enforce_access',(select enforce_access from private.tc_settings where id))")
-    check("Gmail concurrency runs with commercial charging disabled and access enforced",
-          before == {"payments": False, "prices_are_examples": True, "enforce_access": True})
+    before = prepare_fixture_settings()
     run_races()
-    check("Gmail races preserve all commercial and access switches",
-          value("select jsonb_build_object('payments',(select payments_enabled from private.tc_settings where id),"
-                "'prices_are_examples',(select prices_are_examples from private.tc_settings where id),"
-                "'enforce_access',(select enforce_access from private.tc_settings where id))") == before)
+    after = settings()
+    pg.REPORT["final_settings"] = after
+    check("Gmail races preserve all commercial and access switches", after == before)
     pg.REPORT["real_contention_pairs"] = 7
     pg.REPORT["passed"] = True
 

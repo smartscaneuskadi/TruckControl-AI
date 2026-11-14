@@ -87,12 +87,62 @@ class GmailPostgresScope(unittest.TestCase):
                 gmail.validate_receipts({**self.initial, name: value}, self.financial, self.source)
 
     def test_invalid_environment_stops_main_before_schema_or_fixture_access(self):
-        with patch.dict("os.environ", {}, clear=True), patch.object(gmail.pg, "run") as run, patch.object(gmail, "value") as value, patch.object(gmail, "run_races") as races:
+        with patch.dict("os.environ", {}, clear=True), patch.object(gmail.pg, "run") as run, patch.object(gmail, "value") as value, patch.object(gmail, "sql") as sql, patch.object(gmail, "run_races") as races:
             with self.assertRaisesRegex(AssertionError, "isolated GitHub Actions"):
                 gmail.main()
             run.assert_not_called()
             value.assert_not_called()
+            sql.assert_not_called()
             races.assert_not_called()
+
+    def test_fixture_setup_follows_target_verification_and_only_strengthens_example_price_guard(self):
+        safe = {"payments": False, "prices_are_examples": True, "enforce_access": True}
+        for examples in (False, True):
+            initial = {**safe, "prices_are_examples": examples}
+            events = []
+            reads = iter((initial, safe, safe))
+            def read(_statement):
+                events.append("read")
+                return next(reads)
+            def update(statement):
+                self.assertEqual(events, ["verified", "read"])
+                self.assertEqual(statement, "update private.tc_settings set prices_are_examples=true where id=true;")
+                events.append("strengthen")
+            def checked(name, condition):
+                self.assertTrue(condition, name)
+            with self.subTest(initial_examples=examples), patch.object(gmail, "verify_ci_target", side_effect=lambda: events.append("verified")), patch.object(gmail, "value", side_effect=read), patch.object(gmail, "sql", side_effect=update), patch.object(gmail, "run_races", side_effect=lambda: events.append("races")), patch.object(gmail, "check", side_effect=checked), patch.dict(gmail.pg.REPORT, {}, clear=True):
+                gmail.main()
+                self.assertEqual(events, ["verified", "read", "strengthen", "read", "races", "read"])
+                self.assertEqual(gmail.pg.REPORT["initial_settings"], initial)
+                self.assertEqual(gmail.pg.REPORT["fixture_settings"], safe)
+                self.assertEqual(gmail.pg.REPORT["final_settings"], safe)
+
+    def test_unsafe_inherited_settings_are_rejected_before_fixture_update_or_races(self):
+        for changes in ({"payments": True}, {"enforce_access": False}):
+            initial = {"payments": False, "prices_are_examples": False, "enforce_access": True, **changes}
+            def checked(name, condition):
+                if not condition:
+                    raise AssertionError(name)
+            with self.subTest(changes=changes), patch.object(gmail, "verify_ci_target"), patch.object(gmail, "value", return_value=initial), patch.object(gmail, "sql") as sql, patch.object(gmail, "run_races") as races, patch.object(gmail, "check", side_effect=checked), patch.dict(gmail.pg.REPORT, {}, clear=True):
+                with self.assertRaisesRegex(AssertionError, "charging disabled and access enforced"):
+                    gmail.main()
+                sql.assert_not_called()
+                races.assert_not_called()
+
+    def test_fixture_guard_and_post_race_invariants_remain_strict(self):
+        initial = {"payments": False, "prices_are_examples": False, "enforce_access": True}
+        safe = {**initial, "prices_are_examples": True}
+        for phase, readings in (
+            ("setup", [initial, initial]),
+            ("after-races", [initial, safe, initial]),
+        ):
+            def checked(name, condition):
+                if not condition:
+                    raise AssertionError(name)
+            with self.subTest(phase=phase), patch.object(gmail, "verify_ci_target"), patch.object(gmail, "value", side_effect=readings), patch.object(gmail, "sql"), patch.object(gmail, "run_races") as races, patch.object(gmail, "check", side_effect=checked), patch.dict(gmail.pg.REPORT, {}, clear=True):
+                with self.assertRaises(AssertionError):
+                    gmail.main()
+                self.assertEqual(races.call_count, 0 if phase == "setup" else 1)
 
     def test_ci_reuses_verified_steps_and_compiles_new_script_before_running_it(self):
         workflow = (ROOT / ".github/workflows/isolated-postgres.yml").read_text()

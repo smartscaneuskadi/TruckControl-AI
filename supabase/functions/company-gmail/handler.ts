@@ -524,16 +524,18 @@ export function createGmailHandler(
     } catch (e) {
       reauthorize = e instanceof GmailAuthorizationError;
       let superseded = e instanceof GmailSyncSupersededError;
-      if (reauthorize && config.enforceSyncLease) {
+      let clientRejected = e instanceof GoogleClientError;
+      if (!superseded && config.enforceSyncLease) {
         try {
           await assertCurrent();
-        } catch {
-          // A stale token must never mark a newer mailbox as disconnected.
+        } catch (leaseError) {
+          // An obsolete provider failure cannot diagnose the new connection.
+          // An unavailable lease check also cannot prove reauthorization.
           reauthorize = false;
-          superseded = true;
+          clientRejected = false;
+          superseded = leaseError instanceof GmailSyncSupersededError;
         }
       }
-      const clientRejected = e instanceof GoogleClientError;
       return json(
         {
           error: superseded

@@ -351,25 +351,32 @@ const config = {
   },
 };
 
-it("a delayed invalid_grant cannot invalidate a freshly connected mailbox", async () => {
-  const g = gateway();
-  const fetcher = vi.fn<typeof fetch>(async () => {
-    await connect("synthetic-mailbox-b");
-    return Response.json({ error: "invalid_grant" }, { status: 400 });
-  });
-  const response = await createGmailHandler(g, config, fetcher)(request());
-  expect(response.status).toBe(409);
-  expect(await response.json()).toMatchObject({
-    error: "gmail_sync_superseded",
-    imported: 0,
-  });
-  expect(await state()).toMatchObject({
-    status: "connected",
-    google_subject: "synthetic-mailbox-b",
-    sync_lease_id: null,
-  });
-  expect(fetcher).toHaveBeenCalledTimes(1);
-});
+it.each([
+  ["invalid_grant", 400],
+  ["invalid_client", 401],
+  ["server_error", 500],
+] as const)(
+  "a delayed %s cannot invalidate a freshly connected mailbox",
+  async (error, status) => {
+    const g = gateway();
+    const fetcher = vi.fn<typeof fetch>(async () => {
+      await connect("synthetic-mailbox-b");
+      return Response.json({ error }, { status });
+    });
+    const response = await createGmailHandler(g, config, fetcher)(request());
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({
+      error: "gmail_sync_superseded",
+      imported: 0,
+    });
+    expect(await state()).toMatchObject({
+      status: "connected",
+      google_subject: "synthetic-mailbox-b",
+      sync_lease_id: null,
+    });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  },
+);
 
 it("cleans up an uploaded object when reconnect wins the final document commit", async () => {
   const bytes = new TextEncoder().encode("%PDF-1.7\nsynthetic invoice only");
