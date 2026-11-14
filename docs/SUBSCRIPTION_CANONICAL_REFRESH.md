@@ -1,3 +1,5 @@
+> 14/11/2026: Publicado en Sites43/subscriptions20. DDL71 y todos los CI y comprobaciones pospublicación correctos; [recibo final](verification/commercial-safe-update43-20261114.json). La conexión comercial real de Stripe sigue pendiente y el refresco no concede acceso.
+
 # Refresco canónico de una suscripción
 
 Candidata 0.5.25-rc.1; DDL71 aplicada una vez mediante Supabase oficial, SQL idéntico a la candidata CLI20261114080429. PostgreSQL aislado250/250 en Actions43576215731; frontend/backend ampliado todavía pendiente de promoción. No equivale a aceptación Stripe LIVE ni habilita cobros.

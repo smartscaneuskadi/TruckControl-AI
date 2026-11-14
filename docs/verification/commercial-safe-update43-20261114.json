@@ -1,0 +1,135 @@
+{
+  "contract": "truckcontrol-safe-public-update43-v1",
+  "recorded_at": "2026-11-14T09:36:42.194098+00:00",
+  "state": "safe-update-published-commercial-acceptance-pending",
+  "public_url": "https://truckcontrolai.com",
+  "site_project": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "site_version": 43,
+  "app_version": "0.5.25-rc.1",
+  "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_5028752643548191a071df9312d2ccdf",
+  "deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
+  "deployment_status": "succeeded",
+  "deployed_at": "2026-11-14T09:20:06.826815+00:00",
+  "code_head": "67911f21588309f88cd7d6197734128862126d15",
+  "merged_pr": 121,
+  "merge_commit": "c233a3c7320a0e94150264b93545ad55365a11f6",
+  "source_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
+  "source_branch": "deploy/commercial-safe-20261114",
+  "preserved": {
+    "production_42": {
+      "source": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31634449e85081918da94437494884ac",
+      "deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8"
+    },
+    "production_41_and_older": "retained",
+    "demo_project": "appgprj_6adfbdfa388481919121d43f0fd9c242",
+    "demo_version": 6,
+    "demo_confirmed_active": true
+  },
+  "ci": {
+    "code_branch": 43577388157,
+    "code_pr": 43577393538,
+    "source": 43578958439,
+    "package": 43578958429,
+    "postgres": 43578958497,
+    "android": 43578958406,
+    "all_conclusions": "SUCCESS"
+  },
+  "checks_per_ci_run": {
+    "unit_sql": 1729,
+    "python": 107,
+    "demo_browser": 94,
+    "company_browser": 54,
+    "saas_browser": 258,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "previous_public_profiles": 6,
+    "postgres_separate": 250,
+    "postgres_schema": 95,
+    "postgres_financial": 155,
+    "real_postgres_contention_checks": 28,
+    "logical_restores": 2,
+    "android_jvm": 5,
+    "retained_original_tests": 64,
+    "retained_hashes": 11
+  },
+  "postpublication": {
+    "https_file_hashes": 75,
+    "browser_regressions": 60,
+    "browser_unexpected": 0,
+    "browser_skipped": 0,
+    "browser_flaky": 0,
+    "pwa_profiles": 6,
+    "anonymous_backend_denials": 6,
+    "public_health_checks": 5,
+    "browser_sdk": "real pinned SDK, private HTTP fictitious; unmatched native HTTP/WSS blocked",
+    "physical_devices": false,
+    "real_google_consent_test": false,
+    "real_stripe_acceptance": false
+  },
+  "supabase": {
+    "project": "kkkemaycedexymrpaqtp",
+    "migrations": 71,
+    "reapplied_existing": false,
+    "subscription_function": 20,
+    "incident_function": 7,
+    "verified_runtime_files": [
+      11,
+      15
+    ],
+    "security_warnings": 0,
+    "security_errors": 0,
+    "informational_deny_all_findings": 1,
+    "business_flags_changed": false,
+    "risk_receiver_activated": false
+  },
+  "android": {
+    "version_code": 4,
+    "version_name": "0.5.25-rc.1",
+    "debug_apk": true,
+    "unsigned_release_aab": true,
+    "commercial_signing": false,
+    "play_published": false,
+    "physical_devices": false
+  },
+  "business": {
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false,
+    "prices_are_examples": true,
+    "manual_gdtaller_model_confirmed": true,
+    "real_fiscal_issuance_delivery_accepted": false
+  },
+  "costs": {
+    "aggregate_ceiling_eur": 200,
+    "new_purchases_eur": 0,
+    "new_recurring_commitments_eur": 0,
+    "new_model_calls": 0,
+    "new_live_charge_operations": 0,
+    "remaining_budget_eur": null,
+    "historical_expenses_reconciled": false,
+    "ai_monthly_ceiling_usd": 10,
+    "company_monthly_call_limit": 100
+  },
+  "blockers": [
+    "Native Stripe credential/receiver and real paid licence plus fiscal PDF delivery acceptance",
+    "Public Google verification and corporate Gmail acceptance; personal acceptance retained",
+    "Managed Auth/Storage/Vault recovery and custody acceptance",
+    "Commercial Android signing/Play and physical Android/Windows devices",
+    "External legal/fiscal review",
+    "Historical aggregate expense reconciliation before any new charge"
+  ],
+  "archive": {
+    "name": "truckcontrol-production-bb161141c33e8692aab8c4efdaf8c4e359903a3d.tar.gz",
+    "bytes": 1515566,
+    "sha256": "fc3ec281ee0680ee3b4166a4e92b434a953847f06b91210740bbac67161f04c9",
+    "origin": "locally built exact clean source; source/package CI verified separately"
+  },
+  "saved_archive_storage": {
+    "format": "tar",
+    "sha256": "a49899dc9a446c50c5801cadd730c576abc21271c8b34faa2e330797e2b64ee7",
+    "bytes": 3307520,
+    "files": 26,
+    "note": "Provider-normalized uncompressed archive; distinct from uploaded gzip SHA256"
+  }
+}

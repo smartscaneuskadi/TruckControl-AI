@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31634449e85081918da94437494884ac",
-  "published_version_number": 42,
-  "deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
-  "previous_deployment_id": "appgdep_6af643bcca608191829fc7007605ab13",
+  "published_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_5028752643548191a071df9312d2ccdf",
+  "published_version_number": 43,
+  "deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
+  "previous_deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-13T21:06:50.996177Z",
+  "deployed_at": "2026-11-14T09:20:06.826815+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 43487806846,
+  "source_ci_run": 43578958439,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
+  "source_ci_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
   "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 41,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ae1ded3662248191b949e880b0d6a647",
-    "source_commit": "a33ed6f073392984a5de4de9f073734097db3a8d",
-    "deployment_id": "appgdep_6af643bcca608191829fc7007605ab13",
-    "app_version": "0.5.23-rc.1"
+    "version": 42,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31634449e85081918da94437494884ac",
+    "source_commit": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
+    "deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
+    "app_version": "0.5.24-rc.1"
   },
-  "source_deployment_ci_run": 43487806792,
-  "app_version": "0.5.24-rc.1",
+  "source_deployment_ci_run": 43578958429,
+  "app_version": "0.5.25-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -244,6 +244,13 @@
       "source_commit": "a33ed6f073392984a5de4de9f073734097db3a8d",
       "deployment_id": "appgdep_6af643bcca608191829fc7007605ab13",
       "app_version": "0.5.23-rc.1"
+    },
+    {
+      "version": 42,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_31634449e85081918da94437494884ac",
+      "source_commit": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
+      "deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
+      "app_version": "0.5.24-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -256,13 +263,13 @@
   },
   "expected_basic_onboarding": true,
   "expected_auth_mail_cors": true,
-  "auth_mail_function_version": 4,
+  "auth_mail_function_version": 7,
   "expected_document_tracking": true,
-  "gmail_function_version": 15,
+  "gmail_function_version": 18,
   "expected_mail_service_cors": true,
   "expected_invoice_inbox": true,
-  "mail_function_version": 12,
-  "assistant_function_version": 10,
+  "mail_function_version": 15,
+  "assistant_function_version": 13,
   "expected_tyres": true,
   "unpublished_tyre_candidate": {
     "version": 18,
@@ -311,35 +318,40 @@
   },
   "ci_scope_note": "PR98/exact-source CI:1664 per execution, including6 public profiles against prior Sites38. Postpublication receipt records Sites39 separately; no repeated AI/mailbox acceptance.",
   "final_release_verification": {
-    "source_ci": 43123780131,
-    "unit_sql_passed": 1401,
-    "python_passed": 45,
-    "demo_browser_passed": 94,
-    "company_browser_passed": 50,
-    "saas_browser_passed": 220,
-    "candidate_passed": 20,
-    "production_build_passed": 20,
-    "previous_public_profiles_passed": 6,
+    "unit_sql": 1729,
+    "python": 107,
+    "demo_browser": 94,
+    "company_browser": 54,
+    "saas_browser": 258,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "previous_public_profiles": 6,
+    "postgres_separate": 250,
+    "postgres_schema": 95,
+    "postgres_financial": 155,
+    "real_postgres_contention_checks": 28,
+    "logical_restores": 2,
+    "android_jvm": 5,
+    "retained_original_tests": 64,
+    "retained_hashes": 11,
+    "source_ci": 43578958439,
     "post_publication_https_hashes": 75,
-    "post_publication_browser": 82,
+    "post_publication_browser": 60,
+    "post_publication_profiles": 6,
     "physical_devices": false,
     "commercial_payments": false,
-    "post_publication_profiles": 6
+    "scope": "SDK real with fictitious private transport; provider and physical acceptance remain pending"
   },
-  "source_branch": "deploy/gmail-account-production-20261111",
-  "production_source_manifest_only_diff_scope": "Runtime src/public/supabase/package and compiler configuration match reviewed d9e6fc8. Production identity, packaging workflow/helper and source-only delivery records differ; never deploy the demo manifest from main.",
+  "source_branch": "deploy/commercial-safe-20261114",
+  "production_source_manifest_only_diff_scope": "Runtime src/public/tests/supabase/package/compiler/Android sources match reviewed67911f2 and merged mainc233a3c; only production identity, package workflow/helper and three preserved source-delivery records differ. Never deploy the demo manifest from main.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
-    "docs/**",
-    "AGENTS.md",
-    "PROGRESS.md",
-    "TODO.md",
-    "BLOCKERS.md",
-    "TEST_RESULTS.md",
-    "DEPLOYMENT.md",
-    "scripts/verify-published-cargotrack.mjs",
     ".openai/hosting.json",
-    "scripts/verify-cargotrack-embedding.mjs"
+    ".github/workflows/production-package.yml",
+    "scripts/package-production.mjs",
+    "docs/deployment/cargotrack-embedded-release-source.md",
+    "docs/deployment/cargotrack-release-source.md",
+    "docs/deployment/gmail-account-release-source.md"
   ],
   "expected_billing_issuer": {
     "name": "ELEVADANCOR S.L.",
@@ -349,7 +361,7 @@
   },
   "expected_company_fiscal_preparation": true,
   "expected_company_copilot": true,
-  "copilot_function_version": 2,
+  "copilot_function_version": 5,
   "expected_ai_specialists": true,
   "previous_final_release_verification": {
     "code_commit": "56eeef208e0cd2cfd13926cdf8ab44bc09855fcc",
@@ -454,6 +466,22 @@
       "postpublication_checks": "docs/verification/interface-languages-published-20261108.json",
       "scheduled_paid_model_calls": 0,
       "emission_available": false
+    },
+    {
+      "source_ci": 43123780131,
+      "unit_sql_passed": 1401,
+      "python_passed": 45,
+      "demo_browser_passed": 94,
+      "company_browser_passed": 50,
+      "saas_browser_passed": 220,
+      "candidate_passed": 20,
+      "production_build_passed": 20,
+      "previous_public_profiles_passed": 6,
+      "post_publication_https_hashes": 75,
+      "post_publication_browser": 82,
+      "physical_devices": false,
+      "commercial_payments": false,
+      "post_publication_profiles": 6
     }
   ],
   "expected_languages": [
@@ -463,7 +491,7 @@
     "fr"
   ],
   "default_ui_language": "es",
-  "translation_catalog_keys": 2786,
+  "translation_catalog_keys": 2900,
   "prior_published_versions": [
     {
       "version": 38,
@@ -475,5 +503,12 @@
   ],
   "expected_second_driver": true,
   "expected_subscription_incidents": true,
-  "source_production_manifest_only_diff_scope": "Runtime src/public/supabase/package and compiler configuration match reviewed da16c57. Production manifest, packaging workflow/helper and source delivery records differ; never deploy the demo manifest from main."
+  "source_production_manifest_only_diff_scope": "Runtime src/public/tests/supabase/package/compiler/Android sources match reviewed67911f2 and merged mainc233a3c; only production identity, package workflow/helper and three preserved source-delivery records differ. Never deploy the demo manifest from main.",
+  "expected_canonical_subscription_refresh": true,
+  "expected_subscription_risk_review": true,
+  "personal_mail_function_version": 4,
+  "billing_function_version": 21,
+  "recurring_function_version": 20,
+  "stripe_incidents_function_version": 7,
+  "stripe_fiscal_function_version": 8
 }
