@@ -5,7 +5,7 @@ import { join, resolve, relative } from "node:path";
 const siteId = "appgprj_6ae655e56db481918fe18adfe9df8b66";
 const origin = "https://truckcontrolai.com";
 const supabase = "https://kkkemaycedexymrpaqtp.supabase.co";
-const expectedBaseline = "94c719a72f2548b0ec3c0889cea49ae8156952b7";
+const expectedBaseline = "bb161141c33e8692aab8c4efdaf8c4e359903a3d";
 const root = resolve(".");
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 if (!/^[a-f0-9]{40}$/.test(sha)) throw Error("Missing exact source commit.");
@@ -91,7 +91,7 @@ function inventory(directory) {
         throw Error("Unexpected sensitive file in build output.");
       const data = readFileSync(path);
       if (/\.(?:js|html|json|css)$/.test(name) &&
-          /(?:\bsb_secret_[A-Za-z0-9_-]{16,}|\bsk-proj-[A-Za-z0-9_-]{24,})/.test(data.toString("utf8")))
+          /(?:\bsb_secret_[A-Za-z0-9_-]{16,}|\bsk-proj-[A-Za-z0-9_-]{24,}|\b(?:sk|rk)_(?:live|test)_[A-Za-z0-9._~+\/-]{16,}|\bwhsec_[A-Za-z0-9]{16,}|\bGOCSPX[-_][A-Za-z0-9_-]{16,}|\bre_[A-Za-z0-9_]{30,})/.test(data.toString("utf8")))
         throw Error("A secret-shaped value was found; no value has been logged.");
       files.push({ path: name, bytes: data.length, sha256: createHash("sha256").update(data).digest("hex") });
     }
