@@ -41,6 +41,16 @@ import { SubscriptionRiskSignals } from "../components/SubscriptionRiskSignals";
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
 import { MfaSettingsLoader as MfaSettings } from "../components/MfaSettingsLoader";
 const CompanyFullAdmin = lazy(() => import("../components/CompanyFullAdmin").then((module) => ({ default: module.CompanyFullAdmin })));
+const adminSections = new Set([
+  "companies", "customers", "modules", "plans", "activity", "providers",
+  "security", "fiscal", "subscription_invoices", "subscription_incidents",
+]);
+function selectedAdminSection() {
+  const [route, query = ""] = window.location.hash.split("?");
+  if (route !== "#/admin") return null;
+  const section = new URLSearchParams(query).get("section");
+  return section && adminSections.has(section) ? section : null;
+}
 
 export function AdminConsole({
   userId,
@@ -56,21 +66,11 @@ export function AdminConsole({
   const appearance = useAppearance();
   const client = getSupabaseClient();
   const [snapshot, setSnapshot] = useState<AdminSnapshot | null>(null);
-  const [tab, setTab] = useState(() =>
-    new URLSearchParams(window.location.hash.split("?")[1] ?? "").get(
-      "section",
-    ) === "providers"
-      ? "providers"
-      : "customers",
-  );
+  const [tab, setTab] = useState(() => selectedAdminSection() ?? "customers");
   useEffect(() => {
     const selectSection = () => {
-      const [route, query = ""] = window.location.hash.split("?");
-      if (
-        route === "#/admin" &&
-        new URLSearchParams(query).get("section") === "providers"
-      )
-        setTab("providers");
+      const section = selectedAdminSection();
+      if (section) setTab(section);
     };
     window.addEventListener("hashchange", selectSection);
     selectSection();
@@ -327,7 +327,10 @@ export function AdminConsole({
                 key={t.id}
                 variant={tab === t.id ? "primary" : "secondary"}
                 icon={t.icon}
-                onClick={() => setTab(t.id)}
+                onClick={() => {
+                  setTab(t.id);
+                  window.history.replaceState(null, "", window.location.pathname + window.location.search + "#/admin?section=" + encodeURIComponent(t.id));
+                }}
                 aria-pressed={tab === t.id}
               >
                 {t.label}

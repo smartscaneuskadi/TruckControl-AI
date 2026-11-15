@@ -69,6 +69,9 @@ export async function nativeFixture(
     capabilityStatus: 200,
     sessionStatus: 200,
     failUser: false,
+    holdUser: false,
+    userPending: false,
+    releaseUser: () => {},
     unsafeQr: false,
     unsafeStyle: false,
     largeQr: false,
@@ -289,6 +292,12 @@ export async function nativeFixture(
           : controls.loginAal,
       );
     } else if (path === "/auth/v1/user") {
+      if (controls.holdUser) {
+        controls.userPending = true;
+        await new Promise<void>((resolve) => {
+          controls.releaseUser = resolve;
+        });
+      }
       data = controls.failUser
         ? { code: "unexpected_failure", message: "Private provider diagnostic" }
         : user(id);
