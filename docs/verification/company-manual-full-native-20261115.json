@@ -1,0 +1,57 @@
+{
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "source_sha": "553c08bdf25d5417e1c63cbb8c0d98142a193994",
+  "workflow_run": 43736219689,
+  "job_id": 132879290852,
+  "manual_full_checks": 200,
+  "baseline_recovery_checks": 67,
+  "all_passed": true,
+  "cleanup_success": true,
+  "registry_logout_success": true,
+  "candidate_filename": "20261115161323_company_manual_full_licenses.sql",
+  "candidate_sha256": "ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c",
+  "official_auth_image": "ghcr.io/supabase/gotrue:v2.197.0",
+  "committed_schema_file_count": 51,
+  "covered_contracts": {
+    "expired_trial_manual_full_per_company": true,
+    "all_commercial_modules_roles_consents_and_cap": true,
+    "same_owner_sibling_and_other_owner_isolation": true,
+    "company_admin_self_grant_denied": true,
+    "off_preserves_records": true,
+    "expiry_preserves_records": true,
+    "past_date_preserves_records": true,
+    "root_own_company_off_management": true,
+    "cas_stale_denied": true,
+    "idempotent_replay": true,
+    "old_replay_keeps_current_off": true,
+    "audit_real_actor_and_time": true,
+    "audit_immutable": true,
+    "limit50_preserved": true,
+    "server_expiry_boundary": true,
+    "unlimited_immediate_reactivation": true,
+    "user_ban_preserved": true,
+    "account_suspension_preserved": true,
+    "revoked_root_denied": true,
+    "no_automatic_payment_records": true
+  },
+  "external_provider_calls": 0,
+  "stripe_calls": 0,
+  "external_messages_sent": 0,
+  "production_modified": false,
+  "managed_mfa_enabled": false,
+  "managed_platform_restore_verified": false,
+  "issued_urls_or_cached_bytes_recall_claimed": false,
+  "sensitive_artifacts_uploaded": false,
+  "artifacts": {
+    "manual": {
+      "artifact_id": 14170174600,
+      "archive_sha256": "7d3790cd07fb4344ef8ad4e12372ad9d816ea6ace275136230512c5c4bac022e"
+    },
+    "baseline": {
+      "artifact_id": 14170129541,
+      "archive_sha256": "cbd215658e386648a06c507bc1fec9e81d7b86c9f2208b1a9c387c6eb2b62450"
+    }
+  },
+  "started_at": "2026-11-15T16:35:53Z",
+  "completed_at": "2026-11-15T16:36:32Z"
+}
