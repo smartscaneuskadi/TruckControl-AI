@@ -73,6 +73,10 @@ jobs:
       - run: npm run test:e2e:saas
         env:
           TRUCKCONTROL_SAAS_TEST_ARTIFACTS: saas-test-results
+      - name: Manual Full subscriptions, company access and Root permissions
+        run: npm run test:e2e:manual-full
+        env:
+          TRUCKCONTROL_MANUAL_FULL_ARTIFACTS: manual-full-test-results
       - run: npm run test:e2e:candidate
         env:
           TRUCKCONTROL_CANDIDATE_TEST_ARTIFACTS: candidate-test-results
@@ -88,6 +92,7 @@ jobs:
             playwright-report/
             company-test-results/
             saas-test-results/
+            manual-full-test-results/
             candidate-test-results/
             public-test-results/
             production-test-results/
