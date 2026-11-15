@@ -40,6 +40,10 @@ quote_spec = importlib.util.spec_from_file_location("reserved_quote_contracts", 
 assert quote_spec and quote_spec.loader
 quote_contracts = importlib.util.module_from_spec(quote_spec)
 quote_spec.loader.exec_module(quote_contracts)
+company_full_spec = importlib.util.spec_from_file_location("company_manual_full_contracts", ROOT / "tests/postgres/company_manual_full_contracts.py")
+assert company_full_spec and company_full_spec.loader
+company_full_contracts = importlib.util.module_from_spec(company_full_spec)
+company_full_spec.loader.exec_module(company_full_contracts)
 q, sql, value, check = pg.quote, pg.sql, pg.value, pg.check
 ACCOUNT = "acct_IncidentPostgres"
 ADMIN = "fd110000-0000-4000-8000-000000000001"
@@ -48,8 +52,9 @@ RESTORED = "tc_incidents_restored"
 pg.DATABASES.add(RESTORED)
 pg.REPORT.update({
  "contract": "truckcontrol-financial-incidents-postgres-v1",
- "scope": "synthetic financial observations, real PostgreSQL locks and same-cluster logical restore",
- "checks": [], "money_movement": False, "licence_changes": False,
+ "scope": "synthetic financial observations and manual company licences, real PostgreSQL locks and same-cluster logical restore",
+ "checks": [], "money_movement": False, "financial_incident_licence_changes": False,
+ "managed_licence_changes": False,
  "fiscal_emission": False, "provider_calls": 0,
 })
 def uid(n): return "fd330000-0000-4000-8000-" + str(n).zfill(12)
@@ -186,6 +191,7 @@ def main():
  refresh_contracts.run(pg, SimpleNamespace(**globals()))
  risk_contracts.run(pg, SimpleNamespace(**globals()))
  quote_contracts.run(pg, SimpleNamespace(**globals()))
+ company_full_contracts.run(pg, SimpleNamespace(**globals()))
  # Actual dump/restore AFTER the new ledger and reviews exist.
  before=pg.database_fingerprint(pg.SOURCE)
  dump=pg.run(["docker","exec",pg.CONTAINER,"pg_dump","-U","postgres","-d",pg.SOURCE,"-Fc","--no-owner"]).stdout

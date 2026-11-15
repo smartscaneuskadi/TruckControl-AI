@@ -1,0 +1,90 @@
+{
+  "recorded_at": "2026-11-15T14:31:12.533039+00:00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migration_count": 73,
+  "migration": {
+    "version": "20261115143030",
+    "name": "subscription_reserved_quote_recovery",
+    "canonical_file": "supabase/migrations/20261115143030_subscription_reserved_quote_recovery.sql",
+    "candidate_file_before_application": "supabase/migrations/20261114203240_subscription_reserved_quote_recovery.sql",
+    "sql_sha256": "66ee43f73b8b0f6c5c329874d4a56c66f5e4409d5a8791ca7b1f3a5dfee0664d",
+    "native_statement_count": 1,
+    "native_sql_sha256": "66ee43f73b8b0f6c5c329874d4a56c66f5e4409d5a8791ca7b1f3a5dfee0664d",
+    "byte_identical": true,
+    "official_apply_result": {
+      "success": true
+    },
+    "applied_once": true,
+    "do_not_reapply": true
+  },
+  "function": {
+    "signature": "public.tc_recurring_billing(text,jsonb)",
+    "oid": 18420,
+    "before_prosrc_md5": "8ba277d1bfa7c1fbe33d7d50678103c1",
+    "after_prosrc_md5": "414a74828f8a133afc705ac84baea010",
+    "security_invoker": true,
+    "anon_execute": false,
+    "authenticated_execute": false,
+    "service_role_execute": true
+  },
+  "flags": {
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false,
+    "prices_are_examples": true
+  },
+  "security_advisor": {
+    "warn": 0,
+    "error": 0,
+    "info_deny_all": 2,
+    "unchanged_intentionally_closed_test_tables": true,
+    "reference": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+  },
+  "pre_applied_acceptance": {
+    "pr": 133,
+    "main_commit": "ef55b28cb5012b97f649b04ebf531d5761c0a8c5",
+    "source_exact_ci_quality": 43706778964,
+    "source_exact_ci_postgres": 43706779034,
+    "native_payment_or_provider_acceptance": false
+  },
+  "rollback": {
+    "path": "docs/deployment/rollback/subscription-reserved-quote-before-73.sql",
+    "sha256": "13725d4e693efb2c9e6ac5cae8198d7b5e52a9270ee6810f3bc6d9b4c975a2d9",
+    "function_only_snapshot": true,
+    "contains_prior_migration_alter_tables": false,
+    "used": false,
+    "retained_workspace_copy": "/workspace/artifacts/truckcontrol-commercial-continuation-20261114/recurring-billing-before.sql",
+    "requires_official_migration_confirmation": true,
+    "must_check_current_function_before_use": {
+      "oid": 18420,
+      "prosrc_md5": "414a74828f8a133afc705ac84baea010",
+      "mismatched_or_later_body": "stop; do not overwrite newer work"
+    }
+  },
+  "production": {
+    "site_version": 45,
+    "app_version": "0.5.27-rc.1",
+    "source_commit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+    "new_frontend_deployment": false,
+    "demo_version": 6,
+    "preserved": true
+  },
+  "spending": {
+    "new_purchases_or_recurring_commitments_eur": 0,
+    "new_ai_calls": 0,
+    "ai_monthly_usd": 10,
+    "company_call_quota": 100,
+    "historical_200eur_balance_reconciled": false
+  },
+  "commercial_launch_complete": false,
+  "note": "Applied through mandatory official confirmation after owner pressed Approve; expired attempts made no changes. This receipt supersedes Native72/SQL73 pending status in earlier historical reports. No prior migration or AI#37 rerun.",
+  "canonical_reconciliation_validation": {
+    "focused_tests": 32,
+    "command": "vitest run tests/subscription-reserved-quote-age.test.ts",
+    "passed": true,
+    "retained_original_tests": 64,
+    "retained_hashes": 11,
+    "sql_source_bytes_unchanged": true,
+    "new_full_ci": "pending until branch and PR runs finish"
+  }
+}

@@ -505,6 +505,9 @@ function Workspace() {
             <span className="demo-pill">
               <span />
               {subscription.enabled &&
+              subscription.access?.manual_full?.configured
+                ? "Pack Full · Activo"
+                : subscription.enabled &&
               subscription.access?.profile?.status === "trial"
                 ? `${subscription.access.plan === "limited" ? "Básico" : "Full"} · Prueba: ${trialDaysLeft(subscription.access.profile.trial_ends_at)} días`
                 : cloud

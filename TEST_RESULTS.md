@@ -1,3 +1,25 @@
+## Supabase73 aplicada oficialmente · 15/11/2026 14:31 UTC
+
+**73 migraciones verificadas.** La aprobación oficial del titular aplicó una sola vez `20261115143030_subscription_reserved_quote_recovery`; SQL SHA256 `66ee43f73b8b0f6c5c329874d4a56c66f5e4409d5a8791ca7b1f3a5dfee0664d`, idéntico al candidato probado. El archivo local se renombra al timestamp remoto sin cambiar bytes. **No repetir73,68–72 ni#37.** Los estados anteriores «SQL73 pendiente» quedan como historia.
+
+`tc_recurring_billing` conservaOID18420,SECURITYINVOKER yACL:anon/auth sinEXECUTE,service_role conEXECUTE. BodyMD5nuevo414a74828f8a133afc705ac84baea010. RegistroON/enforceON/cobrosOFF;0WARN/ERROR+2INFO deny-all. Fuente exacta previa43706778964 yPostgreSQL43706779034 SUCCESS; la reconciliación de nombre se verifica por separado, sin nueva llamada de pago/proveedor.
+
+Sites45/0.5.27-rc.1 ydemo6 conservados; no nuevo desplieguefrontend. PR145 ya integrado en f1eee9f6825e0b89a178d0f264ebbbe2a66b4522 conCI43708812503/43708781307 SUCCESS; mejora independientePR146/c87a1bf preservada. El frenteMFA de#50 está en ramas candidatas con rolloutOFF, no activo. Persisten aceptaciones Stripe/fiscal,Google,restore gestionado,firma/hardware/jurídica. Sin cargos,contrataciones o llamadasIA nuevas; saldo200EUR histórico desconocido. No declarar lanzamiento comercial.
+
+[Recibo y correspondencia nativa](docs/verification/supabase-migration-73-20261115.json).
+
+## Actualización segura45 publicada y verificada · 15/11/2026 UTC
+
+https://truckcontrolai.com: **Sites45 / 0.5.27-rc.1**, fuente `9dd41d99aadacda961eb772f60439297d6aaa4c5`, despliegue `appgdep_6af9940779a48191b144b16385a388f6` SUCCEEDED. PR144 integrado en `e9819a124e1621704970bea6d688ec9958a7de6a`; PR141/142 independientes conservados. Copiar la dirección privada de reenvío ya controla API ausente, error síncrono y reintento sin avisos antiguos. Misma dirección, permisos y economía.
+
+CI exacta43706778964 y PR43706541846 SUCCESS: **1844 unitarias/SQL,132Python,94demo,62empresa,274SaaS,20candidata,20producción y6perfiles públicos previos**, por ejecución.64originales/11hashes intactos. PostgreSQL43706779034, recuperación Auth/Storage autohospedada67/67 y Android43706779003 SUCCESS. Android6/0.5.27 genera APK debug/AAB sin firma comercial; no Play ni hardware. Tras publicar: **75/75hashes HTTPS,84/84recorridos sin omisiones/flaky,6/6perfilesPWA,6/6denegaciones y5/5salud**. SDK real con transporte privado ficticio bloqueando tráfico no interceptado; no nueva aceptación de proveedores.
+
+Supabase **72**, SQL73 **NO aplicada**: confirmación oficial caducada; historial/función8ba277d1.../OID18420/ACL intactos. No reaplicar68–72/#37 ni usar SQL/CLI para eludir la tarjeta. RegistroON, acceso exigido, cobrosOFF y0WARN/ERROR+2INFO deny-all. Gmail empresarial nativo:0conexiones; correo personal separado. Resend confirma dominio/receptor habilitados,5DNS verificados y firma igual a Vault, solo GET; sin mensajes o lectura de buzones. Destinos DKIM Migadu siguenSERVFAIL; no modificar DNSSEC.
+
+Se conservan44/43/42/41/32/31 ydemo6. Main conserva manifiestoDEMO: **no publicarlo sobre producción**. Cargos/contrataciones/llamadasIA nuevos0; IA10USD/mes–100/empresa intacta. Saldo histórico del techo200EUR desconocido. Persisten puertas Stripe/facturaGDTaller válida/entrega,Google público/empresarial,restore gestionado,firma/Play/hardware y revisión externa. **Actualización segura pública; lanzamiento comercial completo pendiente**.
+
+[Recibo y límites verificables](docs/verification/commercial-safe-update45-20261115.json).
+
 ## Continuación verificada · 14/11/2026 22:45 UTC
 
 Main133 calidad43640320545 yPostgreSQL43640320581 SUCCESS; fuente compuesta5469313 también pasa. Por ejecución:1831unitarias/SQL en152archivos,131Python,94demo,62empresa,258SaaS,20candidata y20producción. SQL329=97+196+36;38contenciones reales y2restores lógicos. Auth/Storage aislados43637623308:67/67; compuesto43639165420 tambiénSUCCESS. Sin omitir64originales/11hashes; sin aceptación nueva de proveedores ni hardware físico. PR134 posterior se conserva sin atribuirle estos recuentos. [Recibo y límites](docs/verification/commercial-continuation-20261114.json).

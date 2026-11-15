@@ -10,10 +10,13 @@ import { join } from 'node:path';
 import { createManualStripeWebhookHandler } from '../supabase/functions/truckcontrol-stripe-fiscal/handler.ts';
 import { createStripeIncidentHandler } from '../supabase/functions/truckcontrol-stripe-incidents/handler.ts';
 import { financialDatabase, withDbRole } from '../tests/helpers/subscription-financial-db.ts';
+import { requireStripeQaIdentity, requireStripeQaLegacyArguments, stripeQaEnvironment, StripeQaAccount } from './lib/stripe-qa-guards.mjs';
 const run = promisify(execFile);
 if(process.env.TRUCKCONTROL_RUN_STRIPE_SANDBOX!=='yes')throw Error('Explicit isolated sandbox acceptance opt-in required');
 const cli=process.env.STRIPE_CLI_BIN||'stripe';
-const account='acct_1UWYX5ECykZtDl5d';
+const account=StripeQaAccount;
+// Never inherit a live Stripe key, alternate account or provider routing from the caller.
+const cliEnv=stripeQaEnvironment(process.env);
 const directory=process.env.TRUCKCONTROL_STRIPE_SANDBOX_ARTIFACTS||join('/tmp','truckcontrol-stripe-sandbox-'+randomUUID());
 mkdirSync(directory,{recursive:true});
 const output=join(directory,'stripe-sandbox-result.json');
@@ -25,9 +28,12 @@ const proof={started_at:new Date().toISOString(),account,livemode:false,real_mon
 let db, listener, server, webhookSecret='', customer, subscription;
 const check=(name,ok)=>{if(!ok)throw Error(name);proof.checks.push(name);};
 async function api(args){
-  if(args.some(x=>x==='--live'||x==='--api-key'))throw Error('Forbidden live/credential argument');
   if(args[0]==='get'&&args[1]?.includes('?')){const url=new URL(args[1],'https://api.stripe.com');args=[args[0],url.pathname,...Array.from(url.searchParams).flatMap(([k,v])=>['-d',k+'='+v]),...args.slice(2)];}
-  const {stdout}=await run(cli,args,{timeout:20000,maxBuffer:262144});
+  const mutation=requireStripeQaLegacyArguments(args);
+  // This legacy executor previously checked account identity only once, before
+  // later writes. Reconfirm the sandbox profile before EACH remote mutation.
+  if(mutation)requireStripeQaIdentity(await api(['whoami','--format','json']));
+  const {stdout}=await run(cli,args,{timeout:20000,maxBuffer:262144,env:cliEnv});
   const s=stdout.replace(/\x1b\[[0-9;]*m/g,'');
   const data=JSON.parse(s.slice(s.indexOf('{'),s.lastIndexOf('}')+1));
   if(data.error)throw Error('stripe_api_error');
@@ -36,7 +42,8 @@ async function api(args){
 const wait=async(predicate,timeout=60000)=>{const end=Date.now()+timeout;while(Date.now()<end){if(await predicate())return;await new Promise(r=>setTimeout(r,200));}throw Error('wait_timeout');};
 try{
   const identity=await api(['whoami','--format','json']);
-  check('Official CLI is authorized only for the explicitly selected test account for this run',identity.authorized===true&&identity.account_id===account&&identity.mode==='test');
+  requireStripeQaIdentity(identity);
+  check('Official CLI is authorized only for the explicitly selected test account for this run',true);
   const actual=await api(['get','/v1/account']);check('Canonical Stripe account identity matches the existing sandbox',actual.id===account);
   db=await financialDatabase();
   const user=randomUUID(),request=randomUUID();
@@ -80,7 +87,7 @@ try{
   });
   await new Promise(r=>server.listen(0,'127.0.0.1',r));
   const port=server.address().port;
-  listener=spawn(cli,['listen','--events','invoice.paid,refund.created,refund.updated,charge.refunded','--forward-to',`http://127.0.0.1:${port}/webhook`],{stdio:['ignore','pipe','pipe'],detached:true});
+  listener=spawn(cli,['listen','--events','invoice.paid,refund.created,refund.updated,charge.refunded','--forward-to',`http://127.0.0.1:${port}/webhook`],{stdio:['ignore','pipe','pipe'],detached:true,env:cliEnv});
   let listenerText='';for(const stream of [listener.stdout,listener.stderr])stream.on('data',b=>{listenerText=(listenerText+b.toString()).slice(-16384);const m=listenerText.match(/whsec_[A-Za-z0-9]+/);if(m)webhookSecret=m[0];});
   await wait(()=>Boolean(webhookSecret),45000);check('Official CLI webhook signing secret obtained only in process memory',true);
   customer=await api(['customers','create','--name','Synthetic TruckControl QA 20261112','--payment-method','pm_card_visa','-d','invoice_settings[default_payment_method]=pm_card_visa','-d','metadata[application]=truckcontrol-ai','-d','metadata[purpose]=isolated-signed-acceptance-20261112','--idempotency','tc-qa-customer-20261112-'+request]);

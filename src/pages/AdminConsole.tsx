@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import {
   Activity,
@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   Truck,
   UsersRound,
+  Building2,
 } from "lucide-react";
 import { Badge, Button, Empty, Field, Modal } from "../components/ui";
 import { getSupabaseClient } from "../integrations/supabase/client";
@@ -38,6 +39,7 @@ import { SubscriptionIncidents } from "../components/SubscriptionIncidents";
 import { UnlinkedIncidentReview } from "../components/UnlinkedIncidentReview";
 import { SubscriptionRiskSignals } from "../components/SubscriptionRiskSignals";
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
+const CompanyFullAdmin = lazy(() => import("../components/CompanyFullAdmin").then((module) => ({ default: module.CompanyFullAdmin })));
 
 export function AdminConsole({
   userId,
@@ -181,6 +183,7 @@ export function AdminConsole({
     }
   }
   const tabs = [
+    { id: "companies", label: "Empresas", icon: Building2 },
     { id: "customers", label: "Clientes", icon: UsersRound },
     { id: "modules", label: "Módulos", icon: Blocks },
     { id: "plans", label: "Planes y cobros", icon: CreditCard },
@@ -330,6 +333,7 @@ export function AdminConsole({
             ))}
           </nav>
           {tab === "providers" && <ProviderSetup />}
+          {tab === "companies" && <Suspense fallback={<p role="status">Comprobando empresas y licencias…</p>}><CompanyFullAdmin key={userId} userId={userId} /></Suspense>}
           {tab === "subscription_invoices" && (
             <ManualSubscriptionInvoices
               key={userId}

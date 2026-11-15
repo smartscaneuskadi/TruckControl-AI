@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ManualFullState } from "./company-full";
 
 export const featureLabels = {
   dashboard: "Panel principal",
@@ -124,6 +125,8 @@ export interface Customer extends Registration {
   updated_at: string;
 }
 export interface SubscriptionAccess {
+  manual_full?: ManualFullState;
+  observed_at?: string;
   is_admin: boolean;
   active: boolean;
   features: Features;

@@ -309,12 +309,12 @@ def fingerprint_differences(before, after, path: str = "") -> list:
     return differences[:20]
 
 
-def wait_for_backend(application: str, *, lock: bool) -> dict:
+def wait_for_backend(application: str, *, lock: bool, database: str = SOURCE) -> dict:
     deadline = time.monotonic() + 7
     while time.monotonic() < deadline:
         rows = value("""select coalesce(jsonb_agg(jsonb_build_object(
           'pid',pid,'wait_type',wait_event_type,'wait',wait_event,'blockers',pg_blocking_pids(pid))),'[]')
-          from pg_stat_activity where application_name=""" + quote(application))
+          from pg_stat_activity where application_name=""" + quote(application), database)
         if rows and ((lock and rows[0]["wait_type"] == "Lock")
                      or (not lock and rows[0]["wait"] == "PgSleep")):
             return rows[0]
@@ -323,20 +323,23 @@ def wait_for_backend(application: str, *, lock: bool) -> dict:
 
 
 def concurrent(first_sql: str, second_sql: str, prefix: str,
-               *, second_error: str | None = None):
+               *, second_error: str | None = None, database: str = SOURCE,
+               hold_after_seconds: int = 8):
+    if hold_after_seconds not in (0, 8):
+        raise AssertionError("Only the bounded existing hold or an explicit in-body hold is supported")
     first_name, second_name = prefix + "-holder", prefix + "-contender"
-    first = subprocess.Popen(pg_command(), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+    first = subprocess.Popen(pg_command(database), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
     assert first.stdin is not None
     first.stdin.write(("set application_name=" + quote(first_name) + ";"
                        + "set statement_timeout='20s';set lock_timeout='15s';begin;"
-                       + first_sql + ";select pg_sleep(8);commit;").encode())
+                       + first_sql + ";select pg_sleep(" + str(hold_after_seconds) + ");commit;").encode())
     first.stdin.close()
     first.stdin = None
     second = None
     try:
-        holder = wait_for_backend(first_name, lock=False)
-        second = subprocess.Popen(pg_command(), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        holder = wait_for_backend(first_name, lock=False, database=database)
+        second = subprocess.Popen(pg_command(database), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE)
         assert second.stdin is not None
         second.stdin.write(("set application_name=" + quote(second_name) + ";"
@@ -344,7 +347,7 @@ def concurrent(first_sql: str, second_sql: str, prefix: str,
                             + second_sql + ";commit;").encode())
         second.stdin.close()
         second.stdin = None
-        contender = wait_for_backend(second_name, lock=True)
+        contender = wait_for_backend(second_name, lock=True, database=database)
         first_out, first_err = first.communicate(timeout=25)
         second_out, second_err = second.communicate(timeout=25)
         check(prefix + ": distinct backends and real row-lock contention",

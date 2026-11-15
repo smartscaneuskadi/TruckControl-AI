@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_90e9d2f5c3288191aa9f77715547d23f",
-  "published_version_number": 44,
-  "deployment_id": "appgdep_6af8a1d3905c81919699fbc3108d44a8",
-  "previous_deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
+  "published_commit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ba3ecd4e45508191a680ca27bdd6a069",
+  "published_version_number": 45,
+  "deployment_id": "appgdep_6af9940779a48191b144b16385a388f6",
+  "previous_deployment_id": "appgdep_6af8a1d3905c81919699fbc3108d44a8",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,9 +31,9 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-14T18:01:06.519158+00:00",
+  "deployed_at": "2026-11-15T11:14:28.013589+00:00",
   "expected_themes": ["light", "cockpit"],
-  "source_ci_run": 43622942100,
+  "source_ci_run": 43706778964,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -62,18 +62,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
+  "source_ci_commit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
   "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 43,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_5028752643548191a071df9312d2ccdf",
-    "source_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
-    "deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
-    "app_version": "0.5.25-rc.1"
+    "version": 44,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_90e9d2f5c3288191aa9f77715547d23f",
+    "source_commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
+    "deployment_id": "appgdep_6af8a1d3905c81919699fbc3108d44a8",
+    "app_version": "0.5.26-rc.1"
   },
-  "source_deployment_ci_run": 43578958429,
-  "app_version": "0.5.26-rc.1",
+  "source_deployment_ci_run": 43706778946,
+  "app_version": "0.5.27-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -248,6 +248,13 @@
       "source_commit": "94c719a72f2548b0ec3c0889cea49ae8156952b7",
       "deployment_id": "appgdep_6af77bdd7b0c819191c1a367230964e8",
       "app_version": "0.5.24-rc.1"
+    },
+    {
+      "version": 44,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_90e9d2f5c3288191aa9f77715547d23f",
+      "source_commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
+      "deployment_id": "appgdep_6af8a1d3905c81919699fbc3108d44a8",
+      "app_version": "0.5.26-rc.1"
     }
   ],
   "expected_provider_admin": true,
