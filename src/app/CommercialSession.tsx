@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { ArrowLeft, CreditCard, ShieldCheck } from "lucide-react";
@@ -6,7 +6,6 @@ import { getSupabaseClient } from "../integrations/supabase/client";
 import { Button } from "../components/ui";
 import { SubscriptionProvider } from "./SubscriptionContext";
 import { Registration, PhoneVerification } from "../pages/Registration";
-import { AdminConsole } from "../pages/AdminConsole";
 import { PlanCards } from "../pages/PublicPortal";
 import { SubscriptionBillingDetails } from "../components/SubscriptionBillingDetails";
 import { CompanySelection, Invitations } from "../pages/Team";
@@ -20,6 +19,10 @@ import type {
   Plan,
   SubscriptionAccess,
 } from "../domain/subscriptions";
+import { fullExpiryDeadline, manualFullBlocked, readManualFullAccess, watchFullExpiry } from "../domain/company-full";
+import { endPrivateSessions } from "./session-events";
+const AdminConsole = lazy(() => import("../pages/AdminConsole").then((module) => ({ default: module.AdminConsole })));
+const CompanyFullAccount = lazy(() => import("../components/CompanyFullAccount").then((module) => ({ default: module.CompanyFullAccount })));
 
 export function CommercialSession({
   children,
@@ -33,6 +36,9 @@ export function CommercialSession({
   onBack,
   onDemo,
   onSignOut,
+  companiesReady = true,
+  companyError = "",
+  onRetryCompanies,
 }: {
   children: ReactNode;
   user: User | null;
@@ -45,60 +51,111 @@ export function CommercialSession({
   onBack(): void;
   onDemo(): void;
   onSignOut(): Promise<void>;
+  companiesReady?: boolean;
+  companyError?: string;
+  onRetryCompanies?(): void;
 }) {
   const client = getSupabaseClient();
   const [access, setAccess] = useState<SubscriptionAccess | null>(null);
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState("");
   const [billing, setBilling] = useState(false);
+  const [expired, setExpired] = useState(false);
+  const [verificationFailed, setVerificationFailed] = useState(false);
+  const [deadline, setDeadline] = useState<number | null>(null);
+  const currentAccess = useRef<SubscriptionAccess | null>(null);
+  currentAccess.current = access;
   const ready = useRef(false);
   useEffect(() => {
     if (!client || !user || recovery) return;
     let active = true;
+    const started = performance.now();
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+    const unavailable = () => {
+      if (!active) return;
+      setError("No se pueden comprobar los permisos de tu cuenta. Reintenta la conexión.");
+      if (currentAccess.current?.is_admin) { setAccess(null); setDeadline(null); endPrivateSessions(); }
+      if (currentAccess.current?.manual_full?.configured) { setVerificationFailed(true); endPrivateSessions(); }
+    };
     void (async () => {
-      const initial = await client.rpc("tc_finish_registration", {});
+      const initial = await client.rpc("tc_finish_registration", {}).abortSignal(controller.signal);
+      if (!active) return null;
       if (
         initial.error ||
         !initial.data ||
-        (initial.data as unknown as SubscriptionAccess).is_admin ||
-        !organizationId
+        (initial.data as unknown as SubscriptionAccess).is_admin
       )
         return initial;
-      return client.rpc("tc_organization_access", { p_org: organizationId });
-    })().then(({ data, error }) => {
-      if (!active) return;
+      // Global administration depends on the verified bootstrap role. Company
+      // access must wait for membership discovery and the selected company.
+      if (!companiesReady || currentAccess.current?.is_admin) {
+        if (currentAccess.current) endPrivateSessions();
+        setAccess(null); setDeadline(null); setExpired(false); setVerificationFailed(false);
+        ready.current = false;
+        if (!companiesReady) return null;
+      }
+      if (!organizationId) return initial;
+      return client.rpc("tc_organization_access", { p_org: organizationId }).abortSignal(controller.signal);
+    })().then((result) => {
+      if (!active || !result) return;
+      const { data, error } = result;
       if (error || !data) {
-        setError(
-          "No se pueden comprobar los permisos de tu cuenta. Reintenta la conexión.",
-        );
+        unavailable();
         return;
       }
       const next = data as unknown as SubscriptionAccess;
+      try {
+        if (!next.is_admin) {
+          const state = readManualFullAccess(next, organizationId);
+          if (currentAccess.current?.manual_full?.configured && state === undefined) throw Error();
+        }
+      }
+      catch {
+        setError("No se puede comprobar el acceso de esta empresa. Comprueba la conexión y reinténtalo.");
+        setVerificationFailed(true); endPrivateSessions(); return;
+      }
+      const previous = currentAccess.current;
+      if (!next.is_admin && previous?.active && !next.active) endPrivateSessions();
       setAccess(next);
+      setVerificationFailed(false);
+      const expires = next.is_admin ? null : fullExpiryDeadline(next.manual_full, next.observed_at, started);
+      setDeadline(expires); setExpired(expires !== null && expires <= performance.now());
       setError("");
       if (next.active && !next.is_admin && !ready.current) {
         ready.current = true;
         onProvisioned();
       }
-    });
+    }).catch(unavailable).finally(() => clearTimeout(timeout));
     return () => {
-      active = false;
+      active = false; clearTimeout(timeout); controller.abort();
     };
-  }, [client, user?.id, organizationId, revision, recovery]);
+  }, [client, user?.id, organizationId, revision, companiesReady, recovery]);
   useEffect(() => {
     if (!user) return;
-    const timer = setInterval(() => setRevision((n) => n + 1), 60000);
+    const timer = setInterval(() => { if (!document.hidden && navigator.onLine) setRevision((n) => n + 1); }, access?.manual_full?.configured ? 15000 : 60000);
     const refresh = () => {
-      if (!document.hidden) setRevision((n) => n + 1);
+      if (!document.hidden) {
+        if (deadline !== null && performance.now() >= deadline) { setExpired(true); endPrivateSessions(); }
+        setRevision((n) => n + 1);
+      }
     };
     document.addEventListener("visibilitychange", refresh);
     window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
     return () => {
       clearInterval(timer);
       document.removeEventListener("visibilitychange", refresh);
       window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
     };
-  }, [user?.id]);
+  }, [user?.id, access?.manual_full?.configured, deadline]);
+  useEffect(() => {
+    if (deadline === null) return;
+    return watchFullExpiry(deadline, () => {
+      setExpired(true); endPrivateSessions(); setRevision((n) => n + 1);
+    });
+  }, [deadline]);
   if (!user || recovery)
     return (
       <Registration
@@ -109,20 +166,20 @@ export function CommercialSession({
         onBack={onBack}
       />
     );
-  if (!access)
+  if (!access || (verificationFailed && !access.manual_full?.configured))
     return (
       <main className="registration-page">
         <section className="card registration-card">
           <h1>Preparando tu acceso</h1>
-          {error ? (
+          {error || companyError ? (
             <p role="alert" className="form-error">
-              {error}
+              {error || companyError}
             </p>
           ) : (
             <p role="status">Comprobando cuenta, verificación y permisos…</p>
           )}
           <div className="access-links">
-            <Button onClick={() => setRevision((n) => n + 1)}>
+            <Button onClick={() => { setRevision((n) => n + 1); onRetryCompanies?.(); }}>
               Reintentar
             </Button>
             <Button variant="secondary" onClick={onBack}>
@@ -137,12 +194,13 @@ export function CommercialSession({
     );
   if (access.is_admin)
     return (
-      <AdminConsole
+      <Suspense fallback={<p role="status">Comprobando cuenta, verificación y permisos…</p>}><AdminConsole
         userId={user.id}
         email={user.email ?? "Administrador"}
         onSignOut={onSignOut}
         onDemo={onDemo}
       />
+      </Suspense>
     );
   if (!user.email_confirmed_at)
     return (
@@ -159,6 +217,31 @@ export function CommercialSession({
         </section>
       </main>
     );
+  const manualAccount = (
+    <Suspense
+      fallback={
+        <p role="status">Comprobando cuenta, verificación y permisos…</p>
+      }
+    >
+      <CompanyFullAccount
+        access={access}
+        expired={expired}
+        error={verificationFailed ? error : ""}
+        onRefresh={() => setRevision((n) => n + 1)}
+        onBack={
+          access.active && !expired && !verificationFailed
+            ? () => setBilling(false)
+            : undefined
+        }
+        onSignOut={onSignOut}
+      />
+    </Suspense>
+  );
+  if (
+    access.manual_full?.configured &&
+    (manualFullBlocked(access.manual_full) || expired || verificationFailed)
+  )
+    return manualAccount;
   if (!access.profile || access.requires_phone_verification)
     return (
       <PhoneVerification
@@ -171,6 +254,7 @@ export function CommercialSession({
         onSignOut={onSignOut}
       />
     );
+  if (access.manual_full?.configured && billing) return manualAccount;
   if (!access.active || billing)
     return (
       <Billing

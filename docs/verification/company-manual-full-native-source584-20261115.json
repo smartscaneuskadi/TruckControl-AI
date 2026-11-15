@@ -1,0 +1,48 @@
+{
+  "contract": "truckcontrol-manual-full-native-final-source-v1",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "source_sha": "584b0a7a15d5d3d16d23416179a46c8a750ce33a",
+  "branch": "deploy/company-manual-full-production-20261115",
+  "workflow_run": 43740760757,
+  "job_id": 132893177537,
+  "workflow_path": ".github/workflows/local-service-recovery.yml",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-11-15T17:22:37Z",
+  "updated_at": "2026-11-15T17:24:38Z",
+  "native_manual_full_checks": 200,
+  "baseline_recovery_checks": 67,
+  "all_passed": true,
+  "artifact_archive_hashes_verified": true,
+  "exact_receipt_fields_and_check_names_verified": true,
+  "sensitive_value_scan_passed": true,
+  "canonical_candidate_filename": "20261115170051_company_manual_full_licenses.sql",
+  "candidate_sql_sha256": "ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c",
+  "source_sql_sha256_verified": true,
+  "manual_harness_identical_to_prior_passed_source": true,
+  "official_auth_image": "ghcr.io/supabase/gotrue:v2.197.0",
+  "committed_schema_file_count": 51,
+  "cleanup_success": true,
+  "registry_logout_success": true,
+  "production_modified": false,
+  "external_provider_calls": 0,
+  "stripe_calls": 0,
+  "external_messages_sent": 0,
+  "managed_platform_restore_verified": false,
+  "managed_mfa_enabled": false,
+  "issued_urls_or_cached_bytes_recall_claimed": false,
+  "artifacts": {
+    "manual": {
+      "artifact_id": 14171663922,
+      "archive_sha256": "4e3dc4d91f37f973ede5ef51018225620077bf7419c990d935f5c115b320ab4a",
+      "receipt_sha256": "20169174a3988382b29f7b8e234af55f97a0ff20293d2c866d35d39e34da887f"
+    },
+    "baseline": {
+      "artifact_id": 14171629150,
+      "archive_sha256": "28c57e4252f78d9afa124fd1e70922d58476c7744740188026375e09648f0d6a",
+      "receipt_sha256": "e3b899d49a62ed15a82c428bcec0e12dc31c4fa2baca586dd78350ce804fbe2f"
+    }
+  },
+  "started_at": "2026-11-15T17:23:58Z",
+  "completed_at": "2026-11-15T17:24:33Z"
+}

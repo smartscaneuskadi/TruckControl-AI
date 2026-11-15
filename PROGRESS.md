@@ -1,3 +1,15 @@
+## Suscripciones FULL manuales publicadas · Sites46 · 15/11/2026 UTC
+
+Vigente https://truckcontrolai.com: **Sites46 / 0.5.28-rc.1**, fuente `4cb1e430fa5530c5b27b17e9dbb2515146d779ab`, despliegue `appgdep_6af9f64bacf88191bffa90e87f0a9b57` SUCCEEDED. PR150 integrado en `3af0fe44cbca9d54c5aa318ea2525cdf1b26ab7c`. **Superadministrador → Empresas** permite activar/desactivar FULL por empresa, vencimiento opcionalUTC, estados y auditoría inmutable, CAS/reintento acotado; no otorga FULL global al propietario ni permite autoactivación a administradores de empresa. OFF/expiración bloquean UI/RLS/RPC/Storage/procesos, conservando datos y administración global. Se conserva la copia cifrada y su cola, con vencimiento y revalidación antes de sincronizar.
+
+Supabase **74**, `20261115170051_company_manual_full_licenses`, SQL SHA `ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c`, aplicada oficialmente una vez. **No repetir74/73/68–72/#37.** RegistroON/enforceON/cobrosOFF;0WARN/ERROR+3INFO deny-all. Sin licencias o datos de clientes cambiados automáticamente. **Stripe LIVE deja de ser condición del lanzamiento inicial manual**; su implementación sigue apagada para aceptación futura. La licencia no representa un pago ni emite una factura fiscal.
+
+CI exacta43743688733 y PR43743536849/43743541583 SUCCESS:1897unit/SQL,140Python,94demo,62empresa,274SaaS,44Full,20candidata,20producción y6perfiles públicos previos, por ejecución.64originales/11hashes intactos. Backend inalterado tras la corrección de arranque:200Full+67Auth/Storage y399PostgreSQL,4carreras nuevas/2restauraciones aisladas. Tras publicar: **93/93hashes HTTPS,128/128recorridos sin fallos/omisiones/flaky,6/6PWA,6/6denegaciones Edge y5/5salud**. SDK real/transporte privado ficticio; sin proveedores, datos reales ni nuevas llamadasIA. Se conserva45/44/32/31 ydemo6. Main mantiene manifiestoDEMO: no publicarlo como producción.
+
+Gastos/compras/compromisos nuevos0; saldo histórico del techo200EUR sin conciliar. IA10USD/mes–100/empresa intacta. Android7 compila APKdebug/AAB sin firma comercial; no Play/hardware. Pendientes independientes: Google empresarial/público,restore gestionado,firma/Play/dispositivos y revisión externa. MFA149 opcional sigue borrador, no aplicada. Esta entrega publica y verifica **la suscripción manual**; no afirma el lanzamiento comercial global completo. Las copias desconectadas yURL ya emitidas conservan su lease/TTL; no se promete retirada retroactiva.
+
+[Recibo y límites](docs/verification/company-manual-full-published46-20261115.json). [Guía de administración](docs/MANUAL_COMPANY_SUBSCRIPTIONS.md).
+
 ## Supabase73 aplicada oficialmente · 15/11/2026 14:31 UTC
 
 **73 migraciones verificadas.** La aprobación oficial del titular aplicó una sola vez `20261115143030_subscription_reserved_quote_recovery`; SQL SHA256 `66ee43f73b8b0f6c5c329874d4a56c66f5e4409d5a8791ca7b1f3a5dfee0664d`, idéntico al candidato probado. El archivo local se renombra al timestamp remoto sin cambiar bytes. **No repetir73,68–72 ni#37.** Los estados anteriores «SQL73 pendiente» quedan como historia.

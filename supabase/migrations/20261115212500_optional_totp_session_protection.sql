@@ -1,6 +1,6 @@
 -- Generated locally with official Supabase CLI 3.1.0; additive candidate only.
 -- Optional account TOTP: no enrollment/settings/provider changes, no business DML.
--- Migration73 and every already applied file remain immutable.
+-- Migrations73/74 and every already applied file remain immutable.
 do $preflight$
 begin
  if to_regclass('auth.mfa_factors') is null or not exists(

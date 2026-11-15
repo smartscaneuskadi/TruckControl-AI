@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import type { BrowserContext, Page } from "@playwright/test";
 import { exampleCatalog } from "../../src/domain/subscriptions";
 import { disabledFiscalPolicy } from "../../src/domain/company-fiscal";
+import type { ManualFullState } from "../../src/domain/company-full";
 export const actor = "10000000-0000-4000-8000-000000000151";
 export const other = "10000000-0000-4000-8000-000000000152";
 export const org = "20000000-0000-4000-8000-000000000151";
@@ -89,7 +90,39 @@ export async function nativeFixture(
     releaseRemoval: () => {},
     boundFactor: new Map<string, string>(),
     organizations: [{ id: org, name: "Empresa MFA ficticia" }],
+    manualFullEnabled: null as boolean | null,
   };
+  let fullRevision = 0;
+  const observedAt = () => new Date().toISOString();
+  const fullState = (): ManualFullState =>
+    controls.manualFullEnabled === null
+      ? {
+          schema_version: 1,
+          configured: false,
+          status: "unconfigured",
+          enabled: null,
+          expires_at: null,
+          revision: 0,
+          updated_at: null,
+        }
+      : {
+          schema_version: 1,
+          configured: true,
+          status: controls.manualFullEnabled ? "active" : "disabled",
+          enabled: controls.manualFullEnabled,
+          expires_at: null,
+          revision: Math.max(1, fullRevision),
+          updated_at: observedAt(),
+        };
+  const fullItem = () => ({
+    organization_id: org,
+    company_name: "Empresa MFA ficticia",
+    owner_id: company ? actor : other,
+    owner_email: company ? "owner@example.com" : "other@example.com",
+    manual_full: fullState(),
+    effective_active: controls.manualFullEnabled === true,
+    effective_plan: controls.manualFullEnabled === true ? "full" : null,
+  });
   const calls: {
     path: string;
     method: string;
@@ -142,7 +175,7 @@ export async function nativeFixture(
     created_at: stamp,
     updated_at: stamp,
   };
-  const access = (id = actor) => ({
+  const access = (id = actor, scoped = false) => ({
     is_admin: !company,
     active: true,
     features: exampleCatalog.plans.find((p) => p.id === "limited")!.modules,
@@ -158,6 +191,19 @@ export async function nativeFixture(
     prices_are_examples: true,
     payments_enabled: false,
     user_id: id,
+    ...(company && scoped && controls.manualFullEnabled !== null
+      ? {
+          active: controls.manualFullEnabled,
+          plan: controls.manualFullEnabled ? "full" : null,
+          features: controls.manualFullEnabled
+            ? exampleCatalog.plans.find((p) => p.id === "full")!.modules
+            : [],
+          can_write: controls.manualFullEnabled,
+          can_manage: controls.manualFullEnabled,
+          manual_full: fullState(),
+          observed_at: observedAt(),
+        }
+      : {}),
   });
   await context.addInitScript(
     ({ secret, goodCode }) => {
@@ -382,8 +428,49 @@ export async function nativeFixture(
           "tc_my_access",
         ].some((name) => path === "/rest/v1/rpc/" + name)
       )
-        data = access(id);
-      else if (path === "/rest/v1/rpc/tc_admin_control")
+        data = access(id, path === "/rest/v1/rpc/tc_organization_access");
+      else if (path === "/rest/v1/rpc/tc_admin_company_full") {
+        if (company || id !== actor) {
+          status = 403;
+          data = { code: "42501" };
+        } else if (body?.p_action === "capabilities")
+          data = {
+            schema_version: 1,
+            manual_company_full: true,
+            observed_at: observedAt(),
+          };
+        else if (body?.p_action === "list")
+          data = {
+            schema_version: 1,
+            observed_at: observedAt(),
+            items: [fullItem()],
+            next_after: null,
+          };
+        else if (body?.p_action === "set" && body.p_org === org) {
+          const input = body.p_data as { enabled?: unknown };
+          if (
+            body.p_expected !== fullState().revision ||
+            typeof input.enabled !== "boolean"
+          ) {
+            status = 409;
+            data = { code: "40001" };
+          } else {
+            fullRevision = fullState().revision + 1;
+            controls.manualFullEnabled = input.enabled;
+            data = {
+              schema_version: 1,
+              observed_at: observedAt(),
+              item: fullItem(),
+              operation_id: body.p_operation,
+              replayed: false,
+              applied_revision: fullRevision,
+            };
+          }
+        } else {
+          blocked.push(request.url());
+          return route.abort("blockedbyclient");
+        }
+      } else if (path === "/rest/v1/rpc/tc_admin_control")
         data = {
           settings: {
             prices_are_examples: true,
@@ -400,6 +487,11 @@ export async function nativeFixture(
         };
       else if (path === "/rest/v1/organizations")
         data = company ? controls.organizations : [];
+      else if (
+        path === "/rest/v1/rpc/tc_team_control" &&
+        body?.p_action === "invitations"
+      )
+        data = [];
       else if (
         ["trucks", "drivers", "finance_entries"].some(
           (name) => path === "/rest/v1/" + name,

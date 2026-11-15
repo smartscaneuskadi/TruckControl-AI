@@ -22,7 +22,7 @@ export default defineConfig({
   projects: [
     {
       name: "mfa-windows",
-      testMatch: "native.spec.ts",
+      testMatch: ["native.spec.ts", "manual-full.spec.ts"],
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 1440, height: 1000 },
@@ -31,7 +31,7 @@ export default defineConfig({
     },
     {
       name: "mfa-android",
-      testMatch: "native.spec.ts",
+      testMatch: ["native.spec.ts", "manual-full.spec.ts"],
       use: { ...devices["Pixel 7"], baseURL: "http://127.0.0.1:4204" },
     },
     {

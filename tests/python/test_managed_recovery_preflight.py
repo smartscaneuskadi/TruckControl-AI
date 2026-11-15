@@ -352,6 +352,15 @@ class RecoveryPreflightTests(unittest.TestCase):
         with self.assertRaises(gate.PreflightError):
             self.inspect()
 
+    def test_rejects_future_dated_restore_evidence(self) -> None:
+        # Valid ordering and duration are not enough when the claimed restore
+        # has not yet occurred. This is synthetic fixture data, not a restore.
+        self.manifest["backup_captured_at"] = "2099-01-01T10:00:00+00:00"
+        self.manifest["restore_started_at"] = "2099-01-01T10:10:00+00:00"
+        self.manifest["restore_completed_at"] = "2099-01-01T10:30:00+00:00"
+        with self.assertRaisesRegex(gate.PreflightError, "in the future"):
+            self.inspect()
+
     def test_rejects_unverified_controls_and_fake_timestamps(self) -> None:
         self.manifest["checks"]["sales_disabled"]["passed"] = False
         with self.assertRaises(gate.PreflightError):

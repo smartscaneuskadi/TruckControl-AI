@@ -5,6 +5,97 @@ import { SupabaseFleetRepository } from "../integrations/supabase/repository";
 import { CloudOperationRepository } from "./operations";
 import { offlinePayload } from "./offline-vault";
 import type { VaultSession } from "./offline-vault";
+import { manualFullBlocked, readManualFullAccess } from "../domain/company-full";
+
+/** Permission-only refresh: never replay queued operations or extend a lease. */
+export async function refreshVaultAuthorization(
+  session: VaultSession,
+  client: SupabaseClient<Database>,
+  signal?: AbortSignal,
+) {
+  const active = () => {
+    session.assertUnlocked();
+    signal?.throwIfAborted();
+  };
+  const [, userId, orgId] = session.scope.split("|");
+  active();
+  const identity = await client.auth.getUser();
+  active();
+  if (identity.error || identity.data.user?.id !== userId)
+    throw Error(
+      "Inicia sesión con la cuenta que creó esta copia antes de sincronizar.",
+    );
+  const { data, error, status } = await client.rpc("tc_organization_access", {
+    p_org: orgId,
+  });
+  session.assertUnlocked();
+  const denied = async (): Promise<never> => {
+    try {
+      await session.update(
+        (value) => ({ ...value, expiresAt: new Date().toISOString() }),
+        signal,
+      );
+    } catch {
+      /* Keep the ciphertext if storage or the request scope closed. */
+    } finally {
+      session.lock();
+    }
+    throw Error(
+      "Esta empresa ya no permite el acceso. La copia queda bloqueada hasta verificar los permisos de nuevo.",
+    );
+  };
+  if (error && (error.code === "42501" || status === 401 || status === 403))
+    return denied();
+  if (error)
+    throw Error(
+      "No se han podido comprobar los permisos actuales. Los cambios siguen cifrados y pendientes.",
+    );
+  const access = data as unknown as SubscriptionAccess;
+  try {
+    if (manualFullBlocked(readManualFullAccess(access, orgId))) return denied();
+  } catch {
+    return denied();
+  }
+  if (!access?.active || access.profile?.user_id !== userId) return denied();
+  active();
+  const previous = await session.read(true, signal);
+  active();
+  const candidate = offlinePayload(
+    previous.snapshot,
+    previous.operations,
+    access,
+  );
+  const expiresAt = new Date(
+    Math.min(Date.parse(previous.expiresAt), Date.parse(candidate.expiresAt)),
+  ).toISOString();
+  const permissions = (value: SubscriptionAccess) =>
+    JSON.stringify({
+      active: value.active,
+      plan: value.plan,
+      features: value.features,
+      role: value.company_role,
+      write: value.can_write,
+      manage: value.can_manage,
+      manual: value.manual_full,
+    });
+  if (
+    expiresAt === previous.expiresAt &&
+    permissions(previous.access) === permissions(access)
+  )
+    return { payload: previous, changed: false };
+  const payload = await session.update(
+    (value) => ({
+      ...value,
+      access,
+      expiresAt: new Date(
+        Math.min(Date.parse(value.expiresAt), Date.parse(expiresAt)),
+      ).toISOString(),
+    }),
+    signal,
+  );
+  active();
+  return { payload, changed: true };
+}
 
 /** Every replay uses the current server identity, company role and module flags.
  * UUIDs and expected versions remain unchanged, including after interrupted sync. */
@@ -53,6 +144,7 @@ export async function synchronizeVault(
       throw Error(
         "No se han podido comprobar los permisos actuales. Los cambios siguen cifrados y pendientes.",
       );
+    try { if (manualFullBlocked(readManualFullAccess(access, orgId))) return denyCopy(); } catch { return denyCopy(); }
     if (!access?.active) return denyCopy();
     if (access.profile?.user_id !== userId)
       throw Error("La cuenta de la copia ha cambiado. Verifica de nuevo el acceso antes de sincronizar.");

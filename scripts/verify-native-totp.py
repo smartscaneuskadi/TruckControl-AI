@@ -9,6 +9,7 @@ This does not enable managed MFA or certify a managed-platform restore.
 from __future__ import annotations
 
 import base64
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 import hashlib
 import hmac
 import importlib.util
@@ -353,6 +354,190 @@ def pending_enrollment_contract(native: NativeClient, primary: dict, primary_nam
     return spare, replacement
 
 
+def verify_queued_behind_retirement_guard(native: NativeClient, primary: dict) -> str:
+    """An actual native verification waits while retirement is rejected.
+
+    The row lock belongs only to this owned disposable stack. A separate Auth
+    request must be observed blocked by that exact backend before running the
+    reviewed SQL guard. No Auth row, secret or provider flag is changed by the
+    retirement attempt, and releasing the holder lets native Auth finish.
+    """
+    stack = native.stack
+    actor_guard(stack, native.actor)
+    factor = str(uuid.UUID(primary["id"]))
+    marker = "tc-totp-retirement-" + uuid.uuid4().hex[:12]
+    body_before = stack.scalar("select md5(prosrc) from pg_proc where oid='private.tc_actor_verified(uuid,boolean)'::regprocedure")
+    holder = subprocess.Popen(lab.DOCKER + ["exec", "-i", stack.db, "psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1",
+                                           "-U", "postgres", "-d", "postgres"],
+                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=lab.child_env())
+    pool = ThreadPoolExecutor(max_workers=1)
+    try:
+        holder.stdin.write(("set application_name=" + q(marker) + ";begin;select 1 from auth.mfa_factors where id="
+                            + q(factor) + " for update;\n").encode())
+        holder.stdin.flush()
+        deadline = time.monotonic() + 15
+        while not stack.scalar("select exists(select 1 from pg_stat_activity where application_name=" + q(marker)
+                               + " and state='idle in transaction')"):
+            if holder.poll() is not None or time.monotonic() >= deadline:
+                raise LabFailure("bounded_native_retirement_holder_not_ready")
+            time.sleep(.1)
+        future = pool.submit(native.verify, primary)
+        deadline = time.monotonic() + 15
+        while not stack.scalar("select exists(select 1 from pg_stat_activity waiting where exists("
+                               "select 1 from pg_stat_activity holding where holding.application_name=" + q(marker)
+                               + " and holding.pid=any(pg_blocking_pids(waiting.pid))))"):
+            if future.done() or time.monotonic() >= deadline:
+                raise LabFailure("bounded_native_verification_was_not_queued")
+            time.sleep(.1)
+        check("actual native factor verification is queued behind the owned pending-factor row lock", True)
+        guard = lab.docker("exec", "-i", stack.db, "psql", "-X", "-qAt", "-v", "ON_ERROR_STOP=1",
+                           "-U", "postgres", "-d", "postgres",
+                           data=(ROOT / "docs/verification/optional-totp-protection-rollback.sql").read_bytes(),
+                           allow_failure=True, timeout=15)
+        check("retirement guard rejects before an in-flight native verification can complete",
+              guard.returncode != 0
+              and b"optional_totp_enforcement_retirement_requires_forward_migration" in guard.stderr)
+        del guard
+        holder.communicate(input=b"commit;\n", timeout=10)
+        check("owned native retirement row lock is released without deleting the factor", holder.returncode == 0)
+        try:
+            token = future.result(timeout=45)
+        except FutureTimeout:
+            raise LabFailure("bounded_native_queued_verification_timed_out") from None
+        check("retirement attempt preserves the exact server enforcement predicate after native verification",
+              stack.scalar("select md5(prosrc) from pg_proc where oid='private.tc_actor_verified(uuid,boolean)'::regprocedure") == body_before)
+        lab.REPORT["retirement_native_race"] = {
+            "verified_native_wait_observed": True,
+            "guard_rejected": True,
+            "native_verify_completed": True,
+            "server_enforcement_preserved": True,
+        }
+        return token
+    finally:
+        if holder.poll() is None:
+            try:
+                holder.communicate(input=b"rollback;\n", timeout=10)
+            except (OSError, ValueError, subprocess.TimeoutExpired):
+                holder.kill()
+                holder.communicate(timeout=10)
+        pool.shutdown(wait=True, cancel_futures=True)
+
+
+def full_call(stack, token: str, action: str, *, org=None, expected=None, operation=None, data=None):
+    body = {"p_action": action, "p_data": data or {}}
+    for name, value in [("p_org", org), ("p_expected", expected), ("p_operation", operation)]:
+        if value is not None:
+            body[name] = value
+    return stack.http("POST", "/rest/v1/rpc/tc_admin_company_full", body, token=token)
+
+
+def full_set(root: NativeClient, org: str, expected: int, *, enabled=True, expires=None, operation=None) -> dict:
+    operation = operation or str(uuid.uuid4())
+    status, result = full_call(root.stack, root.actor["token"], "set", org=org, expected=expected,
+                               operation=operation, data={"enabled": enabled, "expires_at": expires})
+    check("MFA+FULL: verified native Root receives the company revision and operation receipt",
+          status == 200 and result.get("schema_version") == 1 and result.get("operation_id") == operation
+          and result.get("item", {}).get("organization_id") == org
+          and result.get("item", {}).get("manual_full", {}).get("revision") == expected + 1)
+    return result
+
+
+def full_company_access(stack, actor: dict, active: bool, state: str, label: str) -> None:
+    token = actor["token"]
+    check("MFA+FULL: " + label + " retains a verified native session",
+          stack.rpc("tc_verified_session", {}, token) is True)
+    access = stack.rpc("tc_organization_access", {"p_org": actor["org"]}, token)
+    check("MFA+FULL: " + label + " respects the independent commercial state",
+          access.get("active") is active and access.get("manual_full", {}).get("status") == state)
+    status, rows = stack.http("GET", "/rest/v1/trucks?select=organization_id,plate", token=token)
+    check("MFA+FULL: " + label + " keeps fleet RLS scoped to the licensed company",
+          status == 200 and isinstance(rows, list)
+          and (len(rows) == 1 and rows[0]["organization_id"] == actor["org"] if active else rows == []))
+
+
+def exercise_manual_full_mfa(stack, company: NativeClient, original: str, root_actor: dict) -> NativeClient:
+    """Real signed AAL1/AAL2 sessions exercise the already shipped Full RPC.
+
+    The grant below exists only in the owned fixture DB. MFA never supplies a
+    role, changes global service flags, authorizes payments or consumes AI.
+    """
+    started = len(lab.REPORT["checks"])
+    org = company.actor["org"]
+    unchanged = stack.sql("select md5(coalesce(jsonb_agg(to_jsonb(t) order by t.id),'[]')::text) from public.trucks t;")
+    stack.sql("insert into private.tc_admins(user_id) values(" + q(root_actor["user"]) + ");")
+    root = NativeClient(stack, root_actor)
+    root_original = root.actor["token"]
+    factor = root.enroll("Isolated Root " + uuid.uuid4().hex)
+    root.verify(factor)
+    for action in ["capabilities", "list", "set", "history"]:
+        status, result = full_call(stack, root_original, action, org=org,
+                                   expected=0 if action == "set" else None,
+                                   operation=str(uuid.uuid4()) if action == "set" else None,
+                                   data={"enabled": True, "expires_at": None} if action == "set" else {})
+        check("MFA+FULL: Root old AAL1 bearer cannot " + action + " after its same SID upgrades",
+              status == 403 and isinstance(result, dict) and result.get("code") == "42501"
+              and claims(root_original)["session_id"] == claims(root.actor["token"])["session_id"])
+    check("MFA+FULL: denied AAL1 Root operations create no licence or audit",
+          stack.scalar("select count(*) from private.tc_company_full_licenses") == 0
+          and stack.scalar("select count(*) from private.tc_company_full_audit") == 0)
+    operation = str(uuid.uuid4())
+    granted = full_set(root, org, 0, operation=operation)
+    check("MFA+FULL: AAL2 Root activates only the selected commercial company",
+          granted.get("item", {}).get("manual_full", {}).get("status") == "active")
+    status, replay = full_call(stack, root.actor["token"], "set", org=org, expected=0,
+                               operation=operation, data={"enabled": True, "expires_at": None})
+    check("MFA+FULL: native AAL2 Root replay is idempotent",
+          status == 200 and replay.get("replayed") is True and replay.get("applied_revision") == 1
+          and replay.get("item", {}).get("manual_full", {}).get("revision") == 1)
+    status, history = full_call(stack, root.actor["token"], "history", org=org)
+    items = history.get("items") if isinstance(history, dict) else None
+    check("MFA+FULL: the one immutable audit binds the real AAL2 Root actor",
+          status == 200 and isinstance(items, list) and len(items) == 1
+          and items[0].get("actor_id") == root.actor["user"] and items[0].get("actor_email") == root.actor["email"]
+          and items[0].get("operation_id") == operation)
+    for target in [org, root.actor["org"]]:
+        status, result = full_call(stack, company.actor["token"], "set", org=target, expected=0,
+                                   operation=str(uuid.uuid4()), data={"enabled": True, "expires_at": None})
+        check("MFA+FULL: an AAL2 company administrator cannot self-grant or grant a foreign company",
+              status == 403 and isinstance(result, dict) and result.get("code") == "42501")
+    full_company_access(stack, company.actor, True, "active", "verified factor and active licence")
+    access(stack, company.actor, original, False, "MFA+FULL: active Full cannot upgrade an AAL1 bearer")
+    status, _ = stack.http("POST", "/rest/v1/rpc/tc_organization_access", {"p_org": org}, token=original)
+    check("MFA+FULL: active Full cannot bypass the human AAL1 organization RPC guard", status == 403)
+    full_set(root, org, 1, enabled=False)
+    full_company_access(stack, company.actor, False, "disabled", "AAL2 with company OFF")
+    full_set(root, org, 2, expires="2000-01-01T00:00:00Z")
+    full_company_access(stack, company.actor, False, "expired", "AAL2 with company expired")
+    full_set(root, org, 3)
+    full_company_access(stack, company.actor, True, "active", "AAL2 reactivation")
+    full_set(root, root.actor["org"], 0, enabled=False)
+    status, capability = full_call(stack, root.actor["token"], "capabilities")
+    check("MFA+FULL: AAL2 Root keeps management when its own company is OFF",
+          status == 200 and capability.get("manual_company_full") is True)
+    check("MFA+FULL: native licence changes preserve every original fleet record",
+          stack.sql("select md5(coalesce(jsonb_agg(to_jsonb(t) order by t.id),'[]')::text) from public.trucks t;") == unchanged)
+    lab.REPORT["mfa_manual_full_integration"] = {"checks": len(lab.REPORT["checks"]) - started,
+        "real_native_jwt_and_totp": True, "root_aal1_denied": True,
+        "root_aal2_allowed": True, "tenant_self_grant_denied": True,
+        "company_off_and_expiry_override_aal2": True, "business_data_preserved": True}
+    return root
+
+
+def exercise_full_after_last_factor(company: NativeClient, root: NativeClient) -> None:
+    stack, org = company.stack, company.actor["org"]
+    started = len(lab.REPORT["checks"])
+    check("MFA+FULL: removal compatibility starts only after the company has no verified TOTP",
+          not factor_inventory(stack, company.actor))
+    full_set(root, org, 4, enabled=False)
+    full_company_access(stack, company.actor, False, "disabled", "last factor removed but company OFF")
+    full_set(root, org, 5, expires="2000-01-01T00:00:00Z")
+    full_company_access(stack, company.actor, False, "expired", "last factor removed but company expired")
+    full_set(root, org, 6)
+    full_company_access(stack, company.actor, True, "active", "last factor removed and company reactivated")
+    lab.REPORT["mfa_manual_full_integration"]["checks"] += len(lab.REPORT["checks"]) - started
+    lab.REPORT["mfa_manual_full_integration"]["last_factor_removal_preserves_licence_denial"] = True
+
+
 def exercise(stack) -> None:
     a, b = lab.signup(stack, "A"), lab.signup(stack, "B")
     for actor, plate in [(a, "NATIVE MFA A"), (b, "NATIVE MFA B")]:
@@ -375,7 +560,7 @@ def exercise(stack) -> None:
     del wrong, valid_window
     check("native Auth rejects an incorrect TOTP without verifying the pending factor",
           "error" in rejected and factor_state(stack, a, primary).get("status") == "unverified")
-    upgraded = native.verify(primary)
+    upgraded = verify_queued_behind_retirement_guard(native, primary)
     check("successful native TOTP verification removes other pending TOTP factors and preserves the verified primary",
           all(factor_state(stack, a, pending_factor) == {} for pending_factor in pending_factors)
           and factor_inventory(stack, a) == {primary["id"]: "verified"})
@@ -386,6 +571,7 @@ def exercise(stack) -> None:
     access(stack, a, upgraded, True, "native AAL2")
     status, _ = stack.http("POST", "/rest/v1/rpc/tc_admin_control", {"p_action": "snapshot", "p_data": {}}, token=upgraded)
     check("native AAL2 cannot promote an ordinary tenant to administrator", status >= 400)
+    manual_root = exercise_manual_full_mfa(stack, native, original, b)
     stack.sql("update auth.users set banned_until=now()+interval '1 hour' where id=" + q(a["user"]) + ";")
     access(stack, a, upgraded, False, "live user ban with native AAL2")
     stack.sql("update auth.users set banned_until=null where id=" + q(a["user"]) + ";")
@@ -453,6 +639,7 @@ def exercise(stack) -> None:
     lab.REPORT["native_last_factor_removal"] = {"refreshed_jwt_aal": last_aal,
                                                 "live_session_aal": live_session(stack, recovery.actor["token"]).get("aal")}
     access(stack, a, recovery.actor["token"], True, "optional policy returns to baseline only after the last factor")
+    exercise_full_after_last_factor(recovery, manual_root)
     final = recovery.actor["token"]
     recovery.native("signOut")
     access(stack, a, final, False, "global native logout revokes the live SID")

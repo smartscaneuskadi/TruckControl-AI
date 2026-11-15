@@ -77,6 +77,10 @@ jobs:
         run: npm run test:e2e:mfa
         env:
           TRUCKCONTROL_MFA_TEST_ARTIFACTS: mfa-test-results
+      - name: Manual Full subscriptions, company access and Root permissions
+        run: npm run test:e2e:manual-full
+        env:
+          TRUCKCONTROL_MANUAL_FULL_ARTIFACTS: manual-full-test-results
       - run: npm run test:e2e:candidate
         env:
           TRUCKCONTROL_CANDIDATE_TEST_ARTIFACTS: candidate-test-results
@@ -93,6 +97,7 @@ jobs:
             company-test-results/
             saas-test-results/
             mfa-test-results/
+            manual-full-test-results/
             candidate-test-results/
             public-test-results/
             production-test-results/

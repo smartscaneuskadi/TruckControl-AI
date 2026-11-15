@@ -13,7 +13,7 @@ import os
 import re
 import stat
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ARTIFACTS = {"postgresql", "storage_objects", "edge_functions", "service_config"}
@@ -269,6 +269,10 @@ def inspect(manifest_file: Path, source_ref: str) -> dict[str, object]:
     start = _date(manifest.get("restore_started_at"))
     end = _date(manifest.get("restore_completed_at"))
     _require(capture <= start <= end, "backup/restore timestamps are not chronological")
+    # Future-dated artifacts cannot evidence a restore that has happened.
+    # Allow only five minutes of clock skew across independent systems.
+    _require(end <= datetime.now(timezone.utc) + timedelta(minutes=5),
+             "restore completion is in the future")
     elapsed = int((end - start).total_seconds())
     _require(0 < elapsed <= 604800, "restore duration is not plausible")
     return {

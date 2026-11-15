@@ -59,6 +59,16 @@ const documentStatus = () => service("select public.tc_manual_subscription_docum
   [JSON.stringify({ actor_id: incidentAdmin, session_id: incidentAdminSid })]);
 const refresh = () => service<{ result: Record<string, unknown> }>(
   "select public.tc_subscription_snapshot_refresh('observe',$1,$2,$3,'{}') result", [company.user, companySid, randomUUID()]);
+const enforcement = () => db.query(`select p.oid,p.prosrc,p.proacl,p.prosecdef,p.proconfig
+ from pg_catalog.pg_proc p where p.oid in (
+ 'private.tc_actor_verified(uuid,boolean)'::regprocedure,
+ 'private.tc_manual_fiscal_document_actor(uuid,uuid)'::regprocedure,
+ 'private.tc_subscription_snapshot_refresh(text,uuid,uuid,uuid,jsonb)'::regprocedure,
+ 'private.tc_mfa_protection_status()'::regprocedure,
+ 'public.tc_mfa_protection_status()'::regprocedure,
+ 'private.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)'::regprocedure,
+ 'public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)'::regprocedure)
+ order by p.oid`);
 
 beforeAll(async () => {
   db = await financialDatabase();
@@ -210,16 +220,28 @@ describe("optional TOTP: exact JWT and live factor-bound session across SQL and 
     expect(await verified()).toBe(true);
     expect(await actor("select public.tc_mfa_protection_status() capability")).toHaveLength(1);
   });
-  it("refuses rollback when even one verified factor exists", async () => {
-    await enroll();
-    await expect(db.exec(rollback)).rejects.toThrow('optional_totp_rollback_refuses_verified_factors');
+  it.each([false, true])("refuses enforcement retirement without changing routines or ACLs, enrolled=%s", async enrolled => {
+    if (enrolled) await enroll();
+    const before = (await enforcement()).rows;
+    expect(before).toHaveLength(7);
+    await expect(attempt(() => db.exec(rollback)))
+      .rejects.toThrow('optional_totp_enforcement_retirement_requires_forward_migration');
+    expect((await enforcement()).rows).toEqual(before);
+    expect(await verified(company.user, companySid, "aal1")).toBe(!enrolled);
+    expect(await verified(company.user, companySid, "aal2")).toBe(true);
+    expect(await actor("select public.tc_mfa_protection_status() capability"))
+      .toEqual([{ capability: { schema_version: 1, totp_enforcement: true } }]);
   });
-  it("restores the original permission routines only when no verified factors exist", async () => {
-    const isolated = await financialDatabase();
-    try {
-      await isolated.exec(rollback);
-      expect((await isolated.query("select to_regprocedure('public.tc_mfa_protection_status()') is null absent,md5(prosrc) body from pg_proc where oid='private.tc_actor_verified(uuid,boolean)'::regprocedure")).rows)
-        .toEqual([{ absent: true, body: "374d744e7267041f610146e220f9e49b" }]);
-    } finally { await isolated.close(); }
+  it("keeps a late pending-factor verification protected after a refused retirement", async () => {
+    await enroll(company.user, companySid, factor, false, "aal1");
+    expect(await verified(company.user, companySid, "aal1")).toBe(true);
+    const before = (await enforcement()).rows;
+    await expect(attempt(() => db.exec(rollback)))
+      .rejects.toThrow('optional_totp_enforcement_retirement_requires_forward_migration');
+    await db.query("update auth.mfa_factors set status='verified' where id=$1", [factor]);
+    await db.query("update auth.sessions set aal='aal2' where id=$1", [companySid]);
+    expect((await enforcement()).rows).toEqual(before);
+    expect(await verified(company.user, companySid, "aal1")).toBe(false);
+    expect(await verified(company.user, companySid, "aal2")).toBe(true);
   });
 });

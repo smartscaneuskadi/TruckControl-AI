@@ -13,6 +13,7 @@ on:
       - "tests/python/test_subscription_postgres_scope.py"
       - "tests/python/test_gmail_sync_postgres_scope.py"
       - "tests/postgres/**"
+      - "docs/verification/*-rollback.sql"
       - "supabase/migrations/**"
   pull_request:
     paths:
@@ -25,6 +26,7 @@ on:
       - "tests/python/test_subscription_postgres_scope.py"
       - "tests/python/test_gmail_sync_postgres_scope.py"
       - "tests/postgres/**"
+      - "docs/verification/*-rollback.sql"
       - "supabase/migrations/**"
 
 permissions:
@@ -57,7 +59,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate harness syntax
-        run: python3 -m py_compile scripts/verify-isolated-postgres.py scripts/verify-financial-incidents-postgres.py scripts/verify-gmail-sync-postgres.py tests/postgres/subscription_contracts.py tests/postgres/unlinked_contracts.py tests/postgres/snapshot_refresh_contracts.py tests/postgres/risk_signal_contracts.py tests/postgres/reserved_quote_contracts.py tests/postgres/optional_totp_contracts.py
+        run: python3 -m py_compile scripts/verify-isolated-postgres.py scripts/verify-financial-incidents-postgres.py scripts/verify-gmail-sync-postgres.py tests/postgres/subscription_contracts.py tests/postgres/unlinked_contracts.py tests/postgres/snapshot_refresh_contracts.py tests/postgres/risk_signal_contracts.py tests/postgres/reserved_quote_contracts.py tests/postgres/company_manual_full_contracts.py tests/postgres/optional_totp_contracts.py
       - name: Validate disposable local target isolation without Docker or SQL
         run: python3 -m unittest discover -s tests/python -p 'test_subscription_postgres_scope.py'
       - name: Validate Gmail concurrency target isolation without Docker or SQL
