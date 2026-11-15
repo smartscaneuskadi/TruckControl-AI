@@ -136,6 +136,44 @@ describe("monitor público sin secretos ni consumo", () => {
       expect(JSON.stringify(r)).not.toContain("sensitive");
     }
   });
+  it("falla cerrado ante JSON 200 primitivo y perfiles nulos sin filtrar el cuerpo", async () => {
+    for (const value of [null, [], "synthetic-sensitive-token", 42]) {
+      for (const endpoint of ["release", "copilot_health"]) {
+        const r = await checkProduction(
+          config,
+          transport((url) =>
+            endpoint === "release"
+              ? url.endsWith("/release.json")
+                ? Response.json(value)
+                : undefined
+              : url.includes("/health")
+                ? Response.json(value)
+                : undefined,
+          ),
+        );
+        expect(r.passed).toBe(false);
+        expect(r.checks.filter((c: any) => c.name === endpoint).every((c: any) => c.passed === false)).toBe(true);
+        expect(JSON.stringify(r)).not.toContain("synthetic-sensitive-token");
+      }
+    }
+    const invalidProfiles = [null, ...profiles.slice(1)];
+    const r = await checkProduction(
+      config,
+      transport((url) =>
+        url.includes("/health")
+          ? Response.json({
+              service: "company-copilot-specialists",
+              schema_version: 2,
+              profiles: invalidProfiles,
+              human_confirmation: true,
+              scheduled_paid_model_calls: 0,
+            })
+          : undefined,
+      ),
+    );
+    expect(r.passed).toBe(false);
+    expect(r.checks.find((c: any) => c.name === "copilot_health")?.passed).toBe(false);
+  });
   it("no ejecuta peticiones con configuración ajena al proyecto", async () => {
     const f = transport();
     await expect(
