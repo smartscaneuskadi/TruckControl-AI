@@ -1,0 +1,29 @@
+{
+  "observed_on": "2026-11-15",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migration_version": "20261115170051",
+  "scope": "official read-only native privilege metadata",
+  "tables": [
+    {
+      "relation": "private.tc_company_full_licenses",
+      "relacl": "{postgres=arwdDxtm/postgres,service_role=r/postgres}",
+      "service_select": true,
+      "service_insert": false,
+      "service_update": false,
+      "service_delete": false,
+      "service_truncate": false
+    },
+    {
+      "relation": "private.tc_company_full_audit",
+      "relacl": "{postgres=arwdDxtm/postgres}",
+      "service_select": false,
+      "service_insert": false,
+      "service_update": false,
+      "service_delete": false,
+      "service_truncate": false
+    }
+  ],
+  "all_service_writes_denied": true,
+  "raw_customer_data_read": false,
+  "data_mutations": 0
+}

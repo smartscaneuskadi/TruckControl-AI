@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-11-15T17:56:46.877448+00:00",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "source_head": "3d98834827c436caf9a6f3b56c30b854faf390fc",
+  "baseline": "1649184524a7c7d46aac337de691a5191d42a2b1",
+  "branch": "fix/root-bootstrap-20261115",
+  "worktree_clean": true,
+  "changed_files": [
+    "src/app/CommercialSession.tsx",
+    "tests/manual-full-browser/fixture.ts",
+    "tests/manual-full-browser/manual-full.spec.ts"
+  ],
+  "historical_saas_fixtures_and_assertions_unchanged": true,
+  "sql_unchanged": true,
+  "behavior": [
+    "Verify tc_finish_registration before waiting for organization membership discovery.",
+    "Verified global Root management remains available when the organization list fails.",
+    "Non-Root users wait for membership and selected-company access before business or billing.",
+    "A fresh non-Root bootstrap or failed bootstrap clears a previously displayed Root view."
+  ],
+  "validation": {
+    "typecheck": "passed",
+    "retained_test_hashes": {
+      "passed": 11
+    },
+    "manual_full_browser": {
+      "passed": 44,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "reported_duration": "1.3m",
+      "artifacts": "/tmp/truckcontrol-manual-full-Y9gc9H",
+      "log": "/tmp/truckcontrol-root-bootstrap-manual-full.log"
+    },
+    "historical_saas_browser": {
+      "passed": 274,
+      "failed": 0,
+      "skipped": 0,
+      "retries": 0,
+      "reported_duration": "8.7m",
+      "artifacts": "/tmp/truckcontrol-saas-tests-wNDBC3",
+      "log": "/tmp/truckcontrol-root-bootstrap-saas274.log"
+    }
+  },
+  "acceptance_limits": [
+    "Browser emulation with installed native SDK and intercepted synthetic private HTTP; no live provider or hardware acceptance.",
+    "No migration was applied or repeated, and no deployment was performed.",
+    "Parent-owned full source CI remains the publication gate."
+  ]
+}

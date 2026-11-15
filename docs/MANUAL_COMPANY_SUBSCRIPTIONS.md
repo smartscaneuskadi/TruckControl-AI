@@ -1,6 +1,6 @@
 # Suscripciones manuales por empresa
 
-Prioridad del titular, 15/11/2026. Candidata en desarrollo; comprobar el recibo de publicación antes de considerar disponible el control en producción.
+Publicada y verificada el 15/11/2026 en https://truckcontrolai.com, Sites46 / 0.5.28-rc.1. [Recibo de publicación](verification/company-manual-full-published46-20261115.json).
 
 El superadministrador administra el Pack FULL de cada empresa desde **Superadministrador → Empresas**. Puede activarlo, desactivarlo y establecer un vencimiento opcional. Los estados son **Activo**, **Desactivado** y **Vencido**. Una empresa sin decisión manual conserva su plan o prueba anteriores; no recibe FULL automáticamente.
 
@@ -33,3 +33,17 @@ La [aceptación PostgreSQL](verification/company-manual-full-postgres-20261115.j
 ## Migración aplicada
 
 La confirmación oficial de Supabase instaló una sola vez `20261115170051_company_manual_full_licenses`, migración 74, con SQL SHA256 `ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c`, idéntico al candidato ensayado. [Correspondencia nativa y permisos](verification/supabase-migration-74-20261115.json). No repetirla. Los registros de licencia y auditoría estaban vacíos tras aplicar: no se ha concedido ni retirado FULL automáticamente a empresas existentes. Registro y RLS continúan activos; cobros automáticos apagados. La publicación del panel se registra por separado.
+
+## Guía del superadministrador
+
+1. Inicia sesión con tu cuenta de administración y abre **Empresas**. Busca por nombre o correo y comprueba la empresa concreta: un propietario puede tener varias.
+2. Pulsa **Activar Pack Full**. Puedes indicar una fecha y hora en **UTC** o dejar el vencimiento vacío. Revisa la solicitud y pulsa **Confirmar cambio**. El estado mostrado después de confirmar procede del servidor.
+3. Para interrumpir el acceso comercial, pulsa **Desactivar Pack Full** y confirma. La empresa conserva sus registros, archivos y cambios pendientes cifrados; no se cancela ni se borra la cuenta.
+4. Para reactivar, confirma otra activación con un vencimiento futuro o vacío. Si conservas una fecha pasada, el estado seguirá siendo **Vencido**. Los datos y las asignaciones se mantienen.
+5. **Ver historial** muestra el operador, la hora UTC y los estados anterior y posterior. Una modificación concurrente exige revisar el estado actualizado antes de confirmar otra operación.
+
+Si aparece un resultado incierto, usa **Reintentar la misma solicitud**: conserva el identificador y evita duplicar el cambio. Tras recargar la página, revisa primero el estado y el historial; la solicitud pendiente no se conserva en almacenamiento del navegador.
+
+Las cuentas cliente ven el nuevo estado al comprobar acceso, recuperar el foco o en el siguiente sondeo conectado. El servidor decide los permisos de cada solicitud. Un plan Básico anterior sigue identificado como Básico; su acceso vigente no equivale a FULL. Una empresa sin decisión manual conserva su plan anterior. Una desactivación manual explícita sí bloquea sus funciones comerciales aunque la prueba o el plan anterior sigan vigentes.
+
+La licencia manual no registra un pago, no cobra una mensualidad y no emite una factura. La contratación, el cobro manual y la factura fiscal válida deben seguir el procedimiento comercial acordado con ELEVADANCOR. Los futuros cobros automáticos se activarán por separado, después de su aceptación.
