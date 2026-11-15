@@ -11,7 +11,11 @@ create table auth.users(
 );
 create table auth.sessions(
  id uuid primary key,user_id uuid not null references auth.users(id),
- not_after timestamptz
+ not_after timestamptz,aal text default 'aal1',factor_id uuid
+);
+create table auth.mfa_factors(
+ id uuid primary key,user_id uuid not null references auth.users(id),
+ factor_type text not null default 'totp',status text not null default 'unverified'
 );
 create function auth.uid() returns uuid language sql stable as $uid$
  select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid

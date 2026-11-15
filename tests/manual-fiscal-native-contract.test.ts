@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./helpers/auth-session-fixture";
 import { expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -26,6 +27,7 @@ it("ensaya el contrato fiscal nativo exacto y revierte usuarios, roles, pagos y 
       $jwt$;
       grant usage on schema auth,public to anon,authenticated,service_role;
     `);
+    await installAuthSessionFixture(db);
     for (const file of readdirSync("supabase/migrations").filter((f) => f.endsWith(".sql")).sort()) {
       await db.exec(readFileSync("supabase/migrations/" + file, "utf8"));
     }

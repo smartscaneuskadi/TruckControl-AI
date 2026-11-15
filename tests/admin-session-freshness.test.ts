@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./helpers/auth-session-fixture";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -68,6 +69,7 @@ beforeAll(async () => {
     "create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}'::jsonb) $$;" +
     "grant usage on schema public,auth to anon,authenticated;",
   );
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations").filter((f) => f.endsWith(".sql")).sort()) {
     // Capture the original routines immediately before the first verifier
     // installation, even when it is already part of the real migration chain.

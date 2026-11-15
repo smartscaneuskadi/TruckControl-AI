@@ -40,6 +40,10 @@ quote_spec = importlib.util.spec_from_file_location("reserved_quote_contracts", 
 assert quote_spec and quote_spec.loader
 quote_contracts = importlib.util.module_from_spec(quote_spec)
 quote_spec.loader.exec_module(quote_contracts)
+totp_spec = importlib.util.spec_from_file_location("optional_totp_contracts", ROOT / "tests/postgres/optional_totp_contracts.py")
+assert totp_spec and totp_spec.loader
+totp_contracts = importlib.util.module_from_spec(totp_spec)
+totp_spec.loader.exec_module(totp_contracts)
 q, sql, value, check = pg.quote, pg.sql, pg.value, pg.check
 ACCOUNT = "acct_IncidentPostgres"
 ADMIN = "fd110000-0000-4000-8000-000000000001"
@@ -186,6 +190,7 @@ def main():
  refresh_contracts.run(pg, SimpleNamespace(**globals()))
  risk_contracts.run(pg, SimpleNamespace(**globals()))
  quote_contracts.run(pg, SimpleNamespace(**globals()))
+ totp_contracts.run(pg, SimpleNamespace(**globals()))
  # Actual dump/restore AFTER the new ledger and reviews exist.
  before=pg.database_fingerprint(pg.SOURCE)
  dump=pg.run(["docker","exec",pg.CONTAINER,"pg_dump","-U","postgres","-d",pg.SOURCE,"-Fc","--no-owner"]).stdout
