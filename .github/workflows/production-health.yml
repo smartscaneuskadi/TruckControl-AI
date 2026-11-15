@@ -9,6 +9,8 @@ on:
       - .github/workflows/production-health.yml
       - scripts/production-health.mjs
       - scripts/report-production-incident.mjs
+      - scripts/lib/monitor-report-validation.mjs
+      - scripts/lib/monitor-incident-pagination.mjs
       - docs/deployment/candidate-hosting.json
 
 permissions:
