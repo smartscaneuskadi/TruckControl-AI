@@ -59,6 +59,9 @@ export async function fixture(context: BrowserContext) {
     holdSet: false,
     setPending: false,
     releaseSet: () => {},
+    holdAck: false,
+    ackPending: false,
+    releaseAck: () => {},
     orgDelay: 0,
   };
   const now = () => new Date(Date.now() + controls.offset).toISOString();
@@ -440,6 +443,12 @@ export async function fixture(context: BrowserContext) {
             replayed: Boolean(saved),
             applied_revision: revision,
           };
+          if (controls.holdAck) {
+            controls.ackPending = true;
+            await new Promise<void>((resolve) => {
+              controls.releaseAck = resolve;
+            });
+          }
           if (controls.loseAck) {
             controls.loseAck = false;
             return route.abort("failed");

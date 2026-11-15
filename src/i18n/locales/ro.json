@@ -2946,5 +2946,7 @@
   "Introduce una fecha y hora UTC válidas o deja el vencimiento vacío.": "Introdu o dată și o oră UTC valide sau lasă expirarea necompletată.",
   "sin acceso activo": "fără acces activ",
   "Cerrando sesión de TruckControl…": "Se închide sesiunea TruckControl…",
-  "Cerrar sesión de TruckControl": "Închide sesiunea TruckControl"
+  "Cerrar sesión de TruckControl": "Închide sesiunea TruckControl",
+  "Conéctate e inicia sesión para comprobar el acceso actual de esta empresa. La copia cifrada se conserva.": "Conectează-te și autentifică-te pentru a verifica accesul actual al acestei companii. Copia criptată se păstrează.",
+  "Empresas": "Firme"
 }

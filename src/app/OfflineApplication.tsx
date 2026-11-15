@@ -13,7 +13,8 @@ import { OfflineContext } from "./OfflineContext";
 import { endPrivateSessions, sessionExitEvent } from "./session-events";
 import { listVaultScopes, VaultSession } from "../data/offline-vault";
 import type { VaultPayload } from "../data/offline-vault";
-import { synchronizeVault } from "../data/offline-sync";
+import { refreshVaultAuthorization, synchronizeVault } from "../data/offline-sync";
+import { watchFullExpiry } from "../domain/company-full";
 import { getSupabaseClient } from "../integrations/supabase/client";
 import { Button, Field, Modal } from "../components/ui";
 import type { FleetRepository } from "../data/repository";
@@ -48,6 +49,8 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
   const shell = useRef<HTMLDivElement>(null),
     banner = useRef<HTMLDivElement>(null);
   const currentSession = useRef<VaultSession | null>(null);
+  const currentPayload = useRef<VaultPayload | null>(null);
+  currentPayload.current = payload;
   const generation = useRef(0), mounted = useRef(true), running = useRef(false);
   const operation = useRef<AbortController | null>(null);
   const active = (version: number, controller: AbortController) =>
@@ -151,11 +154,111 @@ export function OfflineApplication({ children }: { children: ReactNode }) {
   }, [entry]);
   useEffect(() => {
     if (!payload) return;
-    const timer = setInterval(() => {
-      if (currentSession.current === session && Date.parse(payload.expiresAt) <= Date.now()) lock();
-    }, 30000);
-    return () => clearInterval(timer);
+    return watchFullExpiry(
+      performance.now() +
+        Math.max(0, Date.parse(payload.expiresAt) - Date.now()),
+      () => {
+        if (currentSession.current === session) lock();
+      },
+    );
   }, [payload, session]);
+  useEffect(() => {
+    if (!sdkClient || !session || !online || !currentPayload.current) return;
+    let alive = true,
+      checking = false;
+    let request: AbortController | null = null;
+    const check = async () => {
+      if (
+        !alive ||
+        checking ||
+        running.current ||
+        document.hidden ||
+        !navigator.onLine ||
+        currentSession.current !== session
+      )
+        return;
+      const value = currentPayload.current;
+      if (!value || Date.parse(value.expiresAt) <= Date.now()) {
+        lock();
+        return;
+      }
+      checking = true;
+      const controller = new AbortController();
+      request = controller;
+      const timeout = setTimeout(() => {
+        controller.abort();
+        if (
+          alive &&
+          currentSession.current === session &&
+          value.access.manual_full?.configured
+        ) {
+          lock();
+          setNotice(
+            "Conéctate e inicia sesión para comprobar el acceso actual de esta empresa. La copia cifrada se conserva.",
+          );
+        }
+      }, 12000);
+      try {
+        const identity = await sdkClient.auth.getSession();
+        if (!alive || currentSession.current !== session) return;
+        if (identity.data.session?.user.id !== session.scope.split("|")[1]) {
+          if (value.access.manual_full?.configured) {
+            lock();
+            setNotice(
+              "Conéctate e inicia sesión para comprobar el acceso actual de esta empresa. La copia cifrada se conserva.",
+            );
+          }
+          return;
+        }
+        const result = await refreshVaultAuthorization(
+          session,
+          sdkClient,
+          controller.signal,
+        );
+        if (!alive || currentSession.current !== session) return;
+        if (result.changed) setPayload(result.payload);
+      } catch (cause) {
+        if (currentSession.current !== session) return;
+        let locked = false;
+        try {
+          session.assertUnlocked();
+        } catch {
+          locked = true;
+        }
+        // An authoritative denial may finish while the online effect is being
+        // canceled. A locked current capability must still leave the private UI.
+        if (!alive && !locked) return;
+        if (locked || value.access.manual_full?.configured) {
+          lock();
+          setNotice(
+            errorMessage(cause).includes("ya no permite el acceso")
+              ? "Esta empresa ya no permite el acceso. La copia permanece cifrada y bloqueada hasta verificar de nuevo tus permisos."
+              : "Conéctate e inicia sesión para comprobar el acceso actual de esta empresa. La copia cifrada se conserva.",
+          );
+        }
+      } finally {
+        clearTimeout(timeout);
+        if (request === controller) request = null;
+        checking = false;
+      }
+    };
+    const refresh = () => {
+      void check();
+    };
+    const timer = setInterval(refresh, 15000);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
+    document.addEventListener("visibilitychange", refresh);
+    refresh();
+    return () => {
+      alive = false;
+      request?.abort();
+      clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, [sdkClient, session, online]);
   useEffect(() => {
     if (!session) return;
     let timer: ReturnType<typeof setTimeout>;

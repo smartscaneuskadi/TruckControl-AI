@@ -2511,11 +2511,8 @@ test.describe("copia cifrada y sincronización", () => {
     await context.setOffline(true);
     await page.reload();
     await openAndEdit(page, f.phrase);
-    await context.setOffline(false);
     f.snapshot.customers[0].status = "suspended";
-    await page
-      .getByRole("button", { name: "Sincronizar", exact: true })
-      .click();
+    await context.setOffline(false);
     await expect(page.locator(".offline-workspace-banner")).toHaveCount(0);
     await expect(page.getByRole("dialog")).toContainText(
       "ya no permite el acceso",

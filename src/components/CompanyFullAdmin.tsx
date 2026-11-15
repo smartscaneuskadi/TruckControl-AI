@@ -19,7 +19,7 @@ import type {
   CompanyFullCommand,
   CompanyFullItem,
 } from "../domain/company-full";
-import { currentLocale } from "../i18n/runtime";
+import { currentLocale, t } from "../i18n/runtime";
 import { sessionExitEvent } from "../app/session-events";
 import { Badge, Button, Empty, Field, Modal, SearchField } from "./ui";
 import "../styles/company-full.css";
@@ -385,7 +385,7 @@ export function CompanyFullAdmin({ userId }: { userId: string }) {
                   (
                     item.manual_full.configured
                       ? item.manual_full.status === "active"
-                      : item.effective_active
+                      : item.effective_active && item.effective_plan === "full"
                   )
                     ? "green"
                     : item.manual_full.status === "expired"
@@ -393,12 +393,23 @@ export function CompanyFullAdmin({ userId }: { userId: string }) {
                       : "neutral"
                 }
               >
-                {fullStatusLabel(item.manual_full, item.effective_active)}
+                {fullStatusLabel(
+                  item.manual_full,
+                  item.effective_active && item.effective_plan === "full",
+                )}
               </Badge>
               <p>
                 {item.manual_full.configured
                   ? dateLabel(item.manual_full.expires_at)
-                  : `Plan anterior: ${item.effective_plan === "full" ? "Full" : item.effective_plan === "limited" ? "Básico" : "sin acceso activo"}. Sin asignación manual.`}
+                  : t("Plan anterior: {0}. Sin asignación manual.", [
+                      item.effective_plan === "full"
+                        ? "Full"
+                        : t(
+                            item.effective_plan === "limited"
+                              ? "Básico"
+                              : "sin acceso activo",
+                          ),
+                    ])}
               </p>
               {item.manual_full.status === "active" &&
                 !item.effective_active && (
