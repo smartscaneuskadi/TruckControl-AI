@@ -9,7 +9,7 @@ import { SupabaseFleetRepository } from "../integrations/supabase/repository";
 import { offlinePayload, VaultSession, newVaultSalt } from "./offline-vault";
 import type { VaultPayload } from "./offline-vault";
 import type { OperationRecord } from "../domain/operations";
-import { synchronizeVault } from "./offline-sync";
+import { refreshVaultAuthorization, synchronizeVault } from "./offline-sync";
 
 const user = "e6100000-0000-4000-8000-000000000001";
 function deferred<T>() {
@@ -151,5 +151,147 @@ describe("sincronización offline cerrada por cambio de sesión", () => {
     expect(f.execute).toHaveBeenCalledWith(f.original.outbox[0].command, f.fleet);
     expect(f.payload().outbox).toEqual([]);
     expect(f.rpc.mock.calls.every(([name]) => name === "tc_organization_access")).toBe(true);
+  });
+});
+
+describe("comprobación de licencia sin publicar la cola cifrada", () => {
+  afterEach(() => vi.restoreAllMocks());
+  async function manualFixture() {
+    const f = await fixture();
+    f.access.organization_id = f.fleet.organization.id;
+    f.access.observed_at = new Date().toISOString();
+    f.access.manual_full = {
+      schema_version: 1,
+      configured: true,
+      status: "active",
+      enabled: true,
+      expires_at: null,
+      revision: 1,
+      updated_at: f.access.observed_at,
+    };
+    f.replace({ ...f.original, access: structuredClone(f.access) });
+    return f;
+  }
+  it("una comprobación sin cambios no reescribe la copia ni pierde un borrador o una operación pendiente", async () => {
+    const f = await manualFixture();
+    const before = structuredClone(f.payload());
+    const result = await refreshVaultAuthorization(f.session, f.client);
+    expect(result.changed).toBe(false);
+    expect(result.payload).toEqual(before);
+    expect(f.update).not.toHaveBeenCalled();
+    expect(f.execute).not.toHaveBeenCalled();
+    expect(f.load).not.toHaveBeenCalled();
+  });
+  it("un nuevo vencimiento acorta el permiso, conserva datos y UUIDs y nunca prolonga una licencia ilimitada", async () => {
+    const f = await manualFixture();
+    f.access.manual_full!.expires_at = new Date(
+      Date.now() + 60_000,
+    ).toISOString();
+    f.access.manual_full!.revision = 2;
+    const first = await refreshVaultAuthorization(f.session, f.client);
+    expect(first.changed).toBe(true);
+    expect(first.payload.expiresAt).toBe(f.access.manual_full!.expires_at);
+    expect(first.payload.snapshot).toEqual(f.original.snapshot);
+    expect(first.payload.operations).toEqual(f.original.operations);
+    expect(first.payload.outbox).toEqual(f.original.outbox);
+    expect(first.payload.authorizedAt).toBe(f.original.authorizedAt);
+    f.access.manual_full!.expires_at = null;
+    f.access.manual_full!.revision = 3;
+    const second = await refreshVaultAuthorization(f.session, f.client);
+    expect(second.payload.expiresAt).toBe(first.payload.expiresAt);
+    expect(f.execute).not.toHaveBeenCalled();
+  });
+  it("OFF bloquea la clave y conserva la cola sin ejecutar escrituras comerciales", async () => {
+    const f = await manualFixture();
+    f.access.active = false;
+    f.access.manual_full = {
+      ...f.access.manual_full!,
+      enabled: false,
+      status: "disabled",
+      revision: 2,
+    };
+    await expect(
+      refreshVaultAuthorization(f.session, f.client),
+    ).rejects.toThrow("ya no permite el acceso");
+    expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
+    expect(f.payload().outbox).toEqual(f.original.outbox);
+    expect(f.payload().snapshot).toEqual(f.original.snapshot);
+    expect(f.execute).not.toHaveBeenCalled();
+    expect(Date.parse(f.payload().expiresAt)).toBeLessThanOrEqual(Date.now());
+  });
+  it("una denegación mantiene cerrada la clave aunque falle IndexedDB", async () => {
+    const f = await manualFixture();
+    f.rpc.mockResolvedValueOnce({
+      data: null,
+      error: { code: "42501" },
+      status: 403,
+    });
+    f.update.mockRejectedValueOnce(Error("Synthetic storage failure"));
+    await expect(
+      refreshVaultAuthorization(f.session, f.client),
+    ).rejects.toThrow("ya no permite el acceso");
+    expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
+    expect(f.payload().outbox).toEqual(f.original.outbox);
+    expect(f.execute).not.toHaveBeenCalled();
+  });
+  it("una denegación recibida al cancelar conserva ciphertext y sigue bloqueando la capacidad RAM", async () => {
+    const f = await manualFixture(),
+      entered = deferred<void>(),
+      reply = deferred<SubscriptionAccess>();
+    f.rpc.mockImplementationOnce(async () => {
+      entered.resolve();
+      return { data: await reply.promise, error: null };
+    });
+    const controller = new AbortController();
+    const result = refreshVaultAuthorization(
+      f.session,
+      f.client,
+      controller.signal,
+    );
+    await entered.promise;
+    controller.abort();
+    reply.resolve({ ...f.access, active: false });
+    await expect(result).rejects.toThrow("ya no permite el acceso");
+    expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
+    expect(f.payload().outbox).toEqual(f.original.outbox);
+    expect(f.execute).not.toHaveBeenCalled();
+  });
+  it("una respuesta tardía permitida nunca reabre ni actualiza una copia cerrada", async () => {
+    const f = await manualFixture(),
+      entered = deferred<void>(),
+      reply = deferred<SubscriptionAccess>();
+    f.rpc.mockImplementationOnce(async () => {
+      entered.resolve();
+      return { data: await reply.promise, error: null };
+    });
+    const result = refreshVaultAuthorization(f.session, f.client);
+    await entered.promise;
+    f.session.lock();
+    reply.resolve(f.access);
+    await expect(result).rejects.toThrow("bloqueada");
+    expect(f.update).not.toHaveBeenCalled();
+    expect(f.execute).not.toHaveBeenCalled();
+  });
+  it("la sincronización rechaza un estado manual contradictorio o de otra empresa antes de cargar datos", async () => {
+    const f = await manualFixture();
+    f.access.organization_id = "e6100000-0000-4000-8000-000000000099";
+    await expect(synchronizeVault(f.session, f.client)).rejects.toThrow(
+      "ya no permite el acceso",
+    );
+    expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
+    expect(f.execute).not.toHaveBeenCalled();
+    expect(f.load).not.toHaveBeenCalled();
+    expect(f.payload().outbox).toEqual(f.original.outbox);
+  });
+  it("un estado manual OFF no se convierte en permiso aunque otro campo declare active=true", async () => {
+    for (const check of [refreshVaultAuthorization, synchronizeVault]) {
+      const f = await manualFixture();
+      f.access.manual_full = { ...f.access.manual_full!, enabled: false, status: "disabled", revision: 2 };
+      await expect(check(f.session, f.client)).rejects.toThrow("ya no permite el acceso");
+      expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
+      expect(f.execute).not.toHaveBeenCalled(); expect(f.load).not.toHaveBeenCalled();
+      expect(f.payload().outbox).toEqual(f.original.outbox);
+      vi.restoreAllMocks();
+    }
   });
 });

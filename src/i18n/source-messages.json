@@ -17934,5 +17934,17 @@
     "contexts": [
       "src/components/CompanyFullAdmin.tsx:manual-full"
     ]
+  },
+  {
+    "key": "Conéctate e inicia sesión para comprobar el acceso actual de esta empresa. La copia cifrada se conserva.",
+    "contexts": [
+      "src/app/OfflineApplication.tsx:manual-full"
+    ]
+  },
+  {
+    "key": "Empresas",
+    "contexts": [
+      "src/pages/AdminConsole.tsx:manual-full"
+    ]
   }
 ]

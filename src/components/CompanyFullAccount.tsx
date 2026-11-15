@@ -44,6 +44,17 @@ export function CompanyFullAccount({
         >
           {status}
         </Badge>
+        {access.observed_at && (
+          <p>
+            Estado comprobado:{" "}
+            {new Intl.DateTimeFormat(currentLocale(), {
+              dateStyle: "medium",
+              timeStyle: "short",
+              timeZone: "UTC",
+            }).format(new Date(access.observed_at))}{" "}
+            UTC
+          </p>
+        )}
         {state.expires_at && (
           <p>
             Vencimiento:{" "}

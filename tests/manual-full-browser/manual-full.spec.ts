@@ -125,6 +125,44 @@ test("a stale revision requires review of the server state before another comman
   expect(f.audit).toHaveLength(2);
   expect(f.blocked).toEqual([]);
 });
+test("a stalled acknowledgement after commit enables retry of the exact same request", async ({
+  page,
+  context,
+}) => {
+  const f = await fixture(context);
+  await page.clock.install();
+  await login(page);
+  await openCompanies(page);
+  f.controls.holdAck = true;
+  await page
+    .getByRole("article", { name: "Empresa A", exact: true })
+    .getByRole("button", { name: "Activar Pack Full", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await dialog
+    .getByRole("button", { name: "Confirmar cambio", exact: true })
+    .click();
+  await expect.poll(() => f.controls.ackPending).toBe(true);
+  expect(f.audit).toHaveLength(1);
+  await page.clock.runFor(13000);
+  await expect(dialog.getByRole("alert")).toContainText(
+    "No hemos podido confirmar",
+  );
+  const retry = dialog.getByRole("button", {
+    name: "Reintentar la misma solicitud",
+    exact: true,
+  });
+  await expect(retry).toBeEnabled();
+  f.controls.holdAck = false;
+  f.controls.releaseAck();
+  await retry.click();
+  await expect(dialog).toHaveCount(0);
+  expect(f.audit).toHaveLength(1);
+  const writes = f.calls.filter((c) => c.body?.p_action === "set");
+  expect(writes).toHaveLength(2);
+  expect(writes[0].body).toEqual(writes[1].body);
+  expect(f.blocked).toEqual([]);
+});
 test("an expired owner trial does not block the selected manual Full company or grant its sibling Full", async ({
   page,
   context,
@@ -316,3 +354,95 @@ for (const theme of ["light", "cockpit"])
     ).toBe(true);
     expect(f.blocked).toEqual([]);
   });
+
+test("unchanged permission checks retain an unsaved commercial form; visible polling closes OFF", async ({
+  page,
+  context,
+}) => {
+  const f = await fixture(context);
+  await page.clock.install();
+  f.change(orgA, true);
+  await login(page, "owner");
+  await expect(
+    page.getByRole("heading", { name: "Configuración", exact: true }),
+  ).toBeVisible();
+  await page.goto("/#/customers");
+  await page
+    .getByRole("button", { name: "Añadir registro", exact: true })
+    .click();
+  const name = page.getByLabel("Nombre o razón social", { exact: true });
+  await name.fill("Borrador conservado");
+  const before = f.calls.filter((c) =>
+    c.path.endsWith("tc_organization_access"),
+  ).length;
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await expect
+    .poll(
+      () =>
+        f.calls.filter((c) => c.path.endsWith("tc_organization_access")).length,
+    )
+    .toBeGreaterThan(before);
+  await expect(name).toHaveValue("Borrador conservado");
+  f.change(orgA, false);
+  await page.clock.runFor(16000);
+  await expect(
+    page.getByRole("heading", { name: "Pack Full de tu empresa", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(f.calls.some((c) => c.path.endsWith("tc_save_record"))).toBe(false);
+  expect(f.blocked).toEqual([]);
+});
+
+test("manual company controls show the four interface languages", async ({
+  page,
+  context,
+}) => {
+  const f = await fixture(context);
+  await login(page);
+  await openCompanies(page);
+  const copies = [
+    {
+      lang: "en",
+      title: "Companies · Full Pack",
+      enable: "Activate Full Pack",
+      history: "View history",
+      expiry: "Optional expiry · UTC date and time",
+    },
+    {
+      lang: "ro",
+      title: "Firme · Pachet Full",
+      enable: "Activează Pachetul Full",
+      history: "Vezi istoricul",
+      expiry: "Expirare opțională · data și ora UTC",
+    },
+    {
+      lang: "fr",
+      title: "Entreprises · Pack Full",
+      enable: "Activer le Pack Full",
+      history: "Voir l’historique",
+      expiry: "Expiration facultative · date et heure UTC",
+    },
+    {
+      lang: "es",
+      title: "Empresas · Pack Full",
+      enable: "Activar Pack Full",
+      history: "Ver historial",
+      expiry: "Vencimiento opcional · fecha y hora UTC",
+    },
+  ];
+  for (const copy of copies) {
+    await page.locator(".language-switcher select").selectOption(copy.lang);
+    await expect(
+      page.getByRole("heading", { name: copy.title, exact: true }),
+    ).toBeVisible();
+    const row = page.getByRole("article", { name: "Empresa A", exact: true });
+    await expect(
+      row.getByRole("button", { name: copy.history, exact: true }),
+    ).toBeVisible();
+    await row.getByRole("button", { name: copy.enable, exact: true }).click();
+    await expect(page.getByLabel(copy.expiry, { exact: true })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  }
+  expect(f.blocked).toEqual([]);
+});

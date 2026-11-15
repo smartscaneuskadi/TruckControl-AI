@@ -2946,5 +2946,7 @@
   "Introduce una fecha y hora UTC válidas o deja el vencimiento vacío.": "Enter a valid UTC date and time, or leave the expiry empty.",
   "sin acceso activo": "no active access",
   "Cerrando sesión de TruckControl…": "Signing out of TruckControl…",
-  "Cerrar sesión de TruckControl": "Sign out of TruckControl"
+  "Cerrar sesión de TruckControl": "Sign out of TruckControl",
+  "Conéctate e inicia sesión para comprobar el acceso actual de esta empresa. La copia cifrada se conserva.": "Connect and sign in to check this company’s current access. The encrypted copy is preserved.",
+  "Empresas": "Companies"
 }

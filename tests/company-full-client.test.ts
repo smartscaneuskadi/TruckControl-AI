@@ -68,7 +68,12 @@ async function fixture(actor = root) {
     lost: false,
     conflict: false,
     wrongOrg: false,
+    holdUser: false,
+    userPending: false,
+    holdSet: false,
   };
+  let releaseUser = () => {},
+    releaseSet = () => {};
   const calls: {
       action: string;
       body: Record<string, unknown>;
@@ -106,8 +111,15 @@ async function fixture(actor = root) {
     }
     let data: unknown = null,
       status = 200;
-    if (url.pathname === "/auth/v1/user") data = user();
-    else if (url.pathname === "/rest/v1/rpc/tc_admin_company_full") {
+    if (url.pathname === "/auth/v1/user") {
+      if (state.holdUser) {
+        state.userPending = true;
+        await new Promise<void>((resolve) => {
+          releaseUser = resolve;
+        });
+      }
+      data = user();
+    } else if (url.pathname === "/rest/v1/rpc/tc_admin_company_full") {
       const body = (await request.json()) as Record<string, unknown>,
         action = String(body.p_action);
       calls.push({ action, body, token: request.headers.get("authorization") });
@@ -164,6 +176,10 @@ async function fixture(actor = root) {
             state.lost = false;
             throw new Error("Synthetic acknowledgement lost");
           }
+          if (state.holdSet)
+            await new Promise<void>((resolve) => {
+              releaseSet = resolve;
+            });
           data = {
             schema_version: 1,
             observed_at: stamp(),
@@ -209,7 +225,15 @@ async function fixture(actor = root) {
       })
     ).error,
   ).toBeNull();
-  return { client, calls, state, unmatched, writes: () => writes };
+  return {
+    client,
+    calls,
+    state,
+    unmatched,
+    writes: () => writes,
+    releaseUser: () => releaseUser(),
+    releaseSet: () => releaseSet(),
+  };
 }
 const command = (): CompanyFullCommand => ({
   organizationId: org,
@@ -273,6 +297,48 @@ describe("company Full contract with the real native SDK", () => {
     expect(
       f.calls.filter((c) => c.action === "set").map((c) => c.body.p_operation),
     ).toEqual([request.operationId, request.operationId]);
+    expect(f.unmatched).toEqual([]);
+  });
+  it("a stalled native identity check times out and cannot start a later write", async () => {
+    const f = await fixture(),
+      request = command();
+    f.state.holdUser = true;
+    vi.useFakeTimers();
+    const failed = expect(
+      setCompanyFull(f.client, root, () => true, request),
+    ).rejects.toMatchObject({ reason: "capability" });
+    await vi.waitFor(() => expect(f.state.userPending).toBe(true));
+    await vi.advanceTimersByTimeAsync(12001);
+    await failed;
+    f.state.holdUser = false;
+    f.releaseUser();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(f.writes()).toBe(0);
+    expect(f.calls).toEqual([]);
+    expect(f.unmatched).toEqual([]);
+  });
+  it("a never-returning acknowledgement after commit becomes uncertain and retries only its original UUID", async () => {
+    const f = await fixture(),
+      request = command(),
+      original = structuredClone(request);
+    f.state.holdSet = true;
+    vi.useFakeTimers();
+    const failed = expect(
+      setCompanyFull(f.client, root, () => true, request),
+    ).rejects.toMatchObject({ reason: "uncertain" });
+    await vi.waitFor(() => expect(f.writes()).toBe(1));
+    await vi.advanceTimersByTimeAsync(12001);
+    await failed;
+    f.state.holdSet = false;
+    f.releaseSet();
+    await vi.advanceTimersByTimeAsync(0);
+    const result = await setCompanyFull(f.client, root, () => true, request);
+    expect(result.replayed).toBe(true);
+    expect(f.writes()).toBe(1);
+    expect(request).toEqual(original);
+    expect(
+      f.calls.filter((c) => c.action === "set").map((c) => c.body.p_operation),
+    ).toEqual([original.operationId, original.operationId]);
     expect(f.unmatched).toEqual([]);
   });
   it("keeps a stale CAS conflict distinct from an unknown result", async () => {

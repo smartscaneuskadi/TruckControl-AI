@@ -69,7 +69,7 @@ export function companyFullSessionKey(session: Session | null) {
 async function actor(client: Client, userId: string, current: () => boolean) {
   if (!current()) throw new CompanyFullError("changed");
   const session = await client.auth.getSession();
-  if (session.error || session.data.session?.user.id !== userId)
+  if (!current() || session.error || session.data.session?.user.id !== userId)
     throw new CompanyFullError("changed");
   const native = session.data.session;
   const identity = await client.auth.getUser(native.access_token);
@@ -108,24 +108,47 @@ async function rpc(
   },
   mutation = false,
 ): Promise<unknown> {
-  const scope = await actor(client, userId, current);
-  let result;
+  let alive = true;
+  const controller = new AbortController();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const valid = () => alive && current();
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      alive = false;
+      // A sent write may have committed. Keep its UUID for an honest replay.
+      reject(new CompanyFullError(mutation ? "uncertain" : "unavailable"));
+      controller.abort();
+    }, 12000);
+  });
+  const request = async () => {
+    const scope = await actor(client, userId, valid);
+    if (!valid()) throw new CompanyFullError("changed");
+    let result;
+    try {
+      result = await client
+        .rpc("tc_admin_company_full", args)
+        .setHeader("Authorization", "Bearer " + scope.token)
+        .abortSignal(controller.signal);
+    } catch (error) {
+      throw failure(error, mutation);
+    }
+    const after = await client.auth.getSession();
+    if (
+      !valid() ||
+      after.error ||
+      companyFullSessionKey(after.data.session) !== scope.key
+    )
+      throw new CompanyFullError("changed");
+    if (result.error) throw failure(result.error, mutation);
+    return result.data;
+  };
   try {
-    result = await client
-      .rpc("tc_admin_company_full", args)
-      .setHeader("Authorization", "Bearer " + scope.token);
-  } catch (error) {
-    throw failure(error, mutation);
+    return await Promise.race([request(), timeout]);
+  } finally {
+    alive = false;
+    clearTimeout(timer);
+    controller.abort();
   }
-  const after = await client.auth.getSession();
-  if (
-    !current() ||
-    after.error ||
-    companyFullSessionKey(after.data.session) !== scope.key
-  )
-    throw new CompanyFullError("changed");
-  if (result.error) throw failure(result.error, mutation);
-  return result.data;
 }
 export async function requireCompanyFull(
   client: Client,

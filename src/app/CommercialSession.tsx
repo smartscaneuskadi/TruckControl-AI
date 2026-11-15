@@ -206,6 +206,31 @@ export function CommercialSession({
         </section>
       </main>
     );
+  const manualAccount = (
+    <Suspense
+      fallback={
+        <p role="status">Comprobando cuenta, verificación y permisos…</p>
+      }
+    >
+      <CompanyFullAccount
+        access={access}
+        expired={expired}
+        error={verificationFailed ? error : ""}
+        onRefresh={() => setRevision((n) => n + 1)}
+        onBack={
+          access.active && !expired && !verificationFailed
+            ? () => setBilling(false)
+            : undefined
+        }
+        onSignOut={onSignOut}
+      />
+    </Suspense>
+  );
+  if (
+    access.manual_full?.configured &&
+    (manualFullBlocked(access.manual_full) || expired || verificationFailed)
+  )
+    return manualAccount;
   if (!access.profile || access.requires_phone_verification)
     return (
       <PhoneVerification
@@ -218,8 +243,7 @@ export function CommercialSession({
         onSignOut={onSignOut}
       />
     );
-  if (access.manual_full?.configured && (manualFullBlocked(access.manual_full) || expired || verificationFailed || billing))
-    return <Suspense fallback={<p role="status">Comprobando cuenta, verificación y permisos…</p>}><CompanyFullAccount access={access} expired={expired} error={verificationFailed ? error : ""} onRefresh={() => setRevision((n) => n + 1)} onBack={access.active && !expired && !verificationFailed ? () => setBilling(false) : undefined} onSignOut={onSignOut} /></Suspense>;
+  if (access.manual_full?.configured && billing) return manualAccount;
   if (!access.active || billing)
     return (
       <Billing
