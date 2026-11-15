@@ -67,7 +67,7 @@ export function CommercialSession({
   currentAccess.current = access;
   const ready = useRef(false);
   useEffect(() => {
-    if (!client || !user || !companiesReady || recovery) return;
+    if (!client || !user || recovery) return;
     let active = true;
     const started = performance.now();
     const controller = new AbortController();
@@ -75,20 +75,31 @@ export function CommercialSession({
     const unavailable = () => {
       if (!active) return;
       setError("No se pueden comprobar los permisos de tu cuenta. Reintenta la conexión.");
+      if (currentAccess.current?.is_admin) { setAccess(null); setDeadline(null); endPrivateSessions(); }
       if (currentAccess.current?.manual_full?.configured) { setVerificationFailed(true); endPrivateSessions(); }
     };
     void (async () => {
       const initial = await client.rpc("tc_finish_registration", {}).abortSignal(controller.signal);
+      if (!active) return null;
       if (
         initial.error ||
         !initial.data ||
-        (initial.data as unknown as SubscriptionAccess).is_admin ||
-        !organizationId
+        (initial.data as unknown as SubscriptionAccess).is_admin
       )
         return initial;
+      // Global administration depends on the verified bootstrap role. Company
+      // access must wait for membership discovery and the selected company.
+      if (!companiesReady || currentAccess.current?.is_admin) {
+        if (currentAccess.current) endPrivateSessions();
+        setAccess(null); setDeadline(null); setExpired(false); setVerificationFailed(false);
+        ready.current = false;
+        if (!companiesReady) return null;
+      }
+      if (!organizationId) return initial;
       return client.rpc("tc_organization_access", { p_org: organizationId }).abortSignal(controller.signal);
-    })().then(({ data, error }) => {
-      if (!active) return;
+    })().then((result) => {
+      if (!active || !result) return;
+      const { data, error } = result;
       if (error || !data) {
         unavailable();
         return;
