@@ -48,7 +48,15 @@ export function normalizeMonitorReport(raw) {
       typeof item.passed !== "boolean" || !codes.has(item.code) ||
       ("status" in item && (!Number.isInteger(item.status) || item.status < 100 || item.status > 599)) ||
       (name === "anonymous_database_gateway" &&
-        item.code !== "request_failed" && item.rls_verified !== false)
+        item.code !== "request_failed" && item.rls_verified !== false) ||
+      // A positive boolean alone is insufficient: the recorded outcome
+      // must also be the exact successful HTTP and contract result.
+      (item.passed === true && !(
+        (name === "release" && item.code === "release_identity_check" && item.status === 200) ||
+        (name === "copilot_health" && item.code === "protected_copilot_contract" && item.status === 200) ||
+        (name === "anonymous_database_gateway" &&
+          item.code === "missing_api_key_denied" && [401, 403].includes(item.status))
+      ))
     ) return invalid();
   }
   if (report.passed !== report.checks.every((item) => item.passed === true)) return invalid();
