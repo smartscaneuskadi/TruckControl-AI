@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./helpers/auth-session-fixture";
 import {
   afterAll,
   afterEach,
@@ -106,6 +107,7 @@ beforeAll(async () => {
     create table auth.sessions(id uuid primary key,user_id uuid not null references auth.users(id),not_after timestamptz);
     create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
     grant usage on schema public,auth to anon,authenticated,service_role;`);
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations")
     .filter((f) => f.endsWith(".sql"))
     .sort())

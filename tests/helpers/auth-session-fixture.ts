@@ -37,6 +37,14 @@ export async function installAuthSessionFixture(
       id uuid primary key,
       user_id uuid not null references auth.users(id) on delete cascade
     );
+    create table if not exists auth.mfa_factors(
+      id uuid primary key,
+      user_id uuid not null references auth.users(id) on delete cascade,
+      factor_type text not null default 'totp',
+      status text not null default 'unverified'
+    );
+    alter table auth.sessions add column if not exists aal text default 'aal1';
+    alter table auth.sessions add column if not exists factor_id uuid;
   `);
   if (options.confirmedByDefault) {
     // Only the two byte-retained pre-Auth suites assume confirmed owners.
