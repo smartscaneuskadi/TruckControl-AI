@@ -21,6 +21,10 @@ test("Root activates Full for one company, with audit and no payment request", a
   await openCompanies(page);
   const row = page.getByRole("article", { name: "Empresa A", exact: true });
   await expect(row).toContainText("Sin asignación manual");
+  // An active Basic account must not be displayed as an active Full licence.
+  const basic = page.getByRole("article", { name: "Empresa B", exact: true });
+  await expect(basic).toContainText("Básico");
+  await expect(basic.getByText("Desactivado", { exact: true })).toBeVisible();
   await row
     .getByRole("button", { name: "Activar Pack Full", exact: true })
     .click();

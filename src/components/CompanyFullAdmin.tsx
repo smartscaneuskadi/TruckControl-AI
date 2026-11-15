@@ -385,7 +385,7 @@ export function CompanyFullAdmin({ userId }: { userId: string }) {
                   (
                     item.manual_full.configured
                       ? item.manual_full.status === "active"
-                      : item.effective_active
+                      : item.effective_active && item.effective_plan === "full"
                   )
                     ? "green"
                     : item.manual_full.status === "expired"
@@ -393,7 +393,10 @@ export function CompanyFullAdmin({ userId }: { userId: string }) {
                       : "neutral"
                 }
               >
-                {fullStatusLabel(item.manual_full, item.effective_active)}
+                {fullStatusLabel(
+                  item.manual_full,
+                  item.effective_active && item.effective_plan === "full",
+                )}
               </Badge>
               <p>
                 {item.manual_full.configured
