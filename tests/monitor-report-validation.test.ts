@@ -1,7 +1,12 @@
 import { describe, it, expect } from "vitest";
 // The monitor helper runs in plain Node outside the app compilation.
 // @ts-expect-error Operational JavaScript has no separate TS declarations.
-import { normalizeMonitorReport } from "../scripts/lib/monitor-report-validation.mjs";
+import { normalizeMonitorReport as normalizeWithTrustedSource } from "../scripts/lib/monitor-report-validation.mjs";
+
+const expectedSource = "a".repeat(40);
+const observedAt = Date.parse("2026-11-15T07:24:00.000Z");
+const normalizeMonitorReport = (raw: string) =>
+  normalizeWithTrustedSource(raw, { expectedSource, now: observedAt });
 
 const urls = [
   "https://truckcontrolai.com/release.json",
@@ -27,6 +32,27 @@ function fixture() {
   };
 }
 describe("monitor health artifact integrity before GitHub incident reporting", () => {
+  it("rejects old, missing, invalid and future timestamps instead of closing an incident", () => {
+    for (const checked_at of [
+      undefined, "invalid", "2026-11-15T07:13:59Z",
+      "2026-11-15T07:26:01Z", "2026-02-30T07:23:00Z",
+    ]) {
+      const report = { ...fixture(), checked_at };
+      expect(normalizeMonitorReport(JSON.stringify(report))).toEqual({
+        passed: false, code: "invalid_monitor_report",
+      });
+    }
+  });
+  it("rejects successful artifacts from an older or unrelated production source", () => {
+    const wrong = { ...fixture(), expected_source: "b".repeat(40) };
+    expect(normalizeMonitorReport(JSON.stringify(wrong))).toEqual({
+      passed: false, code: "invalid_monitor_report",
+    });
+    expect(normalizeWithTrustedSource(JSON.stringify(fixture()), {
+      expectedSource: "", now: observedAt,
+    })).toEqual({ passed: false, code: "invalid_monitor_report" });
+  });
+
   it("accepts the complete five-probe public report", () => {
     expect(normalizeMonitorReport(JSON.stringify(fixture())).passed).toBe(true);
   });
