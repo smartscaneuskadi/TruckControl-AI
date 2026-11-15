@@ -24,6 +24,9 @@ test("a baseline TOKEN_REFRESHED account change validates the new company identi
       exact: true,
     }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Empresas", exact: true }),
+  ).toBeVisible();
   const reads = f.privateCalls().length;
   f.controls.holdUser = true;
   await broadcast(
@@ -73,6 +76,9 @@ test("a baseline TOKEN_REFRESHED account change cannot reuse Root permissions wh
       exact: true,
     }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Empresas", exact: true }),
+  ).toBeVisible();
   const reads = f.privateCalls().length;
   f.controls.failUser = true;
   await broadcast(
@@ -107,6 +113,9 @@ test("an unrecognized AAL2 TOKEN_REFRESHED actor change is rejected rather than 
       name: "Tu centro de administración",
       exact: true,
     }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Empresas", exact: true }),
   ).toBeVisible();
   const reads = f.privateCalls().length;
   await broadcast(
