@@ -38,6 +38,7 @@ import { SubscriptionIncidents } from "../components/SubscriptionIncidents";
 import { UnlinkedIncidentReview } from "../components/UnlinkedIncidentReview";
 import { SubscriptionRiskSignals } from "../components/SubscriptionRiskSignals";
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
+import { MfaSettings } from "../components/MfaSettings";
 
 export function AdminConsole({
   userId,
@@ -186,6 +187,7 @@ export function AdminConsole({
     { id: "plans", label: "Planes y cobros", icon: CreditCard },
     { id: "activity", label: "Actividad", icon: Activity },
     { id: "providers", label: "Servicios", icon: ShieldCheck },
+    { id: "security", label: "Seguridad de la cuenta", icon: ShieldCheck },
     { id: "fiscal", label: "Facturación de empresas", icon: Landmark },
     {
       id: "subscription_invoices",
@@ -330,6 +332,7 @@ export function AdminConsole({
             ))}
           </nav>
           {tab === "providers" && <ProviderSetup />}
+          {tab === "security" && <MfaSettings key={userId} userId={userId} />}
           {tab === "subscription_invoices" && (
             <ManualSubscriptionInvoices
               key={userId}

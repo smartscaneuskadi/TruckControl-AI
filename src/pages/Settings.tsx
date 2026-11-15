@@ -21,6 +21,7 @@ import { useTyres } from "../app/TyresProvider";
 import { AppearanceSettings } from "../components/AppearanceSettings";
 import { CompanyBackupTools } from "../components/CompanyBackupTools";
 import { CompanyFiscalSettings } from "../components/CompanyFiscalSettings";
+import { MfaSettings } from "../components/MfaSettings";
 
 export function Settings() {
   const { snapshot, reset, refresh, busy, notify } = useFleet();
@@ -127,6 +128,12 @@ export function Settings() {
         </section>
       </div>
       <AppearanceSettings />
+      {cloud && access.user && !offline.offline && (
+        <MfaSettings
+          key={`${access.user.id}:${access.organization?.id ?? "none"}`}
+          userId={access.user.id}
+        />
+      )}
       <div className="settings-grid">
         <CompanyFiscalSettings />
         <OfflineSettings />

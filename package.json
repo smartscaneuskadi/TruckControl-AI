@@ -16,6 +16,7 @@
     "test:e2e": "playwright test",
     "test:e2e:companies": "node scripts/test-companies.mjs",
     "test:e2e:saas": "node scripts/test-saas.mjs",
+    "test:e2e:mfa": "node scripts/test-mfa.mjs",
     "test:e2e:candidate": "node scripts/test-candidate.mjs",
     "verify:published": "node scripts/verify-published-candidate.mjs",
     "verify:retained": "node scripts/verify-retained-tests.mjs",

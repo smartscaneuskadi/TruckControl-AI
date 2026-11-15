@@ -18,6 +18,9 @@ import { commercialEnabled } from "../domain/subscriptions";
 import type { Plan } from "../domain/subscriptions";
 import { PublicPortal } from "../pages/PublicPortal";
 import { CommercialSession } from "./CommercialSession";
+import { useNativeMfaSession } from "./MfaSession";
+import { MfaChallenge } from "../components/MfaChallenge";
+import { notifyMfaChanged } from "../integrations/supabase/mfa";
 import {
   customAuthMail,
   readEmailAction,
@@ -138,6 +141,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   const signOutRequest = useRef<Promise<void> | null>(null);
   const [emailAction, setEmailAction] = useState(initialEmailAction);
   const [client] = useState(getSupabaseClient);
+  const mfa = useNativeMfaSession(client);
   const [mode, setMode] = useState<"demo" | "company" | "portal">(() =>
     companyPreference()
       ? "company"
@@ -262,8 +266,11 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     };
   }, [client]);
   const userId = account.user?.id;
+  const mfaReady = Boolean(
+    userId && mfa.kind === "ready" && mfa.userId === userId,
+  );
   useEffect(() => {
-    if (!client || !userId) return;
+    if (!client || !userId || !mfaReady) return;
     let active = true;
     void client
       .from("organizations")
@@ -290,7 +297,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [client, userId, revision]);
+  }, [client, userId, revision, mfaReady]);
   const organization =
     account.organizations.find((o) => o.id === selected) ?? null;
   useEffect(() => {
@@ -341,6 +348,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
       if (signOutRequest.current) return signOutRequest.current;
       const request = (async () => {
         // End RAM-only provider capabilities before awaiting network revocation.
+        notifyMfaChanged("signout");
         endPrivateSessions();
         if (client) {
           try {
@@ -423,6 +431,14 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
             setEntryPlan(plan ?? "limited");
             changeMode("company");
           }}
+        />
+      ) : mode === "company" && account.user && !mfaReady ? (
+        <MfaChallenge
+          key={account.user.id}
+          status={mfa}
+          userId={account.user.id}
+          onRetry={mfa.retry}
+          onSignOut={value.signOut}
         />
       ) : mode === "company" && commercialEnabled() ? (
         <CommercialSession

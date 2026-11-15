@@ -53,7 +53,7 @@ export function CommercialSession({
   const [billing, setBilling] = useState(false);
   const ready = useRef(false);
   useEffect(() => {
-    if (!client || !user) return;
+    if (!client || !user || recovery) return;
     let active = true;
     void (async () => {
       const initial = await client.rpc("tc_finish_registration", {});
@@ -84,7 +84,7 @@ export function CommercialSession({
     return () => {
       active = false;
     };
-  }, [client, user?.id, organizationId, revision]);
+  }, [client, user?.id, organizationId, revision, recovery]);
   useEffect(() => {
     if (!user) return;
     const timer = setInterval(() => setRevision((n) => n + 1), 60000);
