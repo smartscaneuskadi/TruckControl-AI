@@ -98,6 +98,14 @@ export async function checkProduction(config, transport = fetch) {
           code: "invalid_or_oversized_json",
         };
       }
+      if (body === null || typeof body !== "object" || Array.isArray(body)) {
+        return {
+          ...spec,
+          status: 200,
+          passed: false,
+          code: "invalid_json_shape",
+        };
+      }
       if (spec.name === "release")
         return {
           ...spec,
@@ -122,13 +130,22 @@ export async function checkProduction(config, transport = fetch) {
         "trips",
         "management",
       ];
+      const validProfiles =
+        Array.isArray(body.profiles) &&
+        body.profiles.length === 8 &&
+        body.profiles.every(
+          (p) =>
+            p !== null &&
+            typeof p === "object" &&
+            !Array.isArray(p) &&
+            typeof p.id === "string" &&
+            ids.includes(p.id),
+        );
       const passed =
         body.service === "company-copilot-specialists" &&
         body.schema_version === 2 &&
-        Array.isArray(body.profiles) &&
-        body.profiles.length === 8 &&
+        validProfiles &&
         new Set(body.profiles.map((p) => p.id)).size === 8 &&
-        body.profiles.every((p) => ids.includes(p.id)) &&
         body.human_confirmation === true &&
         body.scheduled_paid_model_calls === 0;
       return {
