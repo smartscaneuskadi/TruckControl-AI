@@ -114,7 +114,7 @@ if (!["admin_readiness_details", "truckcontrol-stripe-readiness-v2", "Correo per
   throw Error("The reviewed Stripe and personal-mail privacy changes are missing.");
 if (!["refresh_available", "tc_admin_subscription_risk", "subscription-risk-v1"].every((value) => bundle.includes(value)))
   throw Error("Canonical subscription refresh or informational risk review is missing.");
-if (!["tc_admin_company_full", "manual_full", "Pack FULL"].every((value) => bundle.includes(value)))
+if (!["tc_admin_company_full", "manual_full", "Pack Full"].every((value) => bundle.includes(value)))
   throw Error("Manual company Full controls are missing from the production bundle.");
 const archivePath = join(process.env.RUNNER_TEMP || "/tmp", "truckcontrol-production-" + sha + ".tar.gz");
 const tar = spawnSync("tar", ["-czf", archivePath, ".openai/hosting.json", "dist"], { stdio: "inherit", shell: false });
