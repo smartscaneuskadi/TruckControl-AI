@@ -75,7 +75,8 @@ beforeAll(async () => {
   // NEVER disable their production triggers or weaken the security migration.
   // Remove the new receipt trigger/helper first: its composite argument keeps
   // the receipt table alive even though this unrelated fixture never uses it.
-  await db.exec(`drop trigger if exists tc_subscription_unlinked_receipt_inserted on private.tc_manual_stripe_bridge_receipts;
+  await db.exec(`drop table if exists private.tc_company_full_audit;
+    drop trigger if exists tc_subscription_unlinked_receipt_inserted on private.tc_manual_stripe_bridge_receipts;
     drop table if exists private.tc_subscription_snapshot_refresh_attempts;
     drop table if exists private.tc_subscription_snapshot_refreshes;
     drop table if exists private.tc_subscription_risk_entries cascade;
