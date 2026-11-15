@@ -5,10 +5,14 @@ on:
     - cron: "17 * * * *"
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
       - .github/workflows/production-health.yml
       - scripts/production-health.mjs
       - scripts/report-production-incident.mjs
+      - scripts/lib/monitor-report-validation.mjs
+      - scripts/lib/monitor-incident-pagination.mjs
       - docs/deployment/candidate-hosting.json
 
 permissions:
@@ -21,6 +25,7 @@ concurrency:
 
 jobs:
   observe:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:

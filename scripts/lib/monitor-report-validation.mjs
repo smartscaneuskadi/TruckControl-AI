@@ -15,7 +15,10 @@ const invalid = () => ({ passed: false, code: "invalid_monitor_report" });
 
 // A configuration failure is produced intentionally by production-health.mjs.
 // Keep it reportable, but it must never be interpreted as a successful check.
-export function normalizeMonitorReport(raw) {
+export function normalizeMonitorReport(raw, { expectedSource, now = Date.now() } = {}) {
+  // The artifact can be replayed from another release or an older workflow.
+  // Never resolve a live incident from a report without trusted provenance.
+  if (!/^[0-9a-f]{40}$/.test(expectedSource || "") || !Number.isFinite(now)) return invalid();
   if (typeof raw !== "string" || Buffer.byteLength(raw, "utf8") > 65536) return invalid();
   let report;
   try {
@@ -29,6 +32,13 @@ export function normalizeMonitorReport(raw) {
     report.code === "monitor_configuration_failed" &&
     !("checks" in report)
   ) return { passed: false, code: "monitor_configuration_failed" };
+  const checkedAt = typeof report.checked_at === "string" &&
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(report.checked_at)
+    ? Date.parse(report.checked_at) : NaN;
+  // The observer has a three-minute job timeout. Allow ten minutes for
+  // scheduling, clock skew and upload, but never trust an old success.
+  if (!Number.isFinite(checkedAt) || checkedAt > now + 120000 ||
+      now - checkedAt > 600000 || report.expected_source !== expectedSource) return invalid();
   if (
     report.scope !== "public_http_availability_only" ||
     !/^[0-9a-f]{40}$/.test(report.expected_source) ||
