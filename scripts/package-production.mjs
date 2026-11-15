@@ -5,7 +5,7 @@ import { join, resolve, relative } from "node:path";
 const siteId = "appgprj_6ae655e56db481918fe18adfe9df8b66";
 const origin = "https://truckcontrolai.com";
 const supabase = "https://kkkemaycedexymrpaqtp.supabase.co";
-const expectedBaseline = "bb161141c33e8692aab8c4efdaf8c4e359903a3d";
+const expectedBaseline = "43f9b2215424eb58c7a980d25b516d7fd9f4051b";
 const root = resolve(".");
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 if (!/^[a-f0-9]{40}$/.test(sha)) throw Error("Missing exact source commit.");

@@ -30,9 +30,9 @@
     "calls_per_company": 100
   },
   "policy": "No new paid service until prior commitments and available balance are verified.",
-  "recorded_at": "2026-11-14T09:36:42.206657+00:00",
+  "recorded_at": "2026-11-14T18:11:51.497426+00:00",
   "new_model_calls_in_current_session": 0,
   "remaining_aggregate_budget_eur": null,
   "provider_invoice_delta_verified": false,
-  "note": "No purchases or live charges initiated; historical total/FX/taxes and existing-service invoices remain unreconciled."
+  "note": "Safe update44: no purchases, live charges, new recurring commitments or model calls initiated by this execution. Historical total,FX,taxes and existing-provider invoices remain unreconciled."
 }

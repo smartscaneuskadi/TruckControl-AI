@@ -1,3 +1,31 @@
+## Control verificado · 15/11/2026 09:30 UTC
+
+**Prioridad sobre las secciones históricas inferiores; no certifica aceptación comercial.** Repositorio único `smartscaneuskadi/TruckControl-AI`, main exacto `477e274c0722d6c78126901bf29af14682a61643`, PR #140 ya integrado (se conservan PR130–139 y los cambios de PR134). Tanto [CI general #43694679092](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43694679092) como [monitor público #43694679116](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43694679116) terminaron **SUCCESS en ese SHA**. La única PR abierta detectada es #17 histórica; no se ha encontrado otro trabajo nuevo concurrente en las PR consultadas.
+
+**Hosting:** el inventario GitHub [candidate-hosting.json](deployment/candidate-hosting.json) conserva **Sites44 / 0.5.26-rc.1**, fuente `43f9b2215424eb58c7a980d25b516d7fd9f4051b`, despliegue `appgdep_6af8a1d3905c81919699fbc3108d44a8` y demo6 independiente. El monitor de GitHub superó sus probes públicos, pero la consulta HTTPS externa independiente de esta comprobación no fue accesible; **no declarar una nueva publicación ni una lectura HTTPS independiente exitosa**. Main se construye por defecto con manifiesto **DEMO**: no publicar directamente su build genérico como producción. Conservar43/42/41/32/31 y demo6.
+
+**Supabase real:** `kkkemaycedexymrpaqtp` **ACTIVE_HEALTHY**, últimas **72 migraciones**, la #72 `20261114173557_gmail_sync_lease_fencing`. La #73 `subscription_reserved_quote_recovery` sigue **NO APLICADA**; no reabrir confirmaciones oficiales sin el titular disponible y nunca eludirlas con SQL o CLI. El Security Advisor señala **0 WARN/ERROR; 2 INFO deny-all intencionales** en dos tablas privadas: [regla documentada](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy). No alterar RLS, roles ni flags comerciales.
+
+**Stripe LIVE oficial:** en la cuenta existente de Elevadancor S.L. el único webhook `we_1Ub5lBCWctKw8slHXmnq0PZd` de TruckControl, apuntando a `truckcontrol-stripe-fiscal`, sigue **disabled** y sus tres eventos registrados son `checkout.session.completed`, `checkout.session.async_payment_succeeded` e `invoice.paid`. Esta lectura de configuración **no demuestra clave productiva válida, firma, pago, licencia ni factura**. Cobros OFF. El modelo manual **GDTaller/TicketBAI más PDF y entrega por administración** ya está decidido; falta su aceptación operativa real. Gmail empresarial/verificación pública Google, recuperación gestionada Auth/Storage/Vault, Play/firma/dispositivos físicos y revisión legal/fiscal externa siguen pendientes.
+
+**Operaciones de esta comprobación:** solo lecturas a GitHub, Stripe y Supabase; sin migraciones, deploy, modelos de IA, pagos ni compras. Gastos/compromisos nuevos iniciados:0; importe facturado histórico y saldo restante del límite acumulado de200EUR **no conciliados**. Se conservan el techo IA10USD/mes y100llamadas/empresa. **Lanzamiento comercial completo: NO acreditado.** Próximo trabajo permitido: validar la cadena Stripe→licencia→solicitud fiscal→factura auténtica GDTaller→PDF/entrega con autorizaciones reales, y cerrar las aceptaciones externas, sin abrir cobros.
+
+## Continuación verificada · 14/11/2026 22:45 UTC
+
+Producción sigueSites44/0.5.26-rc.1 ydemo6. PR130–133 integrados,134independiente preservado; CI exacta de main133 SUCCESS y recuperación67/67. **Supabase72; la nueva corrección de recuperación Checkout todavía NO está activa en producción**, porque la tarjeta oficial caducó. CobrosOFF; no anunciar lanzamiento comercial. [Informe verificable](verification/commercial-continuation-20261114.json).
+
+## Actualización segura44 publicada y verificada · 14/11/2026 UTC
+
+https://truckcontrolai.com: **Sites44 / 0.5.26-rc.1**, fuente `43f9b2215424eb58c7a980d25b516d7fd9f4051b`, despliegue `appgdep_6af8a1d3905c81919699fbc3108d44a8` SUCCEEDED. PR128 integrado en `dd2b5309f45cb4feb11d15a1d46f3796e6630bad`; PR127 independiente conservado en main y en esta entrega documental. Gmail importa adjuntos posteriores al quinto y protege reconexiones; Checkout guardado se recupera sin recrear otro pago.
+
+CI exacta43622942100 y PR43622918927 SUCCESS:1799 unitarias/SQL,124Python,94demo,62empresa,258SaaS,20candidata y20producción;64originales/11hashes intactos. PostgreSQL:287controles,35contenciones reales y2restauraciones lógicas; no restore gestionado. Publicación:75/75hashes HTTPS,68/68recorridos sin omisiones/flaky,6/6perfilesPWA,6/6denegacionesbackend y5/5salud. SDK real con HTTP privado ficticio bloqueando tráfico no interceptado; no aceptación nueva de proveedores ni hardware físico.
+
+Supabase **72 migraciones**;72=`20261114173557_gmail_sync_lease_fencing`, SHA idéntico al SQL probado y nombre local reconciliado. **No repetir68–72 ni#37**. Gmail19/subscriptions21 ACTIVE,20/20fuentes runtime iguales,respaldos18/20;0WARN/ERROR+2INFO deny-all. Registro abierto,accesoRLS conservado,cobrosOFF. Se conservan43/42/41/32/31 ydemo6. Android5/0.5.26 compila APK debug y AAB sin firma comercial; no Play/hardware.
+
+Esta es una actualización pública segura; **no un lanzamiento comercial completo**. Pendientes aceptación NativeStripe/facturaGDTaller real/entrega,Google público/buzón empresarial,restore gestionado,firma/Play/dispositivos y revisión externa. Cargos/compromisos/llamadasIA nuevos0; techo200EUR acumulado sin saldo conciliado. IA10USD/mes–100llamadas/empresa intacta. Main conserva manifiestoDEMO: producción solo desde su checkout separado.
+
+[Recibo y límites verificables](verification/commercial-safe-update44-20261114.json).
+
 ## Actualización segura43 publicada y comprobada · 14/11/2026 UTC
 
 https://truckcontrolai.com está en **Sites43 / app 0.5.25-rc.1**, fuente `bb161141c33e8692aab8c4efdaf8c4e359903a3d`, despliegue `appgdep_6af827b8dc48819182d18b8efefeafd4` SUCCEEDED. PR #121 integrado en `c233a3c7320a0e94150264b93545ad55365a11f6`; se conservan42, 41, anteriores y demo 6. [Recibo](verification/commercial-safe-update43-20261114.json).

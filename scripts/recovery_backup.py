@@ -151,6 +151,7 @@ def validate_storage_archive(data: bytes) -> None:
             members = archive.getmembers()
             _require(0 < len(members) <= 10000, "backup_storage_archive_invalid")
             seen = set()
+            regular_files = set()
             for member in members:
                 path = PurePosixPath(member.name)
                 _require(bool(member.name) and not path.is_absolute()
@@ -162,9 +163,15 @@ def validate_storage_archive(data: bytes) -> None:
                          "backup_storage_archive_invalid")
                 seen.add(path)
                 if member.isfile():
+                    regular_files.add(path)
                     stream = archive.extractfile(member)
                     _require(stream is not None and len(stream.read()) == member.size,
                              "backup_storage_archive_invalid")
+            # Collect all members first: a regular file cannot occupy a parent
+            # directory, regardless of member order or implicit directories.
+            for path in seen:
+                _require(not any(parent in regular_files for parent in path.parents),
+                         "backup_storage_archive_invalid")
             # tarfile otherwise ignores an appended archive or arbitrary trailing data.
             _require(len(data) - archive.offset >= 1024 and not any(data[archive.offset:]),
                      "backup_storage_archive_invalid")

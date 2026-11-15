@@ -1,0 +1,40 @@
+{
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "branch": "fix/mail-forwarding-clipboard-20261115",
+  "base_main": "2119d41ceb4d14ef0bc9e555ec382f894ed303f0",
+  "candidate_app_version": "0.5.27-rc.1",
+  "android_version_code": 6,
+  "previous_public": {
+    "sites_version": 44,
+    "source_commit": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
+    "preserved": true
+  },
+  "component_before_sha256": "7864fe9fff2af8f35cbeb245eb500095dc788002dea42738ae57c7f226ba2a2a",
+  "browser_regression": {
+    "baseline_failed": 12,
+    "baseline_positive_controls": 4,
+    "fixed_passed": 16,
+    "fixed_skipped": 0,
+    "fixed_flaky": 0,
+    "profiles": ["Android emulation", "Windows emulation"],
+    "themes": ["Fleet Light", "Fleet Cockpit"],
+    "cases": ["clipboard API missing", "synchronous SecurityError", "rejected Promise followed by successful retry", "normal success"],
+    "user_clipboard_accessed": false,
+    "synthetic_private_http_only": true,
+    "unmatched_external_http_and_websocket_blocked": true,
+    "company_mail_mutations": 0
+  },
+  "build_typecheck": "passed",
+  "original_tests_preserved": 64,
+  "frozen_hashes_preserved": 11,
+  "complete_ci": "pending",
+  "production_source_build_and_deploy": "pending",
+  "physical_devices_tested": false,
+  "new_remote_migrations": 0,
+  "new_provider_or_credential_changes": 0,
+  "new_messages_sent": 0,
+  "new_ai_calls": 0,
+  "new_charges_or_commitments": 0,
+  "payments_enabled": false,
+  "commercial_launch_complete": false
+}

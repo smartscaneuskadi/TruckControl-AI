@@ -1,3 +1,23 @@
+## Continuación verificada · 14/11/2026 22:45 UTC
+
+PR130–133 integrados y CI exacta de main133 SUCCESS; PR134 independiente conservado. Sites44/0.5.26-rc.1 y demo6 siguen activos; main conserva manifiesto DEMO, no publicarlo sobre producción. [Recibo y límites](docs/verification/commercial-continuation-20261114.json).
+
+Supabase sigue72: **la candidata `20261114203240_subscription_reserved_quote_recovery.sql` NO está aplicada**. El conector oficial caducó tras2min; ningún cambio de función/historial. No ejecutar por otra vía ni suponer una73; solo renovar la tarjeta cuando el titular pueda pulsarla y comprobar historial/hash antes de reintentar. No repetir68–72/#37. Código de recuperación offline ya integrado; Checkout nuevo probado, pendiente de despliegue de su función SQL.
+
+1831unitarias/SQL y131Python en main133;329controles PostgreSQL,38contenciones reales,2restauraciones lógicas y67checks de Auth/Storage autohospedados. Se conservan64originales/11hashes. Los últimos cambios Python de134 no se atribuyen al recuento anterior. CobrosOFF/registroON/accesoRLS conservados;0WARN/ERROR y2INFO deny-all. Sin compras/compromisos/IA nueva; saldo histórico200EUR desconocido, límitesIA10USD/mes–100llamadas/empresa intactos. Persisten puertas externas Stripe/fiscal,Google empresarial/público,restore gestionado,firma/Play/hardware y revisión jurídica. No declarar lanzamiento comercial.
+
+## Actualización segura44 publicada y verificada · 14/11/2026 UTC
+
+https://truckcontrolai.com: **Sites44 / 0.5.26-rc.1**, fuente `43f9b2215424eb58c7a980d25b516d7fd9f4051b`, despliegue `appgdep_6af8a1d3905c81919699fbc3108d44a8` SUCCEEDED. PR128 integrado en `dd2b5309f45cb4feb11d15a1d46f3796e6630bad`; PR127 independiente conservado en main y en esta entrega documental. Gmail importa adjuntos posteriores al quinto y protege reconexiones; Checkout guardado se recupera sin recrear otro pago.
+
+CI exacta43622942100 y PR43622918927 SUCCESS:1799 unitarias/SQL,124Python,94demo,62empresa,258SaaS,20candidata y20producción;64originales/11hashes intactos. PostgreSQL:287controles,35contenciones reales y2restauraciones lógicas; no restore gestionado. Publicación:75/75hashes HTTPS,68/68recorridos sin omisiones/flaky,6/6perfilesPWA,6/6denegacionesbackend y5/5salud. SDK real con HTTP privado ficticio bloqueando tráfico no interceptado; no aceptación nueva de proveedores ni hardware físico.
+
+Supabase **72 migraciones**;72=`20261114173557_gmail_sync_lease_fencing`, SHA idéntico al SQL probado y nombre local reconciliado. **No repetir68–72 ni#37**. Gmail19/subscriptions21 ACTIVE,20/20fuentes runtime iguales,respaldos18/20;0WARN/ERROR+2INFO deny-all. Registro abierto,accesoRLS conservado,cobrosOFF. Se conservan43/42/41/32/31 ydemo6. Android5/0.5.26 compila APK debug y AAB sin firma comercial; no Play/hardware.
+
+Esta es una actualización pública segura; **no un lanzamiento comercial completo**. Pendientes aceptación NativeStripe/facturaGDTaller real/entrega,Google público/buzón empresarial,restore gestionado,firma/Play/dispositivos y revisión externa. Cargos/compromisos/llamadasIA nuevos0; techo200EUR acumulado sin saldo conciliado. IA10USD/mes–100llamadas/empresa intacta. Main conserva manifiestoDEMO: producción solo desde su checkout separado.
+
+[Recibo y límites verificables](docs/verification/commercial-safe-update44-20261114.json).
+
 ## Actualización segura43 publicada y comprobada · 14/11/2026 UTC
 
 https://truckcontrolai.com está en **Sites43 / app 0.5.25-rc.1**, fuente `bb161141c33e8692aab8c4efdaf8c4e359903a3d`, despliegue `appgdep_6af827b8dc48819182d18b8efefeafd4` SUCCEEDED. PR #121 integrado en `c233a3c7320a0e94150264b93545ad55365a11f6`; se conservan42, 41, anteriores y demo 6. [Recibo](docs/verification/commercial-safe-update43-20261114.json).

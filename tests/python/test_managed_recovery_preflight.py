@@ -70,6 +70,19 @@ class RecoveryPreflightTests(unittest.TestCase):
         self.assertEqual(result["observed_restore_duration_seconds"], 1200)
         self.assertEqual(len(result["checked_controls"]), len(gate.CHECKS))
 
+    def test_rejects_nonstandard_json_numeric_constants(self) -> None:
+        # The default Python JSON decoder accepts these non-JSON tokens.
+        manifest_file = self.root / "manifest.json"
+        original = manifest_file.read_text(encoding="utf-8")
+        for invalid in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(nonstandard_value=invalid):
+                manifest_file.write_text(
+                    original.replace('"schema_version": 1', f'"schema_version": {invalid}', 1),
+                    encoding="utf-8",
+                )
+                with self.assertRaisesRegex(gate.PreflightError, "non-standard JSON numeric constant"):
+                    gate.inspect(manifest_file, SOURCE)
+
     def test_manifest_schema_version_requires_json_integer_not_bool_or_float(self) -> None:
         # Python considers True == 1 and 1.0 == 1; JSON schema must not.
         for invalid in (True, 1.0, "1", None):
@@ -91,6 +104,18 @@ class RecoveryPreflightTests(unittest.TestCase):
         with self.assertRaises(gate.PreflightError):
             self.inspect()
 
+    def test_rejects_non_project_destination_placeholders(self) -> None:
+        # Isolation must not pass merely because a whitespace/URL string is
+        # truthy and differs from the live project ref. These are synthetic.
+        for invalid in (" ", "\\t", "synthetic-test-destination ", " synthetic-test-destination",
+                        "https://project.example", "../other", "a", None, True, 42, [], {}):
+            with self.subTest(destination=invalid):
+                self.manifest["destination_project_ref"] = invalid
+                with self.assertRaisesRegex(gate.PreflightError, "restore destination must be"):
+                    self.inspect()
+        self.manifest["destination_project_ref"] = "synthetic_test_destination"
+        self.assertTrue(self.inspect()["preflight_passed"])
+
     def test_requires_all_backups_and_checks(self) -> None:
         self.manifest["artifacts"].pop()
         with self.assertRaises(gate.PreflightError):
@@ -101,6 +126,29 @@ class RecoveryPreflightTests(unittest.TestCase):
         self.manifest["checks"].pop("cross_tenant_rls")
         with self.assertRaises(gate.PreflightError):
             self.inspect()
+
+    def test_rejects_zero_byte_artifact_and_control_evidence(self) -> None:
+        # A matching SHA-256 of the empty byte string is not a usable backup
+        # or a meaningful attestation. Reject both inventory categories.
+        for category in ("artifact", "control"):
+            with self.subTest(category=category):
+                if category == "artifact":
+                    item = self.manifest["artifacts"][0]
+                    relative = item["path"]
+                else:
+                    item = self.manifest["checks"][sorted(gate.CHECKS)[0]]
+                    relative = item["evidence_path"]
+                target = self.root / relative
+                original = target.read_bytes()
+                original_sha = item["sha256"]
+                try:
+                    target.write_bytes(b"")
+                    item["sha256"] = hashlib.sha256(b"").hexdigest()
+                    with self.assertRaisesRegex(gate.PreflightError, "empty evidence file"):
+                        self.inspect()
+                finally:
+                    target.write_bytes(original)
+                    item["sha256"] = original_sha
 
     def test_rejects_tampering_and_missing_files(self) -> None:
         path = self.root / self.manifest["artifacts"][0]["path"]
@@ -197,6 +245,39 @@ class RecoveryPreflightTests(unittest.TestCase):
         alias.symlink_to(self.root / "manifest.json")
         with self.assertRaisesRegex(gate.PreflightError, "symlinked manifest"):
             gate.inspect(alias, SOURCE)
+
+    def test_rejects_nonregular_manifest_before_open(self) -> None:
+        # A FIFO can hang indefinitely with a blocking open(); a directory
+        # is also not an acceptable JSON evidence manifest.
+        directory = self.root / "manifest-directory"
+        directory.mkdir()
+        with self.assertRaisesRegex(gate.PreflightError, "not a private regular file"):
+            gate.inspect(directory, SOURCE)
+
+        if hasattr(os, "mkfifo"):
+            fifo = self.root / "manifest.fifo"
+            os.mkfifo(fifo)
+            with self.assertRaisesRegex(gate.PreflightError, "not a private regular file"):
+                gate.inspect(fifo, SOURCE)
+
+    def test_rejects_manifest_inode_swap_even_with_identical_json(self) -> None:
+        manifest_path = self.root / "manifest.json"
+        original = self.root / "old-manifest.json"
+        real_open = os.open
+        swapped = False
+
+        def swap_before_open(path: os.PathLike[str] | str, flags: int, *args: object, **kwargs: object) -> int:
+            nonlocal swapped
+            if Path(path) == manifest_path and not swapped:
+                swapped = True
+                manifest_path.rename(original)
+                manifest_path.write_bytes(original.read_bytes())
+            return real_open(path, flags, *args, **kwargs)
+
+        with mock.patch.object(gate.os, "open", side_effect=swap_before_open):
+            with self.assertRaisesRegex(gate.PreflightError, "manifest changed during validation"):
+                gate.inspect(manifest_path, SOURCE)
+        self.assertTrue(swapped)
 
     def test_requires_distinct_files_for_each_inventory_and_check(self) -> None:
         first = self.manifest["artifacts"][0]

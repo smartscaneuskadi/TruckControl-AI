@@ -17,7 +17,8 @@ una **recuperación lógica parcial**, no un backup de toda la infraestructura.
   desactivadas, correo saliente desactivado y consistencia de datos;
 - origen esperado `kkkemaycedexymrpaqtp`, destino diferente marcado como
   `isolated_test`, timestamps con zona horaria y duración observada;
-- rechazo de rutas que salen del directorio, artefactos incompletos,
+- rechazo de rutas que salen del directorio, archivos de evidencia vacíos,
+  artefactos incompletos,
   alterados, enlaces simbólicos internos o externos (también en el manifiesto),
   enlaces físicos/hardlinks a un mismo inode o archivo ajeno al directorio,
   o reutilización de un mismo archivo como prueba de varios controles;
@@ -29,6 +30,8 @@ una **recuperación lógica parcial**, no un backup de toda la infraestructura.
   podría aceptar silenciosamente la última clave duplicada, creando
   ambigüedad para la revisión humana. La ampliación del esquema exige
   una versión nueva y pruebas, no campos arbitrarios en expedientes.
+  Las constantes numéricas no estándar `NaN`, `Infinity` y `-Infinity`
+  tampoco son JSON válido y se rechazan antes de validar el esquema.
 
 La herramienta verifica las evidencias solo por rutas e inodes locales; tampoco
 certifica la ausencia de montajes especiales ni la autoría del informe. Debe

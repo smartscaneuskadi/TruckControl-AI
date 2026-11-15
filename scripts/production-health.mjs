@@ -74,8 +74,10 @@ export async function checkProduction(config, transport = fetch) {
           status: response.status,
           passed: [401, 403].includes(response.status),
           code: [401, 403].includes(response.status)
-            ? "protected"
+            ? "missing_api_key_denied"
             : "anonymous_access_unexpected",
+          // No API key was supplied: this probe cannot certify table RLS.
+          rls_verified: false,
         };
       }
       if (response.status !== 200) {
@@ -98,6 +100,14 @@ export async function checkProduction(config, transport = fetch) {
           code: "invalid_or_oversized_json",
         };
       }
+      if (body === null || typeof body !== "object" || Array.isArray(body)) {
+        return {
+          ...spec,
+          status: 200,
+          passed: false,
+          code: "invalid_json_shape",
+        };
+      }
       if (spec.name === "release")
         return {
           ...spec,
@@ -108,7 +118,8 @@ export async function checkProduction(config, transport = fetch) {
             body.sourceCommit === config.published_commit &&
             body.version === config.app_version &&
             body.sourceDirty === false &&
-            body.companyConnectionBundled === true,
+            body.companyConnectionBundled === true &&
+            body.registrationForcedClosed === false,
           code: "release_identity_check",
         };
       const ids = [
@@ -121,13 +132,22 @@ export async function checkProduction(config, transport = fetch) {
         "trips",
         "management",
       ];
+      const validProfiles =
+        Array.isArray(body.profiles) &&
+        body.profiles.length === 8 &&
+        body.profiles.every(
+          (p) =>
+            p !== null &&
+            typeof p === "object" &&
+            !Array.isArray(p) &&
+            typeof p.id === "string" &&
+            ids.includes(p.id),
+        );
       const passed =
         body.service === "company-copilot-specialists" &&
         body.schema_version === 2 &&
-        Array.isArray(body.profiles) &&
-        body.profiles.length === 8 &&
+        validProfiles &&
         new Set(body.profiles.map((p) => p.id)).size === 8 &&
-        body.profiles.every((p) => ids.includes(p.id)) &&
         body.human_confirmation === true &&
         body.scheduled_paid_model_calls === 0;
       return {
@@ -148,6 +168,8 @@ export async function checkProduction(config, transport = fetch) {
     passed: checks.every((c) => c.passed),
     checks,
     authenticated_customer_data_read: false,
+    // A no-key HTTP denial does not exercise anonymous-key or role RLS.
+    rls_verified: false,
     model_calls: 0,
   };
 }

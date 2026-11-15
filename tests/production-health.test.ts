@@ -34,6 +34,7 @@ function transport(change?: (url: string) => Response | undefined) {
           version: config.app_version,
           sourceDirty: false,
           companyConnectionBundled: true,
+          registrationForcedClosed: false,
         })
       : url.includes("/rest/")
         ? new Response("", { status: 401 })
@@ -55,6 +56,12 @@ describe("monitor público sin secretos ni consumo", () => {
     expect(r.passed).toBe(true);
     expect(r.checks).toHaveLength(5);
     expect(r.model_calls).toBe(0);
+    expect(r.rls_verified).toBe(false);
+    expect(r.checks.find((c: any) => c.name === "anonymous_database_gateway")).toMatchObject({
+      passed: true,
+      code: "missing_api_key_denied",
+      rls_verified: false,
+    });
     expect(f).toHaveBeenCalledTimes(5);
   });
   it("no certifica disponibilidad del proveedor por tener una clave configurada", async () => {
@@ -78,6 +85,28 @@ describe("monitor público sin secretos ni consumo", () => {
     expect(
       r.checks.find((c: any) => c.name === "copilot_health"),
     ).toMatchObject({ configured: false, provider_probe_performed: false });
+  });
+  it("rechaza release de producción con registro forzado cerrado u omitido", async () => {
+    for (const invalid of [true, undefined]) {
+      const f = transport((url) =>
+        url.endsWith("/release.json")
+          ? Response.json({
+              app: "TruckControl AI",
+              channel: "production",
+              sourceCommit: sha,
+              version: config.app_version,
+              sourceDirty: false,
+              companyConnectionBundled: true,
+              ...(invalid === undefined ? {} : { registrationForcedClosed: invalid }),
+            })
+          : undefined,
+      );
+      const r = await checkProduction(config, f);
+      expect(r.passed).toBe(false);
+      expect(
+        r.checks.filter((c: any) => c.name === "release").every((c: any) => c.passed === false),
+      ).toBe(true);
+    }
   });
   it("rechaza fuentes diferentes y gateway abierto sin guardar datos", async () => {
     const r = await checkProduction(
@@ -112,6 +141,44 @@ describe("monitor público sin secretos ni consumo", () => {
       expect(r.passed).toBe(false);
       expect(JSON.stringify(r)).not.toContain("sensitive");
     }
+  });
+  it("falla cerrado ante JSON 200 primitivo y perfiles nulos sin filtrar el cuerpo", async () => {
+    for (const value of [null, [], "synthetic-sensitive-token", 42]) {
+      for (const endpoint of ["release", "copilot_health"]) {
+        const r = await checkProduction(
+          config,
+          transport((url) =>
+            endpoint === "release"
+              ? url.endsWith("/release.json")
+                ? Response.json(value)
+                : undefined
+              : url.includes("/health")
+                ? Response.json(value)
+                : undefined,
+          ),
+        );
+        expect(r.passed).toBe(false);
+        expect(r.checks.filter((c: any) => c.name === endpoint).every((c: any) => c.passed === false)).toBe(true);
+        expect(JSON.stringify(r)).not.toContain("synthetic-sensitive-token");
+      }
+    }
+    const invalidProfiles = [null, ...profiles.slice(1)];
+    const r = await checkProduction(
+      config,
+      transport((url) =>
+        url.includes("/health")
+          ? Response.json({
+              service: "company-copilot-specialists",
+              schema_version: 2,
+              profiles: invalidProfiles,
+              human_confirmation: true,
+              scheduled_paid_model_calls: 0,
+            })
+          : undefined,
+      ),
+    );
+    expect(r.passed).toBe(false);
+    expect(r.checks.find((c: any) => c.name === "copilot_health")?.passed).toBe(false);
   });
   it("no ejecuta peticiones con configuración ajena al proyecto", async () => {
     const f = transport();
