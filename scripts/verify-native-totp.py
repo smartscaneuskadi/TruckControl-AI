@@ -128,6 +128,7 @@ class NativeClient:
     def native(self, action: str, data: dict | None = None) -> dict:
         result = self.call(action, data)
         if "error" in result:
+            lab.REPORT["native_error"] = {"operation": action, **result["error"]}
             raise LabFailure("native_" + action.lower() + "_rejected")
         return result.get("data") or {}
 
@@ -284,6 +285,11 @@ def exercise(stack) -> None:
     native.native("unenroll", {"factorId": primary["id"]})
     check("native unenrollment removes only the current factor and preserves the backup",
           factor_state(stack, a, primary) == {} and factor_state(stack, a, backup).get("status") == "verified")
+    immediate = live_session(stack, before_removal)
+    lab.REPORT["native_current_factor_removal"] = {
+        "immediate_live_session_aal": immediate.get("aal"),
+        "immediate_live_factor_binding_present": immediate.get("factor_id") is not None,
+    }
     access(stack, a, before_removal, False, "removed current factor with verified backup")
     refreshed = native.native("refreshSession")
     refresh_session = refreshed.get("session") or {}
@@ -291,13 +297,13 @@ def exercise(stack) -> None:
     check("native refresh after removal returns an explicit known assurance level", refresh_aal in {"aal1", "aal2"})
     native.accept(refreshed, refresh_aal)
     bound = live_session(stack, native.actor["token"])
-    lab.REPORT["native_current_factor_removal"] = {
+    lab.REPORT["native_current_factor_removal"].update({
         "refreshed_jwt_aal": refresh_aal,
         "live_session_aal": bound.get("aal"),
         "live_factor_binding_present": bound.get("factor_id") is not None,
-        "remaining_verified_factor_requires_challenge": True,
-    }
+    })
     access(stack, a, native.actor["token"], False, "refreshed session still requires backup challenge")
+    lab.REPORT["native_current_factor_removal"]["remaining_verified_factor_requires_challenge"] = True
     native.verify(backup)
     access(stack, a, native.actor["token"], True, "backup native challenge restores access")
     status, _ = stack.http("POST", "/auth/v1/recover", {"email": a["email"]})
