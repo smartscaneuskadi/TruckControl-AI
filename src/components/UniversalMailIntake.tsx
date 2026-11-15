@@ -153,6 +153,17 @@ export function UniversalMailIntake({
       if (alive.current) setBusy(false);
     }
   }
+  async function copyRecipient(recipient: string) {
+    setError("");
+    setMessage("");
+    try {
+      await navigator.clipboard.writeText(recipient);
+      if (alive.current) setMessage("Dirección copiada.");
+    } catch {
+      if (alive.current)
+        setError("No se ha podido copiar. Puedes seleccionar la dirección.");
+    }
+  }
   async function inboxAction(action: "enable_inbox" | "disable_inbox") {
     if (!client || !cloud || !canManage || busy) return;
     setBusy(true);
@@ -268,19 +279,7 @@ export function UniversalMailIntake({
                 <Button
                   icon={Copy}
                   variant="secondary"
-                  onClick={() => {
-                    void navigator.clipboard
-                      .writeText(status.inbox!.recipient)
-                      .then(() => {
-                        if (alive.current) setMessage("Dirección copiada.");
-                      })
-                      .catch(() => {
-                        if (alive.current)
-                          setError(
-                            "No se ha podido copiar. Puedes seleccionar la dirección.",
-                          );
-                      });
-                  }}
+                  onClick={() => void copyRecipient(status.inbox!.recipient)}
                 >
                   Copiar dirección
                 </Button>

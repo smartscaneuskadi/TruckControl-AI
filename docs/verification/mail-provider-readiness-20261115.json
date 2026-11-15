@@ -1,0 +1,352 @@
+{
+  "checked_at": "2026-11-15T10:35:29.567638+00:00",
+  "domain": "truckcontrolai.com",
+  "dns_mutations": 0,
+  "messages_sent": 0,
+  "mailbox_access": false,
+  "results": [
+    {
+      "resolver": "Google",
+      "name": "truckcontrolai.com",
+      "type": "MX",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 2,
+      "dkim_key_present": false,
+      "mx": [
+        "10 aspmx1.migadu.com.",
+        "20 aspmx2.migadu.com."
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "truckcontrolai.com",
+      "type": "TXT",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 2,
+      "dkim_key_present": false,
+      "spf": [
+        "v=spf1 include:spf.migadu.com -all"
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "_dmarc.truckcontrolai.com",
+      "type": "TXT",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "dmarc": [
+        "v=DMARC1; p=quarantine;"
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "facturas.truckcontrolai.com",
+      "type": "MX",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "mx": [
+        "10 receive-euw1.forge.rmta.net."
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "send.facturas.truckcontrolai.com",
+      "type": "MX",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "mx": [
+        "10 feedback-smtp.eu-west-1.amazonses.com."
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "send.facturas.truckcontrolai.com",
+      "type": "TXT",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "spf": [
+        "v=spf1 include:amazonses.com ~all"
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "resend._domainkey.facturas.truckcontrolai.com",
+      "type": "TXT",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": true,
+      "optional_version_tag_omitted": true,
+      "public_key_bytes": 162
+    },
+    {
+      "resolver": "Google",
+      "name": "key1._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "cname": [
+        "key1.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "key2._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "cname": [
+        "key2.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "key3._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "cname": [
+        "key3.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    },
+    {
+      "resolver": "Google",
+      "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+      "type": "TXT",
+      "rcode": 2,
+      "dnssec_authenticated": false,
+      "answer_count": 0,
+      "dkim_key_present": false
+    },
+    {
+      "resolver": "Google",
+      "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+      "type": "TXT",
+      "rcode": 2,
+      "dnssec_authenticated": false,
+      "answer_count": 0,
+      "dkim_key_present": false
+    },
+    {
+      "resolver": "Google",
+      "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+      "type": "TXT",
+      "rcode": 2,
+      "dnssec_authenticated": false,
+      "answer_count": 0,
+      "dkim_key_present": false
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "truckcontrolai.com",
+      "type": "MX",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 2,
+      "dkim_key_present": false,
+      "mx": [
+        "10 aspmx1.migadu.com.",
+        "20 aspmx2.migadu.com."
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "truckcontrolai.com",
+      "type": "TXT",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 2,
+      "dkim_key_present": false,
+      "spf": [
+        "\"v=spf1 include:spf.migadu.com -all\""
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "_dmarc.truckcontrolai.com",
+      "type": "TXT",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "dmarc": [
+        "\"v=DMARC1; p=quarantine;\""
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "facturas.truckcontrolai.com",
+      "type": "MX",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "mx": [
+        "10 receive-euw1.forge.rmta.net."
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "send.facturas.truckcontrolai.com",
+      "type": "MX",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "mx": [
+        "10 feedback-smtp.eu-west-1.amazonses.com."
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "send.facturas.truckcontrolai.com",
+      "type": "TXT",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "spf": [
+        "\"v=spf1 include:amazonses.com ~all\""
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "resend._domainkey.facturas.truckcontrolai.com",
+      "type": "TXT",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": true,
+      "optional_version_tag_omitted": true,
+      "public_key_bytes": 162
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key1._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "cname": [
+        "key1.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key2._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "cname": [
+        "key2.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key3._domainkey.truckcontrolai.com",
+      "type": "CNAME",
+      "rcode": 0,
+      "dnssec_authenticated": false,
+      "answer_count": 1,
+      "dkim_key_present": false,
+      "cname": [
+        "key3.truckcontrolai.com._domainkey.migadu.com."
+      ]
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+      "type": "TXT",
+      "rcode": 2,
+      "dnssec_authenticated": false,
+      "answer_count": 0,
+      "dkim_key_present": false
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+      "type": "TXT",
+      "rcode": 2,
+      "dnssec_authenticated": false,
+      "answer_count": 0,
+      "dkim_key_present": false
+    },
+    {
+      "resolver": "Cloudflare",
+      "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+      "type": "TXT",
+      "rcode": 2,
+      "dnssec_authenticated": false,
+      "answer_count": 0,
+      "dkim_key_present": false
+    }
+  ],
+  "dkim_validation_note": "The v=DKIM1 tag is optional. k=rsa and a nonempty DER public key are accepted without requiring that tag.",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "project": "kkkemaycedexymrpaqtp",
+  "scope": "DNS public lookups and existing provider configuration; no fresh message delivery acceptance",
+  "provider_authenticated": true,
+  "resend_domain": {
+    "name": "facturas.truckcontrolai.com",
+    "id": "2fa6aaf2-0cb4-4cee-adcf-d8d63683cfba",
+    "api_status": 200,
+    "status": "verified",
+    "sending": "enabled",
+    "receiving": "enabled",
+    "dns_records_verified": 5,
+    "open_tracking": false,
+    "click_tracking": false,
+    "tls_field_returned": false
+  },
+  "resend_webhook": {
+    "id": "c39ebee1-9207-4170-9444-9423e9e65802",
+    "api_status": 200,
+    "status": "enabled",
+    "endpoint": "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-mail-resend",
+    "events": [
+      "email.received"
+    ],
+    "signing_secret_matches_vault": true,
+    "secret_values_exposed": false
+  },
+  "native_receiving_enabled": true,
+  "auth_mail": {
+    "enabled": true,
+    "daily_limit": 40,
+    "monthly_limit": 1000,
+    "acceptance_test_channel_enabled": false,
+    "sender_in_reviewed_source": "no-reply@facturas.truckcontrolai.com"
+  },
+  "new_provider_mutations": 0,
+  "new_credential_changes": 0,
+  "new_ai_calls": 0,
+  "new_charges_or_commitments": 0,
+  "resend_free_plan_billing_verified": false,
+  "mailbox_provisioning_or_delivery_verified": false,
+  "migadu_dkim_provider_targets_still_servfail": true,
+  "limitations": [
+    "no new message, registration or mailbox delivery was exercised",
+    "Migadu target failure remains external; no DNSSEC or CNAME changes were made",
+    "Gmail public/company acceptance remains separate",
+    "NativeSQL73 still pending mandatory official approval"
+  ]
+}
