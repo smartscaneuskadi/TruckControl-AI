@@ -37,7 +37,16 @@ const scripts = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)]
   .map((match) => new URL(match[1], origin))
   .filter((url) => url.origin === origin && /^\/assets\/[A-Za-z0-9._-]+\.js$/.test(url.pathname));
 if (scripts.length < 1 || scripts.length > 8) throw Error("Unexpected public entry scripts.");
-const texts = await Promise.all(scripts.map((url) => getText(url.href, 6000000)));
+// The already-published app can put its shared client connection in a
+// same-origin module preload rather than the entry chunk. Read only bounded,
+// immutable-looking public JS assets; getText still refuses redirects,
+// credentials, query strings and any noncanonical origin.
+const preloads = [...html.matchAll(/<link\b(?=[^>]*\brel=["']modulepreload["'])[^>]*\bhref=["']([^"']+)["']/gi)]
+  .map((match) => new URL(match[1], origin))
+  .filter((url) => url.origin === origin && /^\/assets\/[A-Za-z0-9._-]+\.js$/.test(url.pathname));
+if (preloads.length > 16) throw Error("Unexpected public module preload count.");
+const modules = [...new Map([...scripts, ...preloads].map((url) => [url.href, url])).values()];
+const texts = await Promise.all(modules.map((url) => getText(url.href, 6000000)));
 const keys = new Set(texts.flatMap((text) =>
   [...text.matchAll(/\bsb_publishable_[A-Za-z0-9_-]{20,160}\b/g)].map((match) => match[0]),
 ));
@@ -128,7 +137,8 @@ const archive = readFileSync(archivePath);
 const proof = {
   source_commit: sha, project_id: siteId, public_url: origin, baseline_source: expectedBaseline,
   output: release, payment_changes: false, payments_enabled: catalog.payments_enabled,
-  public_connection_source: "existing public browser bundle; no key value in this receipt",
+  public_connection_source: "existing public entry and same-origin module preloads; no key value in this receipt",
+  public_configuration_module_count: modules.length,
   mfa_enrollment_requested: true, mfa_requires_exact_server_capability: true,
   native_mfa_or_provider_configuration_changed_by_build: false,
   archive: { name: "truckcontrol-production-" + sha + ".tar.gz", bytes: archive.length,
