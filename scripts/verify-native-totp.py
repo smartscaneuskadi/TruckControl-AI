@@ -32,7 +32,7 @@ LabFailure = lab.LabFailure
 check = lab.check
 q = lab.quote
 RESULTS = ROOT / "native-totp-results"
-CANDIDATE = "20261115143612_optional_totp_session_protection.sql"
+CANDIDATE_SUFFIX = "_optional_totp_session_protection.sql"
 REPOSITORY = "smartscaneuskadi/TruckControl-AI"
 
 
@@ -46,7 +46,11 @@ def isolated_context(env: dict) -> None:
 
 
 def candidate_path(root: Path = ROOT) -> Path:
-    path = root / "supabase/migrations" / CANDIDATE
+    candidates = [path for path in (root / "supabase/migrations").glob("*" + CANDIDATE_SUFFIX)
+                  if re.fullmatch(r"[0-9]{14}" + re.escape(CANDIDATE_SUFFIX), path.name)]
+    if len(candidates) != 1:
+        raise LabFailure("exactly_one_committed_shaped_optional_totp_candidate_required")
+    path = candidates[0]
     if not path.is_file() or path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
         raise LabFailure("committed_optional_totp_candidate_required")
     return path
@@ -344,6 +348,7 @@ def main() -> int:
     candidate = candidate_path()
     lab.REPORT.update(contract="truckcontrol-native-totp-acceptance-v1", checks=[],
                       all_passed=False, candidate_sql_composed=True,
+                      candidate_filename=candidate.name,
                       candidate_sha256=hashlib.sha256(candidate.read_bytes()).hexdigest(),
                       native_sdk_version="2.118.0", managed_mfa_enabled=False,
                       isolated_auth_logical_restore_verified=False,

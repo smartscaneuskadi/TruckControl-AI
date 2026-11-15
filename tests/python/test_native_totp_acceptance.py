@@ -35,7 +35,7 @@ class NativeTotpTargetGuards(unittest.TestCase):
     def test_refuses_missing_candidate_and_symlinks(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            path = root / "supabase/migrations" / native.CANDIDATE
+            path = root / "supabase/migrations" / ("20261115143612" + native.CANDIDATE_SUFFIX)
             path.parent.mkdir(parents=True)
             with self.assertRaises(native.LabFailure):
                 native.candidate_path(root)
@@ -45,6 +45,23 @@ class NativeTotpTargetGuards(unittest.TestCase):
             target = root / "outside.sql"
             target.write_text("-- never staged\n")
             path.symlink_to(target)
+            with self.assertRaises(native.LabFailure):
+                native.candidate_path(root)
+
+    def test_candidate_accepts_one_canonical_timestamp_but_rejects_duplicate_or_malformed_names(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            migrations = root / "supabase/migrations"
+            migrations.mkdir(parents=True)
+            malformed = migrations / ("not-a-timestamp" + native.CANDIDATE_SUFFIX)
+            malformed.write_text("-- not a committed migration name\n")
+            with self.assertRaises(native.LabFailure):
+                native.candidate_path(root)
+            canonical = migrations / ("20261115180001" + native.CANDIDATE_SUFFIX)
+            canonical.write_text("-- canonical timestamp fixture\n")
+            self.assertEqual(native.candidate_path(root), canonical)
+            duplicate = migrations / ("20261115143612" + native.CANDIDATE_SUFFIX)
+            duplicate.write_text(canonical.read_text())
             with self.assertRaises(native.LabFailure):
                 native.candidate_path(root)
 

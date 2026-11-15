@@ -12,7 +12,7 @@ on:
       - "tests/python/test_local_service_recovery.py"
       - "tests/python/test_native_totp_acceptance.py"
       - "tests/python/test_recovery_backup.py"
-      - "supabase/migrations/20261115143612_optional_totp_session_protection.sql"
+      - "supabase/migrations/*_optional_totp_session_protection.sql"
 
 permissions:
   contents: read
