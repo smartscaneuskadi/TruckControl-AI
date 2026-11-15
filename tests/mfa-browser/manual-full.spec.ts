@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   actor,
+  other,
   broadcast,
   factor,
   goodCode,
@@ -9,6 +10,179 @@ import {
   noSecretStorage,
   openSecurity,
 } from "./fixture";
+
+test("a baseline TOKEN_REFRESHED account change validates the new company identity with old Root views unmounted", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context);
+  f.controls.companyActor = other;
+  await login(page);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  const reads = f.privateCalls().length;
+  f.controls.holdUser = true;
+  await broadcast(
+    page,
+    "TOKEN_REFRESHED",
+    f.session(other, "aal1", "new-company-session"),
+  );
+  await expect.poll(() => f.controls.userPending).toBe(true);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  expect(f.privateCalls()).toHaveLength(reads);
+  f.controls.holdUser = false;
+  f.controls.releaseUser();
+  await expect(
+    page.getByRole("heading", { name: "Configuración", exact: true }),
+  ).toBeVisible();
+  expect(
+    f
+      .privateCalls()
+      .slice(reads)
+      .every((call) => call.actor === other),
+  ).toBe(true);
+  expect(
+    f
+      .privateCalls()
+      .slice(reads)
+      .some((call) => call.path.endsWith("tc_organization_access")),
+  ).toBe(true);
+  expect(f.calls.some((call) => call.path === "/auth/v1/logout")).toBe(false);
+  expect(f.blocked).toEqual([]);
+});
+
+test("a baseline TOKEN_REFRESHED account change cannot reuse Root permissions when native identity validation fails", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context);
+  f.controls.companyActor = other;
+  await login(page);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  const reads = f.privateCalls().length;
+  f.controls.failUser = true;
+  await broadcast(
+    page,
+    "TOKEN_REFRESHED",
+    f.session(other, "aal1", "failed-company-session"),
+  );
+  await expect(page.getByRole("alert")).toContainText(
+    "No se puede comprobar la seguridad de la sesión",
+  );
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Configuración", exact: true }),
+  ).toHaveCount(0);
+  expect(f.privateCalls()).toHaveLength(reads);
+  expect(f.blocked).toEqual([]);
+});
+
+test("an unrecognized AAL2 TOKEN_REFRESHED actor change is rejected rather than granting a new MFA context", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context);
+  await login(page);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  const reads = f.privateCalls().length;
+  await broadcast(
+    page,
+    "TOKEN_REFRESHED",
+    f.session(other, "aal2", "unknown-aal2-session"),
+  );
+  await expect(
+    page.getByRole("heading", {
+      name: "Bienvenido a TruckControl",
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(f.privateCalls()).toHaveLength(reads);
+  expect(f.blocked).toEqual([]);
+});
+
+test("an old MFA actor refresh cannot replace another baseline account after the last factor was removed", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, { factors: [factor()] });
+  f.controls.companyActor = other;
+  f.controls.loginAal = "aal2";
+  f.controls.refreshAal = "aal1";
+  f.controls.boundFactor.set(actor, factor().id);
+  await login(page);
+  await openSecurity(page);
+  await page
+    .getByRole("button", { name: "Quitar autenticador", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect(
+    page.getByText("Sin autenticadores verificados", { exact: true }),
+  ).toBeVisible();
+  const oldMfaRefresh = f.session(actor, "aal1");
+  await broadcast(
+    page,
+    "SIGNED_IN",
+    f.session(other, "aal1", "ordinary-other-session"),
+  );
+  await expect(
+    page.getByRole("heading", { name: "Configuración", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Sin autenticadores verificados", { exact: true }),
+  ).toBeVisible();
+  // Another account's MFA history does not taint this ordinary identity.
+  f.controls.holdUser = true;
+  await broadcast(
+    page,
+    "TOKEN_REFRESHED",
+    f.session(other, "aal1", "ordinary-other-refreshed-session"),
+  );
+  await expect.poll(() => f.controls.userPending).toBe(true);
+  await expect(
+    page.getByRole("heading", { name: "Configuración", exact: true }),
+  ).toHaveCount(0);
+  f.controls.holdUser = false;
+  f.controls.releaseUser();
+  await expect(
+    page.getByRole("heading", { name: "Configuración", exact: true }),
+  ).toBeVisible();
+  const reads = f.privateCalls().length;
+  await broadcast(page, "TOKEN_REFRESHED", oldMfaRefresh);
+  await expect(
+    page.getByRole("heading", {
+      name: "Bienvenido a TruckControl",
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(f.privateCalls()).toHaveLength(reads);
+  expect(f.blocked).toEqual([]);
+});
 
 test("a baseline same-actor SID replacement hides private views until native validation then restores only the current section", async ({
   page,

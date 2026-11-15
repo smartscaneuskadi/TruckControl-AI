@@ -94,6 +94,7 @@ export async function nativeFixture(
     boundFactor: new Map<string, string>(),
     organizations: [{ id: org, name: "Empresa MFA ficticia" }],
     manualFullEnabled: null as boolean | null,
+    companyActor: null as string | null,
   };
   let fullRevision = 0;
   const observedAt = () => new Date().toISOString();
@@ -179,10 +180,13 @@ export async function nativeFixture(
     updated_at: stamp,
   };
   const access = (id = actor, scoped = false) => ({
-    is_admin: !company,
+    is_admin: !company && id !== controls.companyActor,
     active: true,
     features: exampleCatalog.plans.find((p) => p.id === "limited")!.modules,
-    profile: company ? customer : null,
+    profile:
+      company || id === controls.companyActor
+        ? { ...customer, user_id: id, email: user(id).email }
+        : null,
     plan: "limited",
     max_trucks: 50,
     requires_phone_verification: false,
@@ -495,7 +499,8 @@ export async function nativeFixture(
           audit: [],
         };
       else if (path === "/rest/v1/organizations")
-        data = company ? controls.organizations : [];
+        data =
+          company || id === controls.companyActor ? controls.organizations : [];
       else if (
         path === "/rest/v1/rpc/tc_team_control" &&
         body?.p_action === "invitations"

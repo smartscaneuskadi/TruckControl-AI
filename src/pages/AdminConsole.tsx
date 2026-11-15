@@ -90,6 +90,12 @@ export function AdminConsole({
     const clear = () => setFiscalTaskId(null);
     const subscription = client?.auth.onAuthStateChange((event, session) => {
       const next = session?.user.id === userId ? session.access_token : null;
+      // Root navigation must not become the next account's company route.
+      // This runs for a different-UID refresh itself, before private unmount.
+      if (event === "SIGNED_OUT" || session?.user.id !== userId) {
+        if (window.location.hash.split("?")[0] === "#/admin")
+          window.history.replaceState(null, "", window.location.pathname + window.location.search + "#/settings");
+      }
       if (event === "SIGNED_OUT" || (token !== undefined && token !== next))
         clear();
       token = next;

@@ -180,19 +180,22 @@ export function useNativeMfaSession(client: Client | null) {
       const baselineRefresh = Boolean(
         event === "TOKEN_REFRESHED" &&
         id &&
-        actor === id &&
-        accepted?.user.id === id &&
+        actor &&
+        accepted?.user.id === actor &&
         !accepted.factors.length &&
         !accepted.pendingFactors.length &&
         !requireRemainingChallenge &&
-        !mfaActors.has(id),
+        !mfaActors.has(actor) &&
+        !mfaActors.has(id) &&
+        !signingOut &&
+        hint?.aal !== "aal2",
       );
       if (
         signingOut ||
         (["MFA_CHALLENGE_VERIFIED", "TOKEN_REFRESHED", "USER_UPDATED"].includes(
           event,
         ) &&
-          ((actor !== undefined && actor !== id) ||
+          ((actor !== undefined && actor !== id && !baselineRefresh) ||
             (actorSessionId &&
               hint?.sessionId &&
               actorSessionId !== hint.sessionId &&
