@@ -1,0 +1,65 @@
+{
+  "recorded_at": "2026-11-15T23:47:57.636634+00:00",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "mode": "read-only official CI trace diagnosis and local synthetic browser reproduction",
+  "ci_failures": [
+    {
+      "run": 43774365661,
+      "scope": "core push Windows",
+      "expected_private_requests": 29,
+      "actual_private_requests": 30
+    },
+    {
+      "run": 43774371596,
+      "scope": "core PR Windows/Android",
+      "expected_private_requests": [
+        26,
+        29
+      ],
+      "actual_private_requests": 30
+    }
+  ],
+  "trace_artifact": {
+    "id": 14185219392,
+    "sha256": "22734c7cacb57666907ede7eb3c8469a2440be4abc9097305ac673d64fa370a1",
+    "bytes": 18313889,
+    "digest_verified_before_parsing": true
+  },
+  "classification": "test setup captured before new B workspace initialisation finished, not Root actor reactivation",
+  "extra_private_request": {
+    "path": "/rest/v1/rpc/tc_list_records",
+    "actor": "10000000-0000-4000-8000-000000000152",
+    "aal": "aal1",
+    "session_id": "ordinary-other-refreshed-session",
+    "started_monotonic_ms": 30044.774,
+    "body": {
+      "p_org": "20000000-0000-4000-8000-000000000151",
+      "p_after": null
+    }
+  },
+  "old_mfa_refresh_evaluate_started_monotonic_ms": 30045.673,
+  "extra_request_started_before_old_refresh_evaluate": true,
+  "root_private_calls_after_old_refresh_in_inspected_trace": 0,
+  "observed_after_old_refresh": [
+    "old actor Auth logout",
+    "anonymous public catalog"
+  ],
+  "fix": "Only new test setup: register four response listeners before releasing held Auth, match exact B refreshed Bearer and pathname fiscal/tyre/document/records with status200, await all before freezing privateCalls. Preserve exact final count and all closed-view assertions.",
+  "product_changes": false,
+  "historical_test_changes": false,
+  "assertions_removed": 0,
+  "independent_review": "approved, including source-public URL compatibility via pathname match",
+  "repeat_final": {
+    "log": "/tmp/truckcontrol-mfa-lastfactor-ready-path-repeat-20261115.log",
+    "log_sha256": "128edcce2fb70a8946441141c438584da4d0ba7c344ed1dcbd6fe442368825e4",
+    "ten_passed": true,
+    "scope": "5 repetitions per Windows/Android emulated profile; no native Auth/provider/physical device acceptance"
+  },
+  "production_and_backend_mutations": false,
+  "new_model_calls": 0,
+  "new_purchases": 0,
+  "failed_source_commit": "820e2338ce5a842229d3252ab27e64b4e23a688f",
+  "production_source_quality_success": "784fcc2a0e77247298cb9aa2511c8ec948473343",
+  "production_quality_run": 43774380705,
+  "final_ci_required_before_publication": true
+}
