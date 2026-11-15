@@ -1,0 +1,189 @@
+{
+  "recorded_at": "2026-11-15T18:24:49.222187+00:00",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "scope": "company-scoped manual Full subscription update",
+  "manual_full_feature_published_and_verified": true,
+  "commercial_platform_global_launch_complete": false,
+  "publication": {
+    "url": "https://truckcontrolai.com",
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "audience": "public",
+    "version_number": 46,
+    "app_version": "0.5.28-rc.1",
+    "source_commit": "4cb1e430fa5530c5b27b17e9dbb2515146d779ab",
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_2b1e985221e08191953a75bd00a62b42",
+    "deployment_id": "appgdep_6af9f64bacf88191bffa90e87f0a9b57",
+    "status": "succeeded",
+    "deployed_at": "2026-11-15T18:13:45.148135+00:00",
+    "primary_custom_domain_verified": true,
+    "demo_version_preserved": 6
+  },
+  "github": {
+    "pr": 150,
+    "reviewed_head": "97581585967512015fbaaa7ad685a75523b70758",
+    "merged_commit": "3af0fe44cbca9d54c5aa318ea2525cdf1b26ab7c",
+    "source_branch": "deploy/company-manual-full-production-20261115",
+    "production_app_paths_identical_to_merged_main": true,
+    "source_ci": 43743688733,
+    "source_package_ci": 43743688659,
+    "pr_push_ci": 43743536849,
+    "pr_merge_ci": 43743541583,
+    "ci_required_checks": "SUCCESS"
+  },
+  "ci_per_successful_run": {
+    "unit_and_sql": 1897,
+    "unit_files": 156,
+    "python": 140,
+    "demo_browser": 94,
+    "company_browser": 62,
+    "saas_browser": 274,
+    "manual_full_browser": 44,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "previous_public_profiles": 6,
+    "initial64_tests_preserved": true,
+    "retained_file_hashes": 11,
+    "no_counts_added_across_repeated_runs": true
+  },
+  "published_checks": {
+    "file_hashes": {
+      "passed": 93,
+      "failed": 0,
+      "public_files": 31,
+      "origins": 3
+    },
+    "browser": {
+      "published-manual-full": {
+        "passed": 44,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "source_asserted_before_each_case": true
+      },
+      "published-regression": {
+        "passed": 76,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "source_asserted_before_each_case": true
+      },
+      "published-gmail-regression": {
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0,
+        "flaky": 0,
+        "source_asserted_before_each_case": true
+      }
+    },
+    "browser_total": 128,
+    "browser_transport": "real published bundle and pinned SDK; private/provider HTTP fulfilled by fictional fixtures, unmatched private HTTP and all WSS blocked",
+    "pwa_profiles_passed": 6,
+    "negative_edge_http_passed": 6,
+    "new_license_rpc_anonymous_invalid_session_denials_passed": 2,
+    "health_probes_passed": 5,
+    "real_customer_data_or_provider_connections_used_by_browser_tests": false,
+    "physical_device_tests": false
+  },
+  "backend": {
+    "project": "kkkemaycedexymrpaqtp",
+    "migration_count": 74,
+    "latest_migration": "20261115170051_company_manual_full_licenses",
+    "sql_sha256": "ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c",
+    "already_applied_once_do_not_repeat": true,
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false,
+    "prices_are_examples": true,
+    "security_warn_error": 0,
+    "intentional_deny_all_info": 3,
+    "automatic_licenses_granted_to_existing_companies": 0,
+    "post_publication_license_rows": 0,
+    "post_publication_audit_rows": 0,
+    "service_role_direct_license_writes_denied": true
+  },
+  "isolated_backend_acceptance": {
+    "native_auth_storage_manual_full": 200,
+    "native_auth_storage_existing_recovery": 67,
+    "native_verified_source": "584b0a7a15d5d3d16d23416179a46c8a750ce33a",
+    "backend_and_native_harness_unchanged_in_corrected_source": true,
+    "native_run": 43740760757,
+    "postgres_checks": 399,
+    "manual_races_with_distinct_processes": 4,
+    "logical_restores": 2,
+    "postgres_pr_run": 43743541591,
+    "managed_platform_restore_verified": false
+  },
+  "recovery": {
+    "previous_production": {
+      "version": 45,
+      "source_commit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ba3ecd4e45508191a680ca27bdd6a069",
+      "deployment_id": "appgdep_6af9940779a48191b144b16385a388f6"
+    },
+    "demo_6_unchanged": true,
+    "older_versions_including_32_31_retained": true,
+    "rollback_performed_on_production": false,
+    "backend_rollback_refuses_configured_licenses": true,
+    "empty_rollback_preserves_durable_late_write_fence": true
+  },
+  "package": {
+    "artifact_id": 14173700930,
+    "artifact_zip_sha256": "52b1a7a9c45e9557e371acb1d855536b6f758c678bcf24f46250f56c47ddd2b4",
+    "gzip": {
+      "name": "truckcontrol-production-4cb1e430fa5530c5b27b17e9dbb2515146d779ab.tar.gz",
+      "bytes": 1533119,
+      "sha256": "8856f471c9cfe874e8daea805c32bd429295d7384150598de6eee92f263088e6"
+    },
+    "sites_normalized_tar": {
+      "sha256": "f32c6a1d3c806daa6d7de4ff00e63804d04a70db21cde0b3858a84dec064bf3a",
+      "bytes": 3358720,
+      "files": 32
+    },
+    "different_container_formats_not_compared_as_equal": true
+  },
+  "resolved_regression": {
+    "rejected_unpublished_source": "584b0a7a15d5d3d16d23416179a46c8a750ce33a",
+    "failed_saas_cases": 56,
+    "cause": "global Root bootstrap incorrectly waited for company membership metadata",
+    "fix_original_commit": "3d98834827c436caf9a6f3b56c30b854faf390fc",
+    "fix_composed_commit": "97581585967512015fbaaa7ad685a75523b70758",
+    "historical274_fixtures_and_assertions_preserved": true,
+    "fix_does_not_weaken_company_gating": true
+  },
+  "commercial_model": {
+    "initial_model": "manual Full activation by global superadministrator per organization",
+    "automatic_stripe_charges": "disabled",
+    "stripe_live_acceptance_is_initial_manual_launch_gate": false,
+    "license_change_is_payment_or_invoice": false,
+    "fiscal_process": "existing agreed external manual ELEVADANCOR GDTaller/TicketBAI process; no real invoice created by this update",
+    "role_security_suspensions_provider_consents_and_ai_limits_preserved": true
+  },
+  "android_windows": {
+    "pwa_emulation_passed": true,
+    "android_version_code": 7,
+    "android_version_name": "0.5.28-rc.1",
+    "signed_commercial_apk": false,
+    "google_play_published": false,
+    "debug_apk_and_unsigned_aab_from_ci": "43743541588",
+    "physical_android_windows_available": false
+  },
+  "costs": {
+    "new_charges_eur": 0,
+    "new_purchases": 0,
+    "new_recurring_commitments": 0,
+    "new_model_calls": 0,
+    "total_authorized_budget_eur": 200,
+    "historical_spend_and_remaining": "unreconciled; do not assume200EUR remains",
+    "preserved_ai_monthly_budget_usd": 10,
+    "preserved_ai_calls_per_company": 100
+  },
+  "limitations": [
+    "Disconnected copies and previously downloaded bytes cannot be remotely recalled; encrypted lease max7days, shortened by known manual expiry; new sync/server operations revalidate.",
+    "Previously issued signed URLs retain their existing TTL.",
+    "Google public verification and enterprise mailbox acceptance remain separate optional integration work; no new mailbox consent/provider call was performed.",
+    "Managed Auth/Storage/Vault restore, commercial Android signing/Play and physical-device acceptance remain pending.",
+    "External legal/fiscal acceptance is not invented; no fiscal invoice or real payment was simulated.",
+    "Future Stripe LIVE/automatic-billing acceptance remains disabled and is not an initial manual-license gate.",
+    "Optional MFA candidatePR149 remains draft/unapplied and is not included."
+  ]
+}

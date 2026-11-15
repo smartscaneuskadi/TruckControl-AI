@@ -1,0 +1,12 @@
+{
+  "verified_native_source": "584b0a7a15d5d3d16d23416179a46c8a750ce33a",
+  "corrected_frontend_source": "4cb1e430fa5530c5b27b17e9dbb2515146d779ab",
+  "changed_paths": [
+    "src/app/CommercialSession.tsx",
+    "tests/manual-full-browser/fixture.ts",
+    "tests/manual-full-browser/manual-full.spec.ts"
+  ],
+  "backend_and_native_harness_unchanged": true,
+  "verified_sql_sha256": "ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c",
+  "native74_not_reapplied": true
+}
