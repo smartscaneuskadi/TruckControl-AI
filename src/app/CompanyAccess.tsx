@@ -429,6 +429,9 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
           key={`${account.user?.id ?? "visitor"}:${recovery ? "recovery" : (organization?.id ?? "no-company")}`}
           user={account.user}
           organizationId={organization?.id}
+          companiesReady={account.loaded}
+          companyError={error}
+          onRetryCompanies={() => setRevision((n) => n + 1)}
           initialView={entryView}
           plan={entryPlan}
           recovery={recovery}

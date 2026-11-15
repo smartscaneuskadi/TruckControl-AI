@@ -152,6 +152,19 @@ export function OfflineSettings() {
         : await VaultSession.create(scope, passphrase,
             offlinePayload(fleet.snapshot, operations.rows, access), controller.signal);
       if (!active(version, controller, scopeKey)) { next.lock(); return; }
+      if (existing) {
+        await next.update(
+          (value) => ({
+            ...offlinePayload(value.snapshot, value.operations, access),
+            outbox: value.outbox,
+          }),
+          controller.signal,
+        );
+        if (!active(version, controller, scopeKey)) {
+          next.lock();
+          return;
+        }
+      }
       next.assertUnlocked();
       offline.attach(next);
       setPassphrase("");

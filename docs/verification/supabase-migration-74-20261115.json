@@ -1,0 +1,300 @@
+{
+  "observed_at": "2026-11-15 17:03:24 UTC",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migration_count": 74,
+  "migration": {
+    "name": "company_manual_full_licenses",
+    "version": "20261115170051",
+    "sql_sha256": "ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c",
+    "statement_count": 1,
+    "canonical_file": "supabase/migrations/20261115170051_company_manual_full_licenses.sql",
+    "candidate_file_before_application": "supabase/migrations/20261115161323_company_manual_full_licenses.sql",
+    "byte_identical": true,
+    "official_apply_succeeded": true,
+    "applied_once": true,
+    "do_not_reapply": true
+  },
+  "before_metadata": [
+    {
+      "kind": "functions",
+      "metadata": [
+        {
+          "acl": [
+            "postgres=X/postgres",
+            "service_role=X/postgres"
+          ],
+          "oid": "17931",
+          "name": "gmail_server(text,jsonb)",
+          "body_md5": "6c072ff46cd76da64b641ab0a8bcdcf7",
+          "security_definer": false
+        },
+        {
+          "acl": [
+            "postgres=X/postgres",
+            "service_role=X/postgres"
+          ],
+          "oid": "18084",
+          "name": "private.tc_user_access(uuid)",
+          "body_md5": "88a32bd17730eedde1672b09b65401f1",
+          "security_definer": true
+        },
+        {
+          "acl": [
+            "postgres=X/postgres",
+            "authenticated=X/postgres"
+          ],
+          "oid": "18085",
+          "name": "private.tc_account_active(uuid)",
+          "body_md5": "533ab690fbd7fe74419c99696168f3d9",
+          "security_definer": true
+        },
+        {
+          "acl": [
+            "postgres=X/postgres"
+          ],
+          "oid": "18097",
+          "name": "private.tc_truck_limit()",
+          "body_md5": "1406e528d82ea16f433a5098709496fc",
+          "security_definer": true
+        },
+        {
+          "acl": [
+            "postgres=X/postgres",
+            "service_role=X/postgres"
+          ],
+          "oid": "18187",
+          "name": "private.tc_organization_access_for(uuid,uuid)",
+          "body_md5": "79f786304f81a82222f63097dfd6fb29",
+          "security_definer": true
+        }
+      ]
+    },
+    {
+      "kind": "settings",
+      "metadata": {
+        "enforce_access": true,
+        "payments_enabled": false,
+        "registration_open": true,
+        "prices_are_examples": true
+      }
+    },
+    {
+      "kind": "manual_candidate",
+      "metadata": {
+        "rpc_exists": false,
+        "audit_exists": false,
+        "licenses_exist": false
+      }
+    }
+  ],
+  "after_metadata": [
+    {
+      "kind": "migration",
+      "metadata": {
+        "name": "company_manual_full_licenses",
+        "version": "20261115170051",
+        "sql_sha256": "ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c",
+        "statement_count": 1
+      }
+    },
+    {
+      "kind": "functions",
+      "metadata": [
+        {
+          "oid": "17931",
+          "name": "gmail_server(text,jsonb)",
+          "config": [
+            "search_path=\"\""
+          ],
+          "body_md5": "00fa475e88c717cffecdedec592dd3b4",
+          "anon_execute": false,
+          "service_execute": true,
+          "security_definer": false,
+          "authenticated_execute": false
+        },
+        {
+          "oid": "18084",
+          "name": "private.tc_user_access(uuid)",
+          "config": [
+            "search_path=\"\""
+          ],
+          "body_md5": "047eb67dcdcd066dd755e451fbae9389",
+          "anon_execute": false,
+          "service_execute": true,
+          "security_definer": true,
+          "authenticated_execute": false
+        },
+        {
+          "oid": "18085",
+          "name": "private.tc_account_active(uuid)",
+          "config": [
+            "search_path=\"\""
+          ],
+          "body_md5": "cb8465c6eef91273d2ec22ebc4c2d9cb",
+          "anon_execute": false,
+          "service_execute": false,
+          "security_definer": true,
+          "authenticated_execute": true
+        },
+        {
+          "oid": "18097",
+          "name": "private.tc_truck_limit()",
+          "config": [
+            "search_path=\"\""
+          ],
+          "body_md5": "1e03a13fcd5ae5292c66f80732686809",
+          "anon_execute": false,
+          "service_execute": false,
+          "security_definer": true,
+          "authenticated_execute": false
+        },
+        {
+          "oid": "18187",
+          "name": "private.tc_organization_access_for(uuid,uuid)",
+          "config": [
+            "search_path=\"\""
+          ],
+          "body_md5": "1ab3f4ecf190fe49ac7a53c3758a699b",
+          "anon_execute": false,
+          "service_execute": true,
+          "security_definer": true,
+          "authenticated_execute": false
+        },
+        {
+          "oid": "20072",
+          "name": "private.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)",
+          "config": [
+            "search_path=\"\""
+          ],
+          "body_md5": "574867d77a2c10e3d37c9cf4c5d91b1c",
+          "anon_execute": false,
+          "service_execute": false,
+          "security_definer": true,
+          "authenticated_execute": true
+        },
+        {
+          "oid": "20076",
+          "name": "tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)",
+          "config": [
+            "search_path=\"\""
+          ],
+          "body_md5": "f6986d4c894334329956a08fdd3e1a18",
+          "anon_execute": false,
+          "service_execute": true,
+          "security_definer": false,
+          "authenticated_execute": true
+        }
+      ]
+    },
+    {
+      "kind": "rollout",
+      "metadata": {
+        "licenses": 0,
+        "audit_entries": 0,
+        "enforce_access": true,
+        "payments_enabled": false,
+        "registration_open": true,
+        "prices_are_examples": true
+      }
+    },
+    {
+      "kind": "rls",
+      "metadata": [
+        {
+          "rls": true,
+          "table": "private.tc_company_full_licenses",
+          "anon_select": false,
+          "authenticated_select": false
+        },
+        {
+          "rls": true,
+          "table": "private.tc_company_full_audit",
+          "anon_select": false,
+          "authenticated_select": false
+        }
+      ]
+    }
+  ],
+  "advisors": {
+    "lints": [
+      {
+        "name": "rls_enabled_no_policy",
+        "title": "RLS Enabled No Policy",
+        "level": "INFO",
+        "facing": "EXTERNAL",
+        "categories": [
+          "SECURITY"
+        ],
+        "description": "Detects cases where row level security (RLS) has been enabled on a table but no RLS policies have been created.",
+        "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy",
+        "count": 3,
+        "findings": [
+          {
+            "detail": "Table \\`private.tc_company_full_audit\\` has RLS enabled, but no policies exist",
+            "metadata": {
+              "name": "tc_company_full_audit",
+              "type": "table",
+              "schema": "private"
+            },
+            "observed_at": "2026-11-15T17:02:03.312Z"
+          },
+          {
+            "detail": "Table \\`private.tc_specialist_test_organizations\\` has RLS enabled, but no policies exist",
+            "metadata": {
+              "name": "tc_specialist_test_organizations",
+              "type": "table",
+              "schema": "private"
+            },
+            "observed_at": "2026-11-15T17:02:03.312Z"
+          },
+          {
+            "detail": "Table \\`private.tc_specialist_verifications\\` has RLS enabled, but no policies exist",
+            "metadata": {
+              "name": "tc_specialist_verifications",
+              "type": "table",
+              "schema": "private"
+            },
+            "observed_at": "2026-11-15T17:02:03.312Z"
+          }
+        ]
+      }
+    ]
+  },
+  "isolated_acceptance": {
+    "native_run": 43736219689,
+    "native_source": "553c08bdf25d5417e1c63cbb8c0d98142a193994",
+    "manual_checks": 200,
+    "existing_recovery_checks": 67,
+    "all_passed": true,
+    "real_manual_lock_races": 4,
+    "postgres_pr_head": "a248e8f945af4e4a94db1c104d561dc0c2029f34",
+    "postgres_tested_merge": "6330156b638fe367e244810020d24cc30e42d14b",
+    "postgres_checks": 399,
+    "postgres_pr_run": 43737870488,
+    "postgres_run": 43737864796,
+    "postgres_source": "a248e8f945af4e4a94db1c104d561dc0c2029f34",
+    "postgres_receipt": "docs/verification/company-manual-full-postgres-20261115.json"
+  },
+  "rollout": {
+    "existing_licenses_changed": 0,
+    "companies_auto_granted_full": 0,
+    "automatic_charges": "disabled",
+    "stripe_launch_gate": "future acceptance only; not an initial manual-subscription requirement",
+    "frontend_still_public_version": 45,
+    "demo_version_preserved": 6,
+    "mfa_candidate_applied": false
+  },
+  "recovery": {
+    "file": "docs/verification/company-manual-full-function-rollback.sql",
+    "requires_reviewed_official_approval": true,
+    "refuses_configured_company": true,
+    "empty_table_rollback_leaves_durable_write_fence": true,
+    "requires_forward_migration_to_restore_capability": true,
+    "executed_on_production": false
+  },
+  "costs": {
+    "new_purchases": 0,
+    "new_model_calls": 0,
+    "remaining_historical_200_eur": "unreconciled"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-11-15T17:07:06.943099+00:00",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migration_count": 74,
+  "rpc": "tc_admin_company_full",
+  "results": [
+    {
+      "check": "anonymous",
+      "status": 401,
+      "code": "42501",
+      "passed": true
+    },
+    {
+      "check": "invalid_session",
+      "status": 401,
+      "code": "PGRST301",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "real_identities_created": 0,
+  "data_mutations": 0,
+  "provider_calls": 0,
+  "positive_admin_session_verified": false
+}
