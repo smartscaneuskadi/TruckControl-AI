@@ -20,6 +20,9 @@ correctos, en Android/Windows emulados y ambos temas, incluyendo API ausente,
 error síncrono, rechazo asíncrono/reintento y copia correcta. El portapapeles es
 ficticio y se bloquea cualquier HTTP/WebSocket externo no interceptado.
 
-Las pruebas completas y la fuente de producción exacta deben validarse antes
-de publicar. No se presenta como prueba en dispositivos físicos, una entrega
-real de correo ni una activación de la migración SQL pendiente.
+Publicada como Sites45 / 0.5.27-rc.1 el 15/11/2026. CI de la fuente exacta
+43706778964 SUCCESS; los 16 casos de copia también pasan contra el bundle
+público, dentro de 84 regresiones sin fallos. Se verificaron 75 hashes HTTPS y
+seis perfiles PWA. [Recibo](verification/commercial-safe-update45-20261115.json).
+No se presenta como prueba en dispositivos físicos, entrega real de correo ni
+activación de la migración SQL pendiente. Producción44 y demo6 conservadas.
