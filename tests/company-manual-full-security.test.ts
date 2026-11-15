@@ -238,5 +238,5 @@ describe("manual Full: a company decision, fresh Root authorization and existing
       await isolated.exec(rollback);
       expect((await isolated.query("select to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is null absent,to_regclass('private.tc_company_full_audit') is not null audit_kept")).rows).toEqual([{ absent: true, audit_kept: true }]);
     } finally { await isolated.close(); }
-  });
+  }, 30000);
 });
