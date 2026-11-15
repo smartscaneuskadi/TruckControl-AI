@@ -24,3 +24,23 @@ export function stripeQaEnvironment(parent) {
   }
   return env;
 }
+
+// The first synthetic sandbox script uses legacy CLI verbs rather than the
+// canonical `get/post/delete /v1/...` form. Its scope is deliberately fixed:
+// account reads and only the four already-reviewed synthetic write operations.
+// The return value is true for a mutation, so callers must recheck identity.
+export function requireStripeQaLegacyArguments(args) {
+  if (!Array.isArray(args) || args.some(value => typeof value !== "string"))
+    throw Error("Invalid Stripe QA command");
+  if (args[0] === "get" || args[0] === "whoami") {
+    requireStripeQaArguments(args);
+    return false;
+  }
+  const verb = args[0] + ":" + args[1];
+  if (![ "customers:create", "subscriptions:create", "subscriptions:cancel", "refunds:create" ].includes(verb))
+    throw Error("Unreviewed Stripe QA mutation refused");
+  // Reuse the canonical guard for every extra CLI flag, rejecting --live,
+  // --api-key, --stripe-account, --profile, --config and routing overrides.
+  requireStripeQaArguments(["get", "/v1/qa-command-check", ...args.slice(2)]);
+  return true;
+}
