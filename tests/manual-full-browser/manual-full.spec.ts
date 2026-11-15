@@ -12,6 +12,45 @@ import {
   broadcast,
 } from "./fixture";
 
+test("Root management does not depend on the membership list being available", async ({ page, context }) => {
+  const f = await fixture(context);
+  f.controls.orgUnavailable = true;
+  await login(page);
+  await openCompanies(page);
+  await expect(page.getByRole("article", { name: "Empresa A", exact: true })).toBeVisible();
+  expect(f.calls.some(c => c.path.endsWith("tc_finish_registration"))).toBe(true);
+  expect(f.calls.some(c => c.path.endsWith("tc_organization_access") || c.path === "/rest/v1/trucks")).toBe(false);
+  expect(f.blocked).toEqual([]);
+});
+
+test("a fresh non-Root bootstrap closes stale Root management while membership is unavailable", async ({ page, context }) => {
+  const f = await fixture(context);
+  f.controls.orgUnavailable = true;
+  await login(page);
+  await openCompanies(page);
+  f.controls.rootAuthorized = false;
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await expect(page.getByRole("heading", { name: "Preparando tu acceso", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tu centro de administración", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Activar Pack Full", exact: true })).toHaveCount(0);
+  expect(f.calls.some(c => c.path.endsWith("tc_organization_access") || c.path === "/rest/v1/trucks")).toBe(false);
+  expect(f.blocked).toEqual([]);
+});
+
+for (const activeTrial of [false, true]) test(`a company user waits for membership before the ${activeTrial ? "active" : "expired"} global trial can render business or billing`, async ({ page, context }) => {
+  const f = await fixture(context);
+  f.controls.orgUnavailable = true;
+  f.controls.ownerTrialActive = activeTrial;
+  f.change(orgA, true);
+  await login(page, "owner");
+  await expect(page.getByRole("heading", { name: "Preparando tu acceso", exact: true })).toBeVisible();
+  await expect(page.getByRole("alert")).toContainText("No se han podido cargar tus empresas");
+  await expect(page.getByRole("heading", { name: "Elige cómo quieres continuar", exact: true })).toHaveCount(0);
+  expect(f.calls.some(c => c.path.endsWith("tc_organization_access") || c.path === "/rest/v1/trucks")).toBe(false);
+  expect(f.calls.some(c => c.body?.action === "checkout")).toBe(false);
+  expect(f.blocked).toEqual([]);
+});
+
 test("Root activates Full for one company, with audit and no payment request", async ({
   page,
   context,

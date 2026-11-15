@@ -63,6 +63,8 @@ export async function fixture(context: BrowserContext) {
     ackPending: false,
     releaseAck: () => {},
     orgDelay: 0,
+    orgUnavailable: false,
+    rootAuthorized: true,
   };
   const now = () => new Date(Date.now() + controls.offset).toISOString();
   const overrides = new Map<string, Omit<ManualFullState, "status">>();
@@ -182,7 +184,7 @@ export async function fixture(context: BrowserContext) {
       for (const key of Object.keys(features))
         features[key as keyof typeof features] = false;
     return {
-      is_admin: id === root,
+      is_admin: id === root && controls.rootAuthorized,
       active,
       features,
       profile: id === root ? null : profile(id),
@@ -308,6 +310,7 @@ export async function fixture(context: BrowserContext) {
             company.owner === id || (id === member && company.id === orgA),
         )
         .map((company) => ({ id: company.id, name: company.name }));
+      if (controls.orgUnavailable) { status = 503; data = { code: "PGRST000" }; }
     } else if (path === "/rest/v1/rpc/tc_finish_registration")
       data = access(id ?? owner, null, true);
     else if (path === "/rest/v1/rpc/tc_organization_access") {
@@ -335,7 +338,7 @@ export async function fixture(context: BrowserContext) {
         invoices: [],
       };
     else if (path === "/rest/v1/rpc/tc_admin_control") {
-      if (id !== root) {
+      if (id !== root || !controls.rootAuthorized) {
         status = 403;
         data = { code: "42501" };
       } else
@@ -354,7 +357,7 @@ export async function fixture(context: BrowserContext) {
           audit: [],
         };
     } else if (path === "/rest/v1/rpc/tc_admin_company_full") {
-      if (id !== root) {
+      if (id !== root || !controls.rootAuthorized) {
         status = 403;
         data = { code: "42501", message: "Private root-only diagnostic" };
       } else if (body?.p_action === "capabilities")
