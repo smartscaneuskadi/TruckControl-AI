@@ -33,7 +33,7 @@ export function normalizeMonitorReport(raw, { expectedSource, now = Date.now() }
     !("checks" in report)
   ) return { passed: false, code: "monitor_configuration_failed" };
   const checkedAt = typeof report.checked_at === "string" &&
-    /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$/.test(report.checked_at)
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(report.checked_at)
     ? Date.parse(report.checked_at) : NaN;
   // The observer has a three-minute job timeout. Allow ten minutes for
   // scheduling, clock skew and upload, but never trust an old success.
