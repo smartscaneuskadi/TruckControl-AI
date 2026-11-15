@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { listMonitorItems } from "./lib/monitor-incident-pagination.mjs";
 const repository = "smartscaneuskadi/TruckControl-AI";
 if (
   process.env.GITHUB_REPOSITORY !== repository ||
@@ -45,7 +46,7 @@ async function api(path, method = "GET", data) {
   return r.status === 204 ? null : r.json();
 }
 try {
-  const issues = await api("issues?state=open&per_page=100");
+  const issues = await listMonitorItems(api, "issues?state=open");
   const issue = issues.find(
     (i) =>
       !i.pull_request &&
@@ -80,8 +81,9 @@ try {
       "\n```\nSolo disponibilidad HTTP; sin consultas IA de pago,envíos o cambios en empresas.";
     if (!issue) await api("issues", "POST", { title, body });
     else {
-      const comments = await api(
-        "issues/" + issue.number + "/comments?per_page=100",
+      const comments = await listMonitorItems(
+        api,
+        "issues/" + issue.number + "/comments",
       );
       const last = [...comments]
         .reverse()
