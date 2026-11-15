@@ -22,8 +22,14 @@ La facturación de ELEVADANCOR S.L. conserva el procedimiento manual de GDTaller
 
 La nueva migración debe probarse de forma aislada, revisarse y aplicarse una sola vez mediante la confirmación oficial de Supabase. No repetir las 73 migraciones previas. Mantener el frontend anterior y la demo independientes. No publicar el manifiesto de demo de main como producción.
 
-La recuperación de funciones debe rechazar una retirada de los controles de licencia si ya existen decisiones manuales. Volver a un frontend anterior no autoriza a eliminar las licencias, su auditoría ni las barreras del servidor. Conservar todos los datos de empresa.
+La recuperación de funciones debe rechazar una retirada de los controles de licencia si ya existen decisiones manuales. Si todavía no existe ninguna decisión, el procedimiento deja una barrera persistente contra escrituras de licencia para impedir que una solicitud anterior, que estaba esperando un bloqueo, termine después de restaurar las funciones. Retirar esa barrera requiere otra migración revisada que restablezca antes los permisos; nunca repetir la migración original. Volver a un frontend anterior no autoriza a eliminar las licencias, su auditoría ni las barreras del servidor. Conservar todos los datos de empresa.
 
 ## Verificación aislada del servidor
 
 El [recibo nativo](verification/company-manual-full-native-20261115.json) confirma 200/200 controles del Pack FULL y 67/67 controles de recuperación previos en la ejecución [43736219689](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43736219689), fuente `553c08b`. Auth oficial, PostgreSQL, PostgREST y almacenamiento reales, con usuarios y empresas ficticios. Incluye permisos, aislamiento de empresas del mismo propietario, vencimiento, reactivación, documentos privados, auditoría, idempotencia y cupo de 50 camiones. No se alteró producción ni se efectuaron llamadas a proveedores, Stripe o IA. Este recibo acredita el servidor ensayado; no acredita todavía la publicación de la nueva interfaz.
+
+La [aceptación PostgreSQL](verification/company-manual-full-postgres-20261115.json), ejecución `43737864796` sobre la fuente exacta `a248e8f`, confirma 399 controles, con cuatro carreras nuevas entre procesos reales y dos restauraciones lógicas aisladas. El recorrido de rollback impide que una petición ya en ejecución cree una licencia después de restaurar las funciones. No es una restauración de la plataforma gestionada.
+
+## Migración aplicada
+
+La confirmación oficial de Supabase instaló una sola vez `20261115170051_company_manual_full_licenses`, migración 74, con SQL SHA256 `ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c`, idéntico al candidato ensayado. [Correspondencia nativa y permisos](verification/supabase-migration-74-20261115.json). No repetirla. Los registros de licencia y auditoría estaban vacíos tras aplicar: no se ha concedido ni retirado FULL automáticamente a empresas existentes. Registro y RLS continúan activos; cobros automáticos apagados. La publicación del panel se registra por separado.

@@ -1,0 +1,344 @@
+{
+  "source_commit": "a248e8f945af4e4a94db1c104d561dc0c2029f34",
+  "workflow_head_commit": "a248e8f945af4e4a94db1c104d561dc0c2029f34",
+  "merge_base_commit": null,
+  "workflow_run": 43737864796,
+  "artifact_id": 14171770713,
+  "zip_sha256": "a42eb79f08dd481fe977b1f96da5e75efd74a9e114fc6a7dc064fd6e383370be",
+  "artifact_verified": true,
+  "passed_checks": 399,
+  "reports": {
+    "financial-incidents-report.json": {
+      "source_commit": "a248e8f945af4e4a94db1c104d561dc0c2029f34",
+      "passed": true,
+      "passed_checks": 265,
+      "reported_passed_checks": 265,
+      "manual_checks": [
+        {
+          "name": "Manual Full: zero-record function rollback executes with old guard and immutable tables retained",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: unconfigured company retains its legacy trial and metadata",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: expired same-owner sibling and other owner are isolated without global user entitlement",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: bootstrap admits a scoped Full company but keeps legacy per-user plan/features",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF wins even with legacy enforce_access=false; raw UPDATE without RETURNING cannot write",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF company rename is blocked without RETURNING",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF document RPC denies original access",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF operational RPC is denied",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF storage insert cannot create a fresh original",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: exact server expiry boundary is expired and denies operations",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: reactivation from past expiry is immediate and NULL expiry is unlimited",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: company admin cannot self-grant with forged user metadata",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: existing admin permissions survive Full",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: company operator cannot self-grant with forged user metadata",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: existing operator permissions survive Full",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: company viewer cannot self-grant with forged user metadata",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: existing viewer permissions survive Full",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: Root metadata read rejects missing native SID",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: Root metadata read rejects other user's native SID",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: Root metadata read rejects malformed native SID",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: unavailable Auth Root cannot read or mutate banned_until=now()+interval '1 day'",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: unavailable Auth Root cannot read or mutate deleted_at=now()",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: unavailable Auth Root cannot read or mutate email_confirmed_at=null",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: revoked global Root cannot mutate even with old Auth metadata",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: global management remains available while Root company is OFF",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: explicit security suspension remains authoritative for owner",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: explicit security suspension remains authoritative for member",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: banned native actor cannot use company status RPC",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: owner's live Auth ban also blocks an otherwise valid member",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: global module and company-owner restrictions remain authoritative",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: service background guard, AI reservation and both Gmail acquisition paths deny OFF",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: a permitted fenced worker can acquire the existing synthetic connection",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: disable revokes an already acquired worker capability",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: disable prevents an acquired fenced worker from committing an invoice",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: denied worker may release only its lease, without cursor/status/sync mutations",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF blocks legacy Gmail credentials",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF blocks fenced Gmail original import",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF blocks inbound company mail",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: OFF blocks company copilot",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: plan alone never opts in to AI or enables provider consent",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: preexisting AI consent still obeys the 100-call company cap",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: 50-truck limit accepts its upper boundary even when plan max is NULL",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: 51st truck is denied with Full plan max NULL",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: ordinary client cannot use raw licence/audit/internal helpers",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: ordinary client cannot use raw licence/audit/internal helpers",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: ordinary client cannot use raw licence/audit/internal helpers",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: ordinary client cannot use raw licence/audit/internal helpers",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: service worker cannot self-grant through the Root RPC",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: service worker cannot write the private licence table",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: rollback-only permission, business and quota cases leave no persisted drift",
+          "passed": true
+        },
+        {
+          "name": "company-full-rollback-inflight-controller: distinct backends and real row-lock contention",
+          "passed": true,
+          "holder_pid": 10845,
+          "contender_pid": 10866,
+          "observed_wait": "Lock",
+          "blocking_pids": [
+            10845
+          ]
+        },
+        {
+          "name": "company-full-rollback-inflight-controller: stale contender rejected",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: successful rollback durably fences an in-flight initial controller without a decision/audit",
+          "passed": true
+        },
+        {
+          "name": "company-full-first-cas: distinct backends and real row-lock contention",
+          "passed": true,
+          "holder_pid": 10932,
+          "contender_pid": 10952,
+          "observed_wait": "Lock",
+          "blocking_pids": [
+            10932
+          ]
+        },
+        {
+          "name": "company-full-first-cas: stale contender rejected",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: concurrent first CAS commits one immutable revision",
+          "passed": true
+        },
+        {
+          "name": "company-full-operation-replay: distinct backends and real row-lock contention",
+          "passed": true,
+          "holder_pid": 10987,
+          "contender_pid": 11016,
+          "observed_wait": "Lock",
+          "blocking_pids": [
+            10987
+          ]
+        },
+        {
+          "name": "company-full-operation-replay: both serialized deliveries committed",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: identical concurrent operation UUID replays exactly once",
+          "passed": true
+        },
+        {
+          "name": "company-full-operation-cross-company: distinct backends and real row-lock contention",
+          "passed": true,
+          "holder_pid": 11053,
+          "contender_pid": 11073,
+          "observed_wait": "Lock",
+          "blocking_pids": [
+            11053
+          ]
+        },
+        {
+          "name": "company-full-operation-cross-company: stale contender rejected",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: cross-company operation conflict changes only the winning company",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: lost-ACK retry after a newer OFF decision returns current state without resurrection",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: history captures fresh Auth actor email/time and ordered immutable before/after",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: audit rejects owner mutation update",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: audit rejects owner mutation delete",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: audit rejects owner mutation truncate",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: function-only rollback refuses configured records including explicit OFF",
+          "passed": true
+        },
+        {
+          "name": "Manual Full: all commercial/payment/security switches retain their original values",
+          "passed": true
+        }
+      ],
+      "manual_company_full": {
+        "provider_calls": 0,
+        "payment_mutations": 0,
+        "synthetic_licence_decisions": true,
+        "real_lock_races": 4,
+        "managed_supabase_acceptance": false,
+        "native_auth_storage_acceptance": "separate harness"
+      }
+    },
+    "gmail-sync-report.json": {
+      "source_commit": "a248e8f945af4e4a94db1c104d561dc0c2029f34",
+      "passed": true,
+      "passed_checks": 36,
+      "reported_passed_checks": 36,
+      "manual_checks": [],
+      "manual_company_full": null
+    },
+    "report.json": {
+      "source_commit": "a248e8f945af4e4a94db1c104d561dc0c2029f34",
+      "passed": true,
+      "passed_checks": 98,
+      "reported_passed_checks": 98,
+      "manual_checks": [],
+      "manual_company_full": null
+    }
+  }
+}
