@@ -60,6 +60,16 @@ describe("monitor health artifact integrity before GitHub incident reporting", (
       expect(normalizeMonitorReport(JSON.stringify(value))).toEqual({ passed: false, code: "invalid_monitor_report" });
     }
   });
+  it("rejects forged success booleans with failed HTTP outcomes", () => {
+    for (const index of [0, 3, 4]) {
+      const bad = fixture();
+      bad.checks[index].code = "request_failed";
+      expect(normalizeMonitorReport(JSON.stringify(bad))).toEqual({ passed: false, code: "invalid_monitor_report" });
+    }
+    const badGateway = fixture();
+    badGateway.checks[4].status = 500;
+    expect(normalizeMonitorReport(JSON.stringify(badGateway))).toEqual({ passed: false, code: "invalid_monitor_report" });
+  });
   it("rejects contradictory aggregate status and malformed JSON", () => {
     const inconsistent = fixture();
     inconsistent.checks[0].passed = false;
