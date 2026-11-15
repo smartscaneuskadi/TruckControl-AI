@@ -1,3 +1,13 @@
+## Supabase73 aplicada oficialmente · 15/11/2026 14:31 UTC
+
+**73 migraciones verificadas.** La aprobación oficial del titular aplicó una sola vez `20261115143030_subscription_reserved_quote_recovery`; SQL SHA256 `66ee43f73b8b0f6c5c329874d4a56c66f5e4409d5a8791ca7b1f3a5dfee0664d`, idéntico al candidato probado. El archivo local se renombra al timestamp remoto sin cambiar bytes. **No repetir73,68–72 ni#37.** Los estados anteriores «SQL73 pendiente» quedan como historia.
+
+`tc_recurring_billing` conservaOID18420,SECURITYINVOKER yACL:anon/auth sinEXECUTE,service_role conEXECUTE. BodyMD5nuevo414a74828f8a133afc705ac84baea010. RegistroON/enforceON/cobrosOFF;0WARN/ERROR+2INFO deny-all. Fuente exacta previa43706778964 yPostgreSQL43706779034 SUCCESS; la reconciliación de nombre se verifica por separado, sin nueva llamada de pago/proveedor.
+
+Sites45/0.5.27-rc.1 ydemo6 conservados; no nuevo desplieguefrontend. PR145 ya integrado en f1eee9f6825e0b89a178d0f264ebbbe2a66b4522 conCI43708812503/43708781307 SUCCESS; mejora independientePR146/c87a1bf preservada. El frenteMFA de#50 está en ramas candidatas con rolloutOFF, no activo. Persisten aceptaciones Stripe/fiscal,Google,restore gestionado,firma/hardware/jurídica. Sin cargos,contrataciones o llamadasIA nuevas; saldo200EUR histórico desconocido. No declarar lanzamiento comercial.
+
+[Recibo y correspondencia nativa](docs/verification/supabase-migration-73-20261115.json).
+
 ## Actualización segura45 publicada y verificada · 15/11/2026 UTC
 
 https://truckcontrolai.com: **Sites45 / 0.5.27-rc.1**, fuente `9dd41d99aadacda961eb772f60439297d6aaa4c5`, despliegue `appgdep_6af9940779a48191b144b16385a388f6` SUCCEEDED. PR144 integrado en `e9819a124e1621704970bea6d688ec9958a7de6a`; PR141/142 independientes conservados. Copiar la dirección privada de reenvío ya controla API ausente, error síncrono y reintento sin avisos antiguos. Misma dirección, permisos y economía.

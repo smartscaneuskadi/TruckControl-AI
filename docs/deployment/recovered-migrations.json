@@ -182,6 +182,13 @@
       "name": "truck_second_driver",
       "sha256": "dedceb1ce213bb3ed8f923de385303d251e53402522d143a55076245dc3f0375",
       "already_applied": true
+    },
+    {
+      "file": "supabase/migrations/20261115143030_subscription_reserved_quote_recovery.sql",
+      "version": "20261115143030",
+      "name": "subscription_reserved_quote_recovery",
+      "sha256": "66ee43f73b8b0f6c5c329874d4a56c66f5e4409d5a8791ca7b1f3a5dfee0664d",
+      "already_applied": true
     }
   ]
 }
