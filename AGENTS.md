@@ -1,3 +1,9 @@
+## Supabase75 aplicada oficialmente · 15/11/2026 22:14 UTC
+
+La confirmación oficial instaló una sola vez `20261115221404_optional_totp_session_protection`, migración75, SQL SHA256 `b830a21224d64acffeb3dedc1938b8676aa131db4e4347914c35ea01fd387be7`, idéntico al candidato aislado. Se renombra únicamente el archivo para coincidir con el historial; no cambian sus bytes. **No repetir75/74/73/68–72/#37 ni editar su SQL.** Se conservan OID/ACL de las tres rutinas modificadas; wrapper público INVOKER y funciones privadas con search_path vacío. RegistroON/accesoexigido/cobrosOFF;0WARN/ERROR+3INFOdeny-all.0factoresTOTPverificados y0licencias/auditorías manuales: no se activan cuentas, pagos ni proveedores automáticamente.
+
+Producción sigueSites46/0.5.28-rc.1, demo6 intacta; interfazTOTP candidata0.5.29 enPR149, aún sin publicar. La corrección de renovación baseline pasa90MFA+274SaaS sin omisiones/flaky, manteniendo todas las negativas previas. Auth real aislado192TOTP+200Full+67Recovery y PostgreSQL481(43contenciones/2restores) acreditan el backend; no son dispositivos físicos ni recuperación gestionada. La retirada de enforcement se rechaza siempre y exige una migración forward futura; recuperar con una compilación MFA-capaz y altasOFF, sin borrar factores. Stripe sigueOFF y no bloquea el modelo manual. Nuevos gastos/modelos0; saldo histórico200EUR sin conciliar. [Recibo nativo75](docs/verification/supabase-migration-75-20261115.json).
+
 ## Candidata MFA y FULL en revisión · 15/11/2026 UTC
 
 Trabajo retomado en PR149, rama `feat/optional-totp-20261115`, conservando main `faddd9a5` y la publicación Sites46/0.5.28-rc.1. La candidata 0.5.29-rc.1 reutiliza TOTP nativo y conserva los controles FULL de74. SQL `20261115212500_optional_totp_session_protection.sql` **NO aplicada**; las74 migraciones existentes son inmutables. No presentar TOTP nuevo como activo ni repetir74/73/68–72/#37. Registro/aislamiento vigentes, Stripe/cobrosOFF.

@@ -1,3 +1,5 @@
+Estado nativo actualizado: migración75 `20261115221404_optional_totp_session_protection` aplicada una sola vez; [recibo y ACL](verification/supabase-migration-75-20261115.json). No repetirla. La interfaz0.5.29 sigue candidata hasta registrar su despliegue por separado.
+
 # Candidata de autenticación TOTP nativa
 
 La candidata `0.5.29-rc.1` se integra sobre la suscripción manual publicada en Sites46 / `0.5.28-rc.1`. No publica cambios, activa proveedores ni modifica secretos. `VITE_MFA_ENROLLMENT_ENABLED` queda desactivado por defecto; el fichero de ejemplo declara `false`.
