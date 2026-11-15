@@ -6,9 +6,13 @@ on:
     paths:
       - ".github/workflows/local-service-recovery.yml"
       - "scripts/verify-local-service-recovery.py"
+      - "scripts/verify-native-totp.py"
+      - "scripts/native-totp-sdk.mjs"
       - "scripts/recovery_backup.py"
       - "tests/python/test_local_service_recovery.py"
+      - "tests/python/test_native_totp_acceptance.py"
       - "tests/python/test_recovery_backup.py"
+      - "supabase/migrations/20261115143612_optional_totp_session_protection.sql"
 
 permissions:
   contents: read
@@ -34,6 +38,11 @@ jobs:
         run: |
           npx --yes supabase@3.1.0 --version
           python3 -m py_compile scripts/verify-local-service-recovery.py
+          python3 -m py_compile scripts/verify-native-totp.py
+      - name: Install the exact lockfile SDK and check native target guards
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          python3 -m unittest discover -s tests/python -p 'test_native_totp_acceptance.py' -v
       - name: Authenticate official public GHCR packages with this job's temporary read token
         env:
           GHCR_READ_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -46,12 +55,27 @@ jobs:
           # Supabase service tags, no third-party mirror or TLS changes.
           SUPABASE_INTERNAL_IMAGE_REGISTRY: ghcr.io
         run: python3 scripts/verify-local-service-recovery.py
+      - name: Actual native SDK TOTP, candidate SQL, factor removal and isolated Auth restore
+        env:
+          TRUCKCONTROL_LOCAL_SERVICE_ACCEPTANCE: synthetic-only
+          TRUCKCONTROL_NATIVE_TOTP_ACCEPTANCE: synthetic-only
+          SUPABASE_TELEMETRY_DISABLED: "1"
+          SUPABASE_INTERNAL_IMAGE_REGISTRY: ghcr.io
+        run: python3 scripts/verify-native-totp.py
       - name: Preserve only sanitized service recovery receipt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: isolated-service-recovery-${{ github.sha }}
           path: local-service-recovery-results/receipt.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Preserve only sanitized native TOTP receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: isolated-native-totp-${{ github.sha }}
+          path: native-totp-results/receipt.json
           if-no-files-found: warn
           retention-days: 7
       - name: Remove the ephemeral registry login
