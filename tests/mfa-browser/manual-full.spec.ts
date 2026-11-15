@@ -7,7 +7,195 @@ import {
   login,
   nativeFixture,
   noSecretStorage,
+  openSecurity,
 } from "./fixture";
+
+test("a baseline same-actor SID replacement hides private views until native validation then restores only the current section", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context);
+  await login(page);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Empresas", exact: true }).click();
+  await expect(
+    page.getByRole("article", { name: "Empresa MFA ficticia", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Activar Pack Full", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  const reads = f.privateCalls().length;
+  f.controls.holdUser = true;
+  await broadcast(
+    page,
+    "TOKEN_REFRESHED",
+    f.session(actor, "aal1", "new-baseline-session"),
+  );
+  await expect.poll(() => f.controls.userPending).toBe(true);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(f.privateCalls()).toHaveLength(reads);
+  f.controls.holdUser = false;
+  f.controls.releaseUser();
+  await expect(
+    page.getByRole("heading", { name: "Empresas · Pack Full", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("article", { name: "Empresa MFA ficticia", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(new URL(page.url()).hash).toBe("#/admin?section=companies");
+  expect(
+    f.calls.some(
+      (call) =>
+        call.path === "/auth/v1/logout" || call.body?.p_action === "set",
+    ),
+  ).toBe(false);
+  expect(f.controls.manualFullEnabled).toBeNull();
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+
+test("an unavailable native identity during baseline SID replacement keeps all Root data closed", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context);
+  await login(page);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Empresas", exact: true }).click();
+  await expect(
+    page.getByRole("article", { name: "Empresa MFA ficticia", exact: true }),
+  ).toBeVisible();
+  const reads = f.privateCalls().length;
+  f.controls.failUser = true;
+  await broadcast(
+    page,
+    "TOKEN_REFRESHED",
+    f.session(actor, "aal1", "unavailable-baseline-session"),
+  );
+  await expect(page.getByRole("alert")).toContainText(
+    "No se puede comprobar la seguridad de la sesión",
+  );
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("article", { name: "Empresa MFA ficticia", exact: true }),
+  ).toHaveCount(0);
+  expect(f.privateCalls()).toHaveLength(reads);
+  expect(f.blocked).toEqual([]);
+});
+
+test("fresh native factors during baseline SID replacement require a challenge despite the previous no-factor state", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context);
+  await login(page);
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Empresas", exact: true }).click();
+  await expect(
+    page.getByRole("article", { name: "Empresa MFA ficticia", exact: true }),
+  ).toBeVisible();
+  const reads = f.privateCalls().length;
+  f.controls.factors.set(actor, [factor()]);
+  await broadcast(
+    page,
+    "TOKEN_REFRESHED",
+    f.session(actor, "aal1", "new-factor-session"),
+  );
+  await expect(
+    page.getByRole("heading", {
+      name: "Confirma tu autenticador",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  expect(f.privateCalls()).toHaveLength(reads);
+  expect(f.blocked).toEqual([]);
+});
+
+test("a replayed old MFA refresh cannot replace a newer baseline SID after the last factor was removed", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, { factors: [factor()] });
+  f.controls.loginAal = "aal2";
+  f.controls.refreshAal = "aal1";
+  f.controls.boundFactor.set(actor, factor().id);
+  await login(page);
+  await openSecurity(page);
+  await page
+    .getByRole("button", { name: "Quitar autenticador", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect(
+    page.getByText("Sin autenticadores verificados", { exact: true }),
+  ).toBeVisible();
+  expect(
+    f.calls.filter(
+      (call) => call.path === "/auth/v1/token" && call.body?.refresh_token,
+    ),
+  ).toHaveLength(1);
+  const oldRefresh = f.session(actor, "aal1");
+  await broadcast(
+    page,
+    "SIGNED_IN",
+    f.session(actor, "aal1", "new-no-factor-session"),
+  );
+  await expect(
+    page.getByRole("heading", {
+      name: "Tu centro de administración",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Sin autenticadores verificados", { exact: true }),
+  ).toBeVisible();
+  const reads = f.privateCalls().length;
+  await broadcast(page, "TOKEN_REFRESHED", oldRefresh);
+  await expect(
+    page.getByRole("heading", {
+      name: "Bienvenido a TruckControl",
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(f.privateCalls()).toHaveLength(reads);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
 
 test("Root must complete native MFA before listing or activating a company Full licence", async ({
   page,

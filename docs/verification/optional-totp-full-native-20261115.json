@@ -1,0 +1,141 @@
+{
+  "recorded_at": "2026-11-15T21:54:47.672987+00:00",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "source_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+  "sql": {
+    "full_74": {
+      "filename": "20261115170051_company_manual_full_licenses.sql",
+      "sha256": "ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c",
+      "managed_baseline_number": 74,
+      "reapplied": false
+    },
+    "optional_totp_candidate": {
+      "filename": "20261115212500_optional_totp_session_protection.sql",
+      "sha256": "b830a21224d64acffeb3dedc1938b8676aa131db4e4347914c35ea01fd387be7",
+      "candidate_after_baseline_number": 74,
+      "managed_applied": false,
+      "candidate_number": 75
+    }
+  },
+  "mfa_managed_applied": false,
+  "public_release": {
+    "url": "https://truckcontrolai.com",
+    "sites_version": 46,
+    "app_version": "0.5.28-rc.1",
+    "unchanged_by_this_acceptance": true
+  },
+  "physical_or_managed_restore": false,
+  "provider_calls": 0,
+  "model_calls": 0,
+  "payment_calls": 0,
+  "production_modified": false,
+  "real_customer_data": false,
+  "scope": "Actual isolated Auth, SDK, PostgREST, private Storage and PostgreSQL with fictional accounts; no production rollout or managed-platform acceptance.",
+  "workflow": {
+    "run": 43764342284,
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43764342284",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "SUCCESS",
+    "head_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf"
+  },
+  "source_provenance": {
+    "receipt_payloads_embed_source_commit": false,
+    "method": "The workflow head and each artifact workflow head equal the exact source above. Official GitHub artifact ZIP digests were independently matched; reported SQL bytes match that committed source. No embedded source field is attributed to the receipt payloads."
+  },
+  "artifacts": [
+    {
+      "suite": "recovery",
+      "artifact_id": 14181471621,
+      "workflow_head_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+      "zip_sha256": "02272deb9379366941d7f447e3f8b3a4fd80714707ca2550c4c4ee6fcd735489",
+      "receipt_sha256": "03aa93b6fd06005e06d7873559e4ffea5983e1b8348e9bc1a96c9f8083d6380a",
+      "receipt_bytes": 8833,
+      "all_passed": true
+    },
+    {
+      "suite": "totp",
+      "artifact_id": 14181253432,
+      "workflow_head_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+      "zip_sha256": "85e2cefbcda437c873028f00ed1a5a8b9d1996ffc4b36bbc4384b798281df621",
+      "receipt_sha256": "c982e11d898181f5da89994c757f20d7db0be91c845296bf2f1e34ec88f2d0b8",
+      "receipt_bytes": 27769,
+      "all_passed": true
+    },
+    {
+      "suite": "manual-full",
+      "artifact_id": 14181755982,
+      "workflow_head_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+      "zip_sha256": "1646edec384556a0816bb49a5e53dbe9fbd473aba3f680373a2373a641db351d",
+      "receipt_sha256": "4d8729f259d586011ef38620ea7def273cca3042dfb275e9c8d906297bbe60ae",
+      "receipt_bytes": 23546,
+      "all_passed": true
+    }
+  ],
+  "checks": {
+    "recovery_auth_storage": 67,
+    "native_totp_total": 192,
+    "manual_full_separate": 200,
+    "native_totp_included_breakdown": {
+      "retained_previous": 138,
+      "mfa_manual_full_crosschecks": 50,
+      "queued_retirement_guard_checks": 4
+    },
+    "counting_rule": "The 50 crosschecks and 4 retirement checks are included in 192, not additional. The recovery, TOTP and separate Full suites run in distinct isolated stacks; no unique combined total is asserted.",
+    "every_reported_check_passed_exactly_true": true
+  },
+  "native_versions": {
+    "supabase_cli": "3.1.0",
+    "supabase_sdk": "2.118.0",
+    "auth_image": "ghcr.io/supabase/gotrue:v2.197.0",
+    "committed_schema_files": 52,
+    "scope": "Official self-hosted CLI stack; not a claim about managed Auth deployment."
+  },
+  "mfa_manual_full": {
+    "checks": 50,
+    "real_native_jwt_and_totp": true,
+    "root_aal1_denied": true,
+    "root_aal2_allowed": true,
+    "tenant_self_grant_denied": true,
+    "company_off_and_expiry_override_aal2": true,
+    "business_data_preserved": true,
+    "last_factor_removal_preserves_licence_denial": true,
+    "root_aal1_denied_actions": [
+      "capabilities",
+      "list",
+      "set",
+      "history"
+    ],
+    "old_aal1_uses_same_upgraded_session": true,
+    "root_aal2_replay_and_immutable_audit": true,
+    "root_company_off_retains_management": true,
+    "tenant_native_role_scope": "The native company actor is an owner with company administration rights. A distinct non-Root admin membership is additionally covered by the paired PostgreSQL contracts."
+  },
+  "retirement_race": {
+    "verified_native_wait_observed": true,
+    "guard_rejected": true,
+    "native_verify_completed": true,
+    "server_enforcement_preserved": true,
+    "scope": "An actual native SDK verification is observed waiting on an owned pending-factor row lock. The reviewed SQL retirement guard rejects; releasing the holder allows verification to finish with server enforcement unchanged. No managed Auth lock or trigger was added."
+  },
+  "recovery": {
+    "baseline_real_auth_and_private_storage_recovery_checks": 67,
+    "isolated_auth_factor_logical_restore_verified": true,
+    "scope": "Disposable owned stacks and same-stack factor restore with retained isolated key custody. Not managed Auth/Storage/Vault recovery, physical authenticator acceptance, RPO or RTO certification."
+  },
+  "safety": {
+    "exclusive_repository_and_explicit_synthetic_opt_ins": true,
+    "owned_loopback_and_redirect_denial": true,
+    "bounded_fictional_actor_allowlists": true,
+    "no_secret_qr_otp_or_account_identifiers_in_this_receipt": true,
+    "only_sanitized_json_receipts_retained": true,
+    "all_commercial_provider_and_outbound_mail_flags_off": true,
+    "managed_or_physical_acceptance_claimed": false
+  },
+  "limitations": [
+    "No migration was applied to the managed project by this workflow.",
+    "No managed restore, external mailbox, Google review, physical Android/Windows or authenticator acceptance.",
+    "Backend acceptance does not imply acceptance of a subsequent UI change. Reuse requires comparing the exact backend and harness bytes against this source.",
+    "No commercial launch or automatic payment acceptance is asserted."
+  ]
+}

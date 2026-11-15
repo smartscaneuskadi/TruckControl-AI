@@ -38,6 +38,9 @@ export function useNativeMfaSession(client: Client | null) {
     let accepted: NativeMfaState | null = null;
     let acceptedHint: ReturnType<typeof nativeSessionHint> = null;
     let requireRemainingChallenge = false;
+    // Keep MFA-origin context across logout/relogin. A late refresh from removing
+    // the last factor must not replace a newer baseline SID for that same actor.
+    const mfaActors = new Set<string>();
     const timers = new Set<ReturnType<typeof setTimeout>>();
     const defer = (action: () => void) => {
       const timer = setTimeout(() => {
@@ -103,6 +106,8 @@ export function useNativeMfaSession(client: Client | null) {
               actor !== id
             )
               return;
+            if (state.factors.length || state.pendingFactors.length)
+              mfaActors.add(id);
             if (
               state.needsChallenge ||
               (requireRemainingChallenge && state.factors.length > 0)
@@ -153,6 +158,7 @@ export function useNativeMfaSession(client: Client | null) {
     const subscription = client.auth.onAuthStateChange((event, session) => {
       if (!active) return;
       const id = session?.user.id ?? null;
+      if (event === "MFA_CHALLENGE_VERIFIED" && id) mfaActors.add(id);
       if (event === "SIGNED_OUT") {
         signingOut = false;
         actor = null;
@@ -171,6 +177,16 @@ export function useNativeMfaSession(client: Client | null) {
       }
       if (event === "SIGNED_IN" && actor !== id) signingOut = false;
       const hint = nativeSessionHint(session);
+      const baselineRefresh = Boolean(
+        event === "TOKEN_REFRESHED" &&
+        id &&
+        actor === id &&
+        accepted?.user.id === id &&
+        !accepted.factors.length &&
+        !accepted.pendingFactors.length &&
+        !requireRemainingChallenge &&
+        !mfaActors.has(id),
+      );
       if (
         signingOut ||
         (["MFA_CHALLENGE_VERIFIED", "TOKEN_REFRESHED", "USER_UPDATED"].includes(
@@ -179,7 +195,8 @@ export function useNativeMfaSession(client: Client | null) {
           ((actor !== undefined && actor !== id) ||
             (actorSessionId &&
               hint?.sessionId &&
-              actorSessionId !== hint.sessionId)))
+              actorSessionId !== hint.sessionId &&
+              !baselineRefresh)))
       ) {
         // Native verify installs its response before notifying subscribers. A late
         // response after logout/actor change must never reopen that actor's view.
@@ -211,6 +228,10 @@ export function useNativeMfaSession(client: Client | null) {
           ? (detail as Record<string, unknown>)
           : null;
       const reason = scoped ? scoped.reason : detail;
+      if (reason === "factor-removed") {
+        const affectedActor = scoped?.userId ?? actor;
+        if (typeof affectedActor === "string") mfaActors.add(affectedActor);
+      }
       if (scoped && scoped.userId !== actor) return;
       if (reason === "signout") {
         signingOut = true;
