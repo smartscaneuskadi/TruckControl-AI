@@ -5,6 +5,8 @@ import {
   useMemo,
   useRef,
   useState,
+  lazy,
+  Suspense,
 } from "react";
 import type { ReactNode, FormEvent } from "react";
 import type { User } from "@supabase/supabase-js";
@@ -18,6 +20,8 @@ import { commercialEnabled } from "../domain/subscriptions";
 import type { Plan } from "../domain/subscriptions";
 import { PublicPortal } from "../pages/PublicPortal";
 import { CommercialSession } from "./CommercialSession";
+import { useNativeMfaSession } from "./MfaSession";
+import { notifyMfaChanged } from "../integrations/supabase/mfa";
 import {
   customAuthMail,
   readEmailAction,
@@ -35,6 +39,7 @@ import {
 } from "../domain/company-selection";
 
 type Organization = { id: string; name: string };
+const MfaChallenge = lazy(() => import("../components/MfaChallenge").then((module) => ({ default: module.MfaChallenge })));
 interface Access {
   configured: boolean;
   mode: "demo" | "company" | "portal";
@@ -138,6 +143,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
   const signOutRequest = useRef<Promise<void> | null>(null);
   const [emailAction, setEmailAction] = useState(initialEmailAction);
   const [client] = useState(getSupabaseClient);
+  const mfa = useNativeMfaSession(client);
   const [mode, setMode] = useState<"demo" | "company" | "portal">(() =>
     companyPreference()
       ? "company"
@@ -262,8 +268,11 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     };
   }, [client]);
   const userId = account.user?.id;
+  const mfaReady = Boolean(
+    userId && mfa.kind === "ready" && mfa.userId === userId,
+  );
   useEffect(() => {
-    if (!client || !userId) return;
+    if (!client || !userId || !mfaReady) return;
     let active = true;
     void client
       .from("organizations")
@@ -290,7 +299,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
     return () => {
       active = false;
     };
-  }, [client, userId, revision]);
+  }, [client, userId, revision, mfaReady]);
   const organization =
     account.organizations.find((o) => o.id === selected) ?? null;
   useEffect(() => {
@@ -341,6 +350,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
       if (signOutRequest.current) return signOutRequest.current;
       const request = (async () => {
         // End RAM-only provider capabilities before awaiting network revocation.
+        notifyMfaChanged("signout");
         endPrivateSessions();
         if (client) {
           try {
@@ -350,6 +360,7 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
             // auth-js 2.118 clears its local session even on a remote error.
             // Its SIGNED_OUT callback runs before signOut resolves/rejects.
             const localClosed = observedUserId.current === null;
+            if (!localClosed) notifyMfaChanged("signout-failed");
             const message = localClosed
               ? "Tu sesión en este dispositivo se ha cerrado, pero no hemos podido confirmar el cierre en el servidor. Vuelve a iniciar sesión cuando tengas conexión para revisarlo."
               : "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo.";
@@ -424,6 +435,16 @@ export function CompanyAccessProvider({ children }: { children: ReactNode }) {
             changeMode("company");
           }}
         />
+      ) : mode === "company" && account.user && !mfaReady ? (
+        <Suspense fallback={<main className="registration-page"><p role="status">Comprobando la seguridad de tu sesión…</p></main>}>
+        <MfaChallenge
+          key={account.user.id}
+          status={mfa}
+          userId={account.user.id}
+          onRetry={mfa.retry}
+          onSignOut={value.signOut}
+        />
+        </Suspense>
       ) : mode === "company" && commercialEnabled() ? (
         <CommercialSession
           key={`${account.user?.id ?? "visitor"}:${recovery ? "recovery" : (organization?.id ?? "no-company")}`}

@@ -2,7 +2,9 @@
 """Real Auth/PostgREST/Storage acceptance for company-scoped manual Full.
 
 CI only, in a new owned offline stack after the unchanged recovery lab. No MFA
-candidate, managed project, provider, real user, external message or payment.
+enrollment, managed project, provider, real user, external message or payment.
+The composed source may include exactly one later reviewed TOTP migration;
+the separate native TOTP lab exercises its interaction with Full licences.
 Only fixed check names and sanitized metadata are saved. Previously issued
 signed URLs and already downloaded/offline bytes cannot be recalled by a
 licence change; this checks fresh requests and preserves the underlying data.
@@ -34,6 +36,7 @@ LabFailure, check, q = lab.LabFailure, lab.check, lab.quote
 RESULTS = ROOT / "manual-company-full-results"
 REPOSITORY = "smartscaneuskadi/TruckControl-AI"
 CANDIDATE_SUFFIX = "_company_manual_full_licenses.sql"
+TOTP_SUFFIX = "_optional_totp_session_protection.sql"
 RPC = "tc_admin_company_full"
 ACTORS = {"A": 1, "B": 2, "R": 3, "C": 4}
 
@@ -48,16 +51,36 @@ def isolated_context(env: dict) -> None:
 
 
 def candidate_path(root: Path = ROOT) -> Path:
-    if ((root / "scripts/verify-native-totp.py").exists()
-            or list((root / "supabase/migrations").glob("*_optional_totp_session_protection.sql"))):
-        raise LabFailure("manual_full_acceptance_requires_separate_non_mfa_source")
-    paths = [p for p in (root / "supabase/migrations").glob("*" + CANDIDATE_SUFFIX)
-             if re.fullmatch(r"[0-9]{14}" + re.escape(CANDIDATE_SUFFIX), p.name)]
-    if len(paths) != 1:
+    paths = list((root / "supabase/migrations").glob("*" + CANDIDATE_SUFFIX))
+    if len(paths) != 1 or not re.fullmatch(r"[0-9]{14}" + re.escape(CANDIDATE_SUFFIX), paths[0].name):
         raise LabFailure("exactly_one_committed_shaped_manual_full_candidate_required")
     path = paths[0]
     if not path.is_file() or path.is_symlink() or not path.resolve().is_relative_to(root.resolve()):
         raise LabFailure("refuse_foreign_or_symlinked_manual_full_candidate")
+    composed_totp_path(root, path)
+    return path
+
+
+def composed_totp_path(root: Path, manual: Path) -> Path | None:
+    """Admit only an explicit, canonical later TOTP source, never a mixed order.
+
+    Both suites remain independently guarded/opted in. This source check does
+    not apply migrations or enable enrollment; Stack stages the full committed
+    schema and the distinct native TOTP receipt proves the composed policy.
+    """
+    harness = root / "scripts/verify-native-totp.py"
+    paths = list((root / "supabase/migrations").glob("*" + TOTP_SUFFIX))
+    if not paths and not harness.exists() and not harness.is_symlink():
+        return None
+    if (len(paths) != 1 or not harness.is_file() or harness.is_symlink()
+            or not harness.resolve().is_relative_to(root.resolve())):
+        raise LabFailure("composed_totp_requires_one_candidate_and_owned_harness")
+    path = paths[0]
+    if (not re.fullmatch(r"[0-9]{14}" + re.escape(TOTP_SUFFIX), path.name)
+            or not path.is_file() or path.is_symlink()
+            or not path.resolve().is_relative_to(root.resolve())
+            or path.name[:14] <= manual.name[:14]):
+        raise LabFailure("composed_totp_requires_canonical_unique_later_migration")
     return path
 
 
@@ -504,8 +527,12 @@ def exercise(stack) -> None:
 def main() -> int:
     isolated_context(os.environ)
     candidate = candidate_path()
+    totp = composed_totp_path(ROOT, candidate)
     lab.REPORT.update(contract="truckcontrol-manual-company-full-acceptance-v1", checks=[], all_passed=False,
                       candidate_filename=candidate.name, candidate_sha256=hashlib.sha256(candidate.read_bytes()).hexdigest(),
+                      composed_totp_candidate=totp is not None,
+                      totp_candidate_filename=totp.name if totp else None,
+                      totp_candidate_sha256=hashlib.sha256(totp.read_bytes()).hexdigest() if totp else None,
                       managed_mfa_enabled=False, stripe_calls=0, external_messages_sent=0,
                       issued_urls_or_cached_bytes_recall_claimed=False, sensitive_artifacts_uploaded=False)
     RESULTS.mkdir(exist_ok=True)

@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./helpers/auth-session-fixture";
 import { expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -11,6 +12,7 @@ it("el ensayo nativo de tareas pasa íntegro con rollback y conserva datos anter
       grant usage on schema public,auth to anon,authenticated,service_role;
       create schema supabase_migrations;create table supabase_migrations.schema_migrations(version text primary key);
       insert into supabase_migrations.schema_migrations select s::text from generate_series(1,59) s;`);
+    await installAuthSessionFixture(db);
     for (const name of readdirSync("supabase/migrations")
       .filter((n) => n.endsWith(".sql"))
       .sort())

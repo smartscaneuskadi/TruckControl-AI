@@ -263,7 +263,9 @@ PRIVATE: Path | None = None
 
 
 class Stack:
-    def __init__(self, suffix: str, base_port: int, run_id: str):
+    def __init__(self, suffix: str, base_port: int, run_id: str, *, enable_totp: bool = False):
+        if type(enable_totp) is not bool:
+            raise LabFailure("explicit_boolean_totp_configuration_required")
         self.project = "tc-recovery-" + run_id + "-" + suffix
         self.network = self.project + "-offline"
         self.folder = PRIVATE / suffix
@@ -272,6 +274,7 @@ class Stack:
         self.containers: list[dict] = []
         self.settings: dict = {}
         self.relays = None
+        self.enable_totp = enable_totp
 
     def cli(self, *args: str, **kwargs):
         if (not self.project.startswith("tc-recovery-") or self.project == PRODUCTION
@@ -301,6 +304,11 @@ class Stack:
             "auth.email": {"enable_confirmations": "true"},
             "auth.rate_limit": {"email_sent": "12"},
         }
+        if self.enable_totp:
+            # Only the newly initialized disposable config. The repository and
+            # managed Auth configuration keep their existing disabled defaults.
+            values["auth.mfa"] = {"max_enrolled_factors": "3"}
+            values["auth.mfa.totp"] = {"enroll_enabled": "true", "verify_enabled": "true"}
         for section, items in values.items():
             for name, value in items.items():
                 text = toml_set(text, section, name, value)
@@ -564,7 +572,8 @@ def signup(stack: Stack, letter: str):
     check("new company receives only Basic trial " + letter, access.get("plan") == "limited")
     status, organizations = stack.http("GET", "/rest/v1/organizations?select=id&owner_id=eq." + user, token=token)
     check("one company provisioned through actual REST " + letter, status == 200 and len(organizations) == 1)
-    return {"user": user, "email": email, "password": password, "token": token, "org": organizations[0]["id"]}
+    return {"user": user, "email": email, "password": password, "token": token,
+            "refresh_token": login["refresh_token"], "org": organizations[0]["id"]}
 
 
 def snapshot(stack: Stack) -> dict:

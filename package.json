@@ -1,7 +1,7 @@
 {
   "name": "truckcontrol-ai",
   "private": true,
-  "version": "0.5.28-rc.1",
+  "version": "0.5.29-rc.1",
   "type": "module",
   "engines": {
     "node": ">=22.12.0"
@@ -16,6 +16,7 @@
     "test:e2e": "playwright test",
     "test:e2e:companies": "node scripts/test-companies.mjs",
     "test:e2e:saas": "node scripts/test-saas.mjs",
+    "test:e2e:mfa": "node scripts/test-mfa.mjs",
     "test:e2e:manual-full": "node scripts/test-manual-full.mjs",
     "test:e2e:candidate": "node scripts/test-candidate.mjs",
     "verify:published": "node scripts/verify-published-candidate.mjs",

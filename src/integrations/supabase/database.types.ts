@@ -118,6 +118,8 @@ export interface Database {
     };
     Views: Record<string, never>;
     Functions: {
+      tc_mfa_protection_status: { Args: Record<string, never>; Returns: Json };
+      tc_verified_session: { Args: Record<string, never>; Returns: boolean };
       tc_admin_company_full: {
         Args: { p_action: string; p_org?: string; p_expected?: number; p_operation?: string; p_data?: Json; p_after?: string };
         Returns: Json;

@@ -39,6 +39,7 @@ import { SubscriptionIncidents } from "../components/SubscriptionIncidents";
 import { UnlinkedIncidentReview } from "../components/UnlinkedIncidentReview";
 import { SubscriptionRiskSignals } from "../components/SubscriptionRiskSignals";
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
+import { MfaSettingsLoader as MfaSettings } from "../components/MfaSettingsLoader";
 const CompanyFullAdmin = lazy(() => import("../components/CompanyFullAdmin").then((module) => ({ default: module.CompanyFullAdmin })));
 
 export function AdminConsole({
@@ -189,6 +190,7 @@ export function AdminConsole({
     { id: "plans", label: "Planes y cobros", icon: CreditCard },
     { id: "activity", label: "Actividad", icon: Activity },
     { id: "providers", label: "Servicios", icon: ShieldCheck },
+    { id: "security", label: "Seguridad de la cuenta", icon: ShieldCheck },
     { id: "fiscal", label: "Facturación de empresas", icon: Landmark },
     {
       id: "subscription_invoices",
@@ -333,6 +335,7 @@ export function AdminConsole({
             ))}
           </nav>
           {tab === "providers" && <ProviderSetup />}
+          {tab === "security" && <MfaSettings key={userId} userId={userId} />}
           {tab === "companies" && <Suspense fallback={<p role="status">Comprobando empresas y licencias…</p>}><CompanyFullAdmin key={userId} userId={userId} /></Suspense>}
           {tab === "subscription_invoices" && (
             <ManualSubscriptionInvoices

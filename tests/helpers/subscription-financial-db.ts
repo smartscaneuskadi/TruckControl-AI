@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./auth-session-fixture";
 import { PGlite } from "@electric-sql/pglite";
 import { randomUUID } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
@@ -31,6 +32,7 @@ export async function financialDatabase() {
   select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}') $jwt$;
  grant usage on schema public,auth to anon,authenticated,service_role;
  `);
+ await installAuthSessionFixture(db);
  for(const path of readdirSync("supabase/migrations").filter(x=>x.endsWith(".sql")).sort())
   await db.exec(readFileSync("supabase/migrations/"+path,"utf8"));
  await db.query("insert into auth.users(id,email,email_confirmed_at) values($1,'financial-operator@example.invalid',now())",[incidentAdmin]);

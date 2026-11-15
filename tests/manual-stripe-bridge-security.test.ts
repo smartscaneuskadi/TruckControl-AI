@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./helpers/auth-session-fixture";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
@@ -80,6 +81,7 @@ beforeAll(async () => {
       select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid
     $auth$;
     grant usage on schema public,auth to anon,authenticated,service_role;`);
+  await installAuthSessionFixture(db);
   for (const file of readdirSync("supabase/migrations").filter(f => f.endsWith(".sql")).sort())
     await db.exec(readFileSync("supabase/migrations/" + file,"utf8"));
   const installed = (await db.query<{ installed: boolean }>(
