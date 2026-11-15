@@ -5,7 +5,7 @@ import { join, resolve, relative } from "node:path";
 const siteId = "appgprj_6ae655e56db481918fe18adfe9df8b66";
 const origin = "https://truckcontrolai.com";
 const supabase = "https://kkkemaycedexymrpaqtp.supabase.co";
-const expectedBaseline = "9dd41d99aadacda961eb772f60439297d6aaa4c5";
+const expectedBaseline = "4cb1e430fa5530c5b27b17e9dbb2515146d779ab";
 const root = resolve(".");
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 if (!/^[a-f0-9]{40}$/.test(sha)) throw Error("Missing exact source commit.");
@@ -62,6 +62,9 @@ const env = {
   VITE_RELEASE_CHANNEL: "production",
   VITE_COMMERCIAL_MODE: "true",
   VITE_AUTH_MAIL_PROVIDER: "resend",
+  // Account opt-in remains unavailable until the exact native server capability
+  // is present; this build never changes provider/database enrollment settings.
+  VITE_MFA_ENROLLMENT_ENABLED: "true",
 };
 const npmCli = process.env.npm_execpath;
 const build = spawnSync(npmCli ? process.execPath : "npm",
@@ -116,6 +119,8 @@ if (!["refresh_available", "tc_admin_subscription_risk", "subscription-risk-v1"]
   throw Error("Canonical subscription refresh or informational risk review is missing.");
 if (!["tc_admin_company_full", "manual_full", "Pack Full"].every((value) => bundle.includes(value)))
   throw Error("Manual company Full controls are missing from the production bundle.");
+if (!["tc_mfa_protection_status", "tc_verified_session", "Añadir autenticador", "Configura tu autenticador"].every((value) => bundle.includes(value)))
+  throw Error("Native optional TOTP protection or management is missing from the production bundle.");
 const archivePath = join(process.env.RUNNER_TEMP || "/tmp", "truckcontrol-production-" + sha + ".tar.gz");
 const tar = spawnSync("tar", ["-czf", archivePath, ".openai/hosting.json", "dist"], { stdio: "inherit", shell: false });
 if (tar.status !== 0) throw Error("Production packaging failed.");
@@ -124,6 +129,8 @@ const proof = {
   source_commit: sha, project_id: siteId, public_url: origin, baseline_source: expectedBaseline,
   output: release, payment_changes: false, payments_enabled: catalog.payments_enabled,
   public_connection_source: "existing public browser bundle; no key value in this receipt",
+  mfa_enrollment_requested: true, mfa_requires_exact_server_capability: true,
+  native_mfa_or_provider_configuration_changed_by_build: false,
   archive: { name: "truckcontrol-production-" + sha + ".tar.gz", bytes: archive.length,
     sha256: createHash("sha256").update(archive).digest("hex") },
   files, published: false, source_pushed_to_sites: false,
