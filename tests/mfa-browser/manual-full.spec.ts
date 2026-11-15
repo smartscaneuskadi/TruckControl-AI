@@ -167,17 +167,35 @@ test("an old MFA actor refresh cannot replace another baseline account after the
   ).toBeVisible();
   // Another account's MFA history does not taint this ordinary identity.
   f.controls.holdUser = true;
-  await broadcast(
-    page,
-    "TOKEN_REFRESHED",
-    f.session(other, "aal1", "ordinary-other-refreshed-session"),
+  const refreshedCompanySession = f.session(
+    other,
+    "aal1",
+    "ordinary-other-refreshed-session",
   );
+  await broadcast(page, "TOKEN_REFRESHED", refreshedCompanySession);
   await expect.poll(() => f.controls.userPending).toBe(true);
   await expect(
     page.getByRole("heading", { name: "Configuración", exact: true }),
   ).toHaveCount(0);
+  const companyLoaded = Promise.all(
+    [
+      "tc_company_fiscal_control",
+      "tc_tyre_page",
+      "tc_document_page",
+      "tc_list_records",
+    ].map((name) =>
+      page.waitForResponse(
+        (response) =>
+          new URL(response.url()).pathname === "/rest/v1/rpc/" + name &&
+          response.request().headers().authorization ===
+            "Bearer " + refreshedCompanySession.access_token &&
+          response.status() === 200,
+      ),
+    ),
+  );
   f.controls.holdUser = false;
   f.controls.releaseUser();
+  await companyLoaded;
   await expect(
     page.getByRole("heading", { name: "Configuración", exact: true }),
   ).toBeVisible();
