@@ -11,7 +11,12 @@ if (
   throw Error("Invalid monitor execution context");
 let report;
 try {
-  report = normalizeMonitorReport(readFileSync("production-health-results/health.json", "utf8"));
+  // The checked-out production manifest is the source of truth, not a
+  // SHA supplied by the potentially stale monitor artifact.
+  const deployment = JSON.parse(readFileSync("docs/deployment/candidate-hosting.json", "utf8"));
+  report = normalizeMonitorReport(readFileSync("production-health-results/health.json", "utf8"), {
+    expectedSource: deployment.published_commit,
+  });
 } catch {
   // Missing/unreadable artifacts must open an incident, never close an existing one.
   report = { passed: false, code: "invalid_monitor_report" };
