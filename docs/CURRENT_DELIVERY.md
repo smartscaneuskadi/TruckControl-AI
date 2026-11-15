@@ -1,3 +1,15 @@
+## Actualización segura45 publicada y verificada · 15/11/2026 UTC
+
+https://truckcontrolai.com: **Sites45 / 0.5.27-rc.1**, fuente `9dd41d99aadacda961eb772f60439297d6aaa4c5`, despliegue `appgdep_6af9940779a48191b144b16385a388f6` SUCCEEDED. PR144 integrado en `e9819a124e1621704970bea6d688ec9958a7de6a`; PR141/142 independientes conservados. Copiar la dirección privada de reenvío ya controla API ausente, error síncrono y reintento sin avisos antiguos. Misma dirección, permisos y economía.
+
+CI exacta43706778964 y PR43706541846 SUCCESS: **1844 unitarias/SQL,132Python,94demo,62empresa,274SaaS,20candidata,20producción y6perfiles públicos previos**, por ejecución.64originales/11hashes intactos. PostgreSQL43706779034, recuperación Auth/Storage autohospedada67/67 y Android43706779003 SUCCESS. Android6/0.5.27 genera APK debug/AAB sin firma comercial; no Play ni hardware. Tras publicar: **75/75hashes HTTPS,84/84recorridos sin omisiones/flaky,6/6perfilesPWA,6/6denegaciones y5/5salud**. SDK real con transporte privado ficticio bloqueando tráfico no interceptado; no nueva aceptación de proveedores.
+
+Supabase **72**, SQL73 **NO aplicada**: confirmación oficial caducada; historial/función8ba277d1.../OID18420/ACL intactos. No reaplicar68–72/#37 ni usar SQL/CLI para eludir la tarjeta. RegistroON, acceso exigido, cobrosOFF y0WARN/ERROR+2INFO deny-all. Gmail empresarial nativo:0conexiones; correo personal separado. Resend confirma dominio/receptor habilitados,5DNS verificados y firma igual a Vault, solo GET; sin mensajes o lectura de buzones. Destinos DKIM Migadu siguenSERVFAIL; no modificar DNSSEC.
+
+Se conservan44/43/42/41/32/31 ydemo6. Main conserva manifiestoDEMO: **no publicarlo sobre producción**. Cargos/contrataciones/llamadasIA nuevos0; IA10USD/mes–100/empresa intacta. Saldo histórico del techo200EUR desconocido. Persisten puertas Stripe/facturaGDTaller válida/entrega,Google público/empresarial,restore gestionado,firma/Play/hardware y revisión externa. **Actualización segura pública; lanzamiento comercial completo pendiente**.
+
+[Recibo y límites verificables](verification/commercial-safe-update45-20261115.json).
+
 ## Control verificado · 15/11/2026 09:30 UTC
 
 **Prioridad sobre las secciones históricas inferiores; no certifica aceptación comercial.** Repositorio único `smartscaneuskadi/TruckControl-AI`, main exacto `477e274c0722d6c78126901bf29af14682a61643`, PR #140 ya integrado (se conservan PR130–139 y los cambios de PR134). Tanto [CI general #43694679092](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43694679092) como [monitor público #43694679116](https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43694679116) terminaron **SUCCESS en ese SHA**. La única PR abierta detectada es #17 histórica; no se ha encontrado otro trabajo nuevo concurrente en las PR consultadas.

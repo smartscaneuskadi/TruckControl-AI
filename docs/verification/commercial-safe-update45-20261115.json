@@ -1,0 +1,468 @@
+{
+  "recorded_at": "2026-11-15T11:23:12.793285+00:00",
+  "url": "https://truckcontrolai.com",
+  "app_version": "0.5.27-rc.1",
+  "site": {
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version": 45,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ba3ecd4e45508191a680ca27bdd6a069",
+    "deployment_id": "appgdep_6af9940779a48191b144b16385a388f6",
+    "status": "succeeded",
+    "deployed_at": "2026-11-15T11:14:28.013589+00:00",
+    "audience": "public",
+    "native_owner_verified": true
+  },
+  "source": {
+    "branch": "deploy/gmail-account-production-20261115-clipboard",
+    "commit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+    "reviewed_head": "561bb9d22c52a2807f78d84996a5cc6deb2dc158",
+    "merged_pr": 144,
+    "merged_commit": "e9819a124e1621704970bea6d688ec9958a7de6a",
+    "runtime_matches_merged_main": true,
+    "differences_from_merged_main": [
+      "Production hosting identity, production package workflow/helper and three production source records",
+      "Independent monitor PR142 is preserved on main/delivery branch; its workflow/scripts/tests are not part of the static app"
+    ],
+    "source_was_fast_forward_pushed_without_credentials_persisted": true
+  },
+  "archive": {
+    "gzip_sha256": "24d78ae819f7d0067599f75e8f3dabd4ce9142965c4ea2f94585acc01df2e901",
+    "gzip_bytes": 1515905,
+    "public_files": 25,
+    "stored_tar_sha256": "e8b97763ed34ce4ea8d0440491423220afc42122d8914cbe62d276f9dea876e4",
+    "stored_tar_bytes": 3317760,
+    "stored_tar_files": 26,
+    "github_artifact_id": 14158423295,
+    "zip_sha256": "b8ce5fb4b272805ac20e816b8e1de194ac7458ae71badc220c78e9e4808f9320"
+  },
+  "changes": [
+    "Missing clipboard API and synchronous SecurityError use the existing selectable-address fallback",
+    "Retry clears prior copy status/error; successful copies no longer retain an old error",
+    "Existing tenant address, permissions, backend, integrations and economic logic are unchanged"
+  ],
+  "ci": {
+    "runs": {
+      "source_quality": {
+        "run": 43706778964,
+        "conclusion": "success"
+      },
+      "source_package": {
+        "run": 43706778946,
+        "conclusion": "success"
+      },
+      "source_postgres": {
+        "run": 43706779034,
+        "conclusion": "success"
+      },
+      "source_auth_storage_recovery": {
+        "run": 43706778965,
+        "conclusion": "success"
+      },
+      "source_android": {
+        "run": 43706779003,
+        "conclusion": "success"
+      },
+      "pr_quality": {
+        "run": 43706541846,
+        "conclusion": "success"
+      },
+      "branch_quality": {
+        "run": 43706357877,
+        "conclusion": "success"
+      }
+    },
+    "retained_initial_tests": 64,
+    "retained_hashed_files": 11,
+    "unit_sql": 1844,
+    "unit_sql_files": 154,
+    "python": 132,
+    "demo_browser": 94,
+    "company_browser": 62,
+    "saas_browser": 274,
+    "candidate_browser": 20,
+    "production_build_browser": 20,
+    "previous_public_profiles": 6,
+    "counts_are_per_run_not_summed_across_retries": true,
+    "self_hosted_auth_storage_recovery_checks": 67,
+    "managed_platform_restore_verified": false
+  },
+  "post_publication": {
+    "https_hashes": {
+      "passed": 75,
+      "total": 75,
+      "origins": 3
+    },
+    "browser": {
+      "passed": 84,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "suites": {
+        "published-regression": {
+          "stats": {
+            "startTime": "2026-11-15T11:15:11.551Z",
+            "duration": 198652.60499999998,
+            "expected": 76,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "source": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+          "result_sha256": "5395f2ecf7c4c84fb128375285b36e6e6300cdbf173682ce373adc5ba6f16eb0",
+          "original_inputs": [
+            {
+              "path": "tests/saas-browser/platform.spec.ts",
+              "sha256": "841a05d8e7d7a298ec85ba47131e5ba48a68557607663f2a6602c57fd5d8070e",
+              "assertions": "unchanged; only fixture/portal preparation and URL/CORS adaptation"
+            },
+            {
+              "path": "tests/saas-browser/subscription-risk-signals.spec.ts",
+              "sha256": "4cafc462144a666576c1f7305d5ba370e73b7fbd4b167be44ab7980a8e780ca3",
+              "assertions": "unchanged; only fixture/portal preparation and URL/CORS adaptation"
+            }
+          ]
+        },
+        "published-gmail-regression": {
+          "stats": {
+            "startTime": "2026-11-15T11:15:10.759Z",
+            "duration": 47374.012,
+            "expected": 8,
+            "skipped": 0,
+            "unexpected": 0,
+            "flaky": 0
+          },
+          "source": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+          "result_sha256": "a93b3e92034eed4959af4de620e498c13e62350a9048c22ca90fb7ceaa110e4e",
+          "original_inputs": [
+            {
+              "path": "tests/company-browser/gmail.spec.ts",
+              "sha256": "d5247fafccd68c3f3e06196a4b9040a99a731df6c66bf77acc145338806d2539",
+              "assertions": "unchanged; only fixture/portal preparation and URL/CORS adaptation"
+            }
+          ]
+        }
+      },
+      "sdk": "Real pinned SDK in published bundle; private HTTP fictitious/intercepted; unmatched nonstatic/authenticated HTTP and WSS blocked",
+      "native_customer_or_provider_acceptance": false
+    },
+    "pwa": {
+      "url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "origins": [
+        "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "https://truckcontrolai.com",
+        "https://www.truckcontrolai.com"
+      ],
+      "results": [
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "profile": "windows",
+          "sourceCommit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+          "themes": ["light", "cockpit"],
+          "gmailCallback": true,
+          "universalMailOffline": true,
+          "authMailCors": true,
+          "mailServicesCors": true,
+          "personalMailConfig": true,
+          "personalMailReady": true,
+          "publicLegalPages": true,
+          "billingIssuer": true,
+          "invoiceInbox": true,
+          "tyresOffline": true,
+          "personalMailOffline": true,
+          "companyFiscalPreparation": true,
+          "companyCopilot": true,
+          "aiSpecialists": true,
+          "passed": true
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "profile": "android",
+          "sourceCommit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+          "themes": ["light", "cockpit"],
+          "gmailCallback": true,
+          "universalMailOffline": true,
+          "authMailCors": true,
+          "mailServicesCors": true,
+          "personalMailConfig": true,
+          "personalMailReady": true,
+          "publicLegalPages": true,
+          "billingIssuer": true,
+          "invoiceInbox": true,
+          "tyresOffline": true,
+          "personalMailOffline": true,
+          "companyFiscalPreparation": true,
+          "companyCopilot": true,
+          "aiSpecialists": true,
+          "passed": true
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "profile": "windows",
+          "sourceCommit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+          "themes": ["light", "cockpit"],
+          "gmailCallback": true,
+          "universalMailOffline": true,
+          "authMailCors": true,
+          "mailServicesCors": true,
+          "personalMailConfig": true,
+          "personalMailReady": true,
+          "publicLegalPages": true,
+          "billingIssuer": true,
+          "invoiceInbox": true,
+          "tyresOffline": true,
+          "personalMailOffline": true,
+          "companyFiscalPreparation": true,
+          "companyCopilot": true,
+          "aiSpecialists": true,
+          "passed": true
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "profile": "android",
+          "sourceCommit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+          "themes": ["light", "cockpit"],
+          "gmailCallback": true,
+          "universalMailOffline": true,
+          "authMailCors": true,
+          "mailServicesCors": true,
+          "personalMailConfig": true,
+          "personalMailReady": true,
+          "publicLegalPages": true,
+          "billingIssuer": true,
+          "invoiceInbox": true,
+          "tyresOffline": true,
+          "personalMailOffline": true,
+          "companyFiscalPreparation": true,
+          "companyCopilot": true,
+          "aiSpecialists": true,
+          "passed": true
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "profile": "windows",
+          "sourceCommit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+          "themes": ["light", "cockpit"],
+          "gmailCallback": true,
+          "universalMailOffline": true,
+          "authMailCors": true,
+          "mailServicesCors": true,
+          "personalMailConfig": true,
+          "personalMailReady": true,
+          "publicLegalPages": true,
+          "billingIssuer": true,
+          "invoiceInbox": true,
+          "tyresOffline": true,
+          "personalMailOffline": true,
+          "companyFiscalPreparation": true,
+          "companyCopilot": true,
+          "aiSpecialists": true,
+          "passed": true
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "profile": "android",
+          "sourceCommit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+          "themes": ["light", "cockpit"],
+          "gmailCallback": true,
+          "universalMailOffline": true,
+          "authMailCors": true,
+          "mailServicesCors": true,
+          "personalMailConfig": true,
+          "personalMailReady": true,
+          "publicLegalPages": true,
+          "billingIssuer": true,
+          "invoiceInbox": true,
+          "tyresOffline": true,
+          "personalMailOffline": true,
+          "companyFiscalPreparation": true,
+          "companyCopilot": true,
+          "aiSpecialists": true,
+          "passed": true
+        }
+      ],
+      "physicalDevices": false
+    },
+    "native_negative_http": {
+      "checked_at": "2026-11-15T11:15:10.870912+00:00",
+      "results": [
+        {
+          "function": "company-gmail",
+          "check": "missing_session",
+          "status": 401,
+          "code": "authentication_required",
+          "passed": true
+        },
+        {
+          "function": "company-gmail",
+          "check": "invalid_session",
+          "status": 401,
+          "code": "authentication_required",
+          "passed": true
+        },
+        {
+          "function": "company-gmail",
+          "check": "foreign_origin",
+          "status": 403,
+          "code": "origin_not_allowed",
+          "passed": true
+        },
+        {
+          "function": "truckcontrol-subscriptions",
+          "check": "missing_session",
+          "status": 401,
+          "code": "authentication_required",
+          "passed": true
+        },
+        {
+          "function": "truckcontrol-subscriptions",
+          "check": "invalid_session",
+          "status": 401,
+          "code": "authentication_required",
+          "passed": true
+        },
+        {
+          "function": "truckcontrol-subscriptions",
+          "check": "foreign_origin",
+          "status": 403,
+          "code": "origin_not_allowed",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "provider_calls": 0,
+      "model_calls": 0,
+      "data_mutations": 0,
+      "authenticated_acceptance": false
+    },
+    "health": {
+      "checked_at": "2026-11-15T11:17:06.677Z",
+      "scope": "public_http_availability_only",
+      "expected_source": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
+      "passed": true,
+      "checks": [
+        {
+          "name": "release",
+          "url": "https://truckcontrolai.com/release.json",
+          "status": 200,
+          "passed": true,
+          "code": "release_identity_check"
+        },
+        {
+          "name": "release",
+          "url": "https://www.truckcontrolai.com/release.json",
+          "status": 200,
+          "passed": true,
+          "code": "release_identity_check"
+        },
+        {
+          "name": "release",
+          "url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site/release.json",
+          "status": 200,
+          "passed": true,
+          "code": "release_identity_check"
+        },
+        {
+          "name": "copilot_health",
+          "url": "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-copilot/specialists/health",
+          "status": 200,
+          "passed": true,
+          "code": "protected_copilot_contract",
+          "configured": true,
+          "enabled": true,
+          "provider_probe_performed": false
+        },
+        {
+          "name": "anonymous_database_gateway",
+          "url": "https://kkkemaycedexymrpaqtp.supabase.co/rest/v1/trucks?select=id&limit=1",
+          "status": 401,
+          "passed": true,
+          "code": "missing_api_key_denied",
+          "rls_verified": false
+        }
+      ],
+      "authenticated_customer_data_read": false,
+      "rls_verified": false,
+      "model_calls": 0
+    },
+    "health_executor_note": "Initial direct Node transport failed ECONNREFUSED for every origin. Same unchanged monitor passed using NODE_USE_ENV_PROXY=1 with the already configured HTTPS proxy; TLS, CA and provider protections were not weakened."
+  },
+  "supabase": {
+    "checked_at": "2026-11-15T11:19:48.584071+00:00",
+    "project": "kkkemaycedexymrpaqtp",
+    "migration_count": 72,
+    "latest_migration": "20261114173557",
+    "sql73_applied": false,
+    "function_oid": 18420,
+    "function_body_md5": "8ba277d1bfa7c1fbe33d7d50678103c1",
+    "function_security_invoker": true,
+    "anon_execute": false,
+    "authenticated_execute": false,
+    "service_role_execute": true,
+    "settings": {
+      "registration_open": true,
+      "enforce_access": true,
+      "payments_enabled": false,
+      "prices_are_examples": true
+    },
+    "enterprise_gmail": {
+      "connected": 0,
+      "reauthorize": 0
+    },
+    "security_advisor": {
+      "checked_at": "2026-11-15T11:19:42.586Z",
+      "warn": 0,
+      "error": 0,
+      "info_deny_all": 2,
+      "intentionally_closed_tables": [
+        "private.tc_specialist_test_organizations",
+        "private.tc_specialist_verifications"
+      ],
+      "remediation_reference": "https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy"
+    },
+    "mutations": 0,
+    "mailbox_content_read": false,
+    "provider_or_model_calls": 0,
+    "note": "No production SQL migration or authenticated provider acceptance in this verification."
+  },
+  "mail_provider_receipt": "docs/verification/mail-provider-readiness-20261115.json",
+  "mail_provider_scope": "Actual read-only Resend domain and inbound-webhook readiness; no message sent or mailbox content accessed. Five records verified; signature equals Vault without returning the value. Root Migadu DKIM target TXT still SERVFAIL on both resolvers; no DNS mutations. Receiving readiness does not verify delivery.",
+  "android": {
+    "version_code": 6,
+    "version_name": "0.5.27-rc.1",
+    "compile": "success",
+    "debug_apk": true,
+    "unsigned_release_aab": true,
+    "commercial_signing": false,
+    "play_publication": false,
+    "physical_acceptance": false
+  },
+  "preserved": {
+    "previous_production": 44,
+    "previous_source": "43f9b2215424eb58c7a980d25b516d7fd9f4051b",
+    "previous_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_90e9d2f5c3288191aa9f77715547d23f",
+    "additional_versions": [43, 42, 41, 32, 31],
+    "demo_project": "appgprj_6adfbdfa388481919121d43f0fd9c242",
+    "demo_version": 6,
+    "demo_native_status": "active",
+    "demo_modified": false
+  },
+  "budget": {
+    "new_charges_or_recurring_commitments_eur": 0,
+    "new_model_calls_by_this_execution": 0,
+    "ai_monthly_limit_usd": 10,
+    "calls_per_company": 100,
+    "aggregate_authorized_ceiling_eur": 200,
+    "historical_spend_reconciled": false,
+    "remaining_eur": null
+  },
+  "commercial_launch_complete": false,
+  "blockers": [
+    "SQL73 official Supabase confirmation expired again; do not bypass it or repeat migrations68-72",
+    "Native Stripe signed-payment/licence/fiscal request acceptance and valid manual GDTaller TicketBAI PDF/delivery; charges remain off",
+    "Google public restricted-scope verification and real enterprise Gmail acceptance: native aggregate has zero enterprise connections; personal mailbox is separate",
+    "Migadu DKIM target SERVFAIL at provider; do not disable DNSSEC or alter other domains",
+    "Managed Auth/Storage/Vault custody and restore acceptance",
+    "Commercial Android signing/Play and physical Android/Windows acceptance",
+    "External legal/fiscal review and historical aggregate-budget reconciliation"
+  ]
+}
