@@ -12,6 +12,10 @@ def run(pg, f):
     sid, factor, backup, other = (f.op(n) for n in (110, 111, 112, 113))
     q = f.q
     pg.sql("insert into auth.sessions(id,user_id) values(" + q(sid) + "," + q(user) + ")")
+    # This isolated fixture tests MFA, not billing expiry. The reused monthly
+    # payment ends at the run's initial epoch, before preceding lock tests finish.
+    # Give only this synthetic account a future licence and prove baseline access.
+    pg.sql("update private.tc_customers set status='active',paid_until=now()+interval '1 day' where user_id=" + q(user))
 
     def context(actor=user, session=sid, aal=None, role="authenticated"):
         claims = {"sub": actor, "role": role, "session_id": session,
@@ -101,6 +105,8 @@ def run(pg, f):
         denied("client cannot invoke a baseline/internal service exception", "", statement)
 
     background = "select jsonb_build_object('active',(public.tc_company_server_access(" + q(user) + "," + q(organization) + ")->>'active')::boolean)"
+    pg.check("MFA: synthetic background account has an active licence before enrollment",
+             evaluate("", background, role="service_role", actor="", session="") == {"active": True})
     pg.check("MFA: explicit service background access works without a human SID",
              evaluate(enrolled() + "delete from auth.sessions where id=" + q(sid) + ";", background, role="service_role", actor="", session="") == {"active": True})
     pg.check("MFA: explicit service background access still enforces the user's ban",
