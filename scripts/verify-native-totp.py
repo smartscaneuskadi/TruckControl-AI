@@ -22,6 +22,7 @@ import subprocess
 import tempfile
 import time
 import uuid
+from xml.parsers import expat
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("native_totp_recovery", ROOT / "scripts/verify-local-service-recovery.py")
@@ -34,6 +35,72 @@ q = lab.quote
 RESULTS = ROOT / "native-totp-results"
 CANDIDATE_SUFFIX = "_optional_totp_session_protection.sql"
 REPOSITORY = "smartscaneuskadi/TruckControl-AI"
+QR_PREFIX = "data:image/svg+xml;utf-8,"
+QR_MAX_LENGTH = 2 * 1024 * 1024
+
+
+def native_qr_profile(value: str) -> dict:
+    """Inspect native SVG only in RAM; return names and compatibility booleans.
+
+    Auth2.197 pins goqrsvg17e843f1dd40/svgo1546f124cd8b. Its root has
+    xmlns:xlink and its rectangles use exactly two fixed, inert style strings.
+    The UI discards that unused namespace and converts those exact styles to
+    fill/stroke attributes. No SVG, dimensions, coordinates, paths or values
+    from the enrollment response enter this profile or an error message.
+    """
+    profile = {"tag_names": [], "attribute_names": [],
+               "prefix_compatible": isinstance(value, str) and value.startswith(QR_PREFIX),
+               "within_2_mib": isinstance(value, str) and len(value) <= QR_MAX_LENGTH,
+               "namespace_compatible": False, "exact_native_style_compatible": False,
+               "structure_compatible": False}
+    if not profile["prefix_compatible"] or not profile["within_2_mib"]:
+        return profile
+    svg = value[len(QR_PREFIX):]
+    tags, attributes, parents = set(), set(), []
+    namespace_ok, style_ok, structure_ok, has_rect = True, True, True, False
+    root_attrs = {"xmlns", "xmlns:xlink", "width", "height"}
+    rect_attrs = {"x", "y", "width", "height", "style"}
+
+    def start(name: str, attrs: dict) -> None:
+        nonlocal namespace_ok, style_ok, structure_ok, has_rect
+        tags.add(name)
+        attributes.update(attrs)
+        if not parents:
+            structure_ok &= name == "svg" and set(attrs) == root_attrs
+            namespace_ok &= (attrs.get("xmlns") == "http://www.w3.org/2000/svg"
+                             and attrs.get("xmlns:xlink") == "http://www.w3.org/1999/xlink")
+        else:
+            structure_ok &= name == "rect" and parents == ["svg"] and set(attrs) == rect_attrs
+            namespace_ok &= not any(key.startswith("xmlns") for key in attrs)
+            style_ok &= name == "rect" and attrs.get("style") in {"fill:black;stroke:none", "fill:white;stroke:none"}
+            has_rect |= name == "rect"
+        parents.append(name)
+
+    def characters(data: str) -> None:
+        nonlocal structure_ok
+        structure_ok &= not data.strip()
+
+    def forbidden(*args) -> None:
+        # Never let a DTD/entity/processing instruction resolve external data.
+        raise ValueError("native_qr_declaration_forbidden")
+
+    parser = expat.ParserCreate()
+    parser.StartElementHandler = start
+    parser.EndElementHandler = lambda name: parents.pop()
+    parser.CharacterDataHandler = characters
+    parser.StartDoctypeDeclHandler = forbidden
+    parser.EntityDeclHandler = forbidden
+    parser.ExternalEntityRefHandler = forbidden
+    parser.ProcessingInstructionHandler = forbidden
+    try:
+        parser.Parse(svg, True)
+    except (expat.ExpatError, ValueError, IndexError):
+        namespace_ok = style_ok = structure_ok = False
+    profile.update(tag_names=sorted(tags), attribute_names=sorted(attributes),
+                   namespace_compatible=bool(namespace_ok and tags),
+                   exact_native_style_compatible=bool(style_ok and has_rect),
+                   structure_compatible=bool(structure_ok and has_rect and not parents))
+    return profile
 
 
 def isolated_context(env: dict) -> None:
@@ -110,6 +177,13 @@ def factor_state(stack, actor: dict, factor: dict) -> dict:
     return json.loads(raw) if raw else {}
 
 
+def factor_inventory(stack, actor: dict) -> dict:
+    actor_guard(stack, actor)
+    return json.loads(stack.sql("select coalesce(jsonb_object_agg(id::text,status::text),'{}') "
+                                "from auth.mfa_factors where user_id=" + q(actor["user"])
+                                + " and factor_type='totp';"))
+
+
 class NativeClient:
     def __init__(self, stack, actor: dict):
         actor_guard(stack, actor)
@@ -153,6 +227,10 @@ class NativeClient:
 
     def enroll(self, label: str | None = None) -> dict:
         response = self.native("enroll", {"friendlyName": label} if label else {})
+        profile = native_qr_profile(response.get("totp", {}).get("qr_code"))
+        lab.REPORT.setdefault("native_qr_profiles", []).append(profile)
+        check("native QR has the exact inert upstream structure within the UI bound",
+              all(value is True for key, value in profile.items() if key not in {"tag_names", "attribute_names"}))
         factor = {"id": str(uuid.UUID(response["id"])), "secret": response.get("totp", {}).get("secret"),
                   "last_counter": -1}
         # Discard the native QR/URI immediately; neither is a receipt field.
@@ -240,6 +318,41 @@ def restore_native_factor(stack, actor: dict, factor: dict) -> NativeClient:
     return restored
 
 
+def pending_enrollment_contract(native: NativeClient, primary: dict, primary_name: str) -> tuple[dict, dict]:
+    """Bounded native API calls; no extra challenge, OTP wait or policy flag."""
+    stack, actor = native.stack, native.actor
+    original = {primary["id"]: "unverified"}
+    duplicate = native.call("enroll", {"friendlyName": primary_name})
+    check("native duplicate pending friendly name is rejected without creating a factor",
+          duplicate.get("error", {}).get("code") == "mfa_factor_name_conflict"
+          and factor_inventory(stack, actor) == original)
+    unnamed = native.enroll()  # Deliberate blank-name regression, not the normal UI path.
+    first_two = {**original, unnamed["id"]: "unverified"}
+    duplicate = native.call("enroll", {})
+    check("native duplicate blank friendly name is rejected without creating a factor",
+          duplicate.get("error", {}).get("code") == "mfa_factor_name_conflict"
+          and factor_inventory(stack, actor) == first_two)
+    spare = native.enroll("Isolated pending " + uuid.uuid4().hex)
+    full = {**first_two, spare["id"]: "unverified"}
+    check("three pending native TOTP factors occupy all three isolated slots",
+          factor_inventory(stack, actor) == full)
+    overflow = native.call("enroll", {"friendlyName": "Isolated overflow " + uuid.uuid4().hex})
+    check("native pending factors count toward the unchanged max three quota",
+          overflow.get("error", {}).get("code") == "too_many_enrolled_mfa_factors"
+          and factor_inventory(stack, actor) == full)
+    native.native("unenroll", {"factorId": unnamed["id"]})
+    check("selected pending native unenrollment at AAL1 frees exactly one slot and preserves both others",
+          claims(actor["token"]).get("aal") == "aal1"
+          and live_session(stack, actor["token"]) == {"aal": "aal1", "factor_id": None,
+                                                       "user_id": actor["user"], "live": True}
+          and factor_inventory(stack, actor) == {**original, spare["id"]: "unverified"})
+    replacement = native.enroll("Isolated replacement " + uuid.uuid4().hex)
+    check("one new native enrollment consumes exactly the selected freed slot",
+          factor_inventory(stack, actor) == {**original, spare["id"]: "unverified", replacement["id"]: "unverified"})
+    access(stack, actor, actor["token"], True, "only pending factors after explicit selected cleanup")
+    return spare, replacement
+
+
 def exercise(stack) -> None:
     a, b = lab.signup(stack, "A"), lab.signup(stack, "B")
     for actor, plate in [(a, "NATIVE MFA A"), (b, "NATIVE MFA B")]:
@@ -251,8 +364,10 @@ def exercise(stack) -> None:
     original = a["token"]
     capability(stack, original)
     access(stack, a, original, True, "no factor")
-    primary = native.enroll("Isolated primary")
+    primary_name = "Isolated primary " + uuid.uuid4().hex
+    primary = native.enroll(primary_name)
     access(stack, a, original, True, "pending factor")
+    pending_factors = pending_enrollment_contract(native, primary, primary_name)
     counter = int(time.time()) // 30
     valid_window = {totp(primary["secret"], counter + offset) for offset in [-1, 0, 1]}
     wrong = next(f"{value:06d}" for value in range(10) if f"{value:06d}" not in valid_window)
@@ -261,6 +376,9 @@ def exercise(stack) -> None:
     check("native Auth rejects an incorrect TOTP without verifying the pending factor",
           "error" in rejected and factor_state(stack, a, primary).get("status") == "unverified")
     upgraded = native.verify(primary)
+    check("successful native TOTP verification removes other pending TOTP factors and preserves the verified primary",
+          all(factor_state(stack, a, pending_factor) == {} for pending_factor in pending_factors)
+          and factor_inventory(stack, a) == {primary["id"]: "verified"})
     check("pre-enrollment AAL1 JWT uses the same SID as the native upgrade",
           claims(original)["aal"] == "aal1" and claims(original)["session_id"] == claims(upgraded)["session_id"])
     access(stack, a, original, False, "old AAL1 replay after same-SID upgrade")
@@ -278,7 +396,7 @@ def exercise(stack) -> None:
     check("native SDK reports the remaining required AAL2 challenge",
           pending.native("assurance").get("currentLevel") == "aal1"
           and pending.native("assurance").get("nextLevel") == "aal2")
-    backup = native.enroll()  # Real native backup enrollment without friendlyName.
+    backup = native.enroll("Isolated backup " + uuid.uuid4().hex)
     native.verify(backup)
     check("both independent native TOTP factors remain verified",
           factor_state(stack, a, primary).get("status") == "verified"
