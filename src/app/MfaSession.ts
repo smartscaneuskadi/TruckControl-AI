@@ -14,6 +14,7 @@ export type MfaSessionStatus = {
   kind: "checking" | "ready" | "challenge" | "unavailable";
   userId: string | null;
   state: NativeMfaState | null;
+  signingOut: boolean;
 };
 type Client = NonNullable<ReturnType<typeof getSupabaseClient>>;
 
@@ -23,6 +24,7 @@ export function useNativeMfaSession(client: Client | null) {
     kind: "checking",
     userId: null,
     state: null,
+    signingOut: false,
   });
   const retry = useRef<() => void>(() => {});
   useEffect(() => {
@@ -32,6 +34,7 @@ export function useNativeMfaSession(client: Client | null) {
       signingOut = false,
       generation = 0;
     let actor: string | null | undefined;
+    let actorSessionId: string | null | undefined;
     let accepted: NativeMfaState | null = null;
     let acceptedHint: ReturnType<typeof nativeSessionHint> = null;
     let requireRemainingChallenge = false;
@@ -51,7 +54,7 @@ export function useNativeMfaSession(client: Client | null) {
       accepted = null;
       acceptedHint = null;
       endPrivateSessions();
-      setStatus({ kind, userId, state });
+      setStatus({ kind, userId, state, signingOut });
     };
     function check(
       session: Session | null,
@@ -87,6 +90,7 @@ export function useNativeMfaSession(client: Client | null) {
         Boolean(sameToken || unchangedRefresh || verifiedHere);
       if (!preserve) close("checking", id);
       actor = id;
+      actorSessionId = hint?.sessionId ?? null;
       // Auth callbacks run under an SDK lock. Start native calls after it releases.
       defer(() => {
         void readNativeMfa(client!, id)
@@ -111,7 +115,12 @@ export function useNativeMfaSession(client: Client | null) {
                 ...session!,
                 access_token: state.token,
               });
-              setStatus({ kind: "ready", userId: id, state });
+              setStatus({
+                kind: "ready",
+                userId: id,
+                state,
+                signingOut: false,
+              });
             }
           })
           .catch(() => {
@@ -142,24 +151,35 @@ export function useNativeMfaSession(client: Client | null) {
         });
     }
     const subscription = client.auth.onAuthStateChange((event, session) => {
-      if (!active || suspended) return;
+      if (!active) return;
       const id = session?.user.id ?? null;
       if (event === "SIGNED_OUT") {
         signingOut = false;
         actor = null;
+        actorSessionId = null;
         requireRemainingChallenge = false;
         ++generation;
         close("checking", null);
         return;
       }
-      if (event === "SIGNED_IN") signingOut = false;
+      if (signingOut && actor === id) {
+        // Ignore a same-actor refresh/recovery/late MFA result while logout is
+        // pending or failed. The native SIGNED_OUT event above is terminal;
+        // retrying logout does not turn this latch into an access grant.
+        ++generation;
+        return;
+      }
+      if (event === "SIGNED_IN" && actor !== id) signingOut = false;
+      const hint = nativeSessionHint(session);
       if (
         signingOut ||
         (["MFA_CHALLENGE_VERIFIED", "TOKEN_REFRESHED", "USER_UPDATED"].includes(
           event,
         ) &&
-          actor !== undefined &&
-          actor !== id)
+          ((actor !== undefined && actor !== id) ||
+            (actorSessionId &&
+              hint?.sessionId &&
+              actorSessionId !== hint.sessionId)))
       ) {
         // Native verify installs its response before notifying subscribers. A late
         // response after logout/actor change must never reopen that actor's view.
@@ -171,20 +191,45 @@ export function useNativeMfaSession(client: Client | null) {
         });
         return;
       }
+      if (event === "SIGNED_IN" || event === "PASSWORD_RECOVERY") {
+        if (actor !== id || actorSessionId !== (hint?.sessionId ?? null))
+          requireRemainingChallenge = false;
+        actor = id;
+        actorSessionId = hint?.sessionId ?? null;
+      }
       if (event === "MFA_CHALLENGE_VERIFIED") requireRemainingChallenge = false;
+      if (suspended) {
+        ++generation;
+        return;
+      }
       check(session, event);
     });
     function mutation(event: Event) {
-      const reason: unknown = (event as CustomEvent<unknown>).detail;
+      const detail: unknown = (event as CustomEvent<unknown>).detail;
+      const scoped =
+        detail && typeof detail === "object"
+          ? (detail as Record<string, unknown>)
+          : null;
+      const reason = scoped ? scoped.reason : detail;
+      if (scoped && scoped.userId !== actor) return;
       if (reason === "signout") {
         signingOut = true;
         ++generation;
-        close("checking", actor ?? null);
+        // Keep the existing disabled pending-logout control for baseline
+        // accounts. The deny latch still rejects late auth responses, and RAM
+        // capabilities/secrets close synchronously before network revocation.
+        if (accepted && !accepted.factors.length) endPrivateSessions();
+        else close("checking", actor ?? null);
       } else if (reason === "factor-removed") {
-        requireRemainingChallenge = true;
+        const originSession =
+          !scoped?.sessionId || scoped.sessionId === actorSessionId;
+        requireRemainingChallenge = originSession;
         ++generation;
         close("checking", actor ?? null);
-        refresh(true);
+        if (!scoped || !originSession) refresh(true);
+      } else if (reason === "signout-failed" && signingOut) {
+        ++generation;
+        close("unavailable", actor ?? null);
       } else if (reason === "refresh") refresh();
     }
     function suspend() {

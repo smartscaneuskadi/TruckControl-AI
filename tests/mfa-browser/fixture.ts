@@ -30,7 +30,12 @@ export const factor = (
   created_at: stamp,
   updated_at: stamp,
 });
-export const jwt = (id = actor, aal = "aal1", revision = 1) =>
+export const jwt = (
+  id = actor,
+  aal = "aal1",
+  revision = 1,
+  sid = "session-" + id,
+) =>
   Buffer.from('{"alg":"HS256","typ":"JWT"}').toString("base64url") +
   "." +
   Buffer.from(
@@ -39,7 +44,7 @@ export const jwt = (id = actor, aal = "aal1", revision = 1) =>
       aud: "authenticated",
       role: "authenticated",
       aal,
-      session_id: "session-" + id,
+      session_id: sid,
       jti: revision,
       exp: Math.floor(Date.now() / 1000) + 3600,
       iat: Math.floor(Date.now() / 1000),
@@ -64,16 +69,24 @@ export async function nativeFixture(
     sessionStatus: 200,
     failUser: false,
     unsafeQr: false,
+    unsafeStyle: false,
+    largeQr: false,
     ignoreVerification: false,
     revision: 1,
     loginAal: "aal1",
     refreshAal: "aal2",
     holdEnroll: false,
     holdVerify: false,
+    holdLogout: false,
+    holdRemoval: false,
     enrollmentPending: false,
     verificationPending: false,
+    logoutPending: false,
+    removalPending: false,
     releaseEnroll: () => {},
     releaseVerify: () => {},
+    releaseLogout: () => {},
+    releaseRemoval: () => {},
     boundFactor: new Map<string, string>(),
     organizations: [{ id: org, name: "Empresa MFA ficticia" }],
   };
@@ -100,8 +113,8 @@ export async function nativeFixture(
     updated_at: stamp,
     factors: structuredClone(controls.factors.get(id) ?? []),
   });
-  const session = (id = actor, aal = "aal1") => ({
-    access_token: jwt(id, aal, ++controls.revision),
+  const session = (id = actor, aal = "aal1", sid = "session-" + id) => ({
+    access_token: jwt(id, aal, ++controls.revision, sid),
     refresh_token: "synthetic-refresh-" + id,
     token_type: "bearer",
     expires_in: 3600,
@@ -193,7 +206,7 @@ export async function nativeFixture(
     };
     if (request.method() === "OPTIONS")
       return route.fulfill({ status: 204, headers, body: "" });
-    let claims: { sub?: string; aal?: string } = {};
+    let claims: { sub?: string; aal?: string; session_id?: string } = {};
     try {
       claims = JSON.parse(
         Buffer.from(
@@ -234,8 +247,14 @@ export async function nativeFixture(
         ? { code: "unexpected_failure", message: "Private provider diagnostic" }
         : user(id);
       if (controls.failUser) status = 500;
-    } else if (path === "/auth/v1/logout") data = {};
-    else if (path === "/auth/v1/factors" && request.method() === "POST") {
+    } else if (path === "/auth/v1/logout") {
+      controls.logoutPending = true;
+      if (controls.holdLogout)
+        await new Promise<void>((resolve) => {
+          controls.releaseLogout = resolve;
+        });
+      data = {};
+    } else if (path === "/auth/v1/factors" && request.method() === "POST") {
       controls.enrollmentPending = true;
       if (controls.holdEnroll)
         await new Promise<void>((resolve) => {
@@ -244,7 +263,7 @@ export async function nativeFixture(
       const nextId = (controls.factors.get(id)?.length ?? 0) ? backup : primary;
       controls.factors
         .get(id)!
-        .push(factor(nextId, "Nuevo ficticio", "unverified"));
+        .push(factor(nextId, String(body?.friendly_name ?? ""), "unverified"));
       data = {
         id: nextId,
         type: "totp",
@@ -253,7 +272,17 @@ export async function nativeFixture(
           uri: "otpauth://totp/synthetic",
           qr_code: controls.unsafeQr
             ? '<svg xmlns="http://www.w3.org/2000/svg"><image href="https://blocked.example/qr.svg"/></svg>'
-            : '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 10 10"><rect width="10" height="10" fill="#fff"/><path d="M1 1h8v8H1z" fill="#000"/></svg>',
+            : controls.unsafeStyle
+              ? '<svg xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10" style="fill:url(https://blocked.example/style);stroke:none"/></svg>'
+              : '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100">' +
+                (controls.largeQr
+                  ? Array.from(
+                      { length: 4000 },
+                      (_, index) =>
+                        `<rect x="${index % 64}" y="${Math.floor(index / 64)}" width="1" height="1" style="fill:${index % 2 ? "black" : "white"};stroke:none"/>`,
+                    ).join("")
+                  : '<rect x="0" y="0" width="100" height="100" style="fill:white;stroke:none"/><rect x="10" y="10" width="80" height="80" style="fill:black;stroke:none"/>') +
+                "</svg>",
         },
       };
     } else if (/\/auth\/v1\/factors\/[^/]+\/challenge$/.test(path))
@@ -276,19 +305,36 @@ export async function nativeFixture(
         };
       } else {
         const factorId = path.split("/")[4];
-        if (!controls.ignoreVerification)
+        if (!controls.ignoreVerification) {
+          controls.factors.set(
+            id,
+            (controls.factors.get(id) ?? []).filter(
+              (f) => f.id === factorId || f.status === "verified",
+            ),
+          );
           controls.factors.get(id)?.forEach((f) => {
             if (f.id === factorId) f.status = "verified";
           });
+        }
         controls.boundFactor.set(id, factorId);
-        data = session(id, "aal2");
+        data = session(id, "aal2", claims.session_id ?? "session-" + id);
       }
     } else if (
       /\/auth\/v1\/factors\/[^/]+$/.test(path) &&
       request.method() === "DELETE"
     ) {
       const factorId = path.split("/")[4];
-      if (claims.aal !== "aal2") {
+      controls.removalPending = true;
+      if (controls.holdRemoval)
+        await new Promise<void>((resolve) => {
+          controls.releaseRemoval = resolve;
+        });
+      if (
+        claims.aal !== "aal2" &&
+        controls.factors
+          .get(id)
+          ?.some((f) => f.id === factorId && f.status === "verified")
+      ) {
         status = 403;
         data = { code: "insufficient_aal" };
       } else {

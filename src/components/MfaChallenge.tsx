@@ -6,7 +6,8 @@ import { mfaErrorMessage, verifyTotp } from "../integrations/supabase/mfa";
 import type { MfaSessionStatus } from "../app/MfaSession";
 import { sessionExitEvent } from "../app/session-events";
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
-import { TotpCodeField } from "./MfaSettings";
+import { TotpCodeField } from "./TotpCodeField";
+import "../styles/mfa.css";
 import { Button, Field } from "./ui";
 
 export function MfaChallenge({
@@ -68,6 +69,13 @@ export function MfaChallenge({
       if (current()) setBusy(false);
     }
   }
+  const signOut = () => {
+    setCode("");
+    void onSignOut().catch(() => {
+      if (mounted.current)
+        setError("No se ha podido confirmar el cierre de sesión. Reinténtalo.");
+    });
+  };
   return (
     <main className="registration-page mfa-access-page">
       <LanguageSwitcher />
@@ -78,7 +86,9 @@ export function MfaChallenge({
         <span className="settings-icon">
           <ShieldCheck size={26} aria-hidden="true" />
         </span>
-        <h1 id="mfa-challenge-title">Confirma tu autenticador</h1>
+        <h1 id="mfa-challenge-title">
+          {status.signingOut ? "Cerrar sesión" : "Confirma tu autenticador"}
+        </h1>
         {status.kind === "challenge" ? (
           <>
             <p>
@@ -124,11 +134,16 @@ export function MfaChallenge({
           </>
         ) : status.kind === "unavailable" ? (
           <p className="form-error" role="alert">
-            No se puede comprobar la seguridad de la sesión. Comprueba la
-            conexión y reinténtalo.
+            {status.signingOut
+              ? "No se ha podido cerrar la sesión. Comprueba la conexión y reinténtalo."
+              : "No se puede comprobar la seguridad de la sesión. Comprueba la conexión y reinténtalo."}
           </p>
         ) : (
-          <p role="status">Comprobando la seguridad de tu sesión…</p>
+          <p role="status">
+            {status.signingOut
+              ? "Cerrando sesión…"
+              : "Comprobando la seguridad de tu sesión…"}
+          </p>
         )}
         {error && (
           <p className="form-error" role="alert">
@@ -138,27 +153,17 @@ export function MfaChallenge({
         <div className="access-links">
           <Button
             variant="secondary"
-            disabled={busy}
+            disabled={busy || (status.signingOut && status.kind === "checking")}
             onClick={() => {
               setCode("");
               setError("");
-              onRetry();
+              if (status.signingOut) signOut();
+              else onRetry();
             }}
           >
             Reintentar
           </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setCode("");
-              void onSignOut().catch(() => {
-                if (mounted.current)
-                  setError(
-                    "No se ha podido confirmar el cierre de sesión. Reinténtalo.",
-                  );
-              });
-            }}
-          >
+          <Button variant="ghost" onClick={signOut}>
             Cerrar sesión
           </Button>
         </div>

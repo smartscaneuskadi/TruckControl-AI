@@ -38,7 +38,7 @@ import { SubscriptionIncidents } from "../components/SubscriptionIncidents";
 import { UnlinkedIncidentReview } from "../components/UnlinkedIncidentReview";
 import { SubscriptionRiskSignals } from "../components/SubscriptionRiskSignals";
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
-import { MfaSettings } from "../components/MfaSettings";
+import { MfaSettingsLoader as MfaSettings } from "../components/MfaSettingsLoader";
 
 export function AdminConsole({
   userId,

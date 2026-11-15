@@ -7,6 +7,31 @@ import {
   noSecretStorage,
   openSecurity,
 } from "./fixture";
+test("pending cleanup stays available with new enrollment rollout off", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, {
+    factors: [factor(undefined, "Intento pendiente", "unverified")],
+  });
+  await login(page);
+  await openSecurity(page);
+  await page
+    .getByRole("button", { name: "Descartar configuración", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect
+    .poll(() => f.controls.factors.values().next().value?.length)
+    .toBe(0);
+  expect(f.calls.filter((c) => c.method === "DELETE")).toHaveLength(1);
+  expect(
+    f.calls.some((c) => c.path === "/auth/v1/factors" && c.method === "POST"),
+  ).toBe(false);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
 test("enrollment defaults off and ordinary native access stays available", async ({
   page,
   context,

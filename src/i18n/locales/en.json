@@ -2939,5 +2939,13 @@
   "Autenticador": "Authenticator",
   "Confirmar código": "Confirm code",
   "Comprobando la seguridad de tu sesión…": "Checking your session security…",
-  "No se ha podido confirmar el cierre de sesión. Reinténtalo.": "Sign-out could not be confirmed. Try again."
+  "No se ha podido confirmar el cierre de sesión. Reinténtalo.": "Sign-out could not be confirmed. Try again.",
+  "Este autenticador ya está verificado. Actualiza la lista y confirma su retirada como autenticador verificado.": "This authenticator is already verified. Refresh the list and confirm removal as a verified authenticator.",
+  "Has alcanzado el límite de autenticadores. Revisa las configuraciones pendientes y descarta solo las que identifiques antes de reintentar.": "You have reached the authenticator limit. Review pending setups and discard only attempts you recognize before trying again.",
+  "Configuraciones pendientes": "Pending setups",
+  "Los intentos sin verificar pueden ocupar una plaza del límite de autenticadores. Puedes descartar un intento concreto; cerrar la ventana no lo elimina.": "Unverified attempts can occupy an authenticator slot. You can discard a specific attempt; closing the window does not remove it.",
+  "Intento pendiente {0}": "Pending attempt {0}",
+  "Descartar configuración": "Discard setup",
+  "¿Descartar esta configuración?": "Discard this setup?",
+  "Se eliminará este autenticador. Otra sesión podría verificarlo mientras confirmas; también autorizas su retirada en ese caso si el servidor lo permite. Si ya está verificado al comprobarlo, actualiza la lista y confirma su retirada como autenticador verificado.": "This authenticator will be removed. Another session could verify it while you confirm; you also authorize removal in that case if the server permits it. If it is already verified when checked, refresh the list and confirm removal as a verified authenticator."
 }

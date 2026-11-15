@@ -21,36 +21,7 @@ import { sessionExitEvent } from "../app/session-events";
 import { Badge, Button, Field, Modal } from "./ui";
 import "../styles/mfa.css";
 
-export function TotpCodeField({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: string;
-  onChange(value: string): void;
-  disabled: boolean;
-}) {
-  return (
-    <Field label="Código de 6 dígitos">
-      <input
-        className="mfa-code"
-        type="text"
-        inputMode="numeric"
-        autoComplete="one-time-code"
-        pattern="[0-9]{6}"
-        minLength={6}
-        maxLength={6}
-        required
-        spellCheck={false}
-        value={value}
-        disabled={disabled}
-        onChange={(e) =>
-          onChange(e.target.value.replace(/\D/g, "").slice(0, 6))
-        }
-      />
-    </Field>
-  );
-}
+import { TotpCodeField } from "./TotpCodeField";
 
 /** Company settings and superadministrator settings share this native Auth UI. */
 export function MfaSettings({ userId }: { userId: string }) {
@@ -58,7 +29,10 @@ export function MfaSettings({ userId }: { userId: string }) {
   const [state, setState] = useState<NativeMfaState | null>(null);
   const [serverReady, setServerReady] = useState(false);
   const [pending, setPending] = useState<PendingTotp | null>(null);
-  const [removing, setRemoving] = useState<TotpFactor | null>(null);
+  const [removing, setRemoving] = useState<{
+    factor: TotpFactor;
+    pending: boolean;
+  } | null>(null);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -80,6 +54,13 @@ export function MfaSettings({ userId }: { userId: string }) {
     const subscription = client?.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT" || (session && session.user.id !== userId))
         clear();
+      else if (
+        event === "MFA_CHALLENGE_VERIFIED" &&
+        session?.user.id === userId
+      ) {
+        setError("");
+        setRevision((n) => n + 1);
+      }
     });
     window.addEventListener("offline", clear);
     window.addEventListener(sessionExitEvent, clear);
@@ -99,7 +80,6 @@ export function MfaSettings({ userId }: { userId: string }) {
       .then((next) => {
         if (active && mounted.current && generation.current === stamp) {
           setState(next);
-          setError("");
         }
       })
       .catch((e) => {
@@ -127,6 +107,7 @@ export function MfaSettings({ userId }: { userId: string }) {
     setCode("");
     setBusy(false);
     setError("");
+    if (navigator.onLine) setRevision((n) => n + 1);
   };
   async function enroll() {
     if (!client || busy) return;
@@ -188,7 +169,13 @@ export function MfaSettings({ userId }: { userId: string }) {
     setError("");
     setMessage("");
     try {
-      await removeTotp(client, userId, removing.id, isCurrent);
+      await removeTotp(
+        client,
+        userId,
+        removing.factor.id,
+        isCurrent,
+        removing.pending,
+      );
     } catch (e) {
       if (isCurrent()) setError(mfaErrorMessage(e));
     } finally {
@@ -237,7 +224,7 @@ export function MfaSettings({ userId }: { userId: string }) {
                     onClick={() => {
                       setError("");
                       setMessage("");
-                      setRemoving(factor);
+                      setRemoving({ factor, pending: false });
                     }}
                   >
                     Quitar autenticador
@@ -245,6 +232,36 @@ export function MfaSettings({ userId }: { userId: string }) {
                 </li>
               ))}
             </ul>
+          )}
+          {state.pendingFactors.length > 0 && (
+            <div className="mfa-pending-factors">
+              <h3>Configuraciones pendientes</h3>
+              <p>
+                Los intentos sin verificar pueden ocupar una plaza del límite de
+                autenticadores. Puedes descartar un intento concreto; cerrar la
+                ventana no lo elimina.
+              </p>
+              <ul className="mfa-factor-list">
+                {state.pendingFactors.map((factor, index) => (
+                  <li key={factor.id}>
+                    <span>
+                      {factor.friendly_name || `Intento pendiente ${index + 1}`}
+                    </span>
+                    <Button
+                      variant="secondary"
+                      disabled={busy || !navigator.onLine}
+                      onClick={() => {
+                        setError("");
+                        setMessage("");
+                        setRemoving({ factor, pending: true });
+                      }}
+                    >
+                      Descartar configuración
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </>
       ) : (
@@ -281,7 +298,6 @@ export function MfaSettings({ userId }: { userId: string }) {
           disabled={busy || !navigator.onLine}
           onClick={() => {
             close();
-            setRevision((n) => n + 1);
           }}
         >
           Comprobar autenticadores
@@ -344,16 +360,33 @@ export function MfaSettings({ userId }: { userId: string }) {
       )}
       {removing && (
         <Modal
-          title="¿Quitar este autenticador?"
+          title={
+            removing.pending
+              ? "¿Descartar esta configuración?"
+              : "¿Quitar este autenticador?"
+          }
           onClose={close}
           allowAppearance={false}
         >
-          <p>
-            Necesitas una sesión confirmada con un código de autenticación. Si
-            queda otro autenticador, tendrás que confirmar uno de sus códigos
-            para continuar.
+          <p translate="no">
+            {removing.factor.friendly_name || removing.factor.id}
           </p>
-          {state?.factors.length === 1 && (
+          {removing.pending ? (
+            <p>
+              Se eliminará este autenticador. Otra sesión podría verificarlo
+              mientras confirmas; también autorizas su retirada en ese caso si
+              el servidor lo permite. Si ya está verificado al comprobarlo,
+              actualiza la lista y confirma su retirada como autenticador
+              verificado.
+            </p>
+          ) : (
+            <p>
+              Necesitas una sesión confirmada con un código de autenticación. Si
+              queda otro autenticador, tendrás que confirmar uno de sus códigos
+              para continuar.
+            </p>
+          )}
+          {!removing.pending && state?.factors.length === 1 && (
             <p>
               Al quitar el último autenticador, la cuenta volverá al acceso con
               contraseña. Añade antes un respaldo si quieres conservar el

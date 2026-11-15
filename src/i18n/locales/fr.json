@@ -2939,5 +2939,13 @@
   "Autenticador": "Authentificateur",
   "Confirmar código": "Confirmer le code",
   "Comprobando la seguridad de tu sesión…": "Vérification de la sécurité de votre session…",
-  "No se ha podido confirmar el cierre de sesión. Reinténtalo.": "La déconnexion n’a pas pu être confirmée. Réessayez."
+  "No se ha podido confirmar el cierre de sesión. Reinténtalo.": "La déconnexion n’a pas pu être confirmée. Réessayez.",
+  "Este autenticador ya está verificado. Actualiza la lista y confirma su retirada como autenticador verificado.": "Cet authentificateur est déjà vérifié. Actualisez la liste et confirmez sa suppression comme authentificateur vérifié.",
+  "Has alcanzado el límite de autenticadores. Revisa las configuraciones pendientes y descarta solo las que identifiques antes de reintentar.": "Vous avez atteint la limite d’authentificateurs. Examinez les configurations en attente et supprimez uniquement les tentatives que vous reconnaissez avant de réessayer.",
+  "Configuraciones pendientes": "Configurations en attente",
+  "Los intentos sin verificar pueden ocupar una plaza del límite de autenticadores. Puedes descartar un intento concreto; cerrar la ventana no lo elimina.": "Les tentatives non vérifiées peuvent occuper une place dans la limite d’authentificateurs. Vous pouvez supprimer une tentative précise ; fermer la fenêtre ne la supprime pas.",
+  "Intento pendiente {0}": "Tentative en attente {0}",
+  "Descartar configuración": "Supprimer la configuration",
+  "¿Descartar esta configuración?": "Supprimer cette configuration ?",
+  "Se eliminará este autenticador. Otra sesión podría verificarlo mientras confirmas; también autorizas su retirada en ese caso si el servidor lo permite. Si ya está verificado al comprobarlo, actualiza la lista y confirma su retirada como autenticador verificado.": "Cet authentificateur sera supprimé. Une autre session pourrait le vérifier pendant votre confirmation ; vous autorisez également sa suppression dans ce cas si le serveur le permet. S’il est déjà vérifié lors du contrôle, actualisez la liste et confirmez sa suppression comme authentificateur vérifié."
 }

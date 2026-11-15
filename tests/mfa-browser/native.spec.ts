@@ -276,6 +276,7 @@ test("new enrollment verification rechecks backend capability and does not call 
     .getByRole("button", { name: "Cancelar configuración", exact: true })
     .click();
   await expect(page.locator("body")).not.toContainText(secret);
+  await expect(page.locator(".mfa-pending-factors")).toBeVisible();
   expect(f.calls.some((c) => c.method === "DELETE")).toBe(false);
   await noSecretStorage(page);
   expect(f.blocked).toEqual([]);
@@ -326,9 +327,326 @@ test("unsafe QR is not rendered or fetched; close and offline clear RAM setup wi
   await expect(page.locator("body")).not.toContainText(secret);
   expect(f.controls.factors.get(actor)?.[0].status).toBe("unverified");
   expect(f.calls.some((c) => c.method === "DELETE")).toBe(false);
+  f.controls.unsafeQr = false;
+  f.controls.unsafeStyle = true;
+  await page
+    .getByRole("button", { name: "Añadir autenticador", exact: true })
+    .click();
+  await expect(page.getByRole("dialog")).toContainText(secret);
+  await expect(page.getByRole("dialog").getByRole("img")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Cancelar configuración", exact: true })
+    .click();
+  const names = f.calls
+    .filter((c) => c.path === "/auth/v1/factors")
+    .map((c) => c.body?.friendly_name);
+  expect(names).toHaveLength(2);
+  expect(new Set(names).size).toBe(2);
   await noSecretStorage(page);
   expect(f.blocked).toEqual([]);
 });
+test("provider rect/style QR larger than the former limit is normalized locally", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context);
+  f.controls.largeQr = true;
+  await login(page);
+  await openSecurity(page);
+  await page
+    .getByRole("button", { name: "Añadir autenticador", exact: true })
+    .click();
+  const qr = page.getByRole("dialog").getByRole("img");
+  await expect(qr).toBeVisible();
+  const normalized = await qr.evaluate((element) =>
+    decodeURIComponent(
+      (element as HTMLImageElement).src.split(",").slice(1).join(","),
+    ),
+  );
+  expect(normalized.length).toBeGreaterThan(262144);
+  expect(normalized).not.toMatch(/style=|xmlns:xlink|https:\/\/blocked/);
+  expect(normalized).toContain('fill="black"');
+  expect(normalized).toContain('fill="white"');
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("pending-factor discard is explicit and removes only the selected current attempt", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, {
+    factors: [
+      factor(primary, "Intento A", "unverified"),
+      factor(backup, "Intento B", "unverified"),
+    ],
+  });
+  await login(page);
+  await openSecurity(page);
+  await page
+    .locator(".mfa-pending-factors li")
+    .filter({ hasText: "Intento A" })
+    .getByRole("button")
+    .click();
+  await expect(page.getByRole("dialog")).toContainText(
+    "Otra sesión podría verificarlo",
+  );
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect
+    .poll(() => f.controls.factors.get(actor)?.map((factor) => factor.id))
+    .toEqual([backup]);
+  await openSecurity(page);
+  await expect(page.locator(".mfa-pending-factors")).toContainText("Intento B");
+  await expect(page.locator(".mfa-pending-factors")).not.toContainText(
+    "Intento A",
+  );
+  expect(f.calls.filter((c) => c.method === "DELETE")).toHaveLength(1);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("pending discard refuses a factor already verified elsewhere and refreshes the gate", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, {
+    factors: [factor(primary, "Intento A", "unverified")],
+  });
+  await login(page);
+  await openSecurity(page);
+  await page
+    .getByRole("button", { name: "Descartar configuración", exact: true })
+    .click();
+  f.controls.factors.get(actor)![0].status = "verified";
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Confirmar código", exact: true }),
+  ).toBeVisible();
+  expect(f.calls.some((c) => c.method === "DELETE")).toBe(false);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("native AAL rejection of a concurrent pending-to-verified change refreshes the challenge without deleting it", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, {
+    factors: [factor(primary, "Intento A", "unverified")],
+  });
+  f.controls.holdRemoval = true;
+  await login(page);
+  await openSecurity(page);
+  await page
+    .getByRole("button", { name: "Descartar configuración", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect.poll(() => f.controls.removalPending).toBe(true);
+  f.controls.factors.get(actor)![0].status = "verified";
+  f.controls.releaseRemoval();
+  await expect(
+    page.getByRole("button", { name: "Confirmar código", exact: true }),
+  ).toBeVisible();
+  expect(f.controls.factors.get(actor)?.[0].status).toBe("verified");
+  expect(f.calls.filter((c) => c.method === "DELETE")).toHaveLength(1);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("successful removal still suspends and challenges after the initiating modal was canceled", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, {
+    factors: [factor(), factor(backup, "Respaldo ficticio")],
+  });
+  f.controls.loginAal = "aal2";
+  f.controls.boundFactor.set(actor, primary);
+  f.controls.holdRemoval = true;
+  await login(page);
+  await openSecurity(page);
+  await page
+    .locator(".mfa-factor-list li")
+    .filter({ hasText: "Principal ficticio" })
+    .getByRole("button")
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect.poll(() => f.controls.removalPending).toBe(true);
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Cancelar", exact: true })
+    .click();
+  f.controls.releaseRemoval();
+  await expect(
+    page.getByRole("button", { name: "Confirmar código", exact: true }),
+  ).toBeVisible();
+  expect(f.controls.factors.get(actor)?.map((factor) => factor.id)).toEqual([
+    backup,
+  ]);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("a late removal cannot refresh or disturb a newer actor session", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, {
+    factors: [factor(), factor(backup, "Respaldo ficticio")],
+  });
+  f.controls.loginAal = "aal2";
+  f.controls.boundFactor.set(actor, primary);
+  f.controls.holdRemoval = true;
+  await login(page);
+  await openSecurity(page);
+  await page
+    .locator(".mfa-factor-list li")
+    .filter({ hasText: "Principal ficticio" })
+    .getByRole("button")
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect.poll(() => f.controls.removalPending).toBe(true);
+  await broadcast(page, "SIGNED_IN", f.session(other, "aal1"));
+  await expect(page.locator(".admin-account")).toContainText(
+    "other@example.com",
+  );
+  f.controls.releaseRemoval();
+  await expect.poll(() => f.controls.factors.get(actor)?.length).toBe(1);
+  await expect(page.locator(".admin-account")).toContainText(
+    "other@example.com",
+  );
+  expect(
+    f.calls.some((c) => c.path === "/auth/v1/token" && c.body?.refresh_token),
+  ).toBe(false);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("a late removal revalidates a newer same-account SID without refreshing its native session", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, {
+    factors: [factor(), factor(backup, "Respaldo ficticio")],
+  });
+  f.controls.loginAal = "aal2";
+  f.controls.boundFactor.set(actor, primary);
+  f.controls.holdRemoval = true;
+  await login(page);
+  await openSecurity(page);
+  await page
+    .locator(".mfa-factor-list li")
+    .filter({ hasText: "Principal ficticio" })
+    .getByRole("button")
+    .click();
+  await page
+    .getByRole("button", { name: "Sí, quitar autenticador", exact: true })
+    .click();
+  await expect.poll(() => f.controls.removalPending).toBe(true);
+  f.controls.boundFactor.set(actor, backup);
+  await broadcast(
+    page,
+    "SIGNED_IN",
+    f.session(actor, "aal2", "newer-valid-backup-session"),
+  );
+  await expect(
+    page.getByRole("heading", { name: "Tu centro de administración" }),
+  ).toBeVisible();
+  const reads = f.calls.filter((c) =>
+    c.path.endsWith("tc_verified_session"),
+  ).length;
+  f.controls.releaseRemoval();
+  await expect
+    .poll(
+      () =>
+        f.calls.filter((c) => c.path.endsWith("tc_verified_session")).length,
+    )
+    .toBeGreaterThan(reads);
+  await expect(
+    page.getByRole("heading", { name: "Tu centro de administración" }),
+  ).toBeVisible();
+  expect(
+    f.calls.some((c) => c.path === "/auth/v1/token" && c.body?.refresh_token),
+  ).toBe(false);
+  expect(
+    await page.evaluate(
+      () =>
+        JSON.parse(
+          atob(
+            JSON.parse(
+              localStorage.getItem("truckcontrol-auth-v1")!,
+            ).access_token.split(".")[1],
+          ),
+        ).session_id,
+    ),
+  ).toBe("newer-valid-backup-session");
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("a completed native verification after setup cancellation refreshes factors without restoring the secret", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context);
+  f.controls.holdVerify = true;
+  await login(page);
+  await openSecurity(page);
+  await page
+    .getByRole("button", { name: "Añadir autenticador", exact: true })
+    .click();
+  await page.getByLabel("Código de 6 dígitos").fill(goodCode);
+  await page
+    .getByRole("button", { name: "Verificar autenticador", exact: true })
+    .click();
+  await expect.poll(() => f.controls.verificationPending).toBe(true);
+  await page
+    .getByRole("button", { name: "Cancelar configuración", exact: true })
+    .click();
+  f.controls.releaseVerify();
+  await expect(
+    page.getByText("Autenticadores verificados", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator("body")).not.toContainText(secret);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+for (const event of ["SIGNED_IN", "PASSWORD_RECOVERY"])
+  test(`late native verify cannot replace a newer same-actor SID established by ${event}`, async ({
+    page,
+    context,
+  }) => {
+    const f = await nativeFixture(context, { factors: [factor()] });
+    f.controls.holdVerify = true;
+    await login(page);
+    await page.getByLabel("Código de 6 dígitos").fill(goodCode);
+    await page
+      .getByRole("button", { name: "Confirmar código", exact: true })
+      .click();
+    await expect.poll(() => f.controls.verificationPending).toBe(true);
+    await broadcast(
+      page,
+      event,
+      f.session(actor, "aal1", "replacement-same-actor-session"),
+    );
+    await expect(
+      page.getByRole("button", { name: "Confirmar código", exact: true }),
+    ).toBeVisible();
+    f.controls.releaseVerify();
+    await expect(
+      page.getByRole("heading", {
+        name: "Bienvenido a TruckControl",
+        exact: true,
+      }),
+    ).toBeVisible();
+    expect(f.privateCalls()).toEqual([]);
+    await noSecretStorage(page);
+    expect(f.blocked).toEqual([]);
+  });
 test("native removal refreshes the session and challenges the remaining backup despite a stale AAL2 JWT", async ({
   page,
   context,
@@ -568,6 +886,105 @@ test("native other-tab actor changes replace the challenged actor without carryi
     "other@example.com",
   );
   expect(f.privateCalls().every((c) => c.actor === other)).toBe(true);
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("a pre-request native signout failure stays closed, ignores late MFA and lets retry revoke the session", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, { factors: [factor()] });
+  await login(page);
+  await expect(
+    page.getByRole("button", { name: "Confirmar código", exact: true }),
+  ).toBeVisible();
+  await page.evaluate(() => {
+    const original = Storage.prototype.getItem;
+    let fail = true;
+    Storage.prototype.getItem = function (key) {
+      if (fail && key === "truckcontrol-auth-v1") {
+        fail = false;
+        throw new Error("Synthetic private storage failure");
+      }
+      return original.call(this, key);
+    };
+  });
+  await page
+    .getByRole("button", { name: "Cerrar sesión", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Cerrar sesión", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Reintentar", exact: true }),
+  ).toBeEnabled();
+  expect(f.calls.filter((c) => c.path === "/auth/v1/logout")).toHaveLength(0);
+  await broadcast(page, "MFA_CHALLENGE_VERIFIED", f.session(actor, "aal2"));
+  await expect(
+    page.getByRole("heading", { name: "Cerrar sesión", exact: true }),
+  ).toBeVisible();
+  expect(f.privateCalls()).toEqual([]);
+  await page.getByRole("button", { name: "Reintentar", exact: true }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Bienvenido a TruckControl",
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(f.calls.filter((c) => c.path === "/auth/v1/logout")).toHaveLength(1);
+  await expect(page.locator("body")).not.toContainText(
+    "Synthetic private storage failure",
+  );
+  await noSecretStorage(page);
+  expect(f.blocked).toEqual([]);
+});
+test("native signout completed while BFCache-suspended remains terminal and permits a fresh same-actor login", async ({
+  page,
+  context,
+}) => {
+  const f = await nativeFixture(context, { factors: [factor()] });
+  f.controls.holdLogout = true;
+  await login(page);
+  await expect(
+    page.getByRole("button", { name: "Confirmar código", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Cerrar sesión", exact: true })
+    .click();
+  await expect.poll(() => f.controls.logoutPending).toBe(true);
+  await page.evaluate(() =>
+    window.dispatchEvent(
+      new PageTransitionEvent("pagehide", { persisted: true }),
+    ),
+  );
+  f.controls.releaseLogout();
+  await expect
+    .poll(() =>
+      page.evaluate(() => localStorage.getItem("truckcontrol-auth-v1")),
+    )
+    .toBeNull();
+  await page.evaluate(() =>
+    window.dispatchEvent(
+      new PageTransitionEvent("pageshow", { persisted: true }),
+    ),
+  );
+  await expect(
+    page.getByRole("heading", {
+      name: "Bienvenido a TruckControl",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .getByLabel("Correo electrónico", { exact: true })
+    .fill("owner@example.com");
+  await page
+    .getByLabel("Contraseña", { exact: true })
+    .fill("synthetic-password-only");
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Confirmar código", exact: true }),
+  ).toBeVisible();
+  expect(f.privateCalls()).toEqual([]);
   await noSecretStorage(page);
   expect(f.blocked).toEqual([]);
 });

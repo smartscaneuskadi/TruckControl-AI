@@ -8,6 +8,7 @@ export type NativeMfaState = {
   token: string;
   currentLevel: "aal1" | "aal2" | null;
   factors: TotpFactor[];
+  pendingFactors: TotpFactor[];
   needsChallenge: boolean;
 };
 export type PendingTotp = { id: string; secret: string; qrCode: string };
@@ -19,7 +20,9 @@ type Failure =
   | "disabled"
   | "verification"
   | "aal2"
-  | "factor";
+  | "factor"
+  | "factor-verified"
+  | "limit";
 export class MfaError extends Error {
   constructor(readonly reason: Failure) {
     super(reason);
@@ -29,10 +32,16 @@ export class MfaError extends Error {
 export const mfaEnrollmentEnabled =
   import.meta.env.VITE_MFA_ENROLLMENT_ENABLED === "true";
 export const mfaStateEvent = "truckcontrol:native-mfa-state";
+type MfaScope = { userId: string; sessionId: string | null };
 export function notifyMfaChanged(
-  reason: "refresh" | "factor-removed" | "signout",
+  reason: "refresh" | "factor-removed" | "signout" | "signout-failed",
+  scope?: MfaScope,
 ) {
-  window.dispatchEvent(new CustomEvent(mfaStateEvent, { detail: reason }));
+  window.dispatchEvent(
+    new CustomEvent(mfaStateEvent, {
+      detail: scope ? { reason, ...scope } : reason,
+    }),
+  );
 }
 export function mfaErrorMessage(error: unknown) {
   const reason = error instanceof MfaError ? error.reason : "unavailable";
@@ -51,6 +60,10 @@ export function mfaErrorMessage(error: unknown) {
       return "Confirma un código de tu autenticador antes de quitarlo.";
     case "factor":
       return "Ese autenticador ya no está disponible. Actualiza la lista.";
+    case "factor-verified":
+      return "Este autenticador ya está verificado. Actualiza la lista y confirma su retirada como autenticador verificado.";
+    case "limit":
+      return "Has alcanzado el límite de autenticadores. Revisa las configuraciones pendientes y descarta solo las que identifiques antes de reintentar.";
     default:
       return "No se puede comprobar la seguridad de la sesión. Comprueba la conexión y reinténtalo.";
   }
@@ -60,7 +73,9 @@ const current = (isCurrent: () => boolean) => {
 };
 
 /** A display/gating hint only. Native server validation below and SQL authorize access. */
-export function nativeSessionHint(session: Session | null) {
+export function nativeSessionHint(
+  session: Pick<Session, "access_token"> | null,
+) {
   try {
     if (!session) return null;
     const part = session.access_token
@@ -106,6 +121,9 @@ export async function readNativeMfa(
   const factors = all
     .filter((f) => f.factor_type === "totp" && f.status === "verified")
     .map((f) => ({ id: f.id, friendly_name: f.friendly_name }));
+  const pendingFactors = all
+    .filter((f) => f.factor_type === "totp" && f.status === "unverified")
+    .map((f) => ({ id: f.id, friendly_name: f.friendly_name }));
   // A fresh, server-validated factor list is sufficient for ordinary baseline
   // access. Do not claim an MFA assurance level when no verified TOTP exists.
   let level: "aal1" | "aal2" | null = null;
@@ -148,6 +166,7 @@ export async function readNativeMfa(
     token,
     currentLevel,
     factors,
+    pendingFactors,
     needsChallenge:
       factors.length > 0 && (currentLevel !== "aal2" || !sessionBound),
   };
@@ -186,8 +205,11 @@ export async function beginTotp(
   const { data, error } = await client.auth.mfa.enroll({
     factorType: "totp",
     issuer: "TruckControl AI",
+    friendlyName: "TruckControl " + crypto.randomUUID(),
   });
   current(isCurrent);
+  if (error?.code === "too_many_enrolled_mfa_factors")
+    throw new MfaError("limit");
   if (
     error ||
     !data ||
@@ -258,29 +280,61 @@ export async function removeTotp(
   userId: string,
   factorId: string,
   isCurrent: () => boolean,
+  pending = false,
 ) {
   current(isCurrent);
   const state = await readNativeMfa(client, userId);
   current(isCurrent);
-  if (state.currentLevel !== "aal2" || state.needsChallenge)
-    throw new MfaError("aal2");
-  if (!state.factors.some((f) => f.id === factorId))
-    throw new MfaError("factor");
+  const scope = {
+    userId,
+    sessionId:
+      nativeSessionHint({ access_token: state.token })?.sessionId ?? null,
+  };
+  if (pending) {
+    if (state.factors.some((f) => f.id === factorId)) {
+      notifyMfaChanged("refresh", scope);
+      throw new MfaError("factor-verified");
+    }
+    if (!state.pendingFactors.some((f) => f.id === factorId))
+      throw new MfaError("factor");
+  } else {
+    if (state.currentLevel !== "aal2" || state.needsChallenge)
+      throw new MfaError("aal2");
+    if (!state.factors.some((f) => f.id === factorId))
+      throw new MfaError("factor");
+  }
   const { error } = await client.auth.mfa.unenroll({ factorId });
-  current(isCurrent);
-  if (error) throw new MfaError("unavailable");
+  if (error) {
+    notifyMfaChanged("refresh", scope);
+    current(isCurrent);
+    throw new MfaError("unavailable");
+  }
   // Removing the session's bound factor can leave a stale aal2 JWT. Suspend
-  // before refreshing; a remaining native factor must issue a new challenge.
-  notifyMfaChanged("factor-removed");
-  const refreshed = await client.auth.refreshSession();
-  if (refreshed.error) throw new MfaError("unavailable");
-  notifyMfaChanged("refresh");
+  // even when the initiating modal closed. Scope this deny-only signal and the
+  // native refresh so a late DELETE cannot affect another actor/session.
+  notifyMfaChanged("factor-removed", scope);
+  try {
+    const now = await client.auth.getSession();
+    const session = now.data.session;
+    if (
+      now.error ||
+      session?.user.id !== userId ||
+      (scope.sessionId
+        ? nativeSessionHint(session)?.sessionId !== scope.sessionId
+        : session.access_token !== state.token)
+    )
+      throw new MfaError("changed");
+    const refreshed = await client.auth.refreshSession();
+    if (refreshed.error) throw new MfaError("unavailable");
+  } finally {
+    notifyMfaChanged("refresh", scope);
+  }
 }
 
 /** SVG is a local image only, never HTML. Reject active/external SVG content. */
 export function safeTotpQr(value: string): string | null {
   const prefix = "data:image/svg+xml;utf-8,";
-  if (!value.startsWith(prefix) || value.length > 262144) return null;
+  if (!value.startsWith(prefix) || value.length > 2 * 1024 * 1024) return null;
   let svg = value.slice(prefix.length);
   try {
     if (!svg.trimStart().startsWith("<")) svg = decodeURIComponent(svg);
@@ -312,6 +366,23 @@ export function safeTotpQr(value: string): string | null {
     doc.documentElement,
     ...doc.documentElement.querySelectorAll("*"),
   ]) {
+    const xlink = node.getAttribute("xmlns:xlink");
+    if (xlink !== null) {
+      if (
+        node !== doc.documentElement ||
+        xlink !== "http://www.w3.org/1999/xlink"
+      )
+        return null;
+      node.removeAttribute("xmlns:xlink");
+    }
+    const style = node.getAttribute("style");
+    if (style !== null) {
+      const nativeStyle = /^fill:(black|white);stroke:none;?$/.exec(style);
+      if (node.localName !== "rect" || !nativeStyle) return null;
+      node.setAttribute("fill", nativeStyle[1]);
+      node.setAttribute("stroke", "none");
+      node.removeAttribute("style");
+    }
     if (
       !tags.has(node.localName) ||
       node.namespaceURI !== "http://www.w3.org/2000/svg"

@@ -349,4 +349,38 @@ describe("native MFA protocol candidate", () => {
     expect(f.calls.some((c) => c.method === "DELETE")).toBe(false);
     expect(f.unmatched).toEqual([]);
   });
+  it("uses unique nonsecret native factor names so retries and backups do not collide", async () => {
+    const f = await fixture();
+    await mfa.beginTotp(f.client, actor, () => true);
+    await mfa.beginTotp(f.client, actor, () => true);
+    const names = f.calls
+      .filter((c) => c.path === "/auth/v1/factors")
+      .map((c) => c.body?.friendly_name);
+    expect(names).toHaveLength(2);
+    expect(new Set(names).size).toBe(2);
+    expect(
+      names.every(
+        (name) =>
+          typeof name === "string" &&
+          name.startsWith("TruckControl ") &&
+          !name.includes("SYNTHETICRAMONLY"),
+      ),
+    ).toBe(true);
+    expect(f.unmatched).toEqual([]);
+  });
+  it("discards only a selected fresh pending factor and refuses a factor already verified elsewhere", async () => {
+    const f = await fixture([
+      factor(first, "unverified"),
+      factor(second, "unverified"),
+    ]);
+    vi.stubGlobal("window", { dispatchEvent: vi.fn() });
+    await mfa.removeTotp(f.client, actor, first, () => true, true);
+    expect(f.state.factors.map((f) => f.id)).toEqual([second]);
+    f.state.factors[0].status = "verified";
+    await expect(
+      mfa.removeTotp(f.client, actor, second, () => true, true),
+    ).rejects.toMatchObject({ reason: "factor-verified" });
+    expect(f.calls.filter((c) => c.method === "DELETE")).toHaveLength(1);
+    expect(f.unmatched).toEqual([]);
+  });
 });

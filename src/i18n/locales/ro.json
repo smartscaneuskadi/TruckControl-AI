@@ -2939,5 +2939,13 @@
   "Autenticador": "Autentificator",
   "Confirmar código": "Confirmă codul",
   "Comprobando la seguridad de tu sesión…": "Se verifică securitatea sesiunii…",
-  "No se ha podido confirmar el cierre de sesión. Reinténtalo.": "Închiderea sesiunii nu a putut fi confirmată. Reîncearcă."
+  "No se ha podido confirmar el cierre de sesión. Reinténtalo.": "Închiderea sesiunii nu a putut fi confirmată. Reîncearcă.",
+  "Este autenticador ya está verificado. Actualiza la lista y confirma su retirada como autenticador verificado.": "Acest autentificator este deja verificat. Actualizează lista și confirmă eliminarea sa ca autentificator verificat.",
+  "Has alcanzado el límite de autenticadores. Revisa las configuraciones pendientes y descarta solo las que identifiques antes de reintentar.": "Ai atins limita de autentificatoare. Verifică configurările în așteptare și elimină doar încercările pe care le recunoști înainte de a reîncerca.",
+  "Configuraciones pendientes": "Configurări în așteptare",
+  "Los intentos sin verificar pueden ocupar una plaza del límite de autenticadores. Puedes descartar un intento concreto; cerrar la ventana no lo elimina.": "Încercările neverificate pot ocupa un loc din limita de autentificatoare. Poți elimina o anumită încercare; închiderea ferestrei nu o șterge.",
+  "Intento pendiente {0}": "Încercare în așteptare {0}",
+  "Descartar configuración": "Elimină configurarea",
+  "¿Descartar esta configuración?": "Elimini această configurare?",
+  "Se eliminará este autenticador. Otra sesión podría verificarlo mientras confirmas; también autorizas su retirada en ese caso si el servidor lo permite. Si ya está verificado al comprobarlo, actualiza la lista y confirma su retirada como autenticador verificado.": "Acest autentificator va fi eliminat. O altă sesiune l-ar putea verifica în timpul confirmării; autorizezi eliminarea și în acest caz dacă serverul o permite. Dacă este deja verificat la control, actualizează lista și confirmă eliminarea sa ca autentificator verificat."
 }

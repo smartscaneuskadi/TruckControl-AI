@@ -17932,5 +17932,53 @@
       "src/components/MfaSettings.tsx:security",
       "src/components/MfaChallenge.tsx:security"
     ]
+  },
+  {
+    "key": "Este autenticador ya está verificado. Actualiza la lista y confirma su retirada como autenticador verificado.",
+    "contexts": [
+      "src/components/MfaSettings.tsx:security"
+    ]
+  },
+  {
+    "key": "Has alcanzado el límite de autenticadores. Revisa las configuraciones pendientes y descarta solo las que identifiques antes de reintentar.",
+    "contexts": [
+      "src/components/MfaSettings.tsx:security"
+    ]
+  },
+  {
+    "key": "Configuraciones pendientes",
+    "contexts": [
+      "src/components/MfaSettings.tsx:security"
+    ]
+  },
+  {
+    "key": "Los intentos sin verificar pueden ocupar una plaza del límite de autenticadores. Puedes descartar un intento concreto; cerrar la ventana no lo elimina.",
+    "contexts": [
+      "src/components/MfaSettings.tsx:security"
+    ]
+  },
+  {
+    "key": "Intento pendiente {0}",
+    "contexts": [
+      "src/components/MfaSettings.tsx:security"
+    ]
+  },
+  {
+    "key": "Descartar configuración",
+    "contexts": [
+      "src/components/MfaSettings.tsx:security"
+    ]
+  },
+  {
+    "key": "¿Descartar esta configuración?",
+    "contexts": [
+      "src/components/MfaSettings.tsx:security"
+    ]
+  },
+  {
+    "key": "Se eliminará este autenticador. Otra sesión podría verificarlo mientras confirmas; también autorizas su retirada en ese caso si el servidor lo permite. Si ya está verificado al comprobarlo, actualiza la lista y confirma su retirada como autenticador verificado.",
+    "contexts": [
+      "src/components/MfaSettings.tsx:security"
+    ]
   }
 ]

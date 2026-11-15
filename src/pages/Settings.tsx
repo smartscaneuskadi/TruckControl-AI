@@ -21,7 +21,7 @@ import { useTyres } from "../app/TyresProvider";
 import { AppearanceSettings } from "../components/AppearanceSettings";
 import { CompanyBackupTools } from "../components/CompanyBackupTools";
 import { CompanyFiscalSettings } from "../components/CompanyFiscalSettings";
-import { MfaSettings } from "../components/MfaSettings";
+import { MfaSettingsLoader as MfaSettings } from "../components/MfaSettingsLoader";
 
 export function Settings() {
   const { snapshot, reset, refresh, busy, notify } = useFleet();
