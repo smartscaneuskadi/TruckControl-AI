@@ -228,6 +228,30 @@ def run(pg, f):
     pg.check("Manual Full: rollback-only permission, business and quota cases leave no persisted drift",
         pg.database_fingerprint(pg.SOURCE) == baseline)
 
+    # The rollback fence must also stop an already executing Root controller.
+    # Clone only this owned disposable database while its licence table is empty.
+    # Pause rollback after installing the uncommitted fence, before dropping the
+    # RPC, so the second real backend reaches INSERT and waits on the table lock.
+    rollback_database = "tc_company_full_rollback"
+    pg.DATABASES.add(rollback_database)
+    pg.run(["docker", "exec", pg.CONTAINER, "createdb", "-U", "postgres", "-T", pg.SOURCE, rollback_database])
+    try:
+        marker = "-- company_full_rollback_fence_installed"
+        assert rollback.count(marker) == 1
+        held_rollback = rollback.rstrip()[:-len("commit;")].replace(marker, marker + "\nselect pg_sleep(8);", 1)
+        pg.concurrent(held_rollback, set_full(root_org, False, None, 0, f.op(259)),
+            "company-full-rollback-inflight-controller", database=rollback_database,
+            hold_after_seconds=0, second_error="company_full_rollback_fenced")
+        fenced = pg.value("select jsonb_build_object('licences',(select count(*) from private.tc_company_full_licenses),"
+            + "'audit',(select count(*) from private.tc_company_full_audit),"
+            + "'rpc_absent',to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is null,"
+            + "'fence_kept',exists(select 1 from pg_trigger where tgrelid='private.tc_company_full_licenses'::regclass"
+            + " and tgname='tc_company_full_rollback_fenced' and tgenabled='O'))", rollback_database)
+        pg.check("Manual Full: successful rollback durably fences an in-flight initial controller without a decision/audit",
+            fenced == {"licences": 0, "audit": 0, "rpc_absent": True, "fence_kept": True})
+    finally:
+        pg.run(["docker", "exec", pg.CONTAINER, "dropdb", "-U", "postgres", "--if-exists", rollback_database])
+
     # Durable concurrency covers first-insert CAS, lost ACK replay and a single
     # operation UUID reused across companies, using genuinely different psql PIDs.
     # Never UPDATE a shared settings row in the competing transactions: the
@@ -274,5 +298,5 @@ def run(pg, f):
     pg.check("Manual Full: all commercial/payment/security switches retain their original values",
         pg.value("select to_jsonb(s) from private.tc_settings s where id") == original_flags)
     pg.REPORT["manual_company_full"] = {"provider_calls": 0, "payment_mutations": 0,
-        "synthetic_licence_decisions": True, "real_lock_races": 3,
+        "synthetic_licence_decisions": True, "real_lock_races": 4,
         "managed_supabase_acceptance": False, "native_auth_storage_acceptance": "separate harness"}

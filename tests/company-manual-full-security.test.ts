@@ -235,8 +235,13 @@ describe("manual Full: a company decision, fresh Root authorization and existing
   it("allows the function-only zero-record rollback while retaining immutable tables", async () => {
     const isolated = await financialDatabase();
     try {
+      const company = randomUUID();
+      await isolated.query("insert into public.organizations(id,owner_id,name) values($1,$2,'Synthetic rollback company')", [company, incidentAdmin]);
       await isolated.exec(rollback);
       expect((await isolated.query("select to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is null absent,to_regclass('private.tc_company_full_audit') is not null audit_kept")).rows).toEqual([{ absent: true, audit_kept: true }]);
+      await expect(isolated.query("insert into private.tc_company_full_licenses(organization_id,enabled,revision,updated_at,updated_by) values($1,false,1,now(),$2)", [company, incidentAdmin])).rejects.toThrow('company_full_rollback_fenced');
+      await expect(isolated.exec("update private.tc_company_full_licenses set enabled=true")).rejects.toThrow('company_full_rollback_fenced');
+      expect((await isolated.query("select count(*)::int n from private.tc_company_full_licenses")).rows).toEqual([{ n: 0 }]);
     } finally { await isolated.close(); }
   }, 30000);
 });

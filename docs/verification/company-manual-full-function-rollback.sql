@@ -1,11 +1,24 @@
 -- Function-only rollback candidate. Official reviewed path only; never automatic.
 -- Retains licence/audit tables and triggers. Explicit OFF must never reopen legacy access.
+-- A successful rollback leaves a durable licence-write fence. Removing that fence
+-- requires a separately reviewed forward migration restoring enforcement first.
+-- Never replay the original candidate migration to reactivate this capability.
 begin;
 lock table private.tc_company_full_licenses in share row exclusive mode;
 do $refuse$ begin
  if exists(select 1 from private.tc_company_full_licenses) then
   raise exception 'company_full_rollback_refuses_configured_companies';end if;
 end;$refuse$;
+-- A controller authorized before this lock may already be waiting at INSERT.
+-- The fence survives commit and rejects that delayed write under the old guards.
+create function private.tc_company_full_rollback_fenced() returns trigger
+language plpgsql security invoker set search_path='' as $fence$
+begin raise exception 'company_full_rollback_fenced' using errcode='42501';end;
+$fence$;
+revoke all on function private.tc_company_full_rollback_fenced() from public,anon,authenticated;
+create trigger tc_company_full_rollback_fenced before insert or update on private.tc_company_full_licenses
+ for each statement execute function private.tc_company_full_rollback_fenced();
+-- company_full_rollback_fence_installed
 do $expected$ begin if not exists(select 1 from pg_catalog.pg_proc where oid=to_regprocedure('private.tc_account_active(uuid)') and md5(prosrc)='cb8465c6eef91273d2ec22ebc4c2d9cb') then raise exception 'company_full_rollback_body_mismatch';end if;end;$expected$;
 do $expected$ begin if not exists(select 1 from pg_catalog.pg_proc where oid=to_regprocedure('private.tc_organization_access_for(uuid,uuid)') and md5(prosrc)='1ab3f4ecf190fe49ac7a53c3758a699b') then raise exception 'company_full_rollback_body_mismatch';end if;end;$expected$;
 do $expected$ begin if not exists(select 1 from pg_catalog.pg_proc where oid=to_regprocedure('private.tc_user_access(uuid)') and md5(prosrc)='047eb67dcdcd066dd755e451fbae9389') then raise exception 'company_full_rollback_body_mismatch';end if;end;$expected$;
