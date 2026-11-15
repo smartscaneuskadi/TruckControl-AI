@@ -56,6 +56,12 @@ describe("monitor público sin secretos ni consumo", () => {
     expect(r.passed).toBe(true);
     expect(r.checks).toHaveLength(5);
     expect(r.model_calls).toBe(0);
+    expect(r.rls_verified).toBe(false);
+    expect(r.checks.find((c: any) => c.name === "anonymous_database_gateway")).toMatchObject({
+      passed: true,
+      code: "missing_api_key_denied",
+      rls_verified: false,
+    });
     expect(f).toHaveBeenCalledTimes(5);
   });
   it("no certifica disponibilidad del proveedor por tener una clave configurada", async () => {
