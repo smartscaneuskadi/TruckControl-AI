@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { requireStripeQaArguments, requireStripeQaIdentity, stripeQaEnvironment, StripeQaAccount } from "../scripts/lib/stripe-qa-guards.mjs";
+import { requireStripeQaArguments, requireStripeQaIdentity, stripeQaEnvironment, requireStripeQaLegacyArguments, StripeQaAccount } from "../scripts/lib/stripe-qa-guards.mjs";
 
 describe("synthetic Stripe QA boundaries", () => {
   it("accepts only the existing authorized test account", () => {
@@ -26,6 +26,23 @@ describe("synthetic Stripe QA boundaries", () => {
   it("rejects other commands, external destinations and path escapes", () => {
     for (const args of [["login"], ["post", "https://example.invalid"], ["get", "/v1/../v2/core/accounts"], ["get", "/v2/core/accounts"]])
       expect(() => requireStripeQaArguments(args)).toThrow();
+  });
+  it("validates legacy sandbox CLI operations and identifies writes for renewed identity checks", () => {
+    expect(requireStripeQaLegacyArguments(["whoami", "--format", "json"])).toBe(false);
+    expect(requireStripeQaLegacyArguments(["get", "/v1/account"])).toBe(false);
+    for (const command of [["customers", "create", "--name", "Synthetic"],
+      ["subscriptions", "create", "--customer", "cus_synthetic"],
+      ["subscriptions", "cancel", "sub_synthetic", "--confirm"],
+      ["refunds", "create", "--amount", "5000"]])
+      expect(requireStripeQaLegacyArguments(command)).toBe(true);
+  });
+  it("refuses unsafe legacy CLI verbs, live flags, or profile and routing overrides", () => {
+    for (const command of [["customers", "delete", "cus_foreign"], ["accounts", "update"],
+      ["customers", "create", "--live"], ["subscriptions", "create", "--api-key=sk_live_fake"],
+      ["refunds", "create", "--stripe-account=acct_foreign"],
+      ["subscriptions", "cancel", "sub_synthetic", "--profile=other"],
+      ["get", "https://other.example.invalid/v1/account"]])
+      expect(() => requireStripeQaLegacyArguments(command)).toThrow();
   });
   it("removes ambient credentials without mutating the parent or weakening proxy/CA trust", () => {
     const parent = { STRIPE_API_KEY: "synthetic-live-key", STRIPE_API_BASE: "https://example.invalid",
