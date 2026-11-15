@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { listMonitorItems } from "./lib/monitor-incident-pagination.mjs";
+import { normalizeMonitorReport } from "./lib/monitor-report-validation.mjs";
 const repository = "smartscaneuskadi/TruckControl-AI";
 if (
   process.env.GITHUB_REPOSITORY !== repository ||
@@ -8,9 +9,13 @@ if (
   !/^\d+$/.test(process.env.GITHUB_RUN_ID || "")
 )
   throw Error("Invalid monitor execution context");
-const report = JSON.parse(
-  readFileSync("production-health-results/health.json", "utf8"),
-);
+let report;
+try {
+  report = normalizeMonitorReport(readFileSync("production-health-results/health.json", "utf8"));
+} catch {
+  // Missing/unreadable artifacts must open an incident, never close an existing one.
+  report = { passed: false, code: "invalid_monitor_report" };
+}
 const marker = "<!-- truckcontrol-public-monitor:v1 -->",
   title = "[Monitor] Disponibilidad pública de TruckControl AI";
 const run =
@@ -22,7 +27,7 @@ const failures = Array.isArray(report.checks)
   ? report.checks
       .filter((c) => c.passed !== true)
       .map((c) => ({ name: c.name, status: c.status, code: c.code }))
-  : ["monitor_configuration_failed"];
+  : [report.code === "monitor_configuration_failed" ? "monitor_configuration_failed" : "invalid_monitor_report"];
 const fingerprint = createHash("sha256")
   .update(JSON.stringify(failures))
   .digest("hex");
