@@ -55,7 +55,7 @@ describe("monitor health artifact integrity before GitHub incident reporting", (
     const wrongCode = fixture();
     wrongCode.checks[4].code = "synthetic-private-token";
     const omittedRls = fixture();
-    delete omittedRls.checks[4].rls_verified;
+    delete (omittedRls.checks[4] as { rls_verified?: boolean }).rls_verified;
     for (const value of [wrongUrl, wrongCode, omittedRls]) {
       expect(normalizeMonitorReport(JSON.stringify(value))).toEqual({ passed: false, code: "invalid_monitor_report" });
     }
