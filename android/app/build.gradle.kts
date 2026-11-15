@@ -7,8 +7,8 @@ android {
         applicationId = "com.truckcontrolai.app"
         minSdk = 24
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.5.26-rc.1"
+        versionCode = 6
+        versionName = "0.5.27-rc.1"
     }
     buildTypes {
         debug { applicationIdSuffix = ".debug"; versionNameSuffix = "-debug" }

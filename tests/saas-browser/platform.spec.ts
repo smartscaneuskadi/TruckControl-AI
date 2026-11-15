@@ -5666,3 +5666,110 @@ test("Stripe privado: mantiene el contrato anterior sin inventar un diagnóstico
   await expect(card.getByRole("status")).toContainText("El servidor aún no ofrece el detalle de configuración de Stripe.");
   expect(calls).toEqual(["admin_readiness_details","admin_readiness"]);
 });
+
+test.describe("portapapeles del reenvío de facturas", () => {
+  for (const theme of ["light", "cockpit"] as const) {
+    for (const mode of ["missing", "synchronous", "rejected", "success"] as const) {
+      test(`${mode}: copia o permite seleccionar la dirección y reintentar (${theme})`, async ({
+        page,
+        context,
+      }, info) => {
+        const external: string[] = [];
+        const errors: string[] = [];
+        page.on("pageerror", (error) => errors.push(error.message));
+        await context.route("**/*", async (route) => {
+          if (new URL(route.request().url()).origin === "http://127.0.0.1:4194")
+            return route.fallback();
+          external.push(route.request().url());
+          return route.abort("blockedbyclient");
+        });
+        await context.routeWebSocket("**/*", (socket) => {
+          external.push(socket.url());
+          socket.close();
+        });
+        const f = await fixtures(page);
+        const recipient = "forwarding-synthetic@example.invalid";
+        await page.route("http://127.0.0.1:9999/functions/v1/company-mail", async (route) => {
+          const body = route.request().postDataJSON();
+          if (body?.action !== "status") return route.fallback();
+          expect(body.organization_id).toBe(org);
+          f.calls.push({ path: "/functions/v1/company-mail", body });
+          return route.fulfill({
+            headers: { "access-control-allow-origin": "*" },
+            json: {
+              upload_ready: true,
+              forwarding_ready: true,
+              ai_enabled: false,
+              inbox: { recipient, enabled: true },
+            },
+          });
+        });
+        await login(page, "customer@example.com");
+        await expect(page).toHaveURL(/#\/dashboard/);
+        await page.goto("/#/invoices");
+        const intake = page.locator(".universal-mail");
+        await expect(intake.locator(".mail-recipient")).toHaveText(recipient);
+        await page.getByRole("button", { name: "Cambiar apariencia", exact: true }).click();
+        const appearance = page.getByRole("dialog", { name: "Apariencia de TruckControl" });
+        await appearance.getByRole("radio", {
+          name: theme === "light" ? "Fleet Light" : "Fleet Cockpit",
+          exact: true,
+        }).check();
+        await appearance.getByLabel("Animaciones", { exact: true }).selectOption("off");
+        await appearance.getByRole("button", { name: "Aplicar apariencia" }).click();
+        await appearance.getByRole("button", { name: "Cerrar ventana" }).click();
+        await page.evaluate((selected) => {
+          Object.defineProperty(navigator, "clipboard", {
+            configurable: true,
+            value: selected === "missing" ? undefined : {
+              writeText: (value: string) => {
+                if (selected === "synchronous")
+                  throw new DOMException("Synthetic clipboard restriction", "SecurityError");
+                if (selected === "rejected")
+                  return Promise.reject(new DOMException("Synthetic permission denial", "NotAllowedError"));
+                Object.defineProperty(window, "syntheticForwardingCopy", {
+                  configurable: true,
+                  value,
+                });
+                return Promise.resolve();
+              },
+            },
+          });
+        }, mode);
+        const copy = intake.getByRole("button", { name: "Copiar dirección", exact: true });
+        await copy.click();
+        if (mode !== "success") {
+          await expect(intake.getByRole("alert")).toHaveText(
+            "No se ha podido copiar. Puedes seleccionar la dirección.",
+          );
+          await expect(intake.getByRole("status")).toHaveCount(0);
+          await expect(intake.locator(".mail-recipient")).toHaveText(recipient);
+          await page.evaluate(() => {
+            Object.defineProperty(navigator, "clipboard", {
+              configurable: true,
+              value: {
+                writeText: (value: string) => {
+                  Object.defineProperty(window, "syntheticForwardingCopy", {
+                    configurable: true,
+                    value,
+                  });
+                  return Promise.resolve();
+                },
+              },
+            });
+          });
+          await copy.click();
+        }
+        await expect(intake.getByRole("status")).toHaveText("Dirección copiada.");
+        await expect(intake.getByRole("alert")).toHaveCount(0);
+        expect(await page.evaluate(() => Reflect.get(window, "syntheticForwardingCopy"))).toBe(recipient);
+        expect(await page.evaluate(() => document.body.scrollWidth <= innerWidth + 1)).toBe(true);
+        expect(f.calls.filter((call) => call.path.includes("company-mail"))
+          .every((call) => call.body?.action === "status")).toBe(true);
+        expect(errors).toEqual([]);
+        expect(external).toEqual([]);
+        await intake.screenshot({ path: info.outputPath(`forwarding-${mode}-${theme}.png`) });
+      });
+    }
+  }
+});
