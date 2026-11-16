@@ -60,6 +60,7 @@ const jwt = (id: string) =>
   ).toString("base64url") +
   ".c3ludGhldGlj";
 async function fixture(actor = root) {
+  const issuedToken = jwt(actor);
   const state = {
     manual: structuredClone(empty),
     cap: true,
@@ -220,13 +221,14 @@ async function fixture(actor = root) {
   expect(
     (
       await client.auth.setSession({
-        access_token: jwt(actor),
+        access_token: issuedToken,
         refresh_token: "synthetic-refresh",
       })
     ).error,
   ).toBeNull();
   return {
     client,
+    issuedToken,
     calls,
     state,
     unmatched,
@@ -271,6 +273,9 @@ describe("company Full contract with the real native SDK", () => {
   it("pins the validated native JWT and sends exact CAS/idempotency arguments", async () => {
     const f = await fixture(),
       request = command();
+    // Crossing an iat second must not regenerate the expected issued capability.
+    vi.spyOn(Date, "now").mockReturnValue(Date.now() + 1_100);
+    expect(jwt(root)).not.toBe(f.issuedToken);
     const result = await setCompanyFull(f.client, root, () => true, request);
     expect(result.item.organization_id).toBe(org);
     expect(result.item.manual_full.status).toBe("active");
@@ -281,7 +286,7 @@ describe("company Full contract with the real native SDK", () => {
       p_operation: request.operationId,
       p_data: { enabled: true, expires_at: null },
     });
-    expect(f.calls.every((c) => c.token === "Bearer " + jwt(root))).toBe(true);
+    expect(f.calls.every((c) => c.token === "Bearer " + f.issuedToken)).toBe(true);
     expect(f.unmatched).toEqual([]);
   });
   it("retries a lost acknowledgement with the same operation and one server write", async () => {
