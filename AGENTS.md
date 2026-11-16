@@ -1,3 +1,11 @@
+## Correo único con cuentas elegidas e importación IA · candidata 16/11/2026
+
+Trabajo activo en `feat/unified-mailbox-20261116`, candidata **0.5.31-rc.1 / Android10**. Un único Correo permite elegir varias cuentas; dentro de la cuenta conectada se autoriza la descarga de facturas por IA con buzón, empresa y período.30días por defecto/máximo12meses, metadatos de recepción antes del contenido, cursores firmados y originales privados. No se requiere una segunda vinculación empresarial ni se usa su secreto OAuth rechazado. Consentimiento por ejecución/lotes en RAM; sin tarea desatendida ni recibo contractual duradero. La revisión humana precede al gasto.
+
+**Producción49/source5f44 y demo6 conservadas; nueva versión NO publicada todavía.** Supabase76 inmutable, sin SQL77; no repetir75/anteriores/#37. Tipos, Deno2.9.6,154Python,11hashes retenidos e integraciónSQL aislada6casos correctos. Nueva suite de navegador68/68 correcta, sin fallos/omisiones/flaky, con351entradas de fuente invariantes; francés y aliases corregidos. CI/regresión completa/publicación pendientes. Los tests usan proveedores/modelos ficticios; no prueban una cuenta gestionada real ni hardware. IA10USD/mes–100/empresa y cobrosOFF intactos,0compras/modelos/automatizaciones de pago nuevas; techo200EUR histórico sin conciliar.
+
+[Guía y alcance](docs/UNIFIED_MAILBOX.md). Continuidad en issue3 y `/workspace/artifacts/truckcontrol-unified-mailbox-20261116/CHECKPOINT.json`. No duplicar los frentes activos ni desplegar el manifiesto DEMO de main.
+
 ## Actualización49 publicada y verificada · 16/11/2026 UTC
 
 Vigente **https://truckcontrolai.com · Sites49 / 0.5.30-rc.1**, fuente `5f44a164700ea4cc803bb7cf480b664cce68af43`, despliegue `appgdep_6aface4569a48191ab5bd6c0008d40d2` SUCCEEDED. PR153 integrado en `3c1fe69486fe5eee5d15059de79f2f10ed87c5bb`. **Facturación → Ingresos/Gastos** permite Factura/Ticket/Albarán. Camiones y conductores incorporan originales múltiples, tipo/descripcion libre y vencimiento; fichas técnicas, identidad y permisos tienen categorías propias. Se conservan archivos con nombre repetido como originales distintos. Los movimientos históricos, importes, IVA y rentabilidad permanecen intactos.

@@ -28,7 +28,7 @@ async function address(host: string) {
     throw new ConnectionError("invalid");
   return addresses[0].address;
 }
-function imap(config: MailConnection, ip: string) {
+function imap(config: MailConnection, ip: string, invoiceImport = false) {
   return new ImapFlow({
     host: ip,
     servername: config.imapHost,
@@ -44,8 +44,8 @@ function imap(config: MailConnection, ip: string) {
     connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
-    maxLiteralSize: 6 * 1024 * 1024,
-    maxResponseSize: 8 * 1024 * 1024,
+    maxLiteralSize: invoiceImport ? 12 * 1024 * 1024 : 6 * 1024 * 1024,
+    maxResponseSize: invoiceImport ? 12 * 1024 * 1024 : 8 * 1024 * 1024,
     maxLineLength: 1024 * 1024,
   });
 }
@@ -69,11 +69,18 @@ function smtp(config: MailConnection, ip: string) {
     disableUrlAccess: true,
   });
 }
-async function withImap<T>(
+export async function withImap<T>(
   config: MailConnection,
   fn: (client: ImapFlow) => Promise<T>,
+  options?: { invoiceImport: true },
 ) {
-  const client = imap(config, await address(config.imapHost));
+  // Only the separately authorized invoice importer enables this internal flag.
+  // Normal mailbox reads retain their original 6/8 MB transport limits.
+  const client = imap(
+    config,
+    await address(config.imapHost),
+    options?.invoiceImport === true,
+  );
   client.on("error", () => {});
   try {
     await client.connect();

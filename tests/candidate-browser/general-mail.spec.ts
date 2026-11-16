@@ -13,7 +13,7 @@ test("el correo ficticio funciona con la PWA sin red y sin contactar proveedores
   await page
     .getByRole("button", { name: "Explorar la demo", exact: true })
     .click();
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   await expect(
     page.getByRole("heading", { name: "Del correo a tus gastos", exact: true }),
   ).toBeVisible();
@@ -26,7 +26,7 @@ test("el correo ficticio funciona con la PWA sin red y sin contactar proveedores
   await page
     .getByRole("button", { name: "Explorar la demo", exact: true })
     .click();
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   await expect(
     page.getByRole("heading", { name: "Del correo a tus gastos", exact: true }),
   ).toBeVisible();

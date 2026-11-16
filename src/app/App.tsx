@@ -68,6 +68,7 @@ import { Operations } from "../pages/Operations";
 import { Tyres } from "../pages/Tyres";
 import { Suppliers } from "../pages/Suppliers";
 import { MailWorkspace } from "../pages/MailWorkspace";
+import { ConnectedMailboxInvoices } from "../components/ConnectedMailboxInvoices";
 import "../styles/mail-workspace.css";
 import { PersonalMail } from "../pages/PersonalMail";
 import { Team } from "../pages/Team";
@@ -253,6 +254,10 @@ function Workspace() {
       : location.pathname === "/assistant"
         ? "Copiloto de flota"
         : "Configuración");
+  // Retain explicit historical integrations without exposing a second normal mail flow.
+  const mailRoute = new URLSearchParams(location.search);
+  const legacyCompanyMail = location.pathname === "/invoices" &&
+    (!cloud || mailRoute.get("legacy") === "company-gmail" || mailRoute.has("gmail_ticket") || mailRoute.has("gmail_error"));
   useEffect(() => {
     setMenu(false);
     document.title = `${currentPage} · TruckControl AI`;
@@ -602,6 +607,12 @@ function Workspace() {
             key={`mail:${access.mode}:${access.user?.id ?? "demo"}:${access.organization?.id ?? snapshot.organization.id}:${offline.offline}`}
             active={location.pathname === "/mailbox"}
             available={!offline.offline}
+            renderInvoiceAction={(account) => (
+              <ConnectedMailboxInvoices
+                key={`mail-invoices:${access.user?.id ?? "demo"}:${snapshot.organization.id}:${account.id}`}
+                account={account}
+              />
+            )}
           />
           <Routes>
             <Route
@@ -720,7 +731,7 @@ function Workspace() {
             <Route path="/cargotrack" element={null} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/mailbox" element={null} />
-            <Route path="/mailbox/gmail" element={<PersonalMail />} />
+            <Route path="/mailbox/gmail" element={mailRoute.get("legacy") === "personal" ? <PersonalMail /> : <Navigate to="/mailbox" replace />} />
             <Route
               path="/documents"
               element={
@@ -733,7 +744,7 @@ function Workspace() {
               path="/invoices"
               element={
                 <FeatureGate feature="gmail">
-                  <Invoices />
+                  <Invoices reviewOnly={!legacyCompanyMail} />
                 </FeatureGate>
               }
             />

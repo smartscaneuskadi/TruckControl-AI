@@ -111,8 +111,8 @@ export function Settings() {
                   {offline.offline ? "Bloquear copia" : "Cerrar sesión"}
                 </Button>
               </div>
-              <Link to="/invoices" className="button secondary">
-                Gestionar Gmail de esta empresa
+              <Link to="/mailbox" className="button secondary">
+                Gestionar mis cuentas de correo
               </Link>
             </>
           ) : (

@@ -1,6 +1,8 @@
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 import { createMailHandler } from "./handler.ts";
 import { createMailGateway } from "./gateway.ts";
+import { createConnectedMailboxScanner } from "./connected-importer.ts";
+import { selectConnectedMailboxCursorKey } from "./connected-contract.ts";
 import { resendConfig, resendReady } from "../_shared/resend-runtime.ts";
 import {
   productionAppOrigins,
@@ -25,8 +27,14 @@ Deno.serve(async (request: Request) => {
   });
   const policy = error ? null : data;
   const receiver = resendConfig(policy);
+  const connectedMailboxCursorKey = selectConnectedMailboxCursorKey(
+    Deno.env.get("COMPANY_MAIL_INGRESS_SIGNING_KEY"),
+    receiver.signingKey,
+  );
   return createMailHandler(gateway, {
     origins: [...productionAppOrigins, legacyDemoOrigin],
+    connectedMailboxCursorKey,
+    connectedMailbox: createConnectedMailboxScanner(connectedMailboxCursorKey),
     ingress:
       Deno.env.get("COMPANY_MAIL_INGRESS_ENABLED") === "true"
         ? {

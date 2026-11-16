@@ -1274,7 +1274,7 @@ async function openPersonalMail(page: Page) {
   await login(page, "customer@example.com");
   await expect(page).toHaveURL(/#\/dashboard/);
   await page.evaluate(() => {
-    location.hash = "/mailbox/gmail";
+    location.hash = "/mailbox/gmail?legacy=personal";
   });
   await page
     .getByRole("button", { name: "Preparar conexión con Google", exact: true })
@@ -1447,7 +1447,7 @@ test("la administración global explica el enlace de Gmail de empresa y limpia e
     name: "Acceso al correo de empresa",
   });
   await page.evaluate(() => {
-    location.hash = "/invoices";
+    location.hash = "/invoices?legacy=company-gmail";
   });
   await expect(notice).toContainText("Estás en la administración global");
   await expect(notice).toContainText("misma cuenta y empresa");
@@ -2041,7 +2041,7 @@ test("correo personal demo: enviar responder y papelera son ficticios y no alter
     .getByRole("button", { name: "Explorar la demo", exact: true })
     .click();
   await page.evaluate(() => {
-    location.hash = "/mailbox/gmail";
+    location.hash = "/mailbox/gmail?legacy=personal";
   });
   await page
     .getByRole("button", { name: "Abrir buzón ficticio", exact: true })
@@ -3154,7 +3154,7 @@ test("bandeja completa: más de 200 facturas, filtros, CSV y permiso de consulta
   await login(page, "customer@example.com");
   await expect(page.locator(".sidebar")).toBeVisible();
   await page.evaluate(() => {
-    location.hash = "/invoices";
+    location.hash = "/invoices?legacy=company-gmail";
   });
   const register = page.getByRole("region", {
     name: "Bandeja de facturas",
@@ -3261,7 +3261,7 @@ test("lectura IA de factura guardada sin Gmail: permiso, confirmación, estado y
   await login(page, "customer@example.com");
   await expect(page.locator(".sidebar")).toBeVisible();
   await page.evaluate(() => {
-    location.hash = "/invoices";
+    location.hash = "/invoices?legacy=company-gmail";
   });
   await expect(
     page.getByText(
@@ -3372,7 +3372,7 @@ test("lectura IA incierta no se repite; desactivar el consentimiento retira la a
   await login(page, "customer@example.com");
   await expect(page.locator(".sidebar")).toBeVisible();
   await page.evaluate(() => {
-    location.hash = "/invoices";
+    location.hash = "/invoices?legacy=company-gmail";
   });
   const register = page.getByRole("region", {
     name: "Bandeja de facturas",
@@ -5368,6 +5368,7 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
   await expect(page.locator("main iframe")).toHaveCount(0);
   const pages = context.pages().length;
   async function fill(email: string) {
+    await page.getByLabel("Proveedor de correo", { exact: true }).selectOption("porkbun");
     const consent = page.getByLabel("Autorizo a TruckControl a conectar este buzón", { exact: false });
     await expect(consent).not.toBeChecked();
     await page.getByLabel("Correo electrónico", { exact: true }).fill(email);
@@ -5376,6 +5377,9 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
       .fill("app-password-ficticia-no-real");
     await consent.check();
     // Accepting one configuration must not cover a changed server or credential.
+    const advanced = page.locator(".mail-provider-advanced");
+    if (!(await advanced.evaluate((element) => (element as HTMLDetailsElement).open)))
+      await advanced.getByText("Configuración avanzada del proveedor", { exact: true }).click();
     await page.getByLabel("Servidor de salida SMTP", { exact: false }).fill("smtp.changed.example.com");
     await expect(consent).not.toBeChecked();
     await page.getByLabel("Servidor de salida SMTP", { exact: false }).fill("smtp.porkbun.com");
@@ -5416,7 +5420,7 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
     { action: "send", email: "first@example.invalid" },
   ]);
   await page
-    .getByRole("button", { name: "Añadir otro correo", exact: true })
+    .getByRole("button", { name: "Añadir correo", exact: true })
     .click();
   reject = true;
   await fill("second@example.invalid");
@@ -5431,11 +5435,12 @@ test("correo real: verifica cuentas, conserva dos buzones y no guarda contraseñ
   await expect(
     page.getByRole("heading", { name: "second@example.invalid", exact: true }),
   ).toBeVisible();
-  await page
-    .getByRole("link", { name: "Facturas del correo", exact: true })
-    .click();
+  // The unified mailbox deliberately has no second mail/invoice setup entry.
+  // Review is still routable and must preserve every connected account.
+  await expect(page.getByRole("link", { name: "Facturas del correo", exact: true })).toHaveCount(0);
+  await page.evaluate(() => { location.hash = "/invoices"; });
   await expect(
-    page.getByRole("heading", { name: "Del correo a tus gastos", exact: true }),
+    page.getByRole("heading", { name: "Facturas de esta empresa", exact: true }),
   ).toBeVisible();
   await page
     .getByRole("link", { name: "Volver a Correo", exact: true })
@@ -5507,6 +5512,7 @@ test("IMAP/SMTP: la salida de sesión limpia la aceptación y descarta una verif
   });
   await login(page, "customer@example.com");
   await page.evaluate(() => { location.hash = "/mailbox"; });
+  await page.getByLabel("Proveedor de correo", { exact: true }).selectOption("porkbun");
   await page.getByLabel("Correo electrónico", { exact: true }).fill("late@example.invalid");
   await page.getByLabel("Contraseña del buzón o de aplicación", { exact: true }).fill("synthetic-late-password");
   const consent = page.getByLabel("Autorizo a TruckControl a conectar este buzón", { exact: false });
@@ -5517,8 +5523,11 @@ test("IMAP/SMTP: la salida de sesión limpia la aceptación y descarta una verif
   await pending;
   // Logout, user/company changes and page exit all use this production cleanup.
   await page.evaluate(() => window.dispatchEvent(new Event("truckcontrol:session-exit")));
-  await expect(consent).not.toBeChecked();
+  await expect(page.getByLabel("Proveedor de correo", { exact: true })).toHaveValue("google");
+  await expect(page.getByLabel("Contraseña del buzón o de aplicación", { exact: true })).toHaveCount(0);
   await expect(page.getByLabel("Correo electrónico", { exact: true })).toHaveValue("");
+  await page.getByLabel("Proveedor de correo", { exact: true }).selectOption("porkbun");
+  await expect(consent).not.toBeChecked();
   await expect(page.getByLabel("Contraseña del buzón o de aplicación", { exact: true })).toHaveValue("");
   release();
   await expect.poll(() => returned).toBe(true);
@@ -5706,7 +5715,7 @@ test.describe("portapapeles del reenvío de facturas", () => {
         });
         await login(page, "customer@example.com");
         await expect(page).toHaveURL(/#\/dashboard/);
-        await page.goto("/#/invoices");
+        await page.goto("/#/invoices?legacy=company-gmail");
         const intake = page.locator(".universal-mail");
         await expect(intake.locator(".mail-recipient")).toHaveText(recipient);
         await page.getByRole("button", { name: "Cambiar apariencia", exact: true }).click();
