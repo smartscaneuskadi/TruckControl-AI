@@ -2,7 +2,7 @@ name: TruckControl production package only (NO DEPLOY)
 
 on:
   push:
-    branches: ["deploy/cargotrack-production-*", "deploy/gmail-account-production-*", "deploy/company-manual-full-production-*", "deploy/mfa-full-production-*", "deploy/commercial-acceptance-20261113", "deploy/commercial-safe-20261114"]
+    branches: ["deploy/billing-attachments-production-*", "deploy/cargotrack-production-*", "deploy/gmail-account-production-*", "deploy/company-manual-full-production-*", "deploy/mfa-full-production-*", "deploy/commercial-acceptance-20261113", "deploy/commercial-safe-20261114"]
   workflow_dispatch:
 
 permissions:

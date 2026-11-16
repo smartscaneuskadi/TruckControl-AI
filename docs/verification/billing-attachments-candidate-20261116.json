@@ -1,0 +1,120 @@
+{
+  "recorded_at": "2026-11-16T08:24:56.217839+00:00",
+  "status": "candidate_not_published",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "branch": "feat/billing-attachments-20261116",
+  "app_version": "0.5.30-rc.1",
+  "android_version_code": 9,
+  "preserved_production": {
+    "sites_version": 47,
+    "app_version": "0.5.29-rc.1",
+    "source": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+    "url": "https://truckcontrolai.com"
+  },
+  "saved_only_recovery": {
+    "sites_version": 48,
+    "source": "16326200e75275bbb3fd649c26dd40594de91044",
+    "deployed": false
+  },
+  "stable_demo_sites_version": 6,
+  "supabase": {
+    "project": "kkkemaycedexymrpaqtp",
+    "existing_migrations": 75,
+    "candidate_file": "supabase/migrations/20261116073208_billing_document_attachments.sql",
+    "candidate_sha256": "1e93388efd2a890d73a1ca0839a27ff4fe39008c10f019d23e40d10c34bebfd3",
+    "applied": false,
+    "isolated_postgresql_acceptance": "pending_actions",
+    "previous_versioned_sql_files_unchanged": 52
+  },
+  "verified_local": {
+    "final_focal_tests": 108,
+    "focal_breakdown": {
+      "sql": 34,
+      "domain_backup": 24,
+      "financial_adapter": 6,
+      "backup_adapter": 4,
+      "logical_document_restore": 1,
+      "languages": 9,
+      "finance_ui": 13,
+      "document_sdk": 17
+    },
+    "python": 154,
+    "retained_file_hashes": 11,
+    "browser_previous_snapshot_passed": 64,
+    "browser_latest_scope_change_cases_passed": 4,
+    "browser_profiles": [
+      "Windows Light",
+      "Android Light",
+      "Windows Cockpit",
+      "Android Cockpit"
+    ],
+    "saas_passed": 273,
+    "saas_timeout": 1,
+    "saas_timeout_isolated_repeat": {
+      "passed": 2,
+      "source_or_assertion_changes": false
+    }
+  },
+  "preserved_diagnostics": {
+    "first_unit": {
+      "passed": 1967,
+      "failed": 4,
+      "cause": "new versioned backup endpoint required fixture adaptation; all original assertions retained"
+    },
+    "first_browser": {
+      "passed": 48,
+      "failed": 4,
+      "cause": "actual queue accessibility defect, corrected with role=group"
+    },
+    "second_browser": {
+      "passed": 52,
+      "failed": 12,
+      "cause": "controlled section labels were not localized; explicit display translation added"
+    },
+    "intermediate_check": {
+      "passed": 2030,
+      "failed": 4,
+      "cause": "three new AI fixtures did not opt in within their disposable transaction, and one restore reached30s under parallel load; quiet final108 pass supersedes them"
+    }
+  },
+  "compatibility": {
+    "old_rpc_projection_preserved": true,
+    "old_clients_omit_preserves_values": true,
+    "company_backup_versions_read": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "demo_backup_versions_read": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "original_files_overwritten": false,
+    "economic_calculations_changed": false,
+    "public_storage": false,
+    "new_paid_provider_calls": 0
+  },
+  "ci": "pending",
+  "deployment": "not_started",
+  "costs": {
+    "purchases_initiated": 0,
+    "new_recurring_commitments": 0,
+    "new_model_calls": 0,
+    "approved_total_eur": 200,
+    "historical_balance": "not_reconciled_no_new_charges_initiated",
+    "ai_monthly_budget_usd": 10,
+    "ai_calls_per_company": 100
+  },
+  "acceptance_limits": [
+    "Synthetic private HTTP with real installed SDK and real local browser; emulated device profiles, not physical Android/Windows.",
+    "PGlite logical restore is isolated; managed Auth/Storage/Vault restoration is not attested.",
+    "No new real Gmail, model, Stripe, fiscal emission or customer-data acceptance.",
+    "No production schema change or new release yet."
+  ],
+  "next": "Complete exact-commit GitHub checks and real PostgreSQL acceptance; request official migration only if verified; preserve production until safe versioned source deployment."
+}

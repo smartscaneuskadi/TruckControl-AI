@@ -48,6 +48,10 @@ company_full_spec = importlib.util.spec_from_file_location("company_manual_full_
 assert company_full_spec and company_full_spec.loader
 company_full_contracts = importlib.util.module_from_spec(company_full_spec)
 company_full_spec.loader.exec_module(company_full_contracts)
+billing_documents_spec = importlib.util.spec_from_file_location("billing_document_contracts", ROOT / "tests/postgres/billing_document_contracts.py")
+assert billing_documents_spec and billing_documents_spec.loader
+billing_document_contracts = importlib.util.module_from_spec(billing_documents_spec)
+billing_documents_spec.loader.exec_module(billing_document_contracts)
 q, sql, value, check = pg.quote, pg.sql, pg.value, pg.check
 ACCOUNT = "acct_IncidentPostgres"
 ADMIN = "fd110000-0000-4000-8000-000000000001"
@@ -197,6 +201,7 @@ def main():
  quote_contracts.run(pg, SimpleNamespace(**globals()))
  company_full_contracts.run(pg, SimpleNamespace(**globals()))
  totp_contracts.run(pg, SimpleNamespace(**globals()))
+ billing_document_contracts.run(pg, SimpleNamespace(**globals()))
  # Actual dump/restore AFTER the new ledger and reviews exist.
  before=pg.database_fingerprint(pg.SOURCE)
  dump=pg.run(["docker","exec",pg.CONTAINER,"pg_dump","-U","postgres","-d",pg.SOURCE,"-Fc","--no-owner"]).stdout
@@ -210,6 +215,7 @@ def main():
  if before!=after:
   pg.REPORT["restore_differences"]=pg.fingerprint_differences(before,after)
  check("Logical restore preserves all financial rows, ACL, RLS, triggers and immutable operations",before==after)
+ billing_document_contracts.verify_restored(pg, SimpleNamespace(**globals()), RESTORED)
  pg.require_error("Restored financial audit remains immutable","delete from private.tc_subscription_financial_entries","manual_invoice_intake_immutable",RESTORED)
  sql("delete from auth.sessions where id="+q(SID),RESTORED)
  pg.require_error("Restored administrator session revocation is effective",

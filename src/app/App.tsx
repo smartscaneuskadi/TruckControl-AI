@@ -1,4 +1,5 @@
 import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
+import { t } from "../i18n/runtime";
 import { AccountControls } from "../components/AccountControls";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -32,6 +33,7 @@ import {
   Wrench,
   Fuel,
   CalendarClock,
+  ReceiptText,
 } from "lucide-react";
 import {
   HashRouter,
@@ -56,6 +58,7 @@ import { CargoTrack } from "../pages/CargoTrack";
 import { Trucks } from "../pages/Trucks";
 import { Drivers } from "../pages/Drivers";
 import { Finance } from "../pages/Finance";
+import { Billing } from "../pages/Billing";
 import { Profitability } from "../pages/Profitability";
 import { Assistant } from "../pages/Assistant";
 import { Settings } from "../pages/Settings";
@@ -186,6 +189,10 @@ function Workspace() {
   const tyres = useTyres();
   const day = useCurrentDay();
   const cloud = access.mode === "company";
+  const billingAvailable =
+    !subscription.enabled ||
+    subscription.features.income ||
+    subscription.features.expenses;
   const location = useLocation();
   const { install, canInstall } = useInstall();
   const [period, setPeriod] = useState(snapshot.demoMonth);
@@ -237,7 +244,9 @@ function Workspace() {
       ),
   ];
   const currentPage =
-    navigation.find((item) => item.to === location.pathname)?.label ??
+    (location.pathname === "/billing"
+      ? "Facturación"
+      : navigation.find((item) => item.to === location.pathname)?.label) ??
     (location.pathname.startsWith("/mailbox/") ||
     location.pathname === "/invoices"
       ? "Correo"
@@ -347,32 +356,75 @@ function Workspace() {
           {navigation
             .filter(
               (item) =>
-                !subscription.enabled ||
-                item.feature === null ||
-                subscription.features[item.feature as Feature],
+                item.to !== "/expenses" &&
+                (item.to === "/income"
+                  ? billingAvailable
+                  : !subscription.enabled ||
+                    item.feature === null ||
+                    subscription.features[item.feature as Feature]),
             )
-            .map((item) => (
-              <NavLink
-                to={item.to}
-                key={item.to}
-                className={({ isActive }) =>
-                  `nav-link ${isActive ? "active" : ""}`
-                }
-              >
-                {item.to === "/cargotrack" ? (
-                  <span className="cargotrack-nav-icon" aria-hidden="true">
-                    <Truck size={18} />
-                    <MapPinned size={12} />
-                  </span>
-                ) : (
-                  <item.icon size={18} aria-hidden="true" />
-                )}
-                <span>{item.label}</span>
-                {item.to === "/trucks" && (
-                  <span className="nav-count">{snapshot.trucks.length}</span>
-                )}
-              </NavLink>
-            ))}
+            .map((item) =>
+              item.to === "/income" ? (
+                <div className="billing-nav-group" key="billing">
+                  <NavLink
+                    to="/billing"
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? "active" : ""}`
+                    }
+                  >
+                    <ReceiptText size={18} aria-hidden="true" />
+                    <span>Facturación</span>
+                  </NavLink>
+                  <div
+                    className="billing-subnav"
+                    role="group"
+                    aria-label="Facturación"
+                  >
+                    {navigation
+                      .filter(
+                        (section) =>
+                          (section.to === "/income" ||
+                            section.to === "/expenses") &&
+                          (!subscription.enabled ||
+                            subscription.features[section.feature as Feature]),
+                      )
+                      .map((section) => (
+                        <NavLink
+                          key={section.to}
+                          to={section.to}
+                          className={({ isActive }) =>
+                            `nav-link ${isActive ? "active" : ""}`
+                          }
+                        >
+                          <section.icon size={17} aria-hidden="true" />
+                          <span>{t(section.label)}</span>
+                        </NavLink>
+                      ))}
+                  </div>
+                </div>
+              ) : (
+                <NavLink
+                  to={item.to}
+                  key={item.to}
+                  className={({ isActive }) =>
+                    `nav-link ${isActive ? "active" : ""}`
+                  }
+                >
+                  {item.to === "/cargotrack" ? (
+                    <span className="cargotrack-nav-icon" aria-hidden="true">
+                      <Truck size={18} />
+                      <MapPinned size={12} />
+                    </span>
+                  ) : (
+                    <item.icon size={18} aria-hidden="true" />
+                  )}
+                  <span>{item.label}</span>
+                  {item.to === "/trucks" && (
+                    <span className="nav-count">{snapshot.trucks.length}</span>
+                  )}
+                </NavLink>
+              ),
+            )}
         </nav>
         <div className="nav-section-label intelligence-label">INTELIGENCIA</div>
         {(!subscription.enabled || subscription.features.assistant) && (
@@ -428,7 +480,11 @@ function Workspace() {
               type="button"
               disabled={signingOut}
               aria-busy={signingOut}
-              aria-label={signingOut ? "Cerrando sesión de TruckControl…" : "Cerrar sesión de TruckControl"}
+              aria-label={
+                signingOut
+                  ? "Cerrando sesión de TruckControl…"
+                  : "Cerrar sesión de TruckControl"
+              }
               onClick={async () => {
                 if (signOutPending.current) return;
                 signOutPending.current = true;
@@ -508,13 +564,13 @@ function Workspace() {
               subscription.access?.manual_full?.configured
                 ? "Pack Full · Activo"
                 : subscription.enabled &&
-              subscription.access?.profile?.status === "trial"
-                ? `${subscription.access.plan === "limited" ? "Básico" : "Full"} · Prueba: ${trialDaysLeft(subscription.access.profile.trial_ends_at)} días`
-                : cloud
-                  ? "Modo empresa"
-                  : isCandidateRelease
-                    ? "Candidata · datos ficticios"
-                    : "Modo demo"}
+                    subscription.access?.profile?.status === "trial"
+                  ? `${subscription.access.plan === "limited" ? "Básico" : "Full"} · Prueba: ${trialDaysLeft(subscription.access.profile.trial_ends_at)} días`
+                  : cloud
+                    ? "Modo empresa"
+                    : isCandidateRelease
+                      ? "Candidata · datos ficticios"
+                      : "Modo demo"}
             </span>
             {canInstall && (
               <button
@@ -628,6 +684,7 @@ function Workspace() {
                 </FeatureGate>
               }
             />
+            <Route path="/billing" element={<Billing />} />
             <Route
               path="/income"
               element={

@@ -500,7 +500,7 @@ export async function fixture(context: BrowserContext) {
         ["drivers", "finance_entries"].some(
           (name) => path === "/rest/v1/" + name,
         ) ||
-        ["tc_list_records", "tc_document_page", "tc_tyre_page"].some(
+        ["tc_list_records", "tc_document_page", "tc_document_page_v2", "tc_tyre_page"].some(
           (name) => path === "/rest/v1/rpc/" + name,
         )
       )
