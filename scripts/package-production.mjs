@@ -130,6 +130,10 @@ if (!["tc_admin_company_full", "manual_full", "Pack Full"].every((value) => bund
   throw Error("Manual company Full controls are missing from the production bundle.");
 if (!["tc_mfa_protection_status", "tc_verified_session", "Añadir autenticador", "Configura tu autenticador"].every((value) => bundle.includes(value)))
   throw Error("Native optional TOTP protection or management is missing from the production bundle.");
+if (!["Facturación", "technical_card", "identity", "driving_license", "delivery_note",
+    "document_type", "tc_document_page_v2", "tc_update_document_metadata_v2",
+    "tc_register_document_v2", "tc_backup_page_v3"].every((value) => bundle.includes(value)))
+  throw Error("The reviewed billing classes or private fleet attachments are missing.");
 const archivePath = join(process.env.RUNNER_TEMP || "/tmp", "truckcontrol-production-" + sha + ".tar.gz");
 const tar = spawnSync("tar", ["-czf", archivePath, ".openai/hosting.json", "dist"], { stdio: "inherit", shell: false });
 if (tar.status !== 0) throw Error("Production packaging failed.");
