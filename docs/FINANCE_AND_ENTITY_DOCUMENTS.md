@@ -24,7 +24,7 @@ Los originales requieren conexión; no se añaden a la cola offline ni se incluy
 
 ## Compatibilidad y recuperación
 
-La ampliación SQL76 es aditiva: no reclasifica registros anteriores ni elimina archivos. `document_type` es nullable. Los clientes que omiten esa propiedad al editar conservan la clasificación existente. La descripción y el vínculo financiero viven en metadatos separados; no se cambia el nombre ni la ruta del original.
+La ampliación SQL76, aplicada oficialmente como `20261116085827_billing_document_attachments`, es aditiva: no reclasifica registros anteriores ni elimina archivos. `document_type` es nullable. Los clientes que omiten esa propiedad al editar conservan la clasificación existente. La descripción y el vínculo financiero viven en metadatos separados; no se cambia el nombre ni la ruta del original.
 
 Los RPC enriquecidos son `tc_document_page_v2`, `tc_update_document_metadata_v2`, `tc_register_document_v2` y `tc_backup_page_v3`. Los RPC previos conservan su proyección original para Sites47 y la recuperación48; las categorías nuevas se proyectan como «Otro» y una edición antigua no las sustituye accidentalmente. Los campos omitidos se conservan.
 

@@ -19,12 +19,28 @@
   "stable_demo_sites_version": 6,
   "supabase": {
     "project": "kkkemaycedexymrpaqtp",
-    "existing_migrations": 75,
-    "candidate_file": "supabase/migrations/20261116073208_billing_document_attachments.sql",
+    "candidate_file": "supabase/migrations/20261116085827_billing_document_attachments.sql",
     "candidate_sha256": "1e93388efd2a890d73a1ca0839a27ff4fe39008c10f019d23e40d10c34bebfd3",
-    "applied": false,
-    "isolated_postgresql_acceptance": "pending_actions",
-    "previous_versioned_sql_files_unchanged": 52
+    "applied": true,
+    "isolated_postgresql_acceptance": {
+      "workflow_run": 43833876155,
+      "status": "success",
+      "executed_source": "e681e91bb316960daaa0de610d84b88a3f164140",
+      "head": "9af5fc905e0be38ba253e8dc02ffc8bd091df0c8",
+      "tree_equals_head": true,
+      "checks": 524,
+      "real_contentions": 45,
+      "logical_restores": 2,
+      "billing_checks_included": 42
+    },
+    "previous_versioned_sql_files_unchanged": 52,
+    "existing_migrations_at_candidate_creation": 75,
+    "current_migrations": 76,
+    "original_candidate_file": "supabase/migrations/20261116073208_billing_document_attachments.sql",
+    "migration_version": "20261116085827",
+    "remote_statement_md5": "948b1556d11af125bd0e4d7bff31e451",
+    "remote_statement_bytes": 25144,
+    "remote_statement_digest_matches_reviewed_file": true
   },
   "verified_local": {
     "final_focal_tests": 108,
@@ -99,7 +115,7 @@
     "public_storage": false,
     "new_paid_provider_calls": 0
   },
-  "ci": "corrected_commit_checks_pending",
+  "ci": "final_metadata_commit_checks_pending",
   "deployment": "not_started",
   "costs": {
     "purchases_initiated": 0,
