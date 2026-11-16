@@ -356,15 +356,18 @@
     "native_anonymous_read_rpc_denials": 2
   },
   "source_branch": "deploy/billing-attachments-production-20261116",
-  "production_source_manifest_only_diff_scope": "Coreea9 and production888 have identical src/supabase runtime and dependency versions. They differ in production packaging workflow/script, hosting manifest and three prior release-source documents, so the manifest-only flag stays false.",
+  "production_source_manifest_only_diff_scope": "Reviewed PR153 head4e08dfe and deployed source5f44 have identical application, tests, Supabase, dependency, compiler and Android source trees. The nine differences are enumerated in postpublication_allowed_differences: hosting identity, production packaging workflow/helpers and delivery/recovery metadata. The manifest-only flag remains false.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
-    ".openai/hosting.json",
     ".github/workflows/production-package.yml",
-    "scripts/package-production.mjs",
+    ".openai/hosting.json",
+    "docs/deployment/candidate-hosting.json",
     "docs/deployment/cargotrack-embedded-release-source.md",
     "docs/deployment/cargotrack-release-source.md",
-    "docs/deployment/gmail-account-release-source.md"
+    "docs/deployment/gmail-account-release-source.md",
+    "docs/deployment/mfa-recovery-mode.md",
+    "scripts/package-production.mjs",
+    "scripts/prepare-mfa-recovery.mjs"
   ],
   "expected_billing_issuer": {
     "name": "ELEVADANCOR S.L.",
@@ -516,7 +519,7 @@
   ],
   "expected_second_driver": true,
   "expected_subscription_incidents": true,
-  "source_production_manifest_only_diff_scope": "Shipped runtime src/public/functions/package/compiler/Android sources match reviewed PR128 head4880e2d and merged maindd2b530. Production identity, package workflow/helper and three delivery records differ. Independent offline preflight PR127/Python tests are preserved on main and the delivery branch, outside the static bundle. Never deploy the demo manifest from main.",
+  "source_production_manifest_only_diff_scope": "Sites49 deploys source5f44, derived from reviewed PR153 head4e08dfe. Application/runtime and dependencies match; all nine packaging, hosting and delivery/recovery metadata differences are explicitly enumerated. Main retains its demo hosting manifest and must not be deployed as production.",
   "expected_canonical_subscription_refresh": true,
   "expected_subscription_risk_review": true,
   "personal_mail_function_version": 4,
@@ -576,6 +579,10 @@
     "deploy/commercial-safe-20261114"
   ],
   "production_source_manifest_only_diff_scope_history": [
-    "Runtime src/public/tests/supabase/package/compiler/Android sources match reviewed67911f2 and merged mainc233a3c; only production identity, package workflow/helper and three preserved source-delivery records differ. Never deploy the demo manifest from main."
+    "Runtime src/public/tests/supabase/package/compiler/Android sources match reviewed67911f2 and merged mainc233a3c; only production identity, package workflow/helper and three preserved source-delivery records differ. Never deploy the demo manifest from main.",
+    "Coreea9 and production888 have identical src/supabase runtime and dependency versions. They differ in production packaging workflow/script, hosting manifest and three prior release-source documents, so the manifest-only flag stays false."
+  ],
+  "source_production_manifest_only_diff_scope_history": [
+    "Shipped runtime src/public/functions/package/compiler/Android sources match reviewed PR128 head4880e2d and merged maindd2b530. Production identity, package workflow/helper and three delivery records differ. Independent offline preflight PR127/Python tests are preserved on main and the delivery branch, outside the static bundle. Never deploy the demo manifest from main."
   ]
 }
