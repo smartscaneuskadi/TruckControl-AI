@@ -129,6 +129,28 @@ export interface BackupRecords {
   tripFinanceLinks?: z.infer<typeof tripFinanceLinkSchema>[];
   tripFinanceReviews?: z.infer<typeof tripFinanceReviewSchema>[];
 }
+/** Old readers would silently discard new optional fields from otherwise valid records. */
+function hasBillingDocumentRecords(
+  records: Pick<BackupRecords, "fleet" | "documents">,
+) {
+  return (
+    records.fleet.entries.some((entry) => entry.documentType != null) ||
+    records.documents.some((document) => {
+      const tracking = document.tracking;
+      return (
+        Boolean(tracking?.label || tracking?.finance_entry_id) ||
+        (tracking !== undefined &&
+          [
+            "technical_card",
+            "identity",
+            "driving_license",
+            "ticket",
+            "delivery_note",
+          ].includes(tracking.category))
+      );
+    })
+  );
+}
 const coverageSchema = z
   .object({
     documents: z.enum(["library", "invoice-attachments", "none"]),
@@ -141,7 +163,7 @@ const coverageSchema = z
 export type BackupCoverage = z.infer<typeof coverageSchema>;
 export interface CompanyBackup extends BackupRecords {
   format: "truckcontrol-company-records";
-  version: 1 | 2 | 3 | 4 | 5;
+  version: 1 | 2 | 3 | 4 | 5 | 6;
   project: typeof backupProject;
   exportedAt: string;
   coverage: BackupCoverage;
@@ -156,6 +178,7 @@ const packageSchema = z
       z.literal(3),
       z.literal(4),
       z.literal(5),
+      z.literal(6),
     ]),
     project: z.literal(backupProject),
     exportedAt: timestamp,
@@ -209,7 +232,9 @@ export function validateBackupRecords(
   for (const d of documents)
     if (
       (d.truck_id && !trucks.has(d.truck_id)) ||
-      (d.driver_id && !drivers.has(d.driver_id))
+      (d.driver_id && !drivers.has(d.driver_id)) ||
+      (d.tracking?.finance_entry_id &&
+        !entries.has(d.tracking.finance_entry_id))
     )
       throw Error("Un documento ha perdido su ficha relacionada.");
   for (const r of operations)
@@ -341,6 +366,10 @@ export async function validateCompanyBackup(
   if (p.version < 5 && records.fleet.trucks.some((truck) => truck.coDriverId))
     throw Error(
       "El segundo conductor requiere una copia de empresa de versión 5.",
+    );
+  if (p.version < 6 && hasBillingDocumentRecords(records))
+    throw Error(
+      "La clasificación y los vínculos documentales requieren una copia de empresa de versión 6.",
     );
   if (p.version === 1 && p.documents.some((d) => d.tracking))
     throw Error("Los metadatos documentales requieren una copia de versión 2.");
@@ -588,16 +617,18 @@ export async function collectCompanyBackup(
     {
       ...records,
       format: "truckcontrol-company-records",
-      version: records.fleet.trucks.some((truck) => truck.coDriverId)
-        ? 5
-        : records.suppliers !== undefined ||
-            records.tripFinanceLinks !== undefined
-          ? 4
-          : records.tyres !== undefined
-            ? 3
-            : records.documents.some((d) => d.tracking)
-              ? 2
-              : 1,
+      version: hasBillingDocumentRecords(records)
+        ? 6
+        : records.fleet.trucks.some((truck) => truck.coDriverId)
+          ? 5
+          : records.suppliers !== undefined ||
+              records.tripFinanceLinks !== undefined
+            ? 4
+            : records.tyres !== undefined
+              ? 3
+              : records.documents.some((d) => d.tracking)
+                ? 2
+                : 1,
       project: backupProject,
       exportedAt: new Date().toISOString(),
       coverage: auth.coverage,

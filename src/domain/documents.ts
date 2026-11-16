@@ -4,8 +4,13 @@ import { dateSchema } from "./models";
 export const documentCategories = {
   insurance: "Seguro",
   inspection: "ITV",
+  technical_card: "Ficha técnica",
+  identity: "Identidad",
+  driving_license: "Permiso de conducir",
   permit: "Permiso",
   invoice: "Factura",
+  ticket: "Ticket",
+  delivery_note: "Albarán",
   maintenance: "Mantenimiento",
   contract: "Contrato",
   other: "Otro",
@@ -15,8 +20,13 @@ export const documentTrackingInput = z
     category: z.enum([
       "insurance",
       "inspection",
+      "technical_card",
+      "identity",
+      "driving_license",
       "permit",
       "invoice",
+      "ticket",
+      "delivery_note",
       "maintenance",
       "contract",
       "other",
@@ -24,6 +34,9 @@ export const documentTrackingInput = z
     status: z.enum(["active", "archived"]),
     expires_on: dateSchema.nullable(),
     remind_days: z.number().int().min(0).max(365),
+    // An absent field preserves legacy metadata; empty/null explicitly clears it.
+    label: z.string().trim().max(160).optional(),
+    finance_entry_id: z.uuid().nullable().optional(),
   })
   .strict();
 export const documentTrackingSchema = documentTrackingInput.extend({
@@ -84,7 +97,9 @@ export function filterDocuments<T extends TrackedDocument>(
   const query = search.trim().toLocaleLowerCase("es");
   return rows.filter(
     (d) =>
-      (!query || d.name.toLocaleLowerCase("es").includes(query)) &&
+      (!query ||
+        d.name.toLocaleLowerCase("es").includes(query) ||
+        d.tracking?.label?.toLocaleLowerCase("es").includes(query)) &&
       (status === "all" || status === "active"
         ? status === "all" || d.tracking?.status !== "archived"
         : documentState(d, day) === status) &&

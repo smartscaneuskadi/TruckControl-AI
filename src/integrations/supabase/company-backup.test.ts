@@ -66,7 +66,7 @@ function fixture() {
               },
               error: null,
             };
-      if (name === "tc_backup_page_v2") {
+      if (name === "tc_backup_page_v2" || name === "tc_backup_page_v3") {
         let rows =
           args.p_kind === "documents"
             ? docs
@@ -128,10 +128,11 @@ describe("lectura autorizada para copias", () => {
     expect(
       f.rpc.mock.calls.some(
         ([name, args]) =>
-          name === "tc_backup_page_v2" &&
+          name === "tc_backup_page_v3" &&
           args.p_after === "50000000-0000-4000-8000-000000000200",
       ),
     ).toBe(true);
+    expect(f.rpc.mock.calls.some(([name]) => name === "tc_backup_page_v2")).toBe(false);
   });
   it("no genera una copia antigua incompleta si falta el endpoint comercial", async () => {
     const f = fixture();

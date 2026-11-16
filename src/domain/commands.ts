@@ -36,9 +36,18 @@ export function applyCommand(
     case "save-driver":
       next.drivers = upsert(snapshot.drivers, command.value);
       break;
-    case "save-entry":
-      next.entries = upsert(snapshot.entries, command.value);
+    case "save-entry": {
+      const value = { ...command.value };
+      const previous = snapshot.entries.find((entry) => entry.id === value.id);
+      // Older clients do not erase a documentary classification they omit.
+      if (
+        value.documentType === undefined &&
+        previous?.documentType !== undefined
+      )
+        value.documentType = previous.documentType;
+      next.entries = upsert(snapshot.entries, value);
       break;
+    }
     case "delete-truck":
       if (snapshot.entries.some((entry) => entry.truckId === command.id))
         throw new Error(

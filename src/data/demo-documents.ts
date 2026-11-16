@@ -16,6 +16,12 @@ export interface DemoDocument {
   tracking?: DocumentTracking;
 }
 const databaseName = "truckcontrol-demo-documents-v1";
+function compactTracking(value: DocumentTracking): DocumentTracking {
+  const tracking = { ...value };
+  if (!tracking.label) delete tracking.label;
+  if (tracking.finance_entry_id === null) delete tracking.finance_entry_id;
+  return tracking;
+}
 async function database() {
   return new Promise<IDBDatabase>((resolve, reject) => {
     const request = indexedDB.open(databaseName, 1);
@@ -52,7 +58,15 @@ export async function saveDemoDocument(
   truckId: string,
   driverId: string,
   tracking?: DocumentTrackingInput,
+  current?: () => boolean,
 ) {
+  const checkScope = () => {
+    if (current && !current())
+      throw Error(
+        "La cuenta o la empresa ha cambiado. La operación documental se ha detenido.",
+      );
+  };
+  checkScope();
   const metadata = tracking ? documentTrackingInput.parse(tracking) : null;
   if (file.size < 1 || file.size > 10 * 1024 * 1024)
     throw Error("El documento debe tener entre 1 byte y 10 MB.");
@@ -61,6 +75,7 @@ export async function saveDemoDocument(
   );
   if (!type)
     throw Error("Selecciona un PDF o una imagen JPG, PNG o WebP válida.");
+  checkScope();
   const value: DemoDocument = {
     id: crypto.randomUUID(),
     organizationId,
@@ -71,11 +86,11 @@ export async function saveDemoDocument(
     file: new Blob([file], { type }),
     ...(metadata
       ? {
-          tracking: {
+          tracking: compactTracking({
             ...metadata,
             row_version: 1,
             updated_at: new Date().toISOString(),
-          },
+          }),
         }
       : {}),
   };
@@ -87,6 +102,10 @@ export async function saveDemoDocument(
         read = store.getAll();
       let capacityError = false;
       read.onsuccess = () => {
+        if (current && !current()) {
+          tx.abort();
+          return;
+        }
         if (
           (read.result as DemoDocument[]).reduce(
             (total, d) => total + d.file.size,
@@ -126,7 +145,10 @@ export async function updateDemoDocument(
   id: string,
   tracking: DocumentTrackingInput,
   version: number,
+  current?: () => boolean,
 ) {
+  if (current && !current())
+    throw Error("La ficha documental ha cambiado. Vuelve a abrirla.");
   const metadata = documentTrackingInput.parse(tracking),
     db = await database();
   try {
@@ -136,6 +158,10 @@ export async function updateDemoDocument(
         read = store.get(id);
       let failure = "No se ha podido actualizar la ficha documental.";
       read.onsuccess = () => {
+        if (current && !current()) {
+          tx.abort();
+          return;
+        }
         const doc = read.result as DemoDocument | undefined;
         if (!doc || doc.organizationId !== organizationId) {
           tx.abort();
@@ -149,11 +175,12 @@ export async function updateDemoDocument(
         }
         store.put({
           ...doc,
-          tracking: {
+          tracking: compactTracking({
+            ...doc.tracking,
             ...metadata,
             row_version: version + 1,
             updated_at: new Date().toISOString(),
-          },
+          }),
         });
       };
       tx.oncomplete = () => resolve();
@@ -164,17 +191,27 @@ export async function updateDemoDocument(
     db.close();
   }
 }
-export async function clearDemoDocuments(organizationId: string) {
+export async function clearDemoDocuments(
+  organizationId: string,
+  current?: () => boolean,
+) {
+  if (current && !current())
+    throw Error("La biblioteca ha cambiado. Vuelve a abrirla.");
   const db = await database();
   try {
     await new Promise<void>((resolve, reject) => {
       const tx = db.transaction("files", "readwrite"),
         store = tx.objectStore("files"),
         read = store.getAll();
-      read.onsuccess = () =>
+      read.onsuccess = () => {
+        if (current && !current()) {
+          tx.abort();
+          return;
+        }
         (read.result as DemoDocument[])
           .filter((d) => d.organizationId === organizationId)
           .forEach((d) => store.delete(d.id));
+      };
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
       tx.onabort = () =>

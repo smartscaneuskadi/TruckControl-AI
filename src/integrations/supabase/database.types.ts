@@ -7,9 +7,9 @@ export type DeployedFleetTables = Pick<
 >;
 type Table<
   Row extends { id: string; created_at: string },
-  Insert = Omit<Row, "id" | "created_at" | "co_driver_id"> &
+  Insert = Omit<Row, "id" | "created_at" | "co_driver_id" | "document_type"> &
     Partial<Pick<Row, "id" | "created_at">> &
-    Partial<Pick<Row, Extract<keyof Row, "co_driver_id">>>,
+    Partial<Pick<Row, Extract<keyof Row, "co_driver_id" | "document_type">>>,
 > = { Row: Row; Insert: Insert; Update: Partial<Insert>; Relationships: [] };
 export type Json =
   | string
@@ -113,6 +113,9 @@ export interface Database {
             | "other";
           payment_status: "paid" | "pending";
           distance_km: number;
+          /** Optional for legacy INSERT/UPDATE; null means not classified. */
+          document_type:
+            import("../../domain/models").FinanceDocumentType | null;
         }
       >;
     };
@@ -121,19 +124,47 @@ export interface Database {
       tc_mfa_protection_status: { Args: Record<string, never>; Returns: Json };
       tc_verified_session: { Args: Record<string, never>; Returns: boolean };
       tc_admin_company_full: {
-        Args: { p_action: string; p_org?: string; p_expected?: number; p_operation?: string; p_data?: Json; p_after?: string };
+        Args: {
+          p_action: string;
+          p_org?: string;
+          p_expected?: number;
+          p_operation?: string;
+          p_data?: Json;
+          p_after?: string;
+        };
         Returns: Json;
       };
       tc_admin_subscription_risk: {
-        Args: { p_action: string; p_case_id?: string | null; p_expected?: number | null; p_operation_id?: string | null; p_data?: Json; p_after?: string | null };
+        Args: {
+          p_action: string;
+          p_case_id?: string | null;
+          p_expected?: number | null;
+          p_operation_id?: string | null;
+          p_data?: Json;
+          p_after?: string | null;
+        };
         Returns: Json;
       };
       tc_admin_subscription_incidents: {
-        Args: { p_action: string; p_case_id?: string | null; p_expected?: number | null; p_operation_id?: string | null; p_data?: Json; p_after?: string | null };
+        Args: {
+          p_action: string;
+          p_case_id?: string | null;
+          p_expected?: number | null;
+          p_operation_id?: string | null;
+          p_data?: Json;
+          p_after?: string | null;
+        };
         Returns: Json;
       };
       tc_admin_subscription_unlinked: {
-        Args: { p_action: string; p_case_id?: string | null; p_expected?: number | null; p_operation_id?: string | null; p_data?: Json; p_after?: string | null };
+        Args: {
+          p_action: string;
+          p_case_id?: string | null;
+          p_expected?: number | null;
+          p_operation_id?: string | null;
+          p_data?: Json;
+          p_after?: string | null;
+        };
         Returns: Json;
       };
       tc_admin_manual_subscription_invoices: {
@@ -204,7 +235,20 @@ export interface Database {
         Args: { p_org: string; p_after?: string | null };
         Returns: Json;
       };
+      tc_document_page_v2: {
+        Args: { p_org: string; p_after?: string | null };
+        Returns: Json;
+      };
       tc_update_document_metadata: {
+        Args: {
+          p_org: string;
+          p_document: string;
+          p_data: Json;
+          p_expected: number;
+        };
+        Returns: Json;
+      };
+      tc_update_document_metadata_v2: {
         Args: {
           p_org: string;
           p_document: string;
@@ -217,7 +261,15 @@ export interface Database {
         Args: { p_org: string; p_document: Json; p_tracking: Json };
         Returns: string;
       };
+      tc_register_document_v2: {
+        Args: { p_org: string; p_document: Json; p_tracking: Json };
+        Returns: string;
+      };
       tc_backup_page_v2: {
+        Args: { p_org: string; p_kind: string; p_after?: string | null };
+        Returns: Json;
+      };
+      tc_backup_page_v3: {
         Args: { p_org: string; p_kind: string; p_after?: string | null };
         Returns: Json;
       };

@@ -15,9 +15,9 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    # The complete retained + SQL + Android/Windows browser suite now needs
-    # about fifteen minutes. Preserve every check with a bounded safety margin.
-    timeout-minutes: 25
+    # Preserve every retained check and the additional billing/document/browser
+    # coverage in all four languages, with a bounded margin for runner variance.
+    timeout-minutes: 35
     env:
       VITE_COMMERCIAL_MODE: "false"
       VITE_SUPABASE_URL: ""
@@ -81,6 +81,10 @@ jobs:
         run: npm run test:e2e:manual-full
         env:
           TRUCKCONTROL_MANUAL_FULL_ARTIFACTS: manual-full-test-results
+      - name: Billing classes and private truck, driver and movement attachments
+        run: npm run test:e2e:billing-attachments
+        env:
+          TRUCKCONTROL_BILLING_ATTACHMENTS_ARTIFACTS: billing-attachments-test-results
       - run: npm run test:e2e:candidate
         env:
           TRUCKCONTROL_CANDIDATE_TEST_ARTIFACTS: candidate-test-results
@@ -98,6 +102,7 @@ jobs:
             saas-test-results/
             mfa-test-results/
             manual-full-test-results/
+            billing-attachments-test-results/
             candidate-test-results/
             public-test-results/
             production-test-results/

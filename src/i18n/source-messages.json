@@ -18274,5 +18274,448 @@
     "contexts": [
       "src/pages/AdminConsole.tsx:manual-full"
     ]
+  },
+  {
+    "key": "Facturación",
+    "contexts": [
+      "src/app/App.tsx",
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "Descripción del documento (opcional)",
+    "contexts": [
+      "src/components/DocumentRegister.tsx"
+    ]
+  },
+  {
+    "key": "Nombre o descripción del documento…",
+    "contexts": [
+      "src/components/DocumentRegister.tsx"
+    ]
+  },
+  {
+    "key": "Filtrar conductor documental",
+    "contexts": [
+      "src/components/DocumentRegister.tsx"
+    ]
+  },
+  {
+    "key": "Todos los conductores",
+    "contexts": [
+      "src/components/DocumentRegister.tsx"
+    ]
+  },
+  {
+    "key": "Movimiento ·",
+    "contexts": [
+      "src/components/DocumentRegister.tsx"
+    ]
+  },
+  {
+    "key": "Movimiento vinculado",
+    "contexts": [
+      "src/components/DocumentRegister.tsx"
+    ]
+  },
+  {
+    "key": "Descripción",
+    "contexts": [
+      "src/components/DocumentRegister.tsx"
+    ]
+  },
+  {
+    "key": "Sin clasificar",
+    "contexts": [
+      "src/components/Editors.tsx",
+      "src/pages/Finance.tsx"
+    ]
+  },
+  {
+    "key": "Los archivos se adjuntan desde el movimiento guardado.",
+    "contexts": [
+      "src/components/Editors.tsx"
+    ]
+  },
+  {
+    "key": "camión",
+    "contexts": [
+      "src/components/Editors.tsx"
+    ]
+  },
+  {
+    "key": "Selecciona el tipo de documento del movimiento.",
+    "contexts": [
+      "src/components/Editors.tsx"
+    ]
+  },
+  {
+    "key": "VEHÍCULO DE TU EMPRESA",
+    "contexts": [
+      "src/components/TruckDetail.tsx"
+    ]
+  },
+  {
+    "key": "Documentación del camión",
+    "contexts": [
+      "src/components/TruckDetail.tsx"
+    ]
+  },
+  {
+    "key": "La clasificación y los vínculos documentales requieren una copia de empresa de versión 6.",
+    "contexts": [
+      "src/data/company-backup.ts"
+    ]
+  },
+  {
+    "key": "La clasificación documental requiere una copia de demo de versión 4.",
+    "contexts": [
+      "src/data/demo-backup.ts"
+    ]
+  },
+  {
+    "key": "La cuenta o la empresa ha cambiado. La operación documental se ha detenido.",
+    "contexts": [
+      "src/data/demo-documents.ts",
+      "src/integrations/supabase/documents.ts"
+    ]
+  },
+  {
+    "key": "Ficha técnica",
+    "contexts": [
+      "src/domain/documents.ts"
+    ]
+  },
+  {
+    "key": "Identidad",
+    "contexts": [
+      "src/domain/documents.ts"
+    ]
+  },
+  {
+    "key": "Ticket",
+    "contexts": [
+      "src/domain/documents.ts",
+      "src/domain/models.ts"
+    ]
+  },
+  {
+    "key": "Albarán",
+    "contexts": [
+      "src/domain/documents.ts",
+      "src/domain/models.ts"
+    ]
+  },
+  {
+    "key": "La sesión documental ha cambiado. Vuelve a abrir la ficha.",
+    "contexts": [
+      "src/integrations/supabase/documents.ts"
+    ]
+  },
+  {
+    "key": "La conexión documental de la empresa no está disponible.",
+    "contexts": [
+      "src/integrations/supabase/documents.ts"
+    ]
+  },
+  {
+    "key": "La conexión documental no corresponde al proyecto autorizado de TruckControl.",
+    "contexts": [
+      "src/integrations/supabase/documents.ts"
+    ]
+  },
+  {
+    "key": "No se ha podido confirmar si se guardó el archivo. Actualiza el archivo documental antes de consultar con soporte. No vuelvas a subirlo.",
+    "contexts": [
+      "src/integrations/supabase/documents.ts"
+    ]
+  },
+  {
+    "key": "No se ha podido guardar el archivo en tu empresa. Revisa tus permisos y vuelve a intentarlo.",
+    "contexts": [
+      "src/integrations/supabase/documents.ts"
+    ]
+  },
+  {
+    "key": "No se ha podido confirmar si se guardó el archivo. Actualiza el archivo documental y consulta con soporte. No vuelvas a subirlo.",
+    "contexts": [
+      "src/integrations/supabase/documents.ts"
+    ]
+  },
+  {
+    "key": "Documentos del conductor",
+    "contexts": [
+      "src/pages/Drivers.tsx"
+    ]
+  },
+  {
+    "key": "de demostración",
+    "contexts": [
+      "src/pages/Drivers.tsx"
+    ]
+  },
+  {
+    "key": "Filtrar tipo de documento",
+    "contexts": [
+      "src/pages/Finance.tsx"
+    ]
+  },
+  {
+    "key": "Todos los documentos",
+    "contexts": [
+      "src/pages/Finance.tsx"
+    ]
+  },
+  {
+    "key": "Acciones del movimiento",
+    "contexts": [
+      "src/pages/Finance.tsx"
+    ]
+  },
+  {
+    "key": "Ver o adjuntar documentos de {0}",
+    "contexts": [
+      "src/pages/Finance.tsx"
+    ]
+  },
+  {
+    "key": "Documentos del movimiento",
+    "contexts": [
+      "src/pages/Finance.tsx"
+    ]
+  },
+  {
+    "key": "Adjuntos del movimiento",
+    "contexts": [
+      "src/pages/Finance.tsx"
+    ]
+  },
+  {
+    "key": "El módulo de documentos está desactivado para esta empresa.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Los adjuntos requieren conexión. Los originales no se guardan en la copia sin conexión.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Esta ficha documental no está disponible en la cuenta actual.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Documentos adjuntos",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "archivos",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Añadir documentos",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "PDF, JPG, PNG o WebP. Máximo 10 MB por archivo. Cada subida conserva un original independiente, aunque tenga el mismo nombre.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Archivos seleccionados",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Guardado",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Sin confirmar · no repetir",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "No guardado",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Retirar de la cola",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Guardar documentos",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Reintentar archivos fallidos",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Retirar guardados de la cola",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Máximo 50 MB en esta biblioteca de prueba. Retirar de la cola no elimina los originales guardados.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Tu cuenta puede consultar y descargar los documentos, pero no modificarlos.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Añade hasta 50 archivos por tanda. Retira de la cola los ya guardados para añadir más.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Selecciona al menos un archivo pendiente.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Original guardado. Puedes añadir más archivos.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Documentos guardados. Los originales se conservan.",
+    "contexts": [
+      "src/components/EntityDocuments.tsx"
+    ]
+  },
+  {
+    "key": "Datos, asignaciones y documentos del conductor.",
+    "contexts": [
+      "src/components/DriverDetail.tsx"
+    ]
+  },
+  {
+    "key": "Editar conductor",
+    "contexts": [
+      "src/components/DriverDetail.tsx"
+    ]
+  },
+  {
+    "key": "Permiso de conducir",
+    "contexts": [
+      "src/components/DriverDetail.tsx"
+    ]
+  },
+  {
+    "key": "Vehículos asignados",
+    "contexts": [
+      "src/components/DriverDetail.tsx"
+    ]
+  },
+  {
+    "key": "Sin vehículo asignado.",
+    "contexts": [
+      "src/components/DriverDetail.tsx"
+    ]
+  },
+  {
+    "key": "Documentación del conductor",
+    "contexts": [
+      "src/components/DriverDetail.tsx"
+    ]
+  },
+  {
+    "key": "Apartados de facturación",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "Ver resumen de facturación",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "Ver ingresos de facturación",
+    "contexts": [
+      "src/pages/Billing.tsx:aria-label"
+    ]
+  },
+  {
+    "key": "Ver gastos de facturación",
+    "contexts": [
+      "src/pages/Billing.tsx:aria-label"
+    ]
+  },
+  {
+    "key": "Consulta tus ingresos y gastos, y organiza las facturas, tickets y albaranes de cada movimiento.",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "Ingresos y gastos",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "pendientes de cobro",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "pendientes de pago",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "Consultar ingresos",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "Consultar gastos",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
+  },
+  {
+    "key": "La clasificación y los adjuntos acompañan al registro económico. Los importes conservan su base sin IVA.",
+    "contexts": [
+      "src/pages/Billing.tsx"
+    ]
   }
 ]

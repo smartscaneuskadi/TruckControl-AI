@@ -8,6 +8,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useFleet } from "../app/FleetProvider";
+import { useCompany } from "../app/CompanyAccess";
 import { useWorkspace } from "../app/WorkspaceContext";
 import type { Truck } from "../domain/models";
 import { truckStatuses } from "../domain/models";
@@ -22,6 +23,7 @@ import {
 } from "../lib/format";
 import { Badge, Button, Modal } from "./ui";
 import { VehicleBrand } from "./VehicleBrand";
+import { EntityDocuments } from "./EntityDocuments";
 
 export function TruckDetail({
   truck,
@@ -31,6 +33,7 @@ export function TruckDetail({
   onClose(): void;
 }) {
   const { snapshot } = useFleet();
+  const { mode } = useCompany();
   const { period, edit } = useWorkspace();
   const entries = filterEntries(snapshot.entries, period, truck.id);
   const summary = summarize(entries);
@@ -50,7 +53,11 @@ export function TruckDetail({
       <div className="truck-detail-hero">
         <VehicleBrand brand={truck.brand} large />
         <div>
-          <span className="eyebrow">VEHÍCULO DE DEMOSTRACIÓN</span>
+          <span className="eyebrow">
+            {mode === "demo"
+              ? "VEHÍCULO DE DEMOSTRACIÓN"
+              : "VEHÍCULO DE TU EMPRESA"}
+          </span>
           <h3>{truck.plate}</h3>
           <Badge
             tone={
@@ -170,6 +177,11 @@ export function TruckDetail({
           <p className="muted">Sin movimientos en este periodo.</p>
         )}
       </div>
+      <EntityDocuments
+        scope={{ kind: "truck", id: truck.id }}
+        defaultCategory="technical_card"
+        title="Documentación del camión"
+      />
       <div className="modal-actions">
         <span className="muted small-text">
           Importes sin IVA · fecha de devengo

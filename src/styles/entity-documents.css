@@ -1,0 +1,100 @@
+.entity-documents {
+  min-width: 0;
+  margin-top: 1.25rem;
+}
+.entity-documents .detail-section-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.entity-document-upload {
+  margin-bottom: 1rem;
+}
+.entity-document-picker {
+  display: grid;
+  gap: 0.5rem;
+  color: var(--text);
+  font-weight: 650;
+}
+.entity-document-picker input {
+  min-width: 0;
+  max-width: 100%;
+}
+.document-upload-queue {
+  display: grid;
+  gap: 1rem;
+  margin-block: 1rem;
+  min-width: 0;
+}
+.document-upload-item {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.document-upload-item legend {
+  max-width: 100%;
+  padding-inline: 0.4rem;
+  overflow-wrap: anywhere;
+  font-weight: 750;
+  color: var(--text);
+}
+.document-upload-item-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+.document-upload-item.status-saved {
+  border-color: var(--green);
+}
+.document-upload-item.status-uncertain,
+.document-upload-item.status-failed {
+  border-color: var(--theme-gold);
+}
+.document-upload-item .integration-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.document-upload-item .integration-fields input,
+.document-upload-item .integration-fields select {
+  min-width: 0;
+  width: 100%;
+}
+.document-upload-actions {
+  flex-wrap: wrap;
+}
+.document-description,
+.document-finance-link {
+  overflow-wrap: anywhere;
+}
+.driver-detail-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.driver-detail-facts > div {
+  min-width: 0;
+  display: grid;
+  gap: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.85rem;
+}
+.driver-detail-facts strong {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 580px) {
+  .document-upload-item .integration-fields,
+  .driver-detail-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .document-upload-item {
+    padding: 0.75rem;
+  }
+  .document-upload-actions > .button {
+    white-space: normal;
+  }
+}

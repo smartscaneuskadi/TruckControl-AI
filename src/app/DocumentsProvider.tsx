@@ -15,14 +15,19 @@ import { getSupabaseClient } from "../integrations/supabase/client";
 import { loadCompanyDocuments } from "../integrations/supabase/documents";
 import { listDemoDocuments } from "../data/demo-documents";
 import type { CompanyDocument } from "../integrations/supabase/database.types";
+import { sessionExitEvent } from "./session-events";
 
 interface DocumentRegister {
+  scopeKey: string;
+  available: boolean;
   documents: CompanyDocument[];
   loading: boolean;
   error: string;
   refresh(): Promise<void>;
 }
 const Context = createContext<DocumentRegister>({
+  scopeKey: "unavailable",
+  available: false,
   documents: [],
   loading: false,
   error: "",
@@ -38,10 +43,17 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
     org = snapshot.organization.id;
   const allowed =
     (!subscription.enabled || subscription.features.documents) &&
-    !(cloud && offline.offline);
-  const key = `${cloud ? "company" : "demo"}:${org}:${allowed}`;
-  const current = useRef(key);
-  current.current = key;
+    !(cloud && offline.offline) &&
+    (cloud ? Boolean(company.user) : company.mode === "demo");
+  // Financial attachments also require their entry's current module. Closing
+  // that module must drop cached metadata and any in-flight document scope.
+  const permissionKey = `${subscription.enabled}:${subscription.features.income}:${subscription.features.expenses}`;
+  const key = `${company.mode}:${company.user?.id ?? "demo"}:${org}:${allowed}:${permissionKey}`;
+  const [closedKey, setClosedKey] = useState<string | null>(null);
+  const readable = allowed && closedKey !== key;
+  const scopeKey = readable ? key : `${key}:closed`;
+  const current = useRef(scopeKey);
+  current.current = scopeKey;
   const sequence = useRef(0);
   const [state, setState] = useState<{
     key: string;
@@ -51,7 +63,7 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
   }>({ key, documents: [], loading: allowed, error: "" });
   const refresh = useCallback(async () => {
     const run = ++sequence.current;
-    if (!allowed) {
+    if (!readable) {
       setState({ key, documents: [], loading: false, error: "" });
       return;
     }
@@ -66,7 +78,12 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
         throw Error("La conexión de empresa no está disponible.");
       const documents =
         cloud && client
-          ? await loadCompanyDocuments(client, org)
+          ? await loadCompanyDocuments(
+              client,
+              org,
+              () => current.current === key && sequence.current === run,
+              company.user?.id,
+            )
           : (await listDemoDocuments(org)).map((d) => ({
               id: d.id,
               organization_id: d.organizationId,
@@ -90,7 +107,17 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
           error: errorMessage(e),
         });
     }
-  }, [allowed, cloud, client, org, key]);
+  }, [readable, cloud, client, org, key, company.user?.id]);
+  useEffect(() => {
+    const close = () => {
+      current.current = `${key}:closed`;
+      sequence.current++;
+      setClosedKey(key);
+      setState({ key, documents: [], loading: false, error: "" });
+    };
+    window.addEventListener(sessionExitEvent, close);
+    return () => window.removeEventListener(sessionExitEvent, close);
+  }, [key]);
   useEffect(() => {
     void refresh();
     return () => {
@@ -98,11 +125,13 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
     };
   }, [refresh]);
   const visible =
-    state.key === key && allowed
+    state.key === key && readable
       ? state
-      : { documents: [], loading: allowed, error: "" };
+      : { documents: [], loading: readable, error: "" };
   return (
-    <Context.Provider value={{ ...visible, refresh }}>
+    <Context.Provider
+      value={{ ...visible, scopeKey, available: readable, refresh }}
+    >
       {children}
     </Context.Provider>
   );

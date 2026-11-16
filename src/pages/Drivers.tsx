@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   CalendarDays,
   Mail,
+  Paperclip,
   Phone,
   Plus,
   Truck,
@@ -11,6 +12,9 @@ import {
 import { useFleet } from "../app/FleetProvider";
 import { useCompany } from "../app/CompanyAccess";
 import { useWorkspace } from "../app/WorkspaceContext";
+import { useSubscription } from "../app/SubscriptionContext";
+import { sessionExitEvent } from "../app/session-events";
+import { DriverDetail } from "../components/DriverDetail";
 import { date, daysUntil, initials } from "../lib/format";
 import {
   Badge,
@@ -22,13 +26,28 @@ import {
 } from "../components/ui";
 
 export function Drivers() {
-  const { mode } = useCompany();
+  const company = useCompany(),
+    { mode } = company;
+  const subscription = useSubscription();
   const { snapshot } = useFleet();
   const { edit, viewTruck } = useWorkspace();
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState(params.get("search") ?? "");
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
+  const [detail, setDetail] = useState<{ key: string; id: string } | null>(
+    null,
+  );
+  const detailKey = `${company.mode}:${company.user?.id ?? "demo"}:${snapshot.organization.id}`;
+  const selectedDriver =
+    detail?.key === detailKey
+      ? snapshot.drivers.find((driver) => driver.id === detail.id)
+      : null;
+  useEffect(() => {
+    const close = () => setDetail(null);
+    window.addEventListener(sessionExitEvent, close);
+    return () => window.removeEventListener(sessionExitEvent, close);
+  }, []);
   const attention = params.get("attention") === "license";
   const rows = snapshot.drivers.filter(
     (driver) =>
@@ -149,6 +168,15 @@ export function Drivers() {
                 >
                   Ver y editar ficha
                 </Button>
+                {(!subscription.enabled || subscription.features.documents) && (
+                  <Button
+                    variant="ghost"
+                    icon={Paperclip}
+                    onClick={() => setDetail({ key: detailKey, id: driver.id })}
+                  >
+                    Documentos del conductor
+                  </Button>
+                )}
               </article>
             );
           })}
@@ -164,6 +192,9 @@ export function Drivers() {
         pageSize={12}
         onChange={setPage}
       />
+      {selectedDriver && (
+        <DriverDetail driver={selectedDriver} onClose={() => setDetail(null)} />
+      )}
     </>
   );
 }

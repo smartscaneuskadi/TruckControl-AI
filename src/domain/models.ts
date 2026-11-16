@@ -29,6 +29,15 @@ export const categories = {
   other: "Otros",
 } as const;
 
+/** Documentary classification is separate from the amount and accounting kind.
+ * Legacy records intentionally have no inferred classification. */
+export const financeDocumentTypes = {
+  invoice: "Factura",
+  ticket: "Ticket",
+  delivery_note: "Albarán",
+} as const;
+export type FinanceDocumentType = keyof typeof financeDocumentTypes;
+
 export const truckSchema = z.object({
   id: z.uuid(),
   plate: z
@@ -76,6 +85,10 @@ export const entrySchema = z
     ]),
     paymentStatus: z.enum(["paid", "pending"]),
     distanceKm: z.number().int().min(0).max(1_000_000),
+    documentType: z
+      .enum(["invoice", "ticket", "delivery_note"])
+      .nullable()
+      .optional(),
   })
   .refine(
     (entry) =>

@@ -589,8 +589,10 @@ async function fixtures(page: Page, { smsReady = false } = {}) {
         });
         data = row;
       }
-    } else if (url.pathname === "/rest/v1/rpc/tc_document_page") data = [];
-    else if (url.pathname === "/rest/v1/rpc/tc_backup_page_v2")
+    } else if (url.pathname === "/rest/v1/rpc/tc_document_page" ||
+      url.pathname === "/rest/v1/rpc/tc_document_page_v2") data = [];
+    else if (url.pathname === "/rest/v1/rpc/tc_backup_page_v2" ||
+      url.pathname === "/rest/v1/rpc/tc_backup_page_v3")
       data = body?.p_kind === "documents" ? controls.backupDocuments : [];
     else if (url.pathname === "/rest/v1/rpc/tc_commercial_backup_page") {
       const a = access(identity!);
@@ -2287,6 +2289,7 @@ test("revocar administración impide exportar y un operador no muestra controles
     "administradora activa",
   );
   expect(f.calls.some((c) => c.path.endsWith("tc_backup_page_v2"))).toBe(false);
+  expect(f.calls.some((c) => c.path.endsWith("tc_backup_page_v3"))).toBe(false);
   await page.reload();
   await expect(
     page.getByRole("heading", { name: "Configuración", exact: true }),
