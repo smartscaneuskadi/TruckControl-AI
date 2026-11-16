@@ -80,5 +80,17 @@
     "monthly_ai_limit_usd_unchanged": 10,
     "per_company_quota_unchanged": 100
   },
-  "global_commercial_completion_claimed": false
+  "global_commercial_completion_claimed": false,
+  "post_draft_regression": {
+    "trigger": "Changing appearance saves editable preferences and emits USER_UPDATED with the same principal/session/assurance.",
+    "product_bug": "Initial pool forced every USER_UPDATED to close email capabilities.",
+    "fix": "Force only SIGNED_OUT; still evaluate every event for UID/SID/AAL and keep roleRPC/MFA/session-exit invalidation. Never authorize from user_metadata.",
+    "independent_security_review": "approved",
+    "original_saas_case_unchanged_passed": 2,
+    "new_browser_updated_passed": 68,
+    "new_browser_skipped": 0,
+    "focal_subset_not_additional": 4,
+    "full_new_head_ci": "pending",
+    "diagnostic_local_disk": "Own traces moved with hash equality to/tmp and symlinked; no code/data/backups deleted."
+  }
 }

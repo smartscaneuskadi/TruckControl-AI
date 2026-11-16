@@ -236,7 +236,10 @@ export function PersonalMailProvider({ children }: { children: ReactNode }) {
       nativeBinding.current = next;
     };
     const { data } = client.auth.onAuthStateChange((event, session) => {
-      update(session, event === "SIGNED_OUT" || event === "USER_UPDATED");
+      // Appearance and other user-editable metadata also emit USER_UPDATED.
+      // They never grant or revoke access. UID/SID/AAL, authoritative company
+      // permissions and explicit MFA/session exit events own invalidation.
+      update(session, event === "SIGNED_OUT");
     });
     void client.auth
       .getSession()
