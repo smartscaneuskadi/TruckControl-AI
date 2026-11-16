@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./helpers/auth-session-fixture";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync,readdirSync } from "node:fs";
@@ -47,6 +48,7 @@ beforeAll(async()=>{
       select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}'::jsonb) $jwt$;
     grant usage on schema auth,public to anon,authenticated,service_role;
   `);
+  await installAuthSessionFixture(db);
   for(const f of readdirSync("supabase/migrations").filter(f=>f.endsWith(".sql")).sort())
     await db.exec(readFileSync("supabase/migrations/"+f,"utf8"));
   // The standalone D branch lacks B's proposal. Model only its external

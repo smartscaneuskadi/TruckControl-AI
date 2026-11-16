@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./helpers/auth-session-fixture";
 import { expect, it } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { createHash } from "node:crypto";
@@ -37,6 +38,7 @@ it("verifica sesiones reales, aislamiento, CAS y pipeline fiscal cerrado con rol
       "select oid::text,proacl::text,provolatile::text,prosecdef,proconfig from pg_proc " +
       "where oid=to_regprocedure('private.tc_manual_subscription_operator()')",
     );
+    await installAuthSessionFixture(db);
     for (const file of readdirSync("supabase/migrations").filter((f) => f.endsWith(".sql")).sort()) {
       const original = (await db.query<{ present: boolean }>(
         "select to_regprocedure('private.tc_manual_subscription_operator()') is not null " +

@@ -1,3 +1,4 @@
+import { installAuthSessionFixture } from "./helpers/auth-session-fixture";
 import { expect, it, vi } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync,readdirSync } from "node:fs";
@@ -28,6 +29,7 @@ it("pipeline63: pago/licencia/ledger/outbox atómicos, replay y renovaciones ind
         select coalesce(nullif(current_setting('request.jwt.claims',true),'')::jsonb,'{}'::jsonb) $jwt$;
       grant usage on schema auth,public to anon,authenticated,service_role;
     `);
+    await installAuthSessionFixture(db);
     const migrations=readdirSync("supabase/migrations").filter(name=>name.endsWith(".sql")).sort();
     expect(migrations).toContain("20261108100352_manual_subscription_payment_and_documents.sql");
     for(const file of migrations) await db.exec(readFileSync("supabase/migrations/"+file,"utf8"));

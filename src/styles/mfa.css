@@ -1,0 +1,62 @@
+.mfa-settings {
+  margin-block: 1rem;
+}
+.mfa-settings .access-links {
+  flex-wrap: wrap;
+}
+.mfa-factor-list {
+  list-style: none;
+  margin: 1rem 0;
+  padding: 0;
+}
+.mfa-factor-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.7rem;
+  border-bottom: 1px solid var(--theme-border, #dce5e8);
+}
+.mfa-factor-list span {
+  overflow-wrap: anywhere;
+}
+.mfa-qr {
+  display: block;
+  width: min(100%, 15rem);
+  height: auto;
+  margin: 1rem auto;
+  padding: 0.8rem;
+  background: white;
+  border-radius: 0.5rem;
+}
+.mfa-secret {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  user-select: all;
+  padding: 0.8rem;
+  color: var(--theme-fg, #102a3b);
+  background: var(--theme-raised, #edf3f5);
+  border-radius: 0.5rem;
+}
+.mfa-code {
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+  font-variant-numeric: tabular-nums;
+}
+.mfa-access-page .field {
+  margin-block: 1rem;
+}
+.mfa-access-page .language-switcher {
+  align-self: flex-end;
+}
+@media (max-width: 560px) {
+  .mfa-factor-list li {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .mfa-settings .modal-actions {
+    flex-wrap: wrap;
+  }
+}

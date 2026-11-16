@@ -1,0 +1,141 @@
+{
+  "recorded_at": "2026-11-15T21:54:47.672987+00:00",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "source_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+  "sql": {
+    "full_74": {
+      "filename": "20261115170051_company_manual_full_licenses.sql",
+      "sha256": "ca675f4e25ac913b0e31475d72328378334b2430144d2261476bb6c89b214a0c",
+      "managed_baseline_number": 74,
+      "reapplied": false
+    },
+    "optional_totp_candidate": {
+      "filename": "20261115212500_optional_totp_session_protection.sql",
+      "sha256": "b830a21224d64acffeb3dedc1938b8676aa131db4e4347914c35ea01fd387be7",
+      "candidate_after_baseline_number": 74,
+      "managed_applied": false,
+      "candidate_number": 75
+    }
+  },
+  "mfa_managed_applied": false,
+  "public_release": {
+    "url": "https://truckcontrolai.com",
+    "sites_version": 46,
+    "app_version": "0.5.28-rc.1",
+    "unchanged_by_this_acceptance": true
+  },
+  "physical_or_managed_restore": false,
+  "provider_calls": 0,
+  "model_calls": 0,
+  "payment_calls": 0,
+  "production_modified": false,
+  "real_customer_data": false,
+  "scope": "Real PostgreSQL 17 transactions, RLS and restoration over synthetic Auth/Storage catalogs and fictional data. Actual signed Auth/SDK/Storage acceptance is recorded separately.",
+  "workflow": {
+    "run": 43764342217,
+    "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43764342217",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "SUCCESS",
+    "head_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf"
+  },
+  "source_provenance": {
+    "receipt_payloads_embed_source_commit": true,
+    "all_three_embedded_source_commits_equal": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+    "method": "Each original report actually records source_commit equal to the exact source above; this was matched to workflow/artifact metadata, the official ZIP digest and committed SQL hashes."
+  },
+  "artifact": {
+    "artifact_id": 14182180979,
+    "name": "isolated-postgres-report",
+    "workflow_head_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+    "zip_sha256": "df238d5ce2ba99bdab949c8584f43434f2cee3343bdb54303102aae1d3b05c4e",
+    "only_three_safe_json_reports_retained": true,
+    "other_eight_members_not_extracted": true
+  },
+  "reports": [
+    {
+      "name": "report.json",
+      "passed_checks": 99,
+      "passed": true,
+      "source_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+      "receipt_sha256": "8cff24ad162d5deba3bd8d032f1cf51d7f2b264ea36a533615e6a24c85769aaf",
+      "real_contentions": 6
+    },
+    {
+      "name": "financial-incidents-report.json",
+      "passed_checks": 346,
+      "passed": true,
+      "source_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+      "receipt_sha256": "a48fc285dbe0b8ed82c6f397521a237e25b5d30b10a3afff1095278d371d7a2d",
+      "real_contentions": 30
+    },
+    {
+      "name": "gmail-sync-report.json",
+      "passed_checks": 36,
+      "passed": true,
+      "source_commit": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+      "receipt_sha256": "f51689bb08cd79e5222a378727fdb2457c51377ca0c77b1f664d8b179bb7b091",
+      "real_contentions": 7
+    }
+  ],
+  "checks": {
+    "total": 481,
+    "base": 99,
+    "financial": 346,
+    "gmail": 36,
+    "mfa_contracts_included_in_financial": 81,
+    "manual_full_contracts_included_in_financial": 69,
+    "every_reported_check_passed_exactly_true": true,
+    "counting_rule": "99 + 346 + 36 = 481. The 81 MFA and 69 Full checks are included in 346; do not add them again."
+  },
+  "real_contention": {
+    "total": 43,
+    "base": 6,
+    "financial": 30,
+    "gmail": 7,
+    "manual_full_included_in_financial": 4,
+    "mfa_included_in_financial": 1,
+    "all_have_distinct_holder_contender_and_observed_blocking_lock": true,
+    "manual_full_cases": [
+      "company-full-rollback-inflight-controller",
+      "company-full-first-cas",
+      "company-full-operation-replay",
+      "company-full-operation-cross-company"
+    ],
+    "mfa_cases": [
+      "mfa-final-session-downgrade"
+    ],
+    "counting_rule": "The 4 Full and 1 MFA races are subsets of the 30 financial contentions, not additional to 43."
+  },
+  "restoration": {
+    "real_logical_restores": 2,
+    "saved_backup_manifests_verified": true,
+    "catalog_acl_rls_and_business_integrity_verified": true,
+    "gmail_suite_performs_no_additional_restore": true,
+    "managed_service_restore": false,
+    "scope": "Base and financial PostgreSQL logical restores in the owned disposable cluster, not managed Auth/Storage/Vault recovery or RPO/RTO certification."
+  },
+  "mfa_full_contract_scope": {
+    "root_aal1_capabilities_list_set_history_denied": true,
+    "root_bound_aal2_authorized_with_idempotence_and_audit": true,
+    "company_owner_and_distinct_admin_membership_cannot_self_grant": true,
+    "full_active_does_not_replace_mfa_challenge": true,
+    "full_off_and_expiry_deny_even_aal2_or_last_factor_removal": true,
+    "retirement_guard_rejects_empty_verified_and_pending_factor_states": true,
+    "final_session_downgrade_contention_verified": true,
+    "sql_migration_files": 52
+  },
+  "native_auth_acceptance_reference": "optional-totp-full-native-20261115.json",
+  "safety": {
+    "auth_storage_catalogs_are_synthetic": true,
+    "no_credentials_signed_urls_download_links_account_ids_or_codes_in_this_receipt": true,
+    "only_public_safe_json_reports_retained": true,
+    "payments_and_provider_access_not_exercised": true
+  },
+  "limitations": [
+    "No production migration, commercial payment or fiscal emission was performed.",
+    "Gmail contention is SQL state-machine acceptance, not real mailbox or Google verification.",
+    "Synthetic Auth catalogs in this PostgreSQL suite are not native signed-session acceptance; see the paired native receipt.",
+    "No managed restore, physical device or subsequent frontend acceptance is asserted. Reuse requires comparing backend and harness bytes."
+  ]
+}

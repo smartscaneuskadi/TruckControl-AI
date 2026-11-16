@@ -1,0 +1,90 @@
+{
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "project_ref": "kkkemaycedexymrpaqtp",
+  "recorded_at": "2026-11-15T22:19:46.586067+00:00",
+  "applied_migrations": 75,
+  "migration": {
+    "version": "20261115221404",
+    "name": "optional_totp_session_protection",
+    "statements": 1,
+    "sql_sha256": "b830a21224d64acffeb3dedc1938b8676aa131db4e4347914c35ea01fd387be7",
+    "official_apply_succeeded": true,
+    "previous_candidate_filename": "20261115212500_optional_totp_session_protection.sql",
+    "canonical_filename": "20261115221404_optional_totp_session_protection.sql",
+    "sql_bytes_unchanged": true,
+    "do_not_reapply": true
+  },
+  "isolated_evidence": {
+    "source": "d67f686fd315c8f3104a69b067d2d97724710ccf",
+    "native_run": 43764342284,
+    "native_checks": {
+      "totp": 192,
+      "manual_full": 200,
+      "auth_storage_recovery": 67
+    },
+    "postgres_run": 43764342217,
+    "postgres_checks": 481,
+    "native_physical_or_managed_restore_claimed": false
+  },
+  "preserved_routines": [
+    {
+      "routine": "private.tc_actor_verified(uuid,boolean)",
+      "oid": 19447,
+      "previous_md5": "374d744e7267041f610146e220f9e49b",
+      "current_md5": "0a03a9a6d4320228ce5145e38fb81885",
+      "security_definer": true,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "routine": "private.tc_manual_fiscal_document_actor(uuid,uuid)",
+      "oid": 19568,
+      "previous_md5": "9fd23e572f29d19d32465b5688e2afff",
+      "current_md5": "ab49b58d74323d41b3b288420f7fe992",
+      "security_definer": false,
+      "acl": "{postgres=X/postgres}"
+    },
+    {
+      "routine": "private.tc_subscription_snapshot_refresh(text,uuid,uuid,uuid,jsonb)",
+      "oid": 20005,
+      "previous_md5": "b42cf50a43d5252bb12d4c62449f783b",
+      "current_md5": "0aed1ae85f7d27bf36860d2362804af8",
+      "security_definer": true,
+      "acl": "{postgres=X/postgres,service_role=X/postgres}"
+    }
+  ],
+  "new_capability": {
+    "private_oid": 20082,
+    "private_md5": "dc9cc9ff652f4e836443c48080159cc7",
+    "private_acl": "{postgres=X/postgres,authenticated=X/postgres}",
+    "public_oid": 20083,
+    "public_md5": "d3b2508b0572ea92b36ea1609344a624",
+    "public_security_invoker": true,
+    "public_acl": "{postgres=X/postgres,service_role=X/postgres,authenticated=X/postgres}",
+    "empty_search_path_verified": true
+  },
+  "flags": {
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false,
+    "prices_are_examples": true
+  },
+  "counts_after_apply": {
+    "verified_totp_factors": 0,
+    "manual_full_licenses": 0,
+    "manual_full_audit": 0
+  },
+  "security_advisor": {
+    "warn_error": 0,
+    "intentional_deny_all_info": 3
+  },
+  "enrollment_or_factor_mutation_performed": false,
+  "provider_settings_changed": false,
+  "customer_data_mutation_performed": false,
+  "charges_or_new_model_calls": 0,
+  "public_frontend_at_verification": {
+    "sites_version": 46,
+    "app_version": "0.5.28-rc.1",
+    "new_frontend_published": false
+  },
+  "recovery": "Keep server MFA enforcement and publish only a verified MFA-capable build with new enrollment OFF. Enforcement retirement is forward-only; do not use a pre-MFA build as the enrolled-user recovery UI."
+}
