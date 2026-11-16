@@ -1274,7 +1274,7 @@ async function openPersonalMail(page: Page) {
   await login(page, "customer@example.com");
   await expect(page).toHaveURL(/#\/dashboard/);
   await page.evaluate(() => {
-    location.hash = "/mailbox/gmail";
+    location.hash = "/mailbox/gmail?legacy=personal";
   });
   await page
     .getByRole("button", { name: "Preparar conexión con Google", exact: true })
@@ -1447,7 +1447,7 @@ test("la administración global explica el enlace de Gmail de empresa y limpia e
     name: "Acceso al correo de empresa",
   });
   await page.evaluate(() => {
-    location.hash = "/invoices";
+    location.hash = "/invoices?legacy=company-gmail";
   });
   await expect(notice).toContainText("Estás en la administración global");
   await expect(notice).toContainText("misma cuenta y empresa");
@@ -2041,7 +2041,7 @@ test("correo personal demo: enviar responder y papelera son ficticios y no alter
     .getByRole("button", { name: "Explorar la demo", exact: true })
     .click();
   await page.evaluate(() => {
-    location.hash = "/mailbox/gmail";
+    location.hash = "/mailbox/gmail?legacy=personal";
   });
   await page
     .getByRole("button", { name: "Abrir buzón ficticio", exact: true })
@@ -3154,7 +3154,7 @@ test("bandeja completa: más de 200 facturas, filtros, CSV y permiso de consulta
   await login(page, "customer@example.com");
   await expect(page.locator(".sidebar")).toBeVisible();
   await page.evaluate(() => {
-    location.hash = "/invoices";
+    location.hash = "/invoices?legacy=company-gmail";
   });
   const register = page.getByRole("region", {
     name: "Bandeja de facturas",
@@ -3261,7 +3261,7 @@ test("lectura IA de factura guardada sin Gmail: permiso, confirmación, estado y
   await login(page, "customer@example.com");
   await expect(page.locator(".sidebar")).toBeVisible();
   await page.evaluate(() => {
-    location.hash = "/invoices";
+    location.hash = "/invoices?legacy=company-gmail";
   });
   await expect(
     page.getByText(
@@ -3372,7 +3372,7 @@ test("lectura IA incierta no se repite; desactivar el consentimiento retira la a
   await login(page, "customer@example.com");
   await expect(page.locator(".sidebar")).toBeVisible();
   await page.evaluate(() => {
-    location.hash = "/invoices";
+    location.hash = "/invoices?legacy=company-gmail";
   });
   const register = page.getByRole("region", {
     name: "Bandeja de facturas",
@@ -5706,7 +5706,7 @@ test.describe("portapapeles del reenvío de facturas", () => {
         });
         await login(page, "customer@example.com");
         await expect(page).toHaveURL(/#\/dashboard/);
-        await page.goto("/#/invoices");
+        await page.goto("/#/invoices?legacy=company-gmail");
         const intake = page.locator(".universal-mail");
         await expect(intake.locator(".mail-recipient")).toHaveText(recipient);
         await page.getByRole("button", { name: "Cambiar apariencia", exact: true }).click();

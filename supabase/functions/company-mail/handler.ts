@@ -13,6 +13,15 @@ import {
   parseMailFile,
 } from "../_shared/mail.ts";
 import { savedInvoiceAi } from "./saved-ai.ts";
+import type { ParsedMail } from "../_shared/mail.ts";
+import { mailPeriodPolicy } from "../_shared/mail-period.ts";
+import {
+  connectedMailboxCapability,
+  connectedMailConsentVersion,
+  connectedMailRequest,
+  ConnectedMailError,
+} from "./connected-contract.ts";
+import type { ConnectedMailboxScanner } from "./connected-contract.ts";
 
 type Data = Record<string, unknown>;
 export interface MailAccess {
@@ -36,12 +45,16 @@ export interface MailGateway {
     invoiceId: string,
     bytes: Uint8Array,
     type: string,
+    assertCurrent?: () => Promise<void>,
   ): Promise<boolean>;
 }
 export interface MailConfig {
   origins: string[];
   ingress?: { enabled: boolean; domain: string; signingKey: string };
   now?: () => number;
+  connectedMailbox?: ConnectedMailboxScanner;
+  /** Existing backend-only mail signing key, with a separate cursor purpose. */
+  connectedMailboxCursorKey?: string;
 }
 export class MailActionError extends Error {
   constructor(
@@ -163,12 +176,24 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
     delivery?: Data,
   ) {
     const parsed = await parseMailFile(bytes, name);
+    const result = await importParsed(parsed, org, user, delivery);
+    // Retain the older upload/forwarding response contract.
+    return { ...result, ai_used: result.ai_used > 0 };
+  }
+  async function importParsed(
+    parsed: ParsedMail,
+    org: string,
+    user: string,
+    delivery?: Data,
+    assertCurrent?: () => Promise<void>,
+  ) {
     let imported = 0,
       skipped = parsed.skipped,
       failures = 0,
       analyzed = 0;
     for (const attachment of parsed.attachments) {
-      await allowed(org, user, true);
+      if (assertCurrent) await assertCurrent();
+      else await allowed(org, user, true);
       const identity = {
         organization_id: org,
         user_id: user,
@@ -181,10 +206,15 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
       const id = crypto.randomUUID(),
         path =
           org + "/" + id + "/document." + documentExtension(attachment.type);
-      let uploaded = false;
+      let uploaded = false,
+        recordAttempted = false,
+        recordAcknowledged = false;
       try {
+        if (assertCurrent) await assertCurrent();
         await gateway.upload(path, attachment.bytes, attachment.type);
         uploaded = true;
+        if (assertCurrent) await assertCurrent();
+        recordAttempted = true;
         const result = await gateway.server<{
           duplicate?: boolean;
           id?: string;
@@ -196,7 +226,8 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
           attachment_id: attachment.attachmentId,
           import_source: delivery
             ? "forwarded_email"
-            : parsed.messageId.startsWith("eml:")
+            : parsed.messageId.startsWith("eml:") ||
+                parsed.messageId.startsWith("connected:v1:")
               ? "email_upload"
               : "file_upload",
           document: {
@@ -207,6 +238,7 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
             size_bytes: attachment.bytes.length,
           },
         });
+        recordAcknowledged = true;
         if (result.duplicate) {
           await gateway.remove(path);
           skipped++;
@@ -214,26 +246,43 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
           imported++;
           if (gateway.analyze && isUuid(result.id)) {
             try {
+              if (assertCurrent) await assertCurrent();
+              const used = assertCurrent
+                ? await gateway.analyze(
+                    org,
+                    user,
+                    result.id,
+                    attachment.bytes,
+                    attachment.type,
+                    assertCurrent,
+                  )
+                : await gateway.analyze(
+                    org,
+                    user,
+                    result.id,
+                    attachment.bytes,
+                    attachment.type,
+                  );
+              if (used) analyzed++;
+              else if (assertCurrent) failures++;
+            } catch (error) {
               if (
-                await gateway.analyze(
-                  org,
-                  user,
-                  result.id,
-                  attachment.bytes,
-                  attachment.type,
-                )
+                assertCurrent &&
+                (error instanceof MailActionError ||
+                  error instanceof ConnectedMailError)
               )
-                analyzed++;
-            } catch {
+                throw error;
               // An AI failure never undoes a saved document or books an expense.
+              if (assertCurrent) failures++;
             }
-          }
+          } else if (assertCurrent) failures++;
         }
       } catch (error) {
         if (
           uploaded &&
-          error instanceof MailActionError &&
-          error.rollbackConfirmed
+          !recordAcknowledged &&
+          (!recordAttempted ||
+            (error instanceof MailActionError && error.rollbackConfirmed))
         ) {
           try {
             await gateway.remove(path);
@@ -244,14 +293,15 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
         // A lost RPC response may hide a committed invoice. Keep its file until
         // the database outcome is known; retry is deduplicated by content hash.
         if (
-          error instanceof MailActionError &&
-          [403, 429].includes(error.status)
+          (error instanceof MailActionError &&
+            [401, 403, 429].includes(error.status)) ||
+          error instanceof ConnectedMailError
         )
           throw error;
         failures++;
       }
     }
-    return { imported, skipped, failures, ai_used: analyzed > 0 };
+    return { imported, skipped, failures, ai_used: analyzed };
   }
   return async (request: Request) => {
     const origin = request.headers.get("origin");
@@ -412,13 +462,77 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
           ),
         );
       }
-      const raw = await readLimited(request, 8192);
+      const raw = await readLimited(request, 32 * 1024);
       let body: Data;
       try {
         body = JSON.parse(new TextDecoder().decode(raw));
       } catch {
         return json({ error: "invalid_request" }, 400);
       }
+      if (
+        body &&
+        typeof body === "object" &&
+        body.action === "import_connected_mailbox"
+      ) {
+        const input = connectedMailRequest(body, (config.now ?? Date.now)());
+        try {
+          if (
+            !config.connectedMailbox ||
+            !connectedMailboxCapability(config.connectedMailboxCursorKey)
+          )
+            throw new ConnectedMailError("connected_mailbox_unavailable", 503);
+          const assertCurrent = async () => {
+            if (request.signal.aborted)
+              throw new ConnectedMailError("mailbox_import_cancelled", 409);
+            // Roles alone cannot invalidate a revoked SID. Reuse the SAME captured
+            // human bearer and reject any identity change before every effect.
+            const actor = token ? await gateway.authenticate(token) : null;
+            if (!actor || actor.id !== user.id)
+              throw new MailActionError("authentication_required", 401);
+            const current = await allowed(input.organizationId, user.id, true);
+            if (!current.features.invoice_ai)
+              throw new MailActionError("company_access_denied", 403);
+            if (!gateway.analyze || !(await gateway.aiStatus?.()))
+              throw new ConnectedMailError("invoice_ai_unavailable", 503);
+            if (request.signal.aborted)
+              throw new ConnectedMailError("mailbox_import_cancelled", 409);
+          };
+          await assertCurrent();
+          const result = await config.connectedMailbox(input, {
+            userId: user.id,
+            signal: request.signal,
+            now: config.now ?? Date.now,
+            assertCurrent,
+            importParsed: (parsed) =>
+              importParsed(
+                parsed,
+                input.organizationId,
+                user.id,
+                undefined,
+                assertCurrent,
+              ),
+          });
+          await assertCurrent();
+          return json({
+            ...result,
+            authorization_scope: "selected_mailbox_period",
+            consent_version: connectedMailConsentVersion,
+            received_period: {
+              from: input.period.from,
+              to: input.period.to,
+              time_zone: mailPeriodPolicy.time_zone,
+            },
+          });
+        } finally {
+          // No credential, token or mailbox content is stored in database/audit payloads.
+          input.gmailAccessToken = undefined;
+          if (input.connection) input.connection.password = "";
+          body.gmail_access_token = undefined;
+          if (body.connection && typeof body.connection === "object")
+            (body.connection as Data).password = "";
+        }
+      }
+      if (raw.length > 8192) return json({ error: "request_too_large" }, 413);
       if (
         !body ||
         !isUuid(body.organization_id) ||
@@ -452,6 +566,9 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
           ai_enabled: Boolean(
             access.features.invoice_ai && (await gateway.aiStatus?.()),
           ),
+          connected_mailbox_import: config.connectedMailbox
+            ? connectedMailboxCapability(config.connectedMailboxCursorKey)
+            : null,
           inbox: await gateway.server("get_inbox", context),
         });
       if (body.action === "enable_inbox") {
@@ -467,6 +584,8 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
       }
       return json(await gateway.server("disable_inbox", context));
     } catch (error) {
+      if (error instanceof ConnectedMailError)
+        return json({ error: error.code }, error.status);
       if (error instanceof MailInputError)
         return json(
           { error: "invalid_mail_file", message: error.message },

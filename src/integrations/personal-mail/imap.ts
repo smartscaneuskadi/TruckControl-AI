@@ -10,6 +10,7 @@ import type {
   MailConnectorConsent,
 } from "../../../supabase/functions/personal-mail/contract";
 import { getSupabaseClient } from "../supabase/client";
+import { importFromConnectedMailbox, ConnectedInvoiceImportError } from "./invoice-import";
 export type { MailConnection };
 export type MailInvoker = (
   body: Record<string, unknown>,
@@ -61,27 +62,54 @@ export function createImapMailbox(
   let config: MailConnection | null = connectionConfig(input);
   const session = new AbortController();
   const attempted = new Set<string>();
+  const expiresAt = Date.now() + 60 * 60 * 1000;
+  function dispose() {
+    if (config) config.password = "";
+    config = null;
+    session.abort();
+    attempted.clear();
+  }
+  function currentConfig() {
+    if (Date.now() >= expiresAt) dispose();
+    if (!config || session.signal.aborted) throw new MailError("expired");
+    return config;
+  }
   async function call(
     action: string,
     data: Record<string, unknown> = {},
     signal?: AbortSignal,
   ) {
-    if (!config || session.signal.aborted) throw new MailError("expired");
+    const captured = currentConfig();
     signal?.throwIfAborted();
     const result = await invoke(
       {
         action,
         organization_id: organization,
         consent: { ...consent },
-        connection: { ...config },
+        connection: { ...captured },
         data,
       },
       AbortSignal.any([session.signal, ...(signal ? [signal] : [])]),
     );
-    if (!config || session.signal.aborted) throw new MailError("expired");
+    currentConfig();
     return result as Record<string, unknown>;
   }
   return {
+    async importInvoices(request, signal) {
+      let captured: MailConnection;
+      try { captured = currentConfig(); } catch { throw new ConnectedInvoiceImportError("expired"); }
+      if (request.provider !== "imap" || request.organizationId !== organization || request.email !== captured.email)
+        throw new ConnectedInvoiceImportError("consent_required");
+      const active = AbortSignal.any([session.signal, ...(signal ? [signal] : []), AbortSignal.timeout(150000)]);
+      active.throwIfAborted();
+      const result = await importFromConnectedMailbox(request, {
+        connection: { ...captured },
+        connector_consent: { version: mailConnectorConsentVersion, accepted: true },
+      }, active);
+      active.throwIfAborted();
+      try { currentConfig(); } catch { throw new ConnectedInvoiceImportError("expired"); }
+      return result;
+    },
     async profile(signal) {
       const r = await call("verify", {}, signal);
       if (r.consent_version !== mailConnectorConsentVersion)
@@ -120,7 +148,8 @@ export function createImapMailbox(
       throw new MailError("invalid");
     },
     async send(from: string, draft: MailDraft, requestId: string) {
-      if (!config || from !== config.email) throw new MailError("invalid");
+      const captured = currentConfig();
+      if (from !== captured.email) throw new MailError("invalid");
       validateMailDraft(draft);
       if (attempted.has(requestId)) throw new MailError("send_uncertain");
       attempted.add(requestId);
@@ -135,10 +164,7 @@ export function createImapMailbox(
       }
     },
     dispose() {
-      if (config) config.password = "";
-      config = null;
-      session.abort();
-      attempted.clear();
+      dispose();
     },
   };
 }

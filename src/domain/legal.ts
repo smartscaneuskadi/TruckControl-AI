@@ -8,7 +8,7 @@ export const operator = {
 export type LegalDocument = "notice" | "privacy" | "terms";
 export const legalDocuments: Record<
   LegalDocument,
-  { title: string; sections: { title: string; text: string }[] }
+  { title: string; sections: { title: string; text: string; id?: string }[] }
 > = {
   notice: {
     title: "Aviso legal",
@@ -60,11 +60,16 @@ export const legalDocuments: Record<
       },
       {
         title: "Correo personal conectado con Google",
-        text: "Mi correo es opcional. Tú eliges la cuenta Gmail o Google Workspace y autorizas directamente a Google a leer, enviar y gestionar sus mensajes, sin borrado definitivo. Los mensajes, adjuntos consultados y el permiso temporal de este apartado se mantienen en la memoria del navegador y se intercambian directamente con Google; no se envían al backend de TruckControl, al administrador ni a la IA. No se guardan en las copias offline. La sesión se elimina al salir, recargar, cambiar de usuario o empresa o caducar. Los borradores de esta pantalla no se guardan automáticamente. Puedes retirar el permiso en la configuración de seguridad de tu cuenta Google.",
+        text: "Correo es opcional. Tú eliges las cuentas Gmail o Google Workspace y autorizas directamente a Google a leer, enviar y gestionar sus mensajes, sin borrado definitivo. Para el uso ordinario del correo, los mensajes, adjuntos consultados y permisos temporales se mantienen en la memoria del navegador y se intercambian directamente con Google; no se envían al backend de TruckControl, al administrador ni a la IA. No se guardan en las copias offline. La descarga opcional de facturas tiene una autorización independiente descrita a continuación. La sesión se elimina al salir, recargar, cambiar de usuario o empresa o caducar. Los borradores no se guardan automáticamente. Puedes retirar el permiso en la configuración de seguridad de tu cuenta Google.",
+      },
+      {
+        id: "connected-mail-invoices",
+        title: "Descarga de facturas desde una cuenta conectada",
+        text: "Información complementaria de 16/11/2026. Al pulsar Descargar facturas del correo por IA y confirmar la autorización para un buzón, empresa y período, solicitas un lote acotado de importación. El permiso temporal OAuth de esa cuenta Gmail, o los datos de conexión IMAP, pasan por HTTPS al backend de TruckControl en Supabase exclusivamente para consultar ese buzón y período. Se conservan solo en memoria durante la petición y no se guardan como credenciales de importación. Los originales candidatos autorizados se guardan en el almacenamiento privado de la empresa y pueden enviarse al proveedor IA habilitado para extraer propuestas que debes revisar antes de registrar gastos. Se comprueba la fecha de recepción: treinta días por defecto, máximo doce meses, sin días futuros. Puedes continuar lotes o solicitar nuevas descargas explícitas para incorporar correos nuevos. No se activa una tarea desatendida ni se conserva una autorización duradera de acceso al buzón. Cambiar de cuenta o período requiere confirmar su autorización; desconectar impide próximas peticiones, aunque un lote ya recibido por el servidor puede completarse. Los originales ya guardados se conservan conforme a los permisos y plazos de la empresa. Esta autorización adicional no sustituye los consentimientos contractuales anteriores.",
       },
       {
         title: "Uso limitado de los datos de Google",
-        text: "Los datos de Mi correo se utilizan únicamente para las funciones de correo que solicitas. No se venden ni se utilizan para publicidad, perfiles publicitarios o entrenamiento de modelos generales de inteligencia artificial. El uso de información recibida de las API de Google se ajustará a la Política de datos de usuario de los servicios de las API de Google, incluidos sus requisitos de uso limitado (Limited Use). El receptor de facturas y la importación empresarial constituyen funciones separadas: solo los documentos que autorices para esas funciones se incorporan a tu empresa y su lectura IA exige su propia habilitación y consentimiento.",
+        text: "Los datos de Correo se utilizan únicamente para las funciones de correo e importación que solicitas y autorizas. No se venden ni se utilizan para publicidad, perfiles publicitarios o entrenamiento de modelos generales de inteligencia artificial. El uso de información recibida de las API de Google se ajustará a la Política de datos de usuario de los servicios de las API de Google, incluidos sus requisitos de uso limitado (Limited Use). Solo los originales que autorices para la descarga de facturas o su recepción se incorporan a tu empresa y su lectura IA exige su propia habilitación y consentimiento.",
       },
       {
         title: "Conservación y devolución",

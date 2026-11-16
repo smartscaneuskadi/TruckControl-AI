@@ -1,0 +1,84 @@
+{
+  "recorded_at": "2026-11-16T17:08:29.781245+00:00",
+  "status": "candidate_verified_locally_ci_and_deployment_pending",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "branch": "feat/unified-mailbox-20261116",
+  "base_main": "3bf75ce8e771acdf367f5d8c521e9e71c0d9bb28",
+  "candidate_version": "0.5.31-rc.1",
+  "android_version_code": 10,
+  "public_preserved": {
+    "sites": 49,
+    "app_version": "0.5.30-rc.1",
+    "source": "5f44a164700ea4cc803bb7cf480b664cce68af43",
+    "url": "https://truckcontrolai.com",
+    "demo6_unchanged": true
+  },
+  "features": [
+    "Single email workspace and multiple user-selected Gmail/IMAP accounts",
+    "Explicit invoice AI import from an existing connection, no second enterprise OAuth",
+    "Consent scoped to user/company/mailbox/provider/period and explicit batches",
+    "30day default,12calendar months maximum, provider receipt metadata before content",
+    "Private originals, no automatic financial posting, signed cursor and deduplication",
+    "Ordinary account drafts and independent expiry, SID/MFA/company/permission context exits"
+  ],
+  "scope_limits": [
+    "Transport/model fixtures; no new real mailbox/model/payment acceptance",
+    "Android/Windows browser emulation; no hardware or signing/Play claim",
+    "Per-request/session RAM consent; no durable contract or unattended background sync",
+    "Legacy enterprise credential/public Google review and MigaduDKIM remain separate from this flow"
+  ],
+  "local_checks": {
+    "typecheck": "passed",
+    "deno_2_9_6_company_mail": "passed",
+    "python": 154,
+    "retained_original_tests": 64,
+    "retained_file_hashes": 11,
+    "new_browser": {
+      "passed": 68,
+      "unexpected": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "source_inputs_unchanged": 351
+    },
+    "focal_browser_subset_not_additional": 8,
+    "new_client_unit": 30,
+    "connected_handler_unit": 25,
+    "transport_unit": 6,
+    "independent_adversarial_unit": 44,
+    "isolated_sql_integration": 6,
+    "full_check_and_ci": "pending_at_recording"
+  },
+  "backend": {
+    "action": "import_connected_mailbox",
+    "consent_version": "2026-11-16",
+    "capability_version": 1,
+    "previous_native_version": 15,
+    "new_native_deployment": false,
+    "new_migrations": 0,
+    "remote_migrations": 76,
+    "local_consolidated_sql_files": 53,
+    "existing_backend_cursor_key_shape_verified": true,
+    "backup_version15_files": 12,
+    "backup_sha256": "8a80c58fa2274f3002273ecb896a9b53122c64a223177c914896856c063dc0f6"
+  },
+  "preserved_diagnostics": [
+    "First new browser run could not start preview without executor network permission;0cases claimed",
+    "New browser assertions scoped to exact mailbox panel/account tab without weakening assertions",
+    "Initial complete browser66passed2FrenchAndroid overflow; fixed real toolbar wrapping and all68pass",
+    "Deno subdirectory/manual Node-types resolution corrected by root-scope no-config plus exact importmap; strict check then exposed undefined IMAPsearch, now fails closed and is tested",
+    "InitialSQLfixture changed content under immutable messageID; SQLdenied correctly; fixture uses new identity and original negative is a separate sixth test",
+    "Generic legacy URL adaptation briefly touched protected company-demo test; it was restored byte-for-byte before commit,11hashespass; demo retains original route",
+    "Earlier local client fixtures used prohibited .invalid transport host; production host guard unchanged and fixtures use reserved example.com with allHTTPintercepted"
+  ],
+  "costs": {
+    "new_purchases": 0,
+    "new_recurring_commitments": 0,
+    "new_model_calls": 0,
+    "new_paid_browser_automation": 0,
+    "total_approved_eur": 200,
+    "historical_balance": "unreconciled_no_new_charges",
+    "monthly_ai_limit_usd_unchanged": 10,
+    "per_company_quota_unchanged": 100
+  },
+  "global_commercial_completion_claimed": false
+}

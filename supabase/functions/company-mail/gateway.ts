@@ -1,6 +1,7 @@
 import { getSessionVerifiedUser } from "../_shared/auth-session.ts";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createAiRuntimeResolver } from "../_shared/ai-runtime.ts";
+import type { AiRuntimeGateway } from "../_shared/ai-runtime.ts";
 import { extractInvoice } from "../_shared/invoice.ts";
 import { MailActionError } from "./handler.ts";
 import type { MailAccess, MailGateway } from "./handler.ts";
@@ -9,26 +10,24 @@ export function createMailGateway(
   client: SupabaseClient,
   environmentKey?: string | readonly (string | undefined)[],
 ): MailGateway {
-  const runtime = createAiRuntimeResolver(
-    {
-      async config() {
-        const { data, error } = await client.rpc(
-          "company_provider_runtime_config",
-          { p_scope: "ai" },
-        );
-        return error ? null : data;
-      },
-      async budget(action, data) {
-        const { data: result, error } = await client.rpc(
-          "company_ai_budget_server",
-          { p_action: action, p_data: data },
-        );
-        if (error) throw Error("AI budget unavailable");
-        return result;
-      },
+  const runtimeGateway: AiRuntimeGateway = {
+    async config() {
+      const { data, error } = await client.rpc(
+        "company_provider_runtime_config",
+        { p_scope: "ai" },
+      );
+      return error ? null : data;
     },
-    environmentKey,
-  );
+    async budget(action, data) {
+      const { data: result, error } = await client.rpc(
+        "company_ai_budget_server",
+        { p_action: action, p_data: data },
+      );
+      if (error) throw Error("AI budget unavailable");
+      return result;
+    },
+  };
+  const runtime = createAiRuntimeResolver(runtimeGateway, environmentKey);
   return {
     async invoiceAI(action, data) {
       const { data: result, error } = await client.rpc(
@@ -89,16 +88,37 @@ export function createMailGateway(
     async aiStatus() {
       return (await runtime.health()).enabled;
     },
-    async analyze(organization_id, user_id, invoice_id, bytes, type) {
+    async analyze(
+      organization_id,
+      user_id,
+      invoice_id,
+      bytes,
+      type,
+      assertCurrent,
+    ) {
       if (bytes.length > 6 * 1024 * 1024) return false;
-      const ai = await runtime.resolve({
+      const currentRuntime = assertCurrent
+        ? createAiRuntimeResolver(
+            runtimeGateway,
+            environmentKey,
+            async (input, init) => {
+              // The resolver has already reserved quota at this point. A revoked
+              // human session stops before the provider and keeps a conservative reservation.
+              await assertCurrent();
+              return fetch(input, init);
+            },
+          )
+        : runtime;
+      const ai = await currentRuntime.resolve({
         organization_id,
         user_id,
         invoice_id,
         kind: "invoice",
       });
       if (!ai) return false;
+      if (assertCurrent) await assertCurrent();
       const fields = await extractInvoice(bytes, type, ai, ai.fetcher);
+      if (assertCurrent) await assertCurrent();
       const { data, error } = await client.rpc("company_invoice_ai_apply", {
         p_data: { organization_id, user_id, invoice_id, fields },
       });
