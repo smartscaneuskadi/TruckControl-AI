@@ -1,0 +1,683 @@
+{
+  "recorded_at": "2026-11-16T00:29:03.202616+00:00",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "scope": "Optional native TOTP composed with existing manual FULL: actual safe public update47",
+  "feature_published_and_verified": true,
+  "commercial_platform_global_launch_complete": false,
+  "publication": {
+    "url": "https://truckcontrolai.com",
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "audience": "public",
+    "version_number": 47,
+    "app_version": "0.5.29-rc.1",
+    "source_commit": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_afd1d42c56488191907019cae4460e52",
+    "deployment_id": "appgdep_6afa4acb4aa0819188f07f6196c6ec78",
+    "status": "succeeded",
+    "deployed_at": "2026-11-16T00:14:18.781639+00:00",
+    "archive_storage": {
+      "archive_format": "tar",
+      "sediment_file_id": "file_00000000b25081f4b8363bfdf0c48be1",
+      "content_hash": "sha256:5c8341f764bab62c232b8b695a52016df5f013efc6eda052f24b5e04c0af61ef",
+      "size_bytes": 3409920,
+      "file_count": 36
+    },
+    "demo6_unchanged": true
+  },
+  "github": {
+    "pr": 149,
+    "core_source": "ea9e7075abe601b61b7ec0056589717eb7e8d791",
+    "merge_commit": "b64e7004ab7fbb6ec28d9e2a0d7192abde56bea1",
+    "merged": true,
+    "all_seven_prepublication_checks": {
+      "checked_at": "2026-11-16 00:11:23 UTC",
+      "checks": [
+        {
+          "id": 43776960728,
+          "name": "TruckControl AI checks",
+          "source": "ea9e7075abe601b61b7ec0056589717eb7e8d791",
+          "event": "push",
+          "status": "completed",
+          "result": "success",
+          "updated_at": "2026-11-16T00:07:09Z",
+          "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43776960728",
+          "accepted": true
+        },
+        {
+          "id": 43776964807,
+          "name": "TruckControl AI checks",
+          "source": "ea9e7075abe601b61b7ec0056589717eb7e8d791",
+          "event": "pull_request",
+          "status": "completed",
+          "result": "success",
+          "updated_at": "2026-11-16T00:10:54Z",
+          "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43776964807",
+          "accepted": true
+        },
+        {
+          "id": 43777004782,
+          "name": "TruckControl AI checks",
+          "source": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+          "event": "push",
+          "status": "completed",
+          "result": "success",
+          "updated_at": "2026-11-16T00:07:46Z",
+          "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43777004782",
+          "accepted": true
+        },
+        {
+          "id": 43776964824,
+          "name": "Isolated PostgreSQL acceptance",
+          "source": "ea9e7075abe601b61b7ec0056589717eb7e8d791",
+          "event": "pull_request",
+          "status": "completed",
+          "result": "success",
+          "updated_at": "2026-11-15T23:58:42Z",
+          "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43776964824",
+          "accepted": true
+        },
+        {
+          "id": 43776964893,
+          "name": "Android package candidate",
+          "source": "ea9e7075abe601b61b7ec0056589717eb7e8d791",
+          "event": "pull_request",
+          "status": "completed",
+          "result": "success",
+          "updated_at": "2026-11-15T23:52:56Z",
+          "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43776964893",
+          "accepted": true
+        },
+        {
+          "id": 43776964802,
+          "name": "TruckControl isolated frontend candidate archive",
+          "source": "ea9e7075abe601b61b7ec0056589717eb7e8d791",
+          "event": "pull_request",
+          "status": "completed",
+          "result": "success",
+          "updated_at": "2026-11-15T23:50:47Z",
+          "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43776964802",
+          "accepted": true
+        },
+        {
+          "id": 43777004726,
+          "name": "TruckControl production package only (NO DEPLOY)",
+          "source": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+          "event": "push",
+          "status": "completed",
+          "result": "success",
+          "updated_at": "2026-11-15T23:51:23Z",
+          "url": "https://github.com/smartscaneuskadi/TruckControl-AI/actions/runs/43777004726",
+          "accepted": true
+        }
+      ],
+      "accepted": true
+    }
+  },
+  "ci_per_successful_quality_run": {
+    "unit_sql": 1941,
+    "python": 154,
+    "demo_browser": 94,
+    "company_browser": 62,
+    "saas_browser": 274,
+    "mfa_browser": 98,
+    "manual_full_browser": 44,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "previous_public_profiles": 6,
+    "original_tests_retained": 64,
+    "frozen_original_file_hashes": 11,
+    "counts_not_summed_across_reruns": true
+  },
+  "published_acceptance": {
+    "browser_total": 222,
+    "mfa": {
+      "recorded_at": "2026-11-16T00:22:18.686233+00:00",
+      "public_url": "https://truckcontrolai.com",
+      "public_sites_version": 47,
+      "source_commit": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+      "version": "0.5.29-rc.1",
+      "passed_cases": 94,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "top_level_errors": 0,
+      "retries": 0,
+      "counts_by_project": {
+        "published-mfa-windows": 47,
+        "published-mfa-android": 47
+      },
+      "counts_by_file": {
+        "manual-full.spec.ts": 22,
+        "native.spec.ts": 72
+      },
+      "counter_attachments_verified": 94,
+      "totals": {
+        "blocked_wss": 0,
+        "blocked_unmatched_http": 0,
+        "continued_public_static": 1404
+      },
+      "by_project": {
+        "published-mfa-windows": {
+          "cases": 47,
+          "blocked_wss": 0,
+          "blocked_unmatched_http": 0,
+          "continued_public_static": 702
+        },
+        "published-mfa-android": {
+          "cases": 47,
+          "blocked_wss": 0,
+          "blocked_unmatched_http": 0,
+          "continued_public_static": 702
+        }
+      },
+      "only_anonymous_static_public_gets_allowed": true,
+      "private_http_transport": "fictional intercepted HTTP; original fixtures fulfill private Auth/RPC/Storage and block unknown requests",
+      "all_unmatched_private_or_nonstatic_http_and_wss_blocked": true,
+      "actual_owner_sessions_or_real_customer_data_used": false,
+      "real_managed_auth_company_or_provider_acceptance": false,
+      "provider_calls": 0,
+      "model_calls": 0,
+      "payment_calls": 0,
+      "physical_devices": false,
+      "managed_restore": false,
+      "all_cases_asserted_published_source_and_version_first": true,
+      "public_application_and_sdk": "actual published bundle and installed-version-pinned SDK, not a substitute",
+      "service_worker_offline_or_install_acceptance": "separate check; service workers blocked in this suite",
+      "runner_sha256": "f6fbe1354d7120a093e72e398b2a68fd21bb143549bbd0f5412a86f751ecedbc",
+      "input_files": [
+        {
+          "path": "tests/mfa-browser/native.spec.ts",
+          "sha256": "2bd61f2b3d3992458f3a4def67c641444b86fb6d9f3f91c3c91e4c532c3d3e59",
+          "assertions": "unchanged; helper URL/static fallback adaptation only"
+        },
+        {
+          "path": "tests/mfa-browser/manual-full.spec.ts",
+          "sha256": "7b39ff55e21dfaa41b00b73ce7c7a4aba67d7f3ab5169a706f1e7b7efc1eed99",
+          "assertions": "unchanged; helper URL/static fallback adaptation only"
+        },
+        {
+          "path": "tests/mfa-browser/fixture.ts",
+          "sha256": "2eec8683c054ed4c3fb21069e03bfe266ab49528de826225f5c6cb048bf14fb6",
+          "assertions": "unchanged; helper URL/static fallback adaptation only"
+        }
+      ],
+      "scope_sha256": "b2a2fa5946f7c2f7784ef679e1f24758efde259024772a19329fd90f838de1f6",
+      "results_sha256": "f98102c524219bf2b4c82564344df3591388c954ba41f66096dd755958d64df2",
+      "publication_ui_accepted": true
+    },
+    "baseline": {
+      "checked_at": "2026-11-16T00:25:42.837354+00:00",
+      "repository": "smartscaneuskadi/TruckControl-AI",
+      "public_url": "https://truckcontrolai.com",
+      "sites_version": 47,
+      "source_commit": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+      "app_version": "0.5.29-rc.1",
+      "mode": "executed_public_bundle_acceptance",
+      "publication_accepted_for_tested_scope": true,
+      "scope": "Real published HTTPS frontend and pinned SDK; browser Auth/RPC/provider responses are synthetic fixtures, with all unmatched private/authenticated HTTP and WSS blocked. Public anonymous health probes are separate and perform no model calls.",
+      "suites": {
+        "published-manual-full": {
+          "passed": 44,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "duration_ms": 158484.154,
+          "result": "published-manual-full/results.json",
+          "scope": "published-manual-full/scope.json"
+        },
+        "published-regression": {
+          "passed": 76,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "duration_ms": 180726.092,
+          "result": "published-regression/results.json",
+          "scope": "published-regression/scope.json"
+        },
+        "published-gmail-regression": {
+          "passed": 8,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "duration_ms": 22165.086,
+          "result": "published-gmail-regression/results.json",
+          "scope": "published-gmail-regression/scope.json"
+        }
+      },
+      "total_browser_cases_passed": 128,
+      "browser_cases_failed": 0,
+      "browser_cases_flaky": 0,
+      "browser_cases_skipped": 0,
+      "package_hash_checks": {
+        "passed": 105,
+        "files": 35,
+        "origins": 3,
+        "result": "public-hashes.json"
+      },
+      "pwa_profiles": {
+        "passed": 6,
+        "physical_devices": false,
+        "result": "public-pwa/verification.json"
+      },
+      "public_health": {
+        "passed": 5,
+        "scope": "public_http_availability_only",
+        "rls_verified": false,
+        "result": "public-health/health.json"
+      },
+      "model_calls": 0,
+      "authenticated_real_customer_data_read": false,
+      "private_provider_connections_tested": false,
+      "new_purchases": 0,
+      "new_paid_service_activations": 0,
+      "source_or_sql_changes": false,
+      "test_assertions_removed": 0,
+      "package_proof": "/workspace/artifacts/truckcontrol-mfa-full-20261115/production-package-888/truckcontrol-production-package.json",
+      "package_proof_sha256": "47431b32be14d6ac7e3e157e1685c54c091f17d27b8a4aa6db14aa1233f54b74",
+      "limitations": [
+        "No new native Auth/RLS/managed restore/provider/physical device acceptance is claimed by these browser fixtures.",
+        "Gmail8 proves UI behavior with a synthetic provider; it does not prove a real enterprise mailbox connection.",
+        "PWA6 uses desktop and Android browser emulation; it does not validate a signed APK or physical Windows/Android devices.",
+        "No Stripe live payment, model request or fiscal invoice emission was executed.",
+        "Separate MFA94 public acceptance is owned by the Native agent and excluded from the count128."
+      ],
+      "evidence": [
+        {
+          "path": "published-manual-full/results.json",
+          "bytes": 64499,
+          "sha256": "077b17dc7f8d72ebc8cf9c0312021a6009c2376a40b8529ceda009acd21cbcb7"
+        },
+        {
+          "path": "published-manual-full/scope.json",
+          "bytes": 1854,
+          "sha256": "11c89371c67b39005f0722e9d5ad353fdf80d79b92b64c735ae0adac2bcdaf49"
+        },
+        {
+          "path": "published-regression/results.json",
+          "bytes": 114587,
+          "sha256": "c08aca22ea36afff6712efb01d2384ea308140eafdc1453dc195e26879596995"
+        },
+        {
+          "path": "published-regression/scope.json",
+          "bytes": 1610,
+          "sha256": "c3a0a9f393803c5dbb9398794da60fda6e4e43af4e110918affcd543edefd461"
+        },
+        {
+          "path": "published-gmail-regression/results.json",
+          "bytes": 17216,
+          "sha256": "74e5b91f35045dde9ac8ec26b1ad273967667220fc1aa431b036fea0920e4a4d"
+        },
+        {
+          "path": "published-gmail-regression/scope.json",
+          "bytes": 1353,
+          "sha256": "dbbe9bcf518d1c3db94652ef54c7072c70bf88f6b55db8822dbd91d89ef60558"
+        },
+        {
+          "path": "public-hashes.json",
+          "bytes": 27767,
+          "sha256": "94fb90bfe5315212822cca77b64857f7e60b68c8265debaf2f64b47362206f53"
+        },
+        {
+          "path": "public-pwa/verification.json",
+          "bytes": 4424,
+          "sha256": "69b86b80ce6e21a796c38f79b2d905e8b7777c794974892d183dcfd3032acf67"
+        },
+        {
+          "path": "public-health/health.json",
+          "bytes": 1430,
+          "sha256": "7b27352743d367c961898850e69074223fadc9eb309ed341770a8062db36ede7"
+        },
+        {
+          "path": "public-full44-888.log",
+          "bytes": 12811,
+          "sha256": "6119508a176d1d6920a08989c0f1f24b690fcacb46afac19984728e04d7eadc8"
+        },
+        {
+          "path": "public-regression76-888.log",
+          "bytes": 23530,
+          "sha256": "7bf8180b58c42f5c9d540f3b71a8ff8d29d9f2fef50ada45e4b93ef6b021e261"
+        },
+        {
+          "path": "public-gmail8-888.log",
+          "bytes": 2728,
+          "sha256": "712d47a4231f29cddbad2cbc9d6a2454d98e9d76a7218a1fe70c1fbfc4a3c88b"
+        },
+        {
+          "path": "public-hashes105-888.log",
+          "bytes": 47,
+          "sha256": "9e563273333c0b2fae55bd4477dec89b54e27879e724b9bc24bdba042bae5133"
+        },
+        {
+          "path": "public-pwa6-888.log",
+          "bytes": 726,
+          "sha256": "bdb6175c715134b429fd73ca8ab7bea704e8806e718d50fb95a1982f0b6d80f7"
+        },
+        {
+          "path": "public-health5-888.log",
+          "bytes": 67,
+          "sha256": "ea0ef97d70b5790c1f426a145fa22e49960929570ef58c9815a47671931f44ed"
+        }
+      ]
+    },
+    "native_edge_denials": {
+      "checked_at": "2026-11-16T00:21:41.546Z",
+      "results": [
+        {
+          "function": "company-gmail",
+          "check": "missing_session",
+          "status": 401,
+          "code": "authentication_required",
+          "cache_control": "no-store",
+          "passed": true
+        },
+        {
+          "function": "company-gmail",
+          "check": "invalid_session",
+          "status": 401,
+          "code": "authentication_required",
+          "cache_control": "no-store",
+          "passed": true
+        },
+        {
+          "function": "company-gmail",
+          "check": "foreign_origin",
+          "status": 403,
+          "code": "origin_not_allowed",
+          "cache_control": "no-store",
+          "passed": true
+        },
+        {
+          "function": "truckcontrol-subscriptions",
+          "check": "missing_session",
+          "status": 401,
+          "code": "authentication_required",
+          "cache_control": "no-store",
+          "passed": true
+        },
+        {
+          "function": "truckcontrol-subscriptions",
+          "check": "invalid_session",
+          "status": 401,
+          "code": "authentication_required",
+          "cache_control": "no-store",
+          "passed": true
+        },
+        {
+          "function": "truckcontrol-subscriptions",
+          "check": "foreign_origin",
+          "status": 403,
+          "code": "origin_not_allowed",
+          "cache_control": "no-store",
+          "passed": true
+        }
+      ],
+      "passed": true,
+      "provider_calls": 0,
+      "model_calls": 0,
+      "data_mutations": 0,
+      "authenticated_acceptance": false,
+      "initial_transport_failure": {
+        "implementation": "Python urllib",
+        "error": "read timeout",
+        "http_result": "not established",
+        "correction": "Use existing managed Node proxy with NODE_USE_ENV_PROXY=1; no TLS or security changes"
+      }
+    },
+    "capability_rpc_denials": {
+      "passed": 2,
+      "anonymous_status": 401,
+      "invalid_bearer_status": 401,
+      "evidence": "native-http/capability-denials.json",
+      "scope": "Real managed HTTP denial only; no positive account authentication"
+    }
+  },
+  "backend": {
+    "project": "kkkemaycedexymrpaqtp",
+    "migrations": 75,
+    "latest": "20261115221404_optional_totp_session_protection",
+    "sql_sha256": "b830a21224d64acffeb3dedc1938b8676aa131db4e4347914c35ea01fd387be7",
+    "apply_count_this_delivery": 1,
+    "repeat_applied_migrations": false,
+    "flags": {
+      "registration_open": true,
+      "enforce_access": true,
+      "payments_enabled": false,
+      "prices_are_examples": true
+    },
+    "preflight_read_only": {
+      "checked_at": "2026-11-15T23:32:04.941503+00:00",
+      "project_id": "kkkemaycedexymrpaqtp",
+      "query_kind": "read_only_aggregate_no_accounts",
+      "migration_count": 75,
+      "latest": "20261115221404_optional_totp_session_protection",
+      "counts": {
+        "verified_totp_factors": 0,
+        "manual_full_licenses": 0,
+        "manual_full_audit": 0
+      },
+      "flags": {
+        "registration_open": true,
+        "enforce_access": true,
+        "payments_enabled": false,
+        "prices_are_examples": true
+      },
+      "advisor": {
+        "warn_error": 0,
+        "intentional_deny_all_info": 3
+      },
+      "mutations_performed": false,
+      "provider_calls_or_model_consumption": 0
+    },
+    "no_auto_enrollment_or_licenses": true,
+    "security_advisor_warn_error": 0,
+    "intentional_private_deny_all_info": 3
+  },
+  "isolated_backend_evidence": {
+    "canonical_source": "46ec24e84f53ab9dd34b35f025185208abb46e16",
+    "native_run": 43769521346,
+    "native_auth_recovery_checks": 67,
+    "native_totp_checks": 192,
+    "native_manual_full_checks": 200,
+    "postgres_run": 43769521354,
+    "postgres_checks": 481,
+    "observed_contentions": 43,
+    "logical_restores": 2,
+    "fourteen_backend_harness_objects_and_sql_equal": true,
+    "current_postgres_ci_run": 43776964824,
+    "current_postgres_ci_result": "SUCCESS",
+    "source_comparison": "public-tools/backend-reuse-production888.json",
+    "native_cases_not_repeated_for_public_release": true,
+    "managed_restore": false
+  },
+  "package": {
+    "repository": "smartscaneuskadi/TruckControl-AI",
+    "workflow_run": 43777004726,
+    "workflow_conclusion": "SUCCESS",
+    "workflow_event": "push",
+    "workflow_head_commit": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+    "artifact_id": 14186831393,
+    "artifact_name": "unpublished-production-8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+    "github_zip_sha256": "e2338a98c187f25e03a4c7745f3e5ef0244d917f9b1ea4e51d5637c43f95167b",
+    "zip_not_persisted": true,
+    "only_archive_and_original_package_json_extracted": true,
+    "archive_name": "truckcontrol-production-8884595c7436d0702b97a79f653a08e8d8f4ff4b.tar.gz",
+    "archive_sha256": "02847d9b8aedff1e6cc7a1ae1f8f483230e6beab7f63e6eea756cc75a00b9c19",
+    "archive_bytes": 1546019,
+    "package_proof_sha256": "47431b32be14d6ac7e3e157e1685c54c091f17d27b8a4aa6db14aa1233f54b74",
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "canonical_url": "https://truckcontrolai.com",
+    "baseline_source": "4cb1e430fa5530c5b27b17e9dbb2515146d779ab",
+    "output_version": "0.5.29-rc.1",
+    "output_channel": "production",
+    "output_source_clean": true,
+    "company_connection_bundled": true,
+    "dist_file_count": 35,
+    "all_dist_file_hashes_verified": true,
+    "all_archive_paths_and_file_types_verified": true,
+    "mfa_enrollment_requested": true,
+    "mfa_requires_exact_server_capability": true,
+    "native_or_provider_config_changed_by_build": false,
+    "payments_enabled": false,
+    "payment_changes": false,
+    "published": false,
+    "source_pushed_to_sites": false,
+    "local_build_used": false,
+    "public_browser_acceptance_performed_by_this_download": false
+  },
+  "recovery": {
+    "previous_production_preserved": {
+      "version": 46,
+      "app_version": "0.5.28-rc.1",
+      "source_commit": "4cb1e430fa5530c5b27b17e9dbb2515146d779ab",
+      "deployment_id": "appgdep_6af9f64bacf88191bffa90e87f0a9b57"
+    },
+    "demo_version_preserved": 6,
+    "pre_mfa_ui_is_not_enrolled_account_recovery": true,
+    "server_mfa_enforcement_retirement_refused": true,
+    "prepared_enrollment_off_build": {
+      "source_commit": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+      "archive": {
+        "name": "truckcontrol-mfa-recovery-8884595c7436d0702b97a79f653a08e8d8f4ff4b.tar.gz",
+        "bytes": 1542925,
+        "sha256": "40901dd94b7a66aae76c5bb5894afe5616e907fdad61dd606df69005f4ede093"
+      },
+      "local_cases_passed": 6,
+      "enrollment_enabled": false,
+      "challenge_and_factor_management_retained": true,
+      "server_enforcement_retained": true
+    },
+    "same_source_save_is_idempotent": "Recovery888 save returned existing47 unchanged, same archive hash and deployment; no48 created by that call. A separate source is needed for another saved artifact.",
+    "later_persisted_recovery_state": "Track follow-up in issue3; do not infer live version from maximum saved version number.",
+    "recovery_deployment_performed": false
+  },
+  "commercial_model": {
+    "manual_full_preserved": true,
+    "automatic_stripe_charges_enabled": false,
+    "stripe_not_initial_manual_launch_gate": true,
+    "license_is_not_payment_or_fiscal_invoice": true,
+    "offline_revocation_and_signed_urls_remain_bounded_by_existing_lease_or_ttl": true
+  },
+  "android_windows": {
+    "browser_emulation": true,
+    "pwa_profiles_passed": 6,
+    "android_version_code": 8,
+    "android_debug_apk_and_unsigned_aab_ci": 43776964893,
+    "commercial_signing": false,
+    "google_play_publication": false,
+    "physical_devices": false
+  },
+  "migadu_public_dns": {
+    "checked_at": "2026-11-16T00:00:28.822Z",
+    "scope": "Public DKIM target TXT lookup only. No email, authentication, DNS or provider settings changed.",
+    "results": [
+      {
+        "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+        "resolver": "google",
+        "http": 200,
+        "dns_status": 2,
+        "authenticated": false,
+        "txt_count": 0,
+        "dkim_key_present": false,
+        "passed": false
+      },
+      {
+        "name": "key1.truckcontrolai.com._domainkey.migadu.com",
+        "resolver": "cloudflare",
+        "http": 200,
+        "dns_status": 2,
+        "authenticated": false,
+        "txt_count": 0,
+        "dkim_key_present": false,
+        "passed": false
+      },
+      {
+        "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+        "resolver": "google",
+        "http": 200,
+        "dns_status": 2,
+        "authenticated": false,
+        "txt_count": 0,
+        "dkim_key_present": false,
+        "passed": false
+      },
+      {
+        "name": "key2.truckcontrolai.com._domainkey.migadu.com",
+        "resolver": "cloudflare",
+        "http": 200,
+        "dns_status": 2,
+        "authenticated": false,
+        "txt_count": 0,
+        "dkim_key_present": false,
+        "passed": false
+      },
+      {
+        "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+        "resolver": "google",
+        "http": 200,
+        "dns_status": 2,
+        "authenticated": false,
+        "txt_count": 0,
+        "dkim_key_present": false,
+        "passed": false
+      },
+      {
+        "name": "key3.truckcontrolai.com._domainkey.migadu.com",
+        "resolver": "cloudflare",
+        "http": 200,
+        "dns_status": 2,
+        "authenticated": false,
+        "txt_count": 0,
+        "dkim_key_present": false,
+        "passed": false
+      }
+    ],
+    "all_passed": false,
+    "provider_messages_sent": 0,
+    "charges": 0,
+    "current_domain_aliases": [
+      {
+        "name": "key1._domainkey.truckcontrolai.com",
+        "status": 0,
+        "targets": [
+          "key1.truckcontrolai.com._domainkey.migadu.com."
+        ],
+        "expected_target_matches": true
+      },
+      {
+        "name": "key2._domainkey.truckcontrolai.com",
+        "status": 0,
+        "targets": [
+          "key2.truckcontrolai.com._domainkey.migadu.com."
+        ],
+        "expected_target_matches": true
+      },
+      {
+        "name": "key3._domainkey.truckcontrolai.com",
+        "status": 0,
+        "targets": [
+          "key3.truckcontrolai.com._domainkey.migadu.com."
+        ],
+        "expected_target_matches": true
+      }
+    ],
+    "aliases_checked_at": "2026-11-16T00:01:07.766Z"
+  },
+  "costs": {
+    "new_provider_purchases": 0,
+    "new_paid_service_activations": 0,
+    "new_model_calls": 0,
+    "new_recurring_commitments": 0,
+    "budget_cap_eur": 200,
+    "historical_spend_or_remaining": "unreconciled, do not assume200available",
+    "existing_ai_monthly_limit_usd": 10,
+    "existing_ai_calls_per_company": 100
+  },
+  "limitations": [
+    "Public browser suites use real HTTPS bundle and SDK with synthetic private HTTP; no new real customer, managed MFA or enterprise Gmail connection acceptance.",
+    "Managed Auth/Storage/Vault recovery remains separate from isolated logical restores.",
+    "Android signing/Play and physical Android/Windows validation remain pending.",
+    "Public Google/enterprise Gmail review and external legal/fiscal acceptance are not invented.",
+    "Migadu DKIM targets still SERVFAIL in both resolvers; own CNAME correct; no DNSSEC changes.",
+    "No Stripe live charge, fiscal invoice emission, mailbox read/send or AI model call was performed for this delivery."
+  ]
+}
