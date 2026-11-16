@@ -3,7 +3,7 @@ insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data)
 select ('ba210000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,
  'billing-doc-'||n||'@example.invalid',now(),jsonb_build_object('truckcontrol_registration',jsonb_build_object(
  'contact_name','Persona ficticia','company_name','Empresa documental ficticia '||n,'tax_id','DEMO-BILLING-'||n,
- 'address','Dirección sintética 100','phone','+12025551'||lpad(n::text,3,'0')))
+ 'address','Dirección sintética 100','phone','+120255501'||lpad((60+n)::text,2,'0')))
 from unnest(array[1,2,3,9]) n;
 insert into auth.sessions(id,user_id) select ('ba220000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,
  ('ba210000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid from unnest(array[1,2,3,9]) n;

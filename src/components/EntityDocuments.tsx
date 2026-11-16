@@ -494,7 +494,12 @@ function DocumentCollectionBody({
                     <div className="integration-fields">
                       <label>
                         {cloud ? "Camión" : "Camión de demostración"}
-                        <select name={`${row.prefix}_truck`}>
+                        <select
+                          name={`${row.prefix}_truck`}
+                          aria-label={
+                            cloud ? "Camión" : "Camión de demostración"
+                          }
+                        >
                           <option value="">Sin vincular</option>
                           {snapshot.trucks.map((truck) => (
                             <option key={truck.id} value={truck.id}>
@@ -505,7 +510,12 @@ function DocumentCollectionBody({
                       </label>
                       <label>
                         {cloud ? "Conductor" : "Conductor de demostración"}
-                        <select name={`${row.prefix}_driver`}>
+                        <select
+                          name={`${row.prefix}_driver`}
+                          aria-label={
+                            cloud ? "Conductor" : "Conductor de demostración"
+                          }
+                        >
                           <option value="">Sin vincular</option>
                           {snapshot.drivers.map((driver) => (
                             <option key={driver.id} value={driver.id}>
