@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "4cb1e430fa5530c5b27b17e9dbb2515146d779ab",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_2b1e985221e08191953a75bd00a62b42",
-  "published_version_number": 46,
-  "deployment_id": "appgdep_6af9f64bacf88191bffa90e87f0a9b57",
-  "previous_deployment_id": "appgdep_6af9940779a48191b144b16385a388f6",
+  "published_commit": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_afd1d42c56488191907019cae4460e52",
+  "published_version_number": 47,
+  "deployment_id": "appgdep_6afa4acb4aa0819188f07f6196c6ec78",
+  "previous_deployment_id": "appgdep_6af9f64bacf88191bffa90e87f0a9b57",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-15T18:13:45.148135+00:00",
+  "deployed_at": "2026-11-16T00:14:18.781639+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 43743688733,
+  "source_ci_run": 43777004782,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "4cb1e430fa5530c5b27b17e9dbb2515146d779ab",
+  "source_ci_commit": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
   "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 45,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ba3ecd4e45508191a680ca27bdd6a069",
-    "source_commit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
-    "deployment_id": "appgdep_6af9940779a48191b144b16385a388f6",
-    "app_version": "0.5.27-rc.1"
+    "version": 46,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_2b1e985221e08191953a75bd00a62b42",
+    "source_commit": "4cb1e430fa5530c5b27b17e9dbb2515146d779ab",
+    "deployment_id": "appgdep_6af9f64bacf88191bffa90e87f0a9b57",
+    "app_version": "0.5.28-rc.1"
   },
-  "source_deployment_ci_run": 43743688659,
-  "app_version": "0.5.28-rc.1",
+  "source_deployment_ci_run": 43777004726,
+  "app_version": "0.5.29-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -265,6 +265,13 @@
       "source_commit": "9dd41d99aadacda961eb772f60439297d6aaa4c5",
       "deployment_id": "appgdep_6af9940779a48191b144b16385a388f6",
       "app_version": "0.5.27-rc.1"
+    },
+    {
+      "version": 46,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_2b1e985221e08191953a75bd00a62b42",
+      "source_commit": "4cb1e430fa5530c5b27b17e9dbb2515146d779ab",
+      "deployment_id": "appgdep_6af9f64bacf88191bffa90e87f0a9b57",
+      "app_version": "0.5.28-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -330,34 +337,21 @@
     "time_zone": "Europe/Madrid",
     "action": "sync_period"
   },
-  "ci_scope_note": "PR98/exact-source CI:1664 per execution, including6 public profiles against prior Sites38. Postpublication receipt records Sites39 separately; no repeated AI/mailbox acceptance.",
+  "ci_scope_note": "Final coreea9 and production888 quality completed SUCCESS before Sites47. The published receipt records222 browser cases,105 hashes,6 PWA and5 health checks separately. Real bundle/SDK with synthetic private HTTP; no repeated AI/provider acceptance or physical-device claim.",
   "final_release_verification": {
-    "unit_sql": 1729,
-    "python": 107,
-    "demo_browser": 94,
-    "company_browser": 54,
-    "saas_browser": 258,
-    "candidate_browser": 20,
-    "production_browser": 20,
-    "previous_public_profiles": 6,
-    "postgres_separate": 250,
-    "postgres_schema": 95,
-    "postgres_financial": 155,
-    "real_postgres_contention_checks": 28,
-    "logical_restores": 2,
-    "android_jvm": 5,
-    "retained_original_tests": 64,
-    "retained_hashes": 11,
-    "source_ci": 43578958439,
-    "post_publication_https_hashes": 75,
-    "post_publication_browser": 60,
-    "post_publication_profiles": 6,
+    "status": "passed",
+    "receipt": "https://github.com/smartscaneuskadi/TruckControl-AI/blob/26e90c21f599cd2783d99bdf82f08aca81918a62/docs/verification/optional-totp-full-published47-20261116.json",
+    "source_commit": "8884595c7436d0702b97a79f653a08e8d8f4ff4b",
+    "browser_cases": 222,
+    "static_hashes": 105,
+    "pwa_profiles": 6,
+    "native_edge_denials": 6,
+    "health": 5,
     "physical_devices": false,
-    "commercial_payments": false,
-    "scope": "SDK real with fictitious private transport; provider and physical acceptance remain pending"
+    "private_browser_transport": "synthetic, unmatched private HTTP/WSS blocked"
   },
-  "source_branch": "deploy/commercial-safe-20261114",
-  "production_source_manifest_only_diff_scope": "Runtime src/public/tests/supabase/package/compiler/Android sources match reviewed67911f2 and merged mainc233a3c; only production identity, package workflow/helper and three preserved source-delivery records differ. Never deploy the demo manifest from main.",
+  "source_branch": "deploy/mfa-full-production-20261115",
+  "production_source_manifest_only_diff_scope": "Coreea9 and production888 have identical src/supabase runtime and dependency versions. They differ in production packaging workflow/script, hosting manifest and three prior release-source documents, so the manifest-only flag stays false.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
     ".openai/hosting.json",
@@ -541,6 +535,42 @@
       "app_version": "0.5.25-rc.1"
     }
   ],
-  "supabase_migrations": 72,
-  "expected_manual_company_full": true
+  "supabase_migrations": 75,
+  "expected_manual_company_full": true,
+  "previous_release_verifications": [
+    {
+      "unit_sql": 1729,
+      "python": 107,
+      "demo_browser": 94,
+      "company_browser": 54,
+      "saas_browser": 258,
+      "candidate_browser": 20,
+      "production_browser": 20,
+      "previous_public_profiles": 6,
+      "postgres_separate": 250,
+      "postgres_schema": 95,
+      "postgres_financial": 155,
+      "real_postgres_contention_checks": 28,
+      "logical_restores": 2,
+      "android_jvm": 5,
+      "retained_original_tests": 64,
+      "retained_hashes": 11,
+      "source_ci": 43578958439,
+      "post_publication_https_hashes": 75,
+      "post_publication_browser": 60,
+      "post_publication_profiles": 6,
+      "physical_devices": false,
+      "commercial_payments": false,
+      "scope": "SDK real with fictitious private transport; provider and physical acceptance remain pending"
+    }
+  ],
+  "ci_scope_note_history": [
+    "PR98/exact-source CI:1664 per execution, including6 public profiles against prior Sites38. Postpublication receipt records Sites39 separately; no repeated AI/mailbox acceptance."
+  ],
+  "source_branch_history": [
+    "deploy/commercial-safe-20261114"
+  ],
+  "production_source_manifest_only_diff_scope_history": [
+    "Runtime src/public/tests/supabase/package/compiler/Android sources match reviewed67911f2 and merged mainc233a3c; only production identity, package workflow/helper and three preserved source-delivery records differ. Never deploy the demo manifest from main."
+  ]
 }
