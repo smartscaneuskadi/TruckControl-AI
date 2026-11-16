@@ -88,6 +88,55 @@ test("Correo ofrece un solo formulario y conectar no autoriza la IA", async ({
     selectedView(page).getByRole("button", { name: importButton, exact: true }),
   ).toBeEnabled();
   expect(mail.imports()).toEqual([]);
+  await connectGmail(page, mail, secondMail);
+  await connectImap(page, "theme-imap@example.invalid");
+  await choose(page, firstMail);
+  const authorization = await authorize(page);
+  for (const name of ["Fleet Light", "Fleet Cockpit"]) {
+    await authorization
+      .getByRole("button", { name: "Cambiar apariencia", exact: true })
+      .click();
+    const appearance = page.getByRole("dialog", {
+      name: "Apariencia de TruckControl",
+      exact: true,
+    });
+    await appearance.getByRole("radio", { name, exact: true }).check();
+    await appearance
+      .getByRole("button", { name: "Aplicar apariencia", exact: true })
+      .click();
+    await appearance
+      .getByRole("button", { name: "Cerrar ventana", exact: true })
+      .click();
+    await expect(authorization).toBeVisible();
+    await expect(
+      authorization.locator(".mail-invoice-consent input"),
+    ).toBeChecked();
+    await expect(
+      authorization
+        .locator(".mail-invoice-authorization")
+        .getByText(firstMail, { exact: true }),
+    ).toBeVisible();
+  }
+  await closeImport(page);
+  const session = await page.evaluate(() => {
+    const current = JSON.parse(localStorage.getItem("truckcontrol-auth-v1")!);
+    current.user.user_metadata = {
+      ...current.user.user_metadata,
+      ui_only: "synthetic-theme-preference",
+      is_admin: true,
+      aal: "aal2",
+    };
+    return current;
+  });
+  await broadcast(page, "USER_UPDATED", session);
+  for (const email of [firstMail, secondMail, "theme-imap@example.invalid"])
+    await expect(
+      accounts(page).getByRole("button", { name: email, exact: true }),
+    ).toBeVisible();
+  await expect(
+    selectedView(page).getByRole("button", { name: "Redactar", exact: true }),
+  ).toBeVisible();
+  expect(mail.imports()).toEqual([]);
   await page.evaluate(() => {
     location.hash = "/mailbox/gmail";
   });
