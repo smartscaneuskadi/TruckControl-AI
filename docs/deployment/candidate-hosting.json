@@ -535,7 +535,7 @@
       "app_version": "0.5.25-rc.1"
     }
   ],
-  "supabase_migrations": 75,
+  "supabase_migrations": 76,
   "expected_manual_company_full": true,
   "previous_release_verifications": [
     {

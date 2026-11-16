@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Download, FileCheck2, Pencil, RefreshCw } from "lucide-react";
 import { useFleet, errorMessage } from "../app/FleetProvider";
@@ -20,20 +20,29 @@ import { useCurrentDay } from "../lib/use-current-day";
 import { date } from "../lib/format";
 import { exportCsv } from "../lib/export";
 
-export function readDocumentTracking(data: FormData): DocumentTrackingInput {
+export function readDocumentTracking(
+  data: FormData,
+  prefix = "document",
+): DocumentTrackingInput {
+  const label = String(data.get(`${prefix}_label`) || "").trim();
+  const finance = String(data.get(`${prefix}_finance_entry_id`) || "");
   return documentTrackingInput.parse({
-    category: String(data.get("document_category") || "other"),
-    status: String(data.get("document_status") || "active"),
-    expires_on: String(data.get("document_expires_on") || "") || null,
-    remind_days: Number(data.get("document_remind_days") ?? 30),
+    category: String(data.get(`${prefix}_category`) || "other"),
+    status: String(data.get(`${prefix}_status`) || "active"),
+    expires_on: String(data.get(`${prefix}_expires_on`) || "") || null,
+    remind_days: Number(data.get(`${prefix}_remind_days`) ?? 30),
+    ...(label || data.get(`${prefix}_had_label`) === "1" ? { label } : {}),
+    ...(finance ? { finance_entry_id: finance } : {}),
   });
 }
 export function DocumentTrackingFields({
   value = defaultDocumentTracking,
   editableStatus = false,
+  prefix = "document",
 }: {
-  value?: DocumentTracking;
+  value?: DocumentTracking | DocumentTrackingInput;
   editableStatus?: boolean;
+  prefix?: string;
 }) {
   return (
     <div className="integration-fields">
@@ -41,7 +50,7 @@ export function DocumentTrackingFields({
         Tipo de documento
         <select
           aria-label="Tipo de documento"
-          name="document_category"
+          name={`${prefix}_category`}
           defaultValue={value.category}
         >
           {Object.entries(documentCategories).map(([k, v]) => (
@@ -52,9 +61,27 @@ export function DocumentTrackingFields({
         </select>
       </label>
       <label>
+        Descripción del documento (opcional)
+        <input
+          name={`${prefix}_label`}
+          maxLength={160}
+          defaultValue={value.label ?? ""}
+        />
+      </label>
+      {value.label && (
+        <input type="hidden" name={`${prefix}_had_label`} value="1" />
+      )}
+      {value.finance_entry_id && (
+        <input
+          type="hidden"
+          name={`${prefix}_finance_entry_id`}
+          value={value.finance_entry_id}
+        />
+      )}
+      <label>
         Fecha de vencimiento (opcional)
         <input
-          name="document_expires_on"
+          name={`${prefix}_expires_on`}
           type="date"
           defaultValue={value.expires_on ?? ""}
         />
@@ -62,7 +89,7 @@ export function DocumentTrackingFields({
       <label>
         Avisar con días de antelación
         <input
-          name="document_remind_days"
+          name={`${prefix}_remind_days`}
           type="number"
           required
           min={0}
@@ -76,7 +103,7 @@ export function DocumentTrackingFields({
           Estado del documento
           <select
             aria-label="Estado del documento"
-            name="document_status"
+            name={`${prefix}_status`}
             defaultValue={value.status}
           >
             <option value="active">Activo</option>
@@ -106,16 +133,25 @@ export function DocumentRegister({
 }) {
   const { snapshot, notify } = useFleet(),
     day = useCurrentDay();
+  const alive = useRef(true);
+  useLayoutEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
   const [search, setSearch] = useState(""),
     [status, setStatus] = useState("active"),
     [category, setCategory] = useState("all"),
-    [truck, setTruck] = useState("");
+    [truck, setTruck] = useState(""),
+    [driver, setDriver] = useState("");
   const [page, setPage] = useState(1),
     [editor, setEditor] = useState<CompanyDocument | null>(null),
     [error, setError] = useState(""),
     [saving, setSaving] = useState(false);
   const rows = filterDocuments(documents, day, search, status, category)
     .filter((d) => !truck || d.truck_id === truck)
+    .filter((d) => !driver || d.driver_id === driver)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
   const actual = Math.min(page, Math.max(1, Math.ceil(rows.length / 12)));
   async function save(e: FormEvent<HTMLFormElement>) {
@@ -126,12 +162,13 @@ export function DocumentRegister({
     setError("");
     try {
       await onSave(editor, readDocumentTracking(form));
+      if (!alive.current) return;
       setEditor(null);
       notify("Ficha documental actualizada. El original se conserva.");
     } catch (e) {
-      setError(errorMessage(e));
+      if (alive.current) setError(errorMessage(e));
     } finally {
-      setSaving(false);
+      if (alive.current) setSaving(false);
     }
   }
   async function action(fn: () => Promise<void> | void) {
@@ -141,9 +178,9 @@ export function DocumentRegister({
     try {
       await fn();
     } catch (e) {
-      setError(errorMessage(e));
+      if (alive.current) setError(errorMessage(e));
     } finally {
-      setSaving(false);
+      if (alive.current) setSaving(false);
     }
   }
   return (
@@ -175,15 +212,18 @@ export function DocumentRegister({
                   [
                     "Documento",
                     "Tipo",
+                    "Descripción",
                     "Estado",
                     "Vencimiento",
                     "Avisar días antes",
                     "Matrícula",
                     "Conductor",
+                    "Movimiento",
                   ],
                   ...rows.map((d) => [
                     d.name,
                     documentCategories[d.tracking?.category ?? "other"],
+                    d.tracking?.label ?? "",
                     documentStateLabels[documentState(d, day)],
                     d.tracking?.expires_on ?? "",
                     d.tracking?.remind_days ?? 30,
@@ -191,6 +231,11 @@ export function DocumentRegister({
                       "",
                     snapshot.drivers.find((r) => r.id === d.driver_id)?.name ??
                       "",
+                    d.tracking?.finance_entry_id
+                      ? (snapshot.entries.find(
+                          (r) => r.id === d.tracking?.finance_entry_id,
+                        )?.concept ?? d.tracking.finance_entry_id)
+                      : "",
                   ]),
                 ])
               }
@@ -202,7 +247,7 @@ export function DocumentRegister({
         <div className="list-toolbar">
           <SearchField
             label="Buscar documento"
-            placeholder="Nombre del documento…"
+            placeholder="Nombre o descripción del documento…"
             value={search}
             onChange={(v) => {
               setSearch(v);
@@ -223,6 +268,21 @@ export function DocumentRegister({
               {Object.entries(documentStateLabels).map(([k, v]) => (
                 <option value={k} key={k}>
                   {v}
+                </option>
+              ))}
+            </select>
+            <select
+              aria-label="Filtrar conductor documental"
+              value={driver}
+              onChange={(e) => {
+                setDriver(e.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="">Todos los conductores</option>
+              {snapshot.drivers.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
                 </option>
               ))}
             </select>
@@ -279,6 +339,9 @@ export function DocumentRegister({
                   {cloud ? "Privado" : "Solo en este navegador"}
                 </Badge>
                 <h2>{d.name}</h2>
+                {d.tracking?.label && (
+                  <p className="document-description">{d.tracking.label}</p>
+                )}
                 <Badge
                   tone={
                     state === "expired"
@@ -294,6 +357,14 @@ export function DocumentRegister({
                   {documentCategories[d.tracking?.category ?? "other"]} ·{" "}
                   {(d.size_bytes / 1024).toFixed(1)} KB
                 </p>
+                {d.tracking?.finance_entry_id && (
+                  <p className="document-finance-link">
+                    Movimiento ·{" "}
+                    {snapshot.entries.find(
+                      (entry) => entry.id === d.tracking?.finance_entry_id,
+                    )?.concept ?? "Movimiento vinculado"}
+                  </p>
+                )}
                 <p>
                   {snapshot.trucks.find((t) => t.id === d.truck_id)?.plate ??
                     "Documento de empresa"}

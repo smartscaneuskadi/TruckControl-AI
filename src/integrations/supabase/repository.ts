@@ -85,6 +85,7 @@ export class SupabaseFleetRepository implements FleetRepository {
         category: e.category,
         paymentStatus: e.payment_status,
         distanceKm: e.distance_km,
+        ...(e.document_type !== undefined ? { documentType: e.document_type } : {}),
       })),
     });
     this.versions = new Map([
@@ -153,6 +154,7 @@ export class SupabaseFleetRepository implements FleetRepository {
           category: e.category,
           payment_status: e.paymentStatus,
           distance_km: e.distanceKm,
+          ...(e.documentType !== undefined ? { document_type: e.documentType } : {}),
           row_version: 1,
         };
       }

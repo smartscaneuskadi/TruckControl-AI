@@ -7,19 +7,25 @@ import {
   Clock3,
   Download,
   Pencil,
+  Paperclip,
   Plus,
 } from "lucide-react";
 import { useFleet } from "../app/FleetProvider";
 import { useWorkspace } from "../app/WorkspaceContext";
+import { useSubscription } from "../app/SubscriptionContext";
 import { filterEntries, summarize } from "../domain/finance";
-import { categories } from "../domain/models";
+import { categories, financeDocumentTypes } from "../domain/models";
+import { EntityDocuments } from "../components/EntityDocuments";
+import { BillingNavigation } from "./Billing";
 import { date, money, monthLabel } from "../lib/format";
 import { exportCsv } from "../lib/export";
+import { t } from "../i18n/runtime";
 import {
   Badge,
   Button,
   Empty,
   Metric,
+  Modal,
   PageHeading,
   Pagination,
   PeriodPicker,
@@ -29,11 +35,18 @@ import {
 export function Finance({ kind }: { kind: "income" | "expense" }) {
   const { snapshot } = useFleet();
   const { period, setPeriod, edit } = useWorkspace();
+  const subscription = useSubscription();
+  const documentsAvailable =
+    !subscription.enabled || subscription.features.documents;
   const [params] = useSearchParams();
   const [search, setSearch] = useState(params.get("search") ?? "");
   const [truckId, setTruckId] = useState(params.get("truck") ?? "");
   const [payment, setPayment] = useState(params.get("payment") ?? "all");
   const [category, setCategory] = useState("all");
+  const [documentType, setDocumentType] = useState(
+    params.get("documentType") ?? "all",
+  );
+  const [documentEntryId, setDocumentEntryId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const income = kind === "income";
   const rows = filterEntries(snapshot.entries, period, truckId)
@@ -44,7 +57,11 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
           .toLowerCase()
           .includes(search.toLowerCase()) &&
         (payment === "all" || entry.paymentStatus === payment) &&
-        (category === "all" || entry.category === category),
+        (category === "all" || entry.category === category) &&
+        (documentType === "all" ||
+          (documentType === "unclassified"
+            ? !entry.documentType
+            : entry.documentType === documentType)),
     )
     .sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   const summary = summarize(rows);
@@ -53,12 +70,16 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
     ? summary.pendingIncomeCents
     : summary.pendingExpenseCents;
   const actual = Math.min(page, Math.max(1, Math.ceil(rows.length / 15)));
+  const documentEntry = snapshot.entries.find(
+    (entry) => entry.id === documentEntryId && entry.kind === kind,
+  );
   function csv() {
     exportCsv(`truckcontrol-${income ? "ingresos" : "gastos"}-${period}.csv`, [
       [
         "Fecha",
         "Camión",
         "Concepto",
+        "Tipo de documento",
         "Categoría",
         "Importe EUR sin IVA",
         "Estado",
@@ -69,6 +90,9 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
         snapshot.trucks.find((truck) => truck.id === entry.truckId)?.plate ??
           "",
         entry.concept,
+        entry.documentType
+          ? t(financeDocumentTypes[entry.documentType])
+          : t("Sin clasificar"),
         categories[entry.category],
         (entry.amountCents / 100).toFixed(2),
         entry.paymentStatus === "pending"
@@ -98,6 +122,7 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
           {income ? "Nuevo ingreso" : "Nuevo gasto"}
         </Button>
       </PageHeading>
+      <BillingNavigation />
       <div className="overview-toolbar">
         <div className="section-label">
           {income ? "Ingresos" : "Gastos"}
@@ -175,6 +200,22 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
               <option value="pending">Pendiente</option>
             </select>
             <select
+              aria-label="Filtrar tipo de documento"
+              value={documentType}
+              onChange={(e) => {
+                setDocumentType(e.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="all">Todos los documentos</option>
+              {Object.entries(financeDocumentTypes).map(([key, label]) => (
+                <option key={key} value={key}>
+                  {label}
+                </option>
+              ))}
+              <option value="unclassified">Sin clasificar</option>
+            </select>
+            <select
               aria-label="Filtrar categoría"
               value={category}
               onChange={(e) => {
@@ -204,6 +245,7 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
                 <tr>
                   <th scope="col">Fecha</th>
                   <th scope="col">Concepto</th>
+                  <th scope="col">Documento</th>
                   <th scope="col">Camión</th>
                   <th scope="col">Categoría</th>
                   <th scope="col">Estado</th>
@@ -211,7 +253,7 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
                     Importe
                   </th>
                   <th scope="col">
-                    <span className="sr-only">Editar</span>
+                    <span className="sr-only">Acciones del movimiento</span>
                   </th>
                 </tr>
               </thead>
@@ -227,6 +269,11 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
                           servicio
                         </small>
                       )}
+                    </td>
+                    <td className="billing-document-type">
+                      {entry.documentType
+                        ? t(financeDocumentTypes[entry.documentType])
+                        : "Sin clasificar"}
                     </td>
                     <td className="nowrap strong">
                       {
@@ -259,13 +306,26 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
                       {money(entry.amountCents, true)}
                     </td>
                     <td>
-                      <button
-                        className="icon-button"
-                        aria-label={`Editar ${entry.concept}`}
-                        onClick={() => edit({ kind, value: entry })}
-                      >
-                        <Pencil size={16} />
-                      </button>
+                      <div className="billing-row-actions">
+                        {documentsAvailable && (
+                          <Button
+                            variant="ghost"
+                            className="billing-documents-action"
+                            icon={Paperclip}
+                            aria-label={`Ver o adjuntar documentos de ${entry.concept}`}
+                            onClick={() => setDocumentEntryId(entry.id)}
+                          >
+                            Documentos
+                          </Button>
+                        )}
+                        <button
+                          className="icon-button"
+                          aria-label={`Editar ${entry.concept}`}
+                          onClick={() => edit({ kind, value: entry })}
+                        >
+                          <Pencil size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -284,6 +344,20 @@ export function Finance({ kind }: { kind: "income" | "expense" }) {
           onChange={setPage}
         />
       </section>
+      {documentsAvailable && documentEntry && (
+        <Modal
+          title="Documentos del movimiento"
+          subtitle={documentEntry.concept}
+          onClose={() => setDocumentEntryId(null)}
+        >
+          <EntityDocuments
+            key={`${snapshot.organization.id}:${documentEntry.id}`}
+            scope={{ kind: "finance", id: documentEntry.id }}
+            defaultCategory={documentEntry.documentType ?? "invoice"}
+            title="Adjuntos del movimiento"
+          />
+        </Modal>
+      )}
     </>
   );
 }

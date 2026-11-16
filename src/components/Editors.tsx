@@ -6,6 +6,7 @@ import type { Editor } from "../app/WorkspaceContext";
 import type { Driver, FinanceEntry, Truck } from "../domain/models";
 import {
   categories,
+  financeDocumentTypes,
   driverSchema,
   entrySchema,
   truckSchema,
@@ -80,6 +81,9 @@ export function EntityEditor({
         });
         await execute({ type: "save-driver", value: driver });
       } else {
+        const selectedDocumentType = text(data, "documentType");
+        if (!value && !selectedDocumentType)
+          throw new Error("Selecciona el tipo de documento del movimiento.");
         const entry = entrySchema.parse({
           id,
           kind,
@@ -90,6 +94,11 @@ export function EntityEditor({
           category: text(data, "category"),
           paymentStatus: text(data, "paymentStatus"),
           distanceKm: kind === "income" ? integer(data, "distanceKm") : 0,
+          ...(selectedDocumentType
+            ? { documentType: selectedDocumentType }
+            : (value as FinanceEntry | undefined)?.documentType === null
+              ? { documentType: null }
+              : {}),
         });
         await execute({ type: "save-entry", value: entry });
       }
@@ -213,6 +222,31 @@ export function EntityEditor({
                       </option>
                     ))}
                 </select>
+              </Field>
+              <Field label="Tipo de documento">
+                <select
+                  name="documentType"
+                  required={
+                    !value || Boolean((value as FinanceEntry).documentType)
+                  }
+                  defaultValue={
+                    value
+                      ? ((value as FinanceEntry).documentType ?? "")
+                      : "invoice"
+                  }
+                >
+                  {value && !(value as FinanceEntry).documentType && (
+                    <option value="">Sin clasificar</option>
+                  )}
+                  {Object.entries(financeDocumentTypes).map(([key, name]) => (
+                    <option key={key} value={key}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
+                <small>
+                  Los archivos se adjuntan desde el movimiento guardado.
+                </small>
               </Field>
               <Field
                 label={kind === "income" ? "Estado de cobro" : "Estado de pago"}

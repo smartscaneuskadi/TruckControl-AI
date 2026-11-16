@@ -181,7 +181,7 @@ test("an old MFA actor refresh cannot replace another baseline account after the
     [
       "tc_company_fiscal_control",
       "tc_tyre_page",
-      "tc_document_page",
+      "tc_document_page_v2",
       "tc_list_records",
     ].map((name) =>
       page.waitForResponse(
