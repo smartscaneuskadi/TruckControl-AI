@@ -18717,5 +18717,456 @@
     "contexts": [
       "src/pages/Billing.tsx"
     ]
+  },
+  {
+    "key": "El proveedor ha rechazado el acceso. Revisa el usuario y la contraseña del buzón o de aplicación.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:message"
+    ]
+  },
+  {
+    "key": "No se ha conectado el buzón. Comprueba los servidores IMAP/SMTP y la contraseña de aplicación. No se ha guardado tu contraseña.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:message"
+    ]
+  },
+  {
+    "key": "Conecta las cuentas que quieras utilizar y elige tu buzón.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Añadir correo",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Añadir una cuenta de correo",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Escribe tu correo y elige cómo quieres conectarlo. La descarga de facturas por IA se autoriza después, dentro de cada cuenta.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Proveedor de correo",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Gmail / Google Workspace",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Elige esa misma cuenta en la ventana oficial de Google. Autorizar el correo no activa la IA ni descarga facturas.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "La conexión de Google aún no está configurada para esta aplicación.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprobando la conexión de Google…",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:message"
+    ]
+  },
+  {
+    "key": "Configuración avanzada del proveedor",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Usa una contraseña de aplicación si tu proveedor la requiere.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Usa la contraseña de este buzón, que puede ser distinta de la del panel de Porkbun.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Las cuentas y credenciales permanecen temporalmente en memoria y se desconectan al salir, cambiar de empresa o recargar. Los mensajes no se guardan en copias offline.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Microsoft 365/Outlook necesita una conexión OAuth compatible con su proveedor.",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "Volver al buzón conectado",
+    "contexts": [
+      "src/pages/MailWorkspace.tsx:text"
+    ]
+  },
+  {
+    "key": "El proveedor ha confirmado el envío.",
+    "contexts": [
+      "src/pages/PersonalMail.tsx:message"
+    ]
+  },
+  {
+    "key": "CUENTA CONECTADA",
+    "contexts": [
+      "src/pages/PersonalMail.tsx:text"
+    ]
+  },
+  {
+    "key": "Gmail / Google Workspace. Autoriza lectura, redacción y gestión de mensajes. No se solicita permiso para borrar definitivamente. La descarga de facturas por IA se autoriza después desde este buzón.",
+    "contexts": [
+      "src/pages/PersonalMail.tsx:text"
+    ]
+  },
+  {
+    "key": "Puedes conectar otras cuentas desde Añadir correo en el mismo apartado Correo.",
+    "contexts": [
+      "src/pages/PersonalMail.tsx:text"
+    ]
+  },
+  {
+    "key": "La sesión de este correo ha caducado o se ha retirado su permiso. Puedes volver a conectar esta cuenta; las demás siguen abiertas.",
+    "contexts": [
+      "src/app/PersonalMailProvider.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprueba la dirección de correo que quieres conectar.",
+    "contexts": [
+      "src/app/PersonalMailProvider.tsx:message"
+    ]
+  },
+  {
+    "key": "La cuenta autorizada no coincide con el correo escrito. Elige esa cuenta en Google o cambia la dirección antes de conectar.",
+    "contexts": [
+      "src/app/PersonalMailProvider.tsx:message"
+    ]
+  },
+  {
+    "key": "La sesión del correo o de TruckControl ha cambiado. Vuelve a seleccionar una cuenta conectada.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Tu cuenta necesita permiso de importación, IA habilitada y una empresa activa.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Confirma la autorización para esta cuenta y este período antes de descargar.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Elige un período válido dentro de los últimos 12 meses.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "El buzón autorizado no coincide con la cuenta seleccionada. No se ha importado desde otra cuenta.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La importación desde esta cuenta aún no está disponible. Tu correo sigue disponible.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Se ha alcanzado el límite de IA o no se puede verificar el presupuesto. No se repetirá la lectura automáticamente.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "No se puede comprobar el servicio de importación. Comprueba la conexión y vuelve a abrir esta opción.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "No se ha podido confirmar el resultado. Puede haber originales guardados: revisa las facturas de la empresa antes de iniciar otra descarga.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "fecha válida",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "El período se ha actualizado al día de hoy. Revisa las fechas y vuelve a confirmar la autorización.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Disponible con permiso de importación e IA habilitada para esta empresa.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Descargar facturas del correo por IA",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:text",
+      "src/components/ConnectedMailboxInvoices.tsx:title"
+    ]
+  },
+  {
+    "key": "Cuenta y empresa autorizadas",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Correo seleccionado",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Empresa de destino",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Elige qué correos recibidos autorizas a consultar. Solo se descargarán adjuntos candidatos a factura dentro del período confirmado.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Al autorizar esta descarga, TruckControl enviará temporalmente al backend el permiso de acceso de esta cuenta para Gmail, o los datos de conexión para IMAP. Se transmitirán por HTTPS y no se guardarán como credenciales de importación.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Los originales candidatos se guardarán en el almacenamiento privado de esta empresa y podrán ser analizados por el proveedor de IA autorizado. Revisa los datos antes de registrar gastos.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La autorización se aplica a esta descarga y a los lotes que continúes con la misma cuenta y fechas. Puedes volver a ejecutar la descarga para incluir nuevos correos; no se activa una tarea en segundo plano.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Privacidad de la descarga de facturas por IA",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Autorizo la descarga de facturas y su análisis IA desde el correo seleccionado, para esta empresa y únicamente del {0} al {1}.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprobando permiso y disponibilidad de la importación…",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La lectura IA no está habilitada para esta empresa. El administrador puede revisar sus permisos y límites.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Conecta a internet para descargar facturas del correo.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Resultado de la descarga de facturas",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Resultado de este lote",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Originales guardados",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Facturas analizadas",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Omitidos o ya guardados",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Quedan correos o adjuntos por comprobar. Puedes continuar otro lote con esta autorización.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Este recorrido del período ha terminado. Los originales guardados están disponibles para revisión.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Algunos documentos necesitan revisión. Comprueba la bandeja antes de repetir; los originales ya guardados se conservan.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Ver facturas de la empresa",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:text"
+    ]
+  },
+  {
+    "key": "Se han detenido las siguientes solicitudes. El lote ya recibido por el servidor puede finalizar; comprueba las facturas guardadas antes de iniciar otro.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Detener descarga",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:text"
+    ]
+  },
+  {
+    "key": "Continuar descarga autorizada",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Autorizar y descargar facturas",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Descargando el lote autorizado. Los originales se conservarán para revisión y no se registrarán gastos automáticamente.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Desconectar este correo retira el acceso para próximas solicitudes. Los documentos ya guardados permanecen en la empresa.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Facturas de esta empresa",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:title"
+    ]
+  },
+  {
+    "key": "La contraseña se mantiene en memoria del navegador durante la conexión, como máximo una hora, y en memoria temporal del servidor durante cada petición. El uso ordinario de este conector no guarda contraseñas ni contenido del correo en la base de datos, registros de aplicación, WebStorage o copias offline, ni lo envía a la IA. La opción de descargar facturas requiere una autorización independiente y explícita antes de guardar o analizar sus adjuntos.",
+    "contexts": [
+      "src/domain/mail-privacy.ts:message"
+    ]
+  },
+  {
+    "key": "Gmail con Google utiliza su autorización OAuth y llama a Google directamente desde el navegador para el uso ordinario del correo. Gmail con contraseña de aplicación utiliza el recorrido IMAP/SMTP descrito aquí. Dentro de una cuenta conectada puedes autorizar por separado una descarga de facturas por IA, limitada a ese buzón, empresa y período. Conectar una cuenta no inicia esa descarga.",
+    "contexts": [
+      "src/domain/mail-privacy.ts:message"
+    ]
+  },
+  {
+    "key": "Correo es opcional. Tú eliges las cuentas Gmail o Google Workspace y autorizas directamente a Google a leer, enviar y gestionar sus mensajes, sin borrado definitivo. Para el uso ordinario del correo, los mensajes, adjuntos consultados y permisos temporales se mantienen en la memoria del navegador y se intercambian directamente con Google; no se envían al backend de TruckControl, al administrador ni a la IA. No se guardan en las copias offline. La descarga opcional de facturas tiene una autorización independiente descrita a continuación. La sesión se elimina al salir, recargar, cambiar de usuario o empresa o caducar. Los borradores no se guardan automáticamente. Puedes retirar el permiso en la configuración de seguridad de tu cuenta Google.",
+    "contexts": [
+      "src/domain/legal.ts:message"
+    ]
+  },
+  {
+    "key": "Descarga de facturas desde una cuenta conectada",
+    "contexts": [
+      "src/domain/legal.ts:message"
+    ]
+  },
+  {
+    "key": "Información complementaria de 16/11/2026. Al pulsar Descargar facturas del correo por IA y confirmar la autorización para un buzón, empresa y período, solicitas un lote acotado de importación. El permiso temporal OAuth de esa cuenta Gmail, o los datos de conexión IMAP, pasan por HTTPS al backend de TruckControl en Supabase exclusivamente para consultar ese buzón y período. Se conservan solo en memoria durante la petición y no se guardan como credenciales de importación. Los originales candidatos autorizados se guardan en el almacenamiento privado de la empresa y pueden enviarse al proveedor IA habilitado para extraer propuestas que debes revisar antes de registrar gastos. Se comprueba la fecha de recepción: treinta días por defecto, máximo doce meses, sin días futuros. Puedes continuar lotes o solicitar nuevas descargas explícitas para incorporar correos nuevos. No se activa una tarea desatendida ni se conserva una autorización duradera de acceso al buzón. Cambiar de cuenta o período requiere confirmar su autorización; desconectar impide próximas peticiones, aunque un lote ya recibido por el servidor puede completarse. Los originales ya guardados se conservan conforme a los permisos y plazos de la empresa. Esta autorización adicional no sustituye los consentimientos contractuales anteriores.",
+    "contexts": [
+      "src/domain/legal.ts:message"
+    ]
+  },
+  {
+    "key": "Los datos de Correo se utilizan únicamente para las funciones de correo e importación que solicitas y autorizas. No se venden ni se utilizan para publicidad, perfiles publicitarios o entrenamiento de modelos generales de inteligencia artificial. El uso de información recibida de las API de Google se ajustará a la Política de datos de usuario de los servicios de las API de Google, incluidos sus requisitos de uso limitado (Limited Use). Solo los originales que autorices para la descarga de facturas o su recepción se incorporan a tu empresa y su lectura IA exige su propia habilitación y consentimiento.",
+    "contexts": [
+      "src/domain/legal.ts:message"
+    ]
+  },
+  {
+    "key": "Gestionar mis cuentas de correo",
+    "contexts": [
+      "src/pages/Settings.tsx:text"
+    ]
+  },
+  {
+    "key": "Continuar borrador",
+    "contexts": [
+      "src/pages/PersonalMail.tsx:message"
+    ]
+  },
+  {
+    "key": "Minimizar borrador",
+    "contexts": [
+      "src/pages/PersonalMail.tsx:text"
+    ]
+  },
+  {
+    "key": "Revisa cada documento antes de registrar el gasto.",
+    "contexts": [
+      "src/pages/Invoices.tsx:description"
+    ]
   }
 ]

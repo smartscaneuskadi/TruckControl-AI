@@ -37,7 +37,7 @@ export function LegalPage({ document }: { document: LegalDocument }) {
         </p>
         <h1>{content.title}</h1>
         {content.sections.map((s) => (
-          <section key={s.title} style={{ marginTop: 24 }}>
+          <section key={s.title} id={s.id} style={{ marginTop: 24 }}>
             <h2>{s.title}</h2>
             <p>{s.text}</p>
           </section>

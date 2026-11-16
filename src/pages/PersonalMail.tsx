@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
+import type { FormEvent, ReactNode } from "react";
 import {
   Archive,
   ArrowLeft,
@@ -75,12 +75,30 @@ export interface ConnectedMailbox {
 }
 export function ConnectedMailView({
   connection,
+  toolbarAction,
+  active = true,
 }: {
   connection: ConnectedMailbox;
+  toolbarAction?: ReactNode;
+  active?: boolean;
 }) {
-  return <PersonalMailView connection={connection} />;
+  return (
+    <PersonalMailView
+      connection={connection}
+      toolbarAction={toolbarAction}
+      active={active}
+    />
+  );
 }
-function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
+function PersonalMailView({
+  connection,
+  toolbarAction,
+  active = true,
+}: {
+  connection?: ConnectedMailbox;
+  toolbarAction?: ReactNode;
+  active?: boolean;
+}) {
   const personal = usePersonalMail();
   const account = connection
     ? {
@@ -108,6 +126,7 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
     [notice, setNotice] = useState(""),
     [revision, setRevision] = useState(0);
   const [draft, setDraft] = useState<MailDraft | null>(null),
+    [draftOpen, setDraftOpen] = useState(false),
     [confirmSend, setConfirmSend] = useState(false),
     [uncertain, setUncertain] = useState(false),
     [trash, setTrash] = useState(false),
@@ -116,7 +135,7 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
     loadGeneration = useRef(0),
     mounted = useRef(true),
     readController = useRef<AbortController | null>(null);
-  const online = !account.cloud || account.online;
+  const online = active && (!account.cloud || account.online);
   useEffect(() => {
     mounted.current = true;
     return () => {
@@ -133,6 +152,7 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
     setSelected(null);
     setNext(null);
     setDraft(null);
+    setDraftOpen(false);
     setConfirmSend(false);
     setUncertain(false);
     readController.current?.abort();
@@ -239,6 +259,7 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
     )
       return;
     setDraft(value);
+    setDraftOpen(true);
     setConfirmSend(false);
     setUncertain(false);
     setError("");
@@ -263,10 +284,13 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
         await mailbox.send(email, current, id);
         if (mounted.current) {
           setDraft(null);
+          setDraftOpen(false);
           setConfirmSend(false);
           setNotice(
             account.cloud
-              ? "Google ha confirmado el envío."
+              ? connection
+                ? "El proveedor ha confirmado el envío."
+                : "Google ha confirmado el envío."
               : "Mensaje ficticio guardado en Enviados. No se ha enviado ningún correo.",
           );
           setRevision((n) => n + 1);
@@ -292,21 +316,43 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
           Volver a Correo
         </Link>
       )}
-      <PageHeading
-        eyebrow="COMUNICACIONES"
-        title={connection ? "Buzón conectado" : "Mi correo"}
-        description="Tu buzón personal. Tú eliges la cuenta y autorizas el acceso ante tu proveedor."
-      >
-        {mailbox && (
-          <Button
-            icon={Send}
-            disabled={busy || !online}
-            onClick={() => compose()}
-          >
-            Redactar
-          </Button>
-        )}
-      </PageHeading>
+      {connection ? (
+        <div className="page-heading">
+          <div>
+            <p className="eyebrow">CUENTA CONECTADA</p>
+            <h2>Buzón conectado</h2>
+          </div>
+          <div className="inline-actions">
+            {toolbarAction}
+            {mailbox && (
+              <Button
+                icon={Send}
+                disabled={busy || !online}
+                onClick={() => (draft ? setDraftOpen(true) : compose())}
+              >
+                {draft ? "Continuar borrador" : "Redactar"}
+              </Button>
+            )}
+          </div>
+        </div>
+      ) : (
+        <PageHeading
+          eyebrow="COMUNICACIONES"
+          title="Mi correo"
+          description="Tu buzón personal. Tú eliges la cuenta y autorizas el acceso ante tu proveedor."
+        >
+          {toolbarAction}
+          {mailbox && (
+            <Button
+              icon={Send}
+              disabled={busy || !online}
+              onClick={() => (draft ? setDraftOpen(true) : compose())}
+            >
+              {draft ? "Continuar borrador" : "Redactar"}
+            </Button>
+          )}
+        </PageHeading>
+      )}
       <section
         className="card personal-mail-account"
         aria-label="Conexión de mi correo"
@@ -348,7 +394,8 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
                 <p>
                   Gmail / Google Workspace. Autoriza lectura, redacción y
                   gestión de mensajes. No se solicita permiso para borrar
-                  definitivamente. La IA permanece separada.
+                  definitivamente. La descarga de facturas por IA se autoriza
+                  después desde este buzón.
                 </p>
                 <Button
                   disabled={account.connecting || !online}
@@ -402,9 +449,8 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
         )}
         {account.cloud && !connection && (
           <p className="personal-mail-privacy">
-            Outlook, Yahoo y otros servidores todavía no tienen conexión directa
-            en este apartado. El reenvío de facturas existente sigue disponible
-            por separado.
+            Puedes conectar otras cuentas desde Añadir correo en el mismo
+            apartado Correo.
           </p>
         )}
       </section>
@@ -697,7 +743,7 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
           </div>
         </section>
       )}
-      {draft && (
+      {draft && draftOpen && active && (
         <Modal
           title={confirmSend ? "Confirmar envío" : "Redactar correo"}
           onClose={() => {
@@ -798,6 +844,13 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
               )}
               <div className="full inline-actions">
                 <Button
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => setDraftOpen(false)}
+                >
+                  Minimizar borrador
+                </Button>
+                <Button
                   type="submit"
                   icon={Send}
                   disabled={busy || uncertain || !online}
@@ -814,7 +867,7 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
           )}
         </Modal>
       )}
-      {trash && selected && (
+      {trash && selected && active && (
         <Modal
           title="Mover a papelera"
           onClose={() => {
@@ -843,7 +896,7 @@ function PersonalMailView({ connection }: { connection?: ConnectedMailbox }) {
           </div>
         </Modal>
       )}
-      {disconnect && (
+      {disconnect && active && (
         <Modal
           title="Salir de mi correo"
           onClose={() => {

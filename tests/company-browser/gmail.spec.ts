@@ -356,7 +356,7 @@ test("un retorno malformado o desconocido no expone su contenido ni envía ticke
   const calls = await fixture(page);
   await signIn(page);
   await page.getByLabel("Empresa activa").selectOption(orgA2);
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   await expect(
     page.getByRole("button", {
       name: "Conectar Gmail de esta empresa",
@@ -393,7 +393,7 @@ test("el retorno de Google en una ventana ya abierta finaliza una sola vez", asy
   const calls = await fixture(page);
   await signIn(page);
   await page.getByLabel("Empresa activa").selectOption(orgA2);
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   await expect(
     page.getByRole("button", {
       name: "Conectar Gmail de esta empresa",
@@ -553,7 +553,7 @@ for (const theme of ["light", "cockpit"] as const) {
     });
     await signIn(page);
     await page.getByLabel("Empresa activa").selectOption(orgA2);
-    await page.goto("/#/invoices");
+    await page.goto("/#/invoices?legacy=company-gmail");
     await expect(page.getByText("Gmail vinculado", { exact: true })).toBeVisible();
     await chooseGmailTheme(page, theme);
     const card = page.locator(".document-card").filter({
@@ -625,7 +625,7 @@ for (const theme of ["light", "cockpit"] as const) {
     });
     await signIn(page);
     await page.getByLabel("Empresa activa").selectOption(orgA2);
-    await page.goto("/#/invoices");
+    await page.goto("/#/invoices?legacy=company-gmail");
     await expect(page.getByText("Gmail vinculado", { exact: true })).toBeVisible();
     await chooseGmailTheme(page, theme);
     const syncCalls = () => calls.filter((c) => c.data?.action === "sync_period");
@@ -728,7 +728,7 @@ test("un permiso retirado se muestra por renovar y no como Gmail vinculado", asy
   const calls = await fixture(page, true, { connectionState: "reauthorize" });
   await signIn(page);
   await page.getByLabel("Empresa activa").selectOption(orgA2);
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   await expect(
     page.getByText("Renovar permiso de Gmail", { exact: true }),
   ).toBeVisible();
@@ -750,7 +750,7 @@ test("un fallo al consultar el vínculo no se presenta como Gmail sin conectar",
   const calls = await fixture(page, true, { connectionReadFails: true });
   await signIn(page);
   await page.getByLabel("Empresa activa").selectOption(orgA2);
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   await expect(
     page.getByText("No se ha podido cargar la bandeja de esta empresa.", {
       exact: true,
@@ -938,7 +938,7 @@ for (const failure of [
     });
     await signIn(page);
     await page.getByLabel("Empresa activa").selectOption(orgA2);
-    await page.goto("/#/invoices");
+    await page.goto("/#/invoices?legacy=company-gmail");
     await expect(page.getByText("Gmail vinculado", { exact: true })).toBeVisible();
     const readsBefore = calls.filter((c) => c.path === "/rest/v1/rpc/get_company_gmail").length;
     const startImport = async () => {
@@ -991,7 +991,7 @@ test("una preferencia de otra empresa no concede acceso al cambiar de usuario", 
   expect(
     await page.getByLabel("Empresa activa").locator("option").count(),
   ).toBe(1);
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   await expect(page.locator("main")).toContainText("Empresa ficticia B");
   await expect(page.locator("body")).not.toContainText("Empresa ficticia A2");
   expect(

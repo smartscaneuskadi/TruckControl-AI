@@ -1,0 +1,131 @@
+{
+  "recorded_at": "2026-11-16T09:52:57.160725+00:00",
+  "status": "published_and_verified",
+  "scope": "Billing categories and independent private truck, driver and saved financial entry documents",
+  "url": "https://truckcontrolai.com",
+  "app_version": "0.5.30-rc.1",
+  "sites": {
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "version": 49,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0a57d381ffd081918f6d663aef093740",
+    "source_commit": "5f44a164700ea4cc803bb7cf480b664cce68af43",
+    "deployment_id": "appgdep_6aface4569a48191ab5bd6c0008d40d2",
+    "deployment_status": "succeeded",
+    "deployed_at": "2026-11-16T09:35:15.877647+00:00",
+    "normalized_archive_sha256": "a5dbdec2b9a48c2bdacb821fc9b3de24fbdaf2121e7aa5b615dbb1af42938df2",
+    "source_branch": "deploy/billing-attachments-production-20261116",
+    "previous_public47_preserved": true,
+    "recovery48_saved_only": true,
+    "stable_demo6_preserved": true
+  },
+  "github": {
+    "pr": 153,
+    "head": "4e08dfe546446fe1e462b09b3f8f8ee5cf34a0bd",
+    "merge_commit": "3c1fe69486fe5eee5d15059de79f2f10ed87c5bb",
+    "pr_merged": true,
+    "feature_quality": [
+      43836996940,
+      43837006975
+    ],
+    "production_quality": 43837612468,
+    "all_final_quality_conclusions": "success",
+    "production_postgres": 43837612404,
+    "production_package": 43837612560,
+    "android": 43837006472,
+    "candidate_archive": 43837006721
+  },
+  "package": {
+    "artifact_id": 14212230135,
+    "github_zip_sha256": "4e6a07e04199b675baba76d5c58b470832b90bf4affd1409bdfe7d5ff7369728",
+    "archive_sha256": "9abe5224e92d6a15b4feb6104c8289f73818fbf2fec26c3ae0fc29a1e522a01e",
+    "archive_bytes": 1558101,
+    "package_proof_sha256": "79a9e8f43065f3c1fdc6877db2f99716ded454de88dcb2da3197582e2026554a",
+    "dist_files": 35,
+    "local_build_used": false
+  },
+  "ci_per_execution": {
+    "unit_sql": 2035,
+    "python": 154,
+    "demo_browser": 94,
+    "company_browser": 62,
+    "saas_browser": 274,
+    "mfa_browser": 98,
+    "manual_full_browser": 44,
+    "billing_attachment_language_browser": 68,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "previous_public_profiles": 6,
+    "retained_original_tests": 64,
+    "retained_file_hashes": 11
+  },
+  "postgres": {
+    "checks": 524,
+    "real_contentions": 45,
+    "logical_restores": 2,
+    "billing_checks_included_not_additional": 42,
+    "billing_contentions_included_not_additional": 2,
+    "managed_restore": false
+  },
+  "supabase": {
+    "project_id": "kkkemaycedexymrpaqtp",
+    "migrations": 76,
+    "latest": "20261116085827_billing_document_attachments",
+    "sql_sha256": "1e93388efd2a890d73a1ca0839a27ff4fe39008c10f019d23e40d10c34bebfd3",
+    "applied_once": true,
+    "source_bytes_equal_native_history": true,
+    "private_storage": true,
+    "rls_preserved_and_extended": true,
+    "existing_data_preserved": true,
+    "registration_open": true,
+    "enforce_access": true,
+    "payments_enabled": false,
+    "security_warnings": 0,
+    "security_errors": 0,
+    "intentional_existing_info": 3
+  },
+  "post_publication": {
+    "browser": 68,
+    "unexpected": 0,
+    "flaky": 0,
+    "skipped": 0,
+    "https_file_hashes": 105,
+    "pwa_profiles": 6,
+    "health_probes": 5,
+    "native_read_rpc_anonymous_denials": 2,
+    "every_browser_case_pinned_to_source_and_version": true,
+    "specification_bytes_unchanged": true,
+    "generic_public_origin_passthrough": false,
+    "unmatched_private_authenticated_network_allowed": false,
+    "real_customer_data_read": false,
+    "provider_calls": 0,
+    "model_calls": 0,
+    "payment_calls": 0
+  },
+  "preserved_diagnostics": [
+    "Initial unit backup endpoint fixture adaptation; original negative assertions retained.",
+    "Axe upload queue role corrected and initial48pass4fail retained.",
+    "Controlled section labels explicitly localized; original52pass12languagefail retained.",
+    "Parallel local timeout: original273pass1timeout retained, unchanged quiet case passes2/2.",
+    "Initial real PostgreSQL seed phone collision corrected only in the new fixture.",
+    "Historical demo test: selector aria-label restored; untouched original2/2 then full94 pass.",
+    "First HTTPS inventory102/105 rejected a known callback canonical redirect before requesting; exact callback alias added only in the external verifier, same bytes/hash, final105/105 pass."
+  ],
+  "costs": {
+    "new_purchases_initiated": 0,
+    "new_recurring_commitments": 0,
+    "new_model_calls": 0,
+    "approved_total_eur": 200,
+    "historical_balance": "not_reconciled",
+    "ai_monthly_limit_usd_unchanged": 10,
+    "ai_calls_per_company_unchanged": 100
+  },
+  "scope_limits": [
+    "Browser uses published application and installed SDK with synthetic private HTTP and blocked unmatched traffic; this does not attest a managed account sign-in or actual company upload.",
+    "Android and Windows browser profiles are emulated; no physical-device acceptance claimed.",
+    "Native wrapper9 compiles debug APK and unsigned AAB; no commercial signing or Google Play publication in this delivery.",
+    "Logical restores are isolated; managed Auth/Storage/Vault restoration is not claimed.",
+    "No new real Gmail/model/payment/fiscal acceptance; preserve task37 earlier verified connections without repeating consumption."
+  ],
+  "owner_operating_model": "Owner handles legal responsibility, manual sales, subscription invoicing after notice and physical tests; automated charges remain off.",
+  "global_commercial_completion_claimed": false
+}

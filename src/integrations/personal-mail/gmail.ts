@@ -3,6 +3,8 @@ import {
   base64url,
   fromBase64,
 } from "../../../supabase/functions/_shared/invoice";
+import { importFromConnectedMailbox, ConnectedInvoiceImportError } from "./invoice-import";
+import type { ConnectedInvoiceImportRequest, ConnectedInvoiceImportResult } from "./invoice-import";
 
 export const personalMailScope = "https://www.googleapis.com/auth/gmail.modify";
 export const mailFolders = {
@@ -65,6 +67,10 @@ export interface Mailbox {
     signal?: AbortSignal,
   ): Promise<Uint8Array>;
   send(from: string, draft: MailDraft, requestId: string): Promise<void>;
+  importInvoices?(
+    request: ConnectedInvoiceImportRequest,
+    signal?: AbortSignal,
+  ): Promise<ConnectedInvoiceImportResult>;
 }
 export class MailError extends Error {
   constructor(
@@ -384,6 +390,18 @@ export function createGmailMailbox(
     return `messages/${id}`;
   };
   return {
+    async importInvoices(request, signal) {
+      if (request.provider !== "gmail") throw new ConnectedInvoiceImportError("consent_required");
+      const active = AbortSignal.any([
+        ...(sessionSignal ? [sessionSignal] : []),
+        ...(signal ? [signal] : []),
+        AbortSignal.timeout(150000),
+      ]);
+      active.throwIfAborted();
+      const result = await importFromConnectedMailbox(request, { gmail_access_token: token }, active);
+      active.throwIfAborted();
+      return result;
+    },
     async profile(signal) {
       const data = await api("profile", {}, signal);
       if (!mailAddress(data.emailAddress ?? ""))

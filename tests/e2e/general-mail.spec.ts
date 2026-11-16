@@ -4,7 +4,7 @@ import AxeBuilder from "@axe-core/playwright";
 test("un correo ficticio espera revisión y no duplica su gasto después de recargar", async ({
   page,
 }) => {
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   const before = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("truckcontrol.demo.v1")!),
   );
@@ -65,7 +65,7 @@ test("un correo ficticio espera revisión y no duplica su gasto después de reca
 test("cancelar la previsualización conserva los datos y Gmail sigue disponible", async ({
   page,
 }) => {
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   const before = await page.evaluate(() =>
     localStorage.getItem("truckcontrol.demo.v1"),
   );
@@ -88,7 +88,7 @@ test("cancelar la previsualización conserva los datos y Gmail sigue disponible"
 test("la recepción general y la previsualización son accesibles en Android y Windows", async ({
   page,
 }, info) => {
-  await page.goto("/#/invoices");
+  await page.goto("/#/invoices?legacy=company-gmail");
   await page.getByRole("button", { name: "Probar correo ficticio" }).click();
   await expect(
     page.getByRole("heading", { name: "Adjuntos listos para revisar" }),

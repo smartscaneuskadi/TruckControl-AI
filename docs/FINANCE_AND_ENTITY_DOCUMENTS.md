@@ -1,6 +1,6 @@
 # Facturación y documentos por ficha
 
-Estado: candidata `0.5.30-rc.1` en verificación; la publicación vigente sigue siendo Sites47 / `0.5.29-rc.1`. No presentar estas funciones como publicadas hasta actualizar el recibo de entrega.
+Publicada y verificada: **Sites49 / `0.5.30-rc.1`**, https://truckcontrolai.com. Si la PWA ofrece «Actualizar», aplica el aviso para cargar las nuevas fichas. Cada persona entra con su cuenta de empresa autorizada.
 
 ## Uso
 
@@ -34,6 +34,6 @@ Si se elimina un movimiento con los permisos requeridos, sus originales se conse
 
 ## Verificación
 
-La entrega añade pruebas de clasificación y céntimos, conservación de datos históricos, copias, SDK documental fijado a sesión y recorridos de navegador en Fleet Light/Fleet Cockpit con perfiles Windows/Android emulados. Los contratos SQL comprueban aislamiento, RLS, roles, concurrencia y compatibilidad de clientes. La CI conserva las 64 pruebas iniciales, los 11 hashes retenidos y los controles anteriores. La candidata supera 108 pruebas focales finales, 64 recorridos completos de navegador más cuatro casos nuevos de revocación, y 154 pruebas Python. La regresión de 274 casos ha completado 273 y un límite de tiempo en correo; ese caso supera su repetición aislada en Windows y Android, sin cambiar aserciones. Los resultados de CI y PostgreSQL real siguen pendientes y se registrarán en el recibo. Un build correcto no equivale a publicación.
+La entrega añade pruebas de clasificación y céntimos, conservación de datos históricos, copias, SDK documental fijado a sesión y recorridos de navegador en Fleet Light/Fleet Cockpit con perfiles Windows/Android emulados. Los contratos SQL comprueban aislamiento, RLS, roles, concurrencia y compatibilidad de clientes. La CI conserva las 64 pruebas iniciales, los 11 hashes retenidos y los controles anteriores. La fuente final supera2035pruebas unitarias/SQL y154Python, la regresiónSaaS274/274 y68recorridos de adjuntos/idiomas, además de las suites anteriores. PostgreSQL real:524comprobaciones,45contenciones y2restauraciones aisladas. Después de desplegar se verificaron68recorridos,105hashes HTTPS,6perfilesPWA y5controles de salud. El recibo de publicación delimita la emulación y el transporte privado ficticio; no son pruebas de dispositivos físicos o proveedores.
 
 Ejecutar `npm run test:e2e:billing-attachments` prepara una compilación y resultados en un directorio temporal aislado. No usa buzones, pagos, modelos IA ni datos empresariales reales. Los límites IA y los cobros automáticos no cambian. Las pruebas de navegador no se presentan como dispositivos físicos.

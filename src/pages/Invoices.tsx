@@ -66,7 +66,7 @@ function gmailCallbackMessage(code: string) {
       return "No se ha completado la autorización de Gmail. Comprueba el estado y, si hace falta, inicia una nueva autorización desde esta empresa.";
   }
 }
-export function Invoices() {
+export function Invoices({ reviewOnly = false, refreshKey = 0, embedded = false }: { reviewOnly?: boolean; refreshKey?: number; embedded?: boolean } = {}) {
   const subscription = useSubscription();
   const access = useCompany();
   const { snapshot, execute, refresh, notify } = useFleet();
@@ -128,6 +128,7 @@ export function Invoices() {
   }, [org, access.user?.id]);
   const [callback, setCallback] = useState(readGmailCallback);
   useEffect(() => {
+    if (reviewOnly) return;
     const capture = () => {
       const next = readGmailCallback();
       if (!next.ticket && !next.error) return;
@@ -148,7 +149,7 @@ export function Invoices() {
     window.addEventListener("hashchange", capture);
     capture();
     return () => window.removeEventListener("hashchange", capture);
-  }, []);
+  }, [reviewOnly]);
   const completion = useRef<{
     ticket: string;
     settled: boolean;
@@ -158,6 +159,7 @@ export function Invoices() {
     }>;
   } | null>(null);
   useEffect(() => {
+    if (reviewOnly) return;
     if (!callback.ticket && !callback.error) return;
     if (callback.error) {
       setCallbackError(gmailCallbackMessage(callback.error));
@@ -232,7 +234,7 @@ export function Invoices() {
     return () => {
       active = false;
     };
-  }, [callback, cloud, client, org, notify]);
+  }, [callback, cloud, client, org, notify, reviewOnly]);
   useEffect(() => {
     if (!cloud || !client) return;
     let active = true;
@@ -243,9 +245,9 @@ export function Invoices() {
     setConnection(null);
     setStatus(null);
     void Promise.all([
-      client.rpc("get_company_gmail", { p_organization_id: org }),
+      reviewOnly ? Promise.resolve({ data: null, error: null }) : client.rpc("get_company_gmail", { p_organization_id: org }),
       loadCompanyInvoices(client, org, controller.signal),
-      client.functions.invoke<IntegrationStatus>("company-gmail", {
+      reviewOnly ? Promise.resolve({ data: null, error: null }) : client.functions.invoke<IntegrationStatus>("company-gmail", {
         body: { action: "status", organization_id: org },
       }),
     ])
@@ -273,7 +275,7 @@ export function Invoices() {
       active = false;
       controller.abort();
     };
-  }, [cloud, client, org, revision]);
+  }, [cloud, client, org, revision, reviewOnly, refreshKey]);
   async function gmailAction(
     action: "start" | "sync" | "disconnect",
     selectedPeriod?: ReceivedPeriod,
@@ -604,6 +606,12 @@ export function Invoices() {
   }
   return (
     <>
+      {reviewOnly && !embedded && <>
+        <Link className="button secondary" to="/mailbox">Volver a Correo</Link>
+        <PageHeading eyebrow="BANDEJA DE FACTURAS" title="Facturas de esta empresa"
+          description="Revisa cada documento antes de registrar el gasto." />
+      </>}
+      {!reviewOnly && <>
       <Link className="button secondary" to="/mailbox">
         Volver a Correo
       </Link>
@@ -820,6 +828,7 @@ export function Invoices() {
         )}
       </section>
       <GmailConnectionGuide />
+      </>}
       {error && (
         <p role="alert" className="form-error">
           {error}
