@@ -46,7 +46,8 @@
     "transport_unit": 6,
     "independent_adversarial_unit": 44,
     "isolated_sql_integration": 6,
-    "full_check_and_ci": "pending_at_recording"
+    "full_check_and_ci": "Full npm run check:2146unitSQL/168files+build PASS; exact-head CI pending",
+    "full_check_fixed_theme": "PASS2146/168"
   },
   "backend": {
     "action": "import_connected_mailbox",
@@ -68,7 +69,8 @@
     "Deno subdirectory/manual Node-types resolution corrected by root-scope no-config plus exact importmap; strict check then exposed undefined IMAPsearch, now fails closed and is tested",
     "InitialSQLfixture changed content under immutable messageID; SQLdenied correctly; fixture uses new identity and original negative is a separate sixth test",
     "Generic legacy URL adaptation briefly touched protected company-demo test; it was restored byte-for-byte before commit,11hashespass; demo retains original route",
-    "Earlier local client fixtures used prohibited .invalid transport host; production host guard unchanged and fixtures use reserved example.com with allHTTPintercepted"
+    "Earlier local client fixtures used prohibited .invalid transport host; production host guard unchanged and fixtures use reserved example.com with allHTTPintercepted",
+    "Final pre-adaptation CI retained270/274 and four old mailbox navigation selectors failed after the intentional unified form change. Only those two existing cases now select a provider, open advanced fields, use the actual review route and verify the Google-reset form after logout; all consent, no-storage, two-mailbox, send and late-callback assertions remain. Four focal Windows/Android cases pass unchanged runtime. The alternate local preview-port diagnostic correctly failed the origin guard; final checks use the original4194 origin without changing the guard."
   ],
   "costs": {
     "new_purchases": 0,
@@ -91,6 +93,12 @@
     "new_browser_skipped": 0,
     "focal_subset_not_additional": 4,
     "full_new_head_ci": "pending",
-    "diagnostic_local_disk": "Own traces moved with hash equality to/tmp and symlinked; no code/data/backups deleted."
+    "diagnostic_local_disk": "Own traces moved with hash equality to/tmp and symlinked; no code/data/backups deleted.",
+    "existing_mailbox_saas_focal": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0,
+      "windows_android": true
+    }
   }
 }
