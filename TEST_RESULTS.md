@@ -1,3 +1,7 @@
+### Diagnóstico CI de la candidata722 y correcciones
+
+La suite completa unitaria/SQL pasó **2035/2035** y Python154 en43831399946. El navegador genérico pasó92/94: los dos fallos revelaron la pérdida del aria-label explícito del selector de camión en la biblioteca; se restauran sus etiquetas accesibles sin cambiar el recorrido ni el test. La prueba original repetida sin modificación pasa2/2 (Windows/Android), con persistencia, PDF válido, bytes, Axe y cero envíos externos. PG43831399729 rechazó el nuevo seed por colisión de teléfono con otra fixture: se cambia únicamente el rango ficticio reservado de la nueva fixture, conservando la restricción de unicidad y los datos históricos. La carga junto a la fixture previa acepta4/4 y conserva la negativa del rango anterior. La migración SQL76 mantieneSHA1e93388e…bebfd3. Estos fallos se conservan; **la CI del nuevo commit aún no ha terminado**.
+
 ## Facturación y documentos por ficha · candidata en verificación · 16/11/2026 UTC
 
 Nueva prioridad del propietario implementada en `feat/billing-attachments-20261116`, candidata **0.5.30-rc.1 / Android9**. Facturación agrupa Ingresos y Gastos con Factura/Ticket/Albarán; archivos independientes por movimiento guardado, camión y conductor con tipo, descripción libre, vencimiento y subidas repetibles. Sin cambios de importes, IVA o rentabilidad; históricos sin clasificación conservados. Se reutilizan documentos, permisos y sincronización existentes.
