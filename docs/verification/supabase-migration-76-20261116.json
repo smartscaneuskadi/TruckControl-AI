@@ -1,0 +1,69 @@
+{
+  "recorded_at": "2026-11-16T09:00:23Z",
+  "project_id": "kkkemaycedexymrpaqtp",
+  "migration_version": "20261116085827",
+  "migration_name": "billing_document_attachments",
+  "sql_sha256": "1e93388efd2a890d73a1ca0839a27ff4fe39008c10f019d23e40d10c34bebfd3",
+  "sql_md5": "948b1556d11af125bd0e4d7bff31e451",
+  "sql_bytes": 25144,
+  "remote_statement_count": 1,
+  "remote_statement_digest_matches_reviewed_file": true,
+  "previous_migration_count": 75,
+  "current_migration_count": 76,
+  "applied_once_with_official_tool": true,
+  "repeat": false,
+  "existing_business_row_counts_unchanged": true,
+  "existing_original_document_counts_unchanged": true,
+  "historical_records_automatically_classified": 0,
+  "existing_routine_oids_acl_security_configuration_preserved": true,
+  "verified_actor_body_unchanged": true,
+  "private_bucket": true,
+  "restrictive_finance_document_policy": true,
+  "anonymous_new_rpc_execute_denied": true,
+  "internal_explicit_actor_helper_execute_denied_to_authenticated": true,
+  "authenticated_new_rpc_execute_allowed": true,
+  "flags": {
+    "enforce_access": true,
+    "payments_enabled": false,
+    "registration_open": true
+  },
+  "advisors": {
+    "warn": 0,
+    "error": 0,
+    "info": 3,
+    "note": "The three existing private deny-all tables are unchanged."
+  },
+  "postgres_acceptance": {
+    "workflow_run": 43833876155,
+    "conclusion": "success",
+    "workflow_head": "9af5fc905e0be38ba253e8dc02ffc8bd091df0c8",
+    "executed_source": "e681e91bb316960daaa0de610d84b88a3f164140",
+    "executed_tree_equals_head": true,
+    "checks": 524,
+    "real_contentions": 45,
+    "logical_restores": 2,
+    "new_billing_checks_included": 42,
+    "new_billing_contentions_included": 2,
+    "provider_calls": 0,
+    "managed_restore": false,
+    "physical_devices": false
+  },
+  "frontend": {
+    "current_public_sites_version": 47,
+    "current_public_app_version": "0.5.29-rc.1",
+    "candidate_app_version": "0.5.30-rc.1",
+    "new_frontend_published": false,
+    "saved_recovery48_deployed": false,
+    "stable_demo6_preserved": true
+  },
+  "costs": {
+    "new_purchases": 0,
+    "new_recurring_commitments": 0,
+    "new_model_calls": 0,
+    "payments_enabled": false,
+    "ai_monthly_budget_usd_unchanged": 10,
+    "ai_calls_per_company_unchanged": 100,
+    "historical_200_eur_balance": "unreconciled"
+  },
+  "rollback": "Keep additive schema76 and use MFA-capable frontend47/48; retirement script rejects dropping data. Any retirement requires a reviewed forward migration."
+}
