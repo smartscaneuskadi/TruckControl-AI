@@ -1,8 +1,10 @@
-Estado nativo actualizado: migración75 `20261115221404_optional_totp_session_protection` aplicada una sola vez; [recibo y ACL](verification/supabase-migration-75-20261115.json). No repetirla. La interfaz0.5.29 sigue candidata hasta registrar su despliegue por separado.
+Publicado Sites47 /0.5.29-rc.1; [recibo de publicación](verification/optional-totp-full-published47-20261116.json). La producción solicita altas opcionales y exige capacidad exacta del backend; el ejemplo local mantiene altasOFF. No se activa el autenticador de ninguna cuenta automáticamente.
 
-# Candidata de autenticación TOTP nativa
+Estado nativo actualizado: migración75 `20261115221404_optional_totp_session_protection` aplicada una sola vez; [recibo y ACL](verification/supabase-migration-75-20261115.json). No repetirla. La interfaz0.5.29 está publicada y comprobada enSites47; ver el recibo de publicación anterior.
 
-La candidata `0.5.29-rc.1` se integra sobre la suscripción manual publicada en Sites46 / `0.5.28-rc.1`. No publica cambios, activa proveedores ni modifica secretos. `VITE_MFA_ENROLLMENT_ENABLED` queda desactivado por defecto; el fichero de ejemplo declara `false`.
+# Autenticación TOTP nativa opcional
+
+La versión `0.5.29-rc.1` publicada enSites47 conserva la suscripción manual de46. No modifica las configuraciones de proveedores ni secretos. `VITE_MFA_ENROLLMENT_ENABLED` queda desactivado por defecto; el fichero de ejemplo declara `false`.
 
 Configuración de empresa y Administración → Seguridad de la cuenta usan el mismo componente. La lista procede de los factores nativos actuales de Supabase Auth. Un factor nuevo solo aparece como verificado después de `challenge` + `verify` y otra lectura nativa que confirme el factor verificado y AAL2. La activación y la verificación de un factor nuevo comprueban de nuevo que `tc_mfa_protection_status()` responde exactamente `{"schema_version":1,"totp_enforcement":true}`. Una respuesta ausente, errónea o incompatible impide esa activación y no bloquea el acceso habitual de las cuentas sin TOTP verificado. El registro de un factor en Auth no se presenta como prueba de protección de Data API.
 
@@ -26,4 +28,4 @@ Después de admitir autenticadores no se retira la protección SQL ni se recuper
 
 `getAuthenticatorAssuranceLevel` valida el JWT y consulta factores, pero no expone la vinculación viva `auth.sessions.factor_id`. Por eso, después de encontrar TOTP verificado y AAL2 nativo, la puerta consulta el RPC existente `tc_verified_session()` con la cabecera Authorization fijada al mismo JWT que acaba de validar. Solo acepta el booleano exacto `true`; `false` exige otro desafío nativo y un error cierra el acceso hasta reintentar. La identidad y el token se vuelven a comprobar después de la respuesta. Esto cubre también una recarga completa con AAL2 obsoleto y vinculación eliminada, sin depender de una marca guardada en el navegador. No se amplía la capacidad de alta ni se crea un segundo endpoint de autenticación. Las cuentas sin TOTP verificado conservan su camino habitual sin esta llamada adicional.
 
-La entrega todavía debe comprobar la semántica real de refresco/retirada con el ensayo Auth aislado y, antes de activar altas, verificar la migración y los adaptadores productivos. La comprobación visual por sí sola no acredita el servidor gestionado ni un autenticador físico.
+La semántica nativa de refresco, retirada y carreras se verificó en Auth aislado; migración75, OID/ACL y denegaciones HTTP gestionadas se registran por separado. Los94recorridos públicos acreditan el bundle con transporte privado ficticio, no una nueva cuenta gestionada ni un autenticador físico.
