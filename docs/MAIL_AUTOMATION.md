@@ -1,6 +1,6 @@
 # Revisión opcional de facturas desde Correo
 
-Esta ampliación de Correo unificado está en la candidata **0.5.32-rc.1**. Hasta completar CI y publicar, la versión pública sigue siendo Sites50/0.5.31-rc.1. No modifica las migraciones, datos, planes ni límites de IA.
+Esta ampliación está publicada y verificada en **Sites51 /0.5.32-rc.1**, en https://truckcontrolai.com. Se conservan las76 migraciones, los datos, planes y límites de IA. [Recibo de pruebas y publicación](verification/mail-automation-published51-20261117.json).
 
 ## Uso
 
@@ -14,6 +14,8 @@ Esta ampliación de Correo unificado está en la candidata **0.5.32-rc.1**. Hast
 El modo manual anterior sigue disponible, sin marcar la revisión automática. Cuando hay una revisión automática activa hay que detenerla antes de iniciar una descarga manual; una petición anterior debe terminar o confirmar su cancelación antes de abrir otra.
 
 ## Alcance y costes
+
+La frecuencia y simultaneidad se coordinan por instancia abierta de la app, no entre distintas pestañas, dispositivos o llamadas directas. Las cuotas y reservas del servidor continúan aplicándose a todas las peticiones.
 
 La autorización solo vive en la memoria de la sesión. Permite revisar el período elegido y después únicamente el día final ya autorizado, cada cinco minutos como mínimo. El coordinador aplica un máximo de diez peticiones por autorización, una petición global en vuelo y un original nuevo por petición automática. No se buscan fechas futuras ni se reinicia el período al llegar la medianoche.
 

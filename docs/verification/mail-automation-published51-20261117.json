@@ -1,0 +1,2424 @@
+{
+  "recorded_at": "2026-11-17T17:56:55.590164+00:00",
+  "repository": "smartscaneuskadi/TruckControl-AI",
+  "public_url": "https://truckcontrolai.com",
+  "public_channel": "production",
+  "version": "0.5.32-rc.1",
+  "sites_number": 51,
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "source_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+  "source_branch": "deploy/mail-automation-production-20261117",
+  "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_34171029625881919a7feb1978c4f77d",
+  "deployment_id": "appgdep_6afc91fc04988191bf227400e6406a36",
+  "deployment_status": "succeeded",
+  "deployment_completed_at": "2026-11-17T17:42:29.634920+00:00",
+  "feature_PR": 157,
+  "feature_head": "327ca49414eba6ce97c6e8103cbf141f7580b60f",
+  "merge_commit": "c70e3bde3116958fc9b38e0cb33cfb3128f9f76b",
+  "implemented": [
+    "Optional open-visible-session invoice review from selected Gmail or IMAP account",
+    "Explicit per-account/company/actor/SID/AAL/fixed-received-period consent, defaultOFF",
+    "1h absolute maximum limited by mailbox, JWT and authorized day; no automatic renewal or future-day expansion",
+    "One local coordinator:5min minimum,10requests/authorization; stop all on uncertain/failure/budget, no automatic retry",
+    "Backend enforces one new original/automatic request plus existing fresh permissions, private storage, dedup andAIquotas",
+    "Correct oversized or invalid Gmail PDF metadata omission without downloading rejected originals",
+    "Four languages, both themes, floating stop control and ordinary/manual mail retained"
+  ],
+  "scope_limits": {
+    "coordinator_rate_and_concurrency": "per live app instance, not a remote global rate limiter across tabs/devices/direct callers",
+    "credentials_and_periodic_consent": "RAM only; no unattended closed-app job or durable per-mailbox contractual receipt",
+    "stop_effect": "prevents new scheduled requests; already-received work can complete and authorized originals remain private",
+    "uncertain_cost": "existing conservative reservations may remain until reconciled; no automatic repetition",
+    "account_access": "each customer authorizes their own provider; no Root inbox approval or credential sharing",
+    "AI_results": "proposals require human review before posting expenses"
+  },
+  "tests": {
+    "per_final_quality_execution": {
+      "unit_SQL": 2284,
+      "unit_files": 171,
+      "Python": 154,
+      "demo": 94,
+      "company": 62,
+      "SaaS": 274,
+      "MFA": 98,
+      "manual_FULL": 44,
+      "billing_documents": 68,
+      "unified_mail": 172,
+      "candidate": 20,
+      "production": 20,
+      "previous_public_profiles": 6
+    },
+    "new_unit_focal": 138,
+    "new_browser_cases": 104,
+    "retained_mail_browser": 68,
+    "retained_original_tests": 64,
+    "retained_file_hashes": 11,
+    "local_mail_browser": 172,
+    "clock_sync_focal_repetitions": 20,
+    "published_mail_browser": 172,
+    "published_mail_stats": {
+      "startTime": "2026-11-17T17:46:06.436Z",
+      "duration": 404611.275,
+      "expected": 172,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "published_projects": {
+      "published-mail-windows-light": 43,
+      "published-mail-android-light": 43,
+      "published-mail-windows-cockpit": 43,
+      "published-mail-android-cockpit": 43
+    },
+    "published_specs": {
+      "automation-languages.spec.ts": 12,
+      "automation.spec.ts": 92,
+      "languages.spec.ts": 12,
+      "mail.spec.ts": 56
+    },
+    "published_hashes": 105,
+    "published_PWA_profiles": 6,
+    "published_health": 5,
+    "native_access_CORS": 6,
+    "physical_devices": false,
+    "mail_private_transport": "synthetic intercepted HTTP with real published app/SDK; no unmatched private HTTP/WSS permitted",
+    "live_mailbox_read_or_send_in_this_delivery": false,
+    "new_model_calls": 0
+  },
+  "CI": {
+    "quality": [
+      44133849697,
+      44133864824,
+      44133880410
+    ],
+    "Android": 44133865338,
+    "isolated_archive": 44133864902,
+    "production_package": 44133880514,
+    "all_final_conclusions": "success",
+    "Android_native18files_equal_b42_327_c592": true,
+    "previous_Android_source_b42_run": 44125394552
+  },
+  "package": {
+    "repository": "smartscaneuskadi/TruckControl-AI",
+    "workflow_run": 44133880514,
+    "workflow_conclusion": "SUCCESS",
+    "workflow_event": "push",
+    "workflow_head_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+    "artifact_id": 14351042125,
+    "artifact_name": "unpublished-production-c592945b7da8e2ddbed8b5bc54b80651b313224e",
+    "github_zip_sha256": "b87ef00d5a222b6e6e2c39c293f2d9376865648513eb9ec8ca3e97e56eade85a",
+    "zip_not_persisted": true,
+    "only_archive_and_original_package_json_extracted": true,
+    "archive_name": "truckcontrol-production-c592945b7da8e2ddbed8b5bc54b80651b313224e.tar.gz",
+    "archive_sha256": "466a21633632a096ec98468cbeae8354fda5d52826aa831d5391954f13191eaa",
+    "archive_bytes": 1592144,
+    "package_proof_sha256": "15782c3c754ee058fcac693329c6148baacf6c3336396a2bf6235b9fddc70bab",
+    "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+    "canonical_url": "https://truckcontrolai.com",
+    "baseline_source": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+    "output_version": "0.5.32-rc.1",
+    "output_channel": "production",
+    "output_source_clean": true,
+    "company_connection_bundled": true,
+    "dist_file_count": 35,
+    "all_dist_file_hashes_verified": true,
+    "all_archive_paths_and_file_types_verified": true,
+    "mfa_enrollment_requested": true,
+    "mfa_requires_exact_server_capability": true,
+    "native_or_provider_config_changed_by_build": false,
+    "payments_enabled": false,
+    "payment_changes": false,
+    "published": false,
+    "source_pushed_to_sites": false,
+    "local_build_used": false,
+    "public_browser_acceptance_performed_by_this_download": false
+  },
+  "native": {
+    "project_id": "kkkemaycedexymrpaqtp",
+    "company_mail_version": 17,
+    "status": "ACTIVE",
+    "runtime_files": 21,
+    "files_match_b42_and_c592": true,
+    "previous_version": 16,
+    "previous_recovery_files": 20,
+    "migrations": 76,
+    "new_migration": false,
+    "last_migration": "20261116085827_billing_document_attachments",
+    "last_migration_sha256": "1e93388efd2a890d73a1ca0839a27ff4fe39008c10f019d23e40d10c34bebfd3",
+    "security_WARN_ERROR": 0,
+    "security_INFO": 3,
+    "AI_limits": "10USD/month;100calls/company unchanged",
+    "payments_enabled": false
+  },
+  "diagnostics_preserved": [
+    {
+      "run": 44125297905,
+      "result": "171/172 mail; one interval test failed",
+      "trace": "virtual-clock jumps3.776msapart with native HTTP pending; SID/AALstable, private pool cleared",
+      "fix": "18added/0removed lines in new test; await HTTP plus private context assertions, no product/assertion/timeout/security weakening",
+      "causality_limit": "isolated13sretention demonstrated safe timeout closure;61sretentions did not reproduce CI. Exact CIcallback not asserted."
+    },
+    {
+      "stage": "first local browser launch",
+      "cause": "sandbox localhost listen EPERM; official additional network permission resolved"
+    },
+    {
+      "stage": "first two local scenarios",
+      "cause": "heldHTTP5min exceeded real150sSDKtimeout; company selector belongs in Settings; only new test scenarios corrected"
+    },
+    {
+      "stage": "first saved archive guard",
+      "cause": "compared gzip input digest to service TAR envelope digest; representation differs. Saved51reconciled without duplicateSave;105actualpublic file hashes pass. Stored archive reference was not downloadable via uploaded-file tool; no alternate private access attempted."
+    }
+  ],
+  "recovery": {
+    "previous_public_sites_number": 50,
+    "previous_source": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+    "previous_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ee728639b8688191add56b276ad84b87",
+    "previous_deployment_id": "appgdep_6afb4a20f2e881918f97f61b1c6d52ec",
+    "demo6_preserved": true,
+    "restore_strategy": "redeploy saved50 while retaining all76 migrations; company-mail17 is additive/compatible. Native16snapshot preserved if a backend recovery is necessary. No destructive SQL or pre-MFA fallback."
+  },
+  "mail_acceptance": {
+    "owner_previous_real_read_send": "confirmed2026-11-03, preserved without asking to repeat",
+    "new_real_account_session_available_in_executor": false,
+    "Google_public_restricted_scopes_approval": "not independently confirmed; issue97 remains",
+    "legacy_enterprise_OAuth": "not needed by selected-account import; no duplicate client/secret created",
+    "Microsoft_OAuth": "not implemented by this change"
+  },
+  "costs": {
+    "additional_purchases_EUR": 0,
+    "new_paid_model_requests": 0,
+    "new_paid_browser_automation": 0,
+    "new_recurring_contracts": 0,
+    "aggregate_authorized_budget_EUR": 200,
+    "historic_spend_and_remaining_balance": "not reconciled; do not assume200EURremaining",
+    "existing_provider_limits_changed": false
+  },
+  "commercial_model": "Owner-managed legal/sales/subscription invoicing and physical acceptance; automatic Stripe/paymentsOFF is not a launch gate for this manual model",
+  "commercial_global_certification": false,
+  "remaining_external_scope": [
+    "Google public verification and a new real customer mailbox acceptance",
+    "Managed Auth/Storage/Vault recovery acceptance",
+    "Commercial Android signing/Play and physical device acceptance; owner handles physical tests",
+    "Provider-side Migadu DKIM target issue remains unverified; no DNSSEC weakening"
+  ],
+  "monitor_update": {
+    "only_five_identity_fields_changed": true,
+    "offer_flags_themes_origins_preserved": true
+  },
+  "evidence": {
+    "public_UI_scope": {
+      "checked_at": "2026-11-17T17:52:51.151Z",
+      "mode": "published_bundle_verification",
+      "runner_sha256": "4e3dec52108386cad0cfa7120299710e6b13b6112664a07ef5f4bac9264dd9d5",
+      "reviewed_runner": "/workspace/artifacts/truckcontrol-billing-attachments-20261116/public-tools/verify-published-billing-attachments.mjs",
+      "reviewed_runner_sha256": "7017bf27fcd6845c1d8ce247558c7af362cd5eee986c255a96409f68904c675f",
+      "strict_guard_byte_identical_to_reviewed_runner": true,
+      "strict_guard_sha256": "adfc3e6535160ebb6956e8b3230f4eb418675ec4ac588b0fdd5983555ae2a963",
+      "origin": "https://truckcontrolai.com",
+      "expected_source_commit_argument": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+      "expected_version_argument": "0.5.32-rc.1",
+      "expected_case_count_argument": 172,
+      "fixture_head_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+      "fixture_tracked_changes_present": false,
+      "exact_clean_production_source_required_for_run": true,
+      "expected_production_project": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+      "collected_cases": 172,
+      "retained_cases": 68,
+      "new_cases": 104,
+      "counts_by_project": {
+        "published-mail-windows-light": 43,
+        "published-mail-android-light": 43,
+        "published-mail-windows-cockpit": 43,
+        "published-mail-android-cockpit": 43
+      },
+      "counts_by_file": {
+        "automation-languages.spec.ts": 12,
+        "automation.spec.ts": 92,
+        "languages.spec.ts": 12,
+        "mail.spec.ts": 56
+      },
+      "original_inputs": [
+        {
+          "path": "tests/unified-mail-browser/mail.spec.ts",
+          "sha256": "0772eb96afc36eb2c0c9902e6ba3737dee3ef9104efc27040a75312a58efd53f",
+          "adapted_sha256": "0772eb96afc36eb2c0c9902e6ba3737dee3ef9104efc27040a75312a58efd53f",
+          "specification_byte_identical": true
+        },
+        {
+          "path": "tests/unified-mail-browser/languages.spec.ts",
+          "sha256": "c51db82b39fa6b498bf37431a64b94632c2a26da79f8384f045ca0371a24dcc4",
+          "adapted_sha256": "c51db82b39fa6b498bf37431a64b94632c2a26da79f8384f045ca0371a24dcc4",
+          "specification_byte_identical": true
+        },
+        {
+          "path": "tests/unified-mail-browser/automation.spec.ts",
+          "sha256": "8f3c9ee4d97e363c343ba7db41f51bc86761e62b675bd6a01a55554258d33e3b",
+          "adapted_sha256": "8f3c9ee4d97e363c343ba7db41f51bc86761e62b675bd6a01a55554258d33e3b",
+          "specification_byte_identical": true
+        },
+        {
+          "path": "tests/unified-mail-browser/automation-languages.spec.ts",
+          "sha256": "85db6d0f59cc888666424c53409c9df13b9b48ec914f4d4a920bea205649a8de",
+          "adapted_sha256": "85db6d0f59cc888666424c53409c9df13b9b48ec914f4d4a920bea205649a8de",
+          "specification_byte_identical": true
+        },
+        {
+          "path": "tests/unified-mail-browser/fixture.ts",
+          "sha256": "1557c65ebdd38223cfe101ee4c00db11e119cc0b7343456a21803ab2378df4a7",
+          "adapted_sha256": "c69fbd169193e65c4fc3ec97cad40f13638a4f00405c85df54106dcca90c1d61",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "tests/billing-attachments-browser/fixture.ts",
+          "sha256": "ec5fd7ca516d4442516d1f37b4f3d1c7bc597b86437003d9f0854a19b26b56c2",
+          "adapted_sha256": "b5e6533251335fae7900a1e9de5f6911f225f30a51d2049355a8325c2e0e5714",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "tests/mfa-browser/fixture.ts",
+          "sha256": "2d25df794e39dd7fd9675832962da209b993e22843e78302ad1eda828a4be869",
+          "adapted_sha256": "3a7b79b03a7af015650b482a95e8367cd03299dc648e8cfc73f5b2d3c9006f45",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "supabase/functions/_shared/mail-period.ts",
+          "sha256": "0e2d90265915d834a7712cadf252b0dbf2bf0703446a80cd87db3a9cdab49071",
+          "adapted_sha256": "0e2d90265915d834a7712cadf252b0dbf2bf0703446a80cd87db3a9cdab49071",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "supabase/functions/_shared/mail-automation.ts",
+          "sha256": "853217ed12c732e6e454165122a8756904b072305c21e3bc0bcbc02749df54c4",
+          "adapted_sha256": "853217ed12c732e6e454165122a8756904b072305c21e3bc0bcbc02749df54c4",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "src/i18n/locales/en.json",
+          "sha256": "d7345c0d54ff10bfd11d8ed93ac97e5ede6a21db4d64f78868875093556a93a0",
+          "adapted_sha256": "d7345c0d54ff10bfd11d8ed93ac97e5ede6a21db4d64f78868875093556a93a0",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "src/i18n/locales/ro.json",
+          "sha256": "d626cd503aeb4a35adab62b740cb68d605050ccc5a47b7a9a1bd5f15e09d96ad",
+          "adapted_sha256": "d626cd503aeb4a35adab62b740cb68d605050ccc5a47b7a9a1bd5f15e09d96ad",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "src/i18n/locales/fr.json",
+          "sha256": "f7a0b0b1e1d208629d33092af277d95633e8e90d678335b380b2417cc8d2d781",
+          "adapted_sha256": "f7a0b0b1e1d208629d33092af277d95633e8e90d678335b380b2417cc8d2d781",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "src/domain/models.ts",
+          "sha256": "77951fc8ad8f687ae5dc1110e8f5f52357bfe1484d1fff0a882371589189ef3c",
+          "adapted_sha256": "77951fc8ad8f687ae5dc1110e8f5f52357bfe1484d1fff0a882371589189ef3c",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "src/domain/subscriptions.ts",
+          "sha256": "33b74e9dec82ea93d8bf199b1271cecf9395e1dc30a028cdab6b1e63cc623a7f",
+          "adapted_sha256": "33b74e9dec82ea93d8bf199b1271cecf9395e1dc30a028cdab6b1e63cc623a7f",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "src/domain/company-fiscal.ts",
+          "sha256": "845ddccc12d40f46e9d924e8805f4f4812a684602ca7147cb09129e99ded81b3",
+          "adapted_sha256": "845ddccc12d40f46e9d924e8805f4f4812a684602ca7147cb09129e99ded81b3",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "src/domain/company-full.ts",
+          "sha256": "0007bf77cb314319974276e1ec9a7839bd17dd2b6637a557dec7b93bd7a91ca5",
+          "adapted_sha256": "0007bf77cb314319974276e1ec9a7839bd17dd2b6637a557dec7b93bd7a91ca5",
+          "specification_byte_identical": null
+        },
+        {
+          "path": "src/domain/invoice-mail-period.ts",
+          "sha256": "3b11b247a532b025505b923ce4806f8d925a73547db35e87ae1f2e2b54455087",
+          "adapted_sha256": "3b11b247a532b025505b923ce4806f8d925a73547db35e87ae1f2e2b54455087",
+          "specification_byte_identical": null
+        }
+      ],
+      "copied_source_paths_are_explicit_whitelist_only": true,
+      "source_directory_symlink_or_copy": false,
+      "all_specification_bytes_unchanged": true,
+      "public_guard_installed_before_auto_private_fixtures": true,
+      "generic_public_origin_passthrough_in_fixtures": false,
+      "browser_application": "real published HTML and JavaScript assets, never replaced or rebuilt by this runner",
+      "browser_sdk": "real published pinned Supabase SDK; no substitute SDK or client bridge",
+      "backend_transport": "fictional intercepted HTTP; all unmatched private/nonstatic HTTP and every WebSocket blocked",
+      "release_source_guard_configured_before_each_case": true,
+      "release_source_verified_for_every_case": true,
+      "outbound_authenticated_or_private_requests_allowed": false,
+      "public_static_policy": "canonical anonymous static GET only: committed public files, fixed metadata and generated assets; no query/fragment/credentials/cookie or authentication headers; arbitrary extension-bearing API paths forbidden",
+      "existing_owner_session_or_real_customer_data": "none; fresh isolated contexts and fictional fixtures only",
+      "provider_calls": 0,
+      "model_calls": 0,
+      "payment_calls": 0,
+      "real_mailbox_or_message_access": false,
+      "source_or_production_mutated": false,
+      "physical_devices": false,
+      "managed_auth_acceptance": false,
+      "managed_restore_acceptance": false,
+      "device_scope": "Desktop Chrome and Pixel 7 emulation on the existing Chromium, not physical Windows or Android",
+      "pwa_service_worker_scope": "serviceWorkers=block; PWA installation/offline acceptance is separate",
+      "full_static_asset_digest_scope": "separate unchanged verify-public-inventory.mjs",
+      "automation_scope": "opt-in open visible session, limits, stop/revocation and no automatic restart with synthetic HTTP; no real mailbox/model acceptance",
+      "collection_succeeded": true,
+      "final_stats": {
+        "startTime": "2026-11-17T17:46:06.436Z",
+        "duration": 404611.275,
+        "expected": 172,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "publication_accepted": true,
+      "browser_execution_process_started": true,
+      "no_public_requests_in_list_mode": false,
+      "output": "/tmp/truckcontrol-mail51-public-ui-20261117",
+      "shadow_removed": true,
+      "exit_code": 0
+    },
+    "public_inventory": {
+      "mode": "post_deployment_public_inventory",
+      "checked_at": "2026-11-17T17:43:32.477Z",
+      "expected_source": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+      "expected_version": "0.5.32-rc.1",
+      "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+      "package_proof_sha256": "15782c3c754ee058fcac693329c6148baacf6c3336396a2bf6235b9fddc70bab",
+      "package_archive_sha256": "466a21633632a096ec98468cbeae8354fda5d52826aa831d5391954f13191eaa",
+      "origins": [
+        "https://truckcontrolai.com",
+        "https://www.truckcontrolai.com",
+        "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site"
+      ],
+      "files": 35,
+      "expected_checks": 105,
+      "concurrency": 4,
+      "maximum_response_bytes": 8388608,
+      "model_calls": 0,
+      "provider_calls": 0,
+      "authenticated_customer_data_read": false,
+      "mutations": 0,
+      "passed": true,
+      "checks": 105,
+      "results": [
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/AdminConsole-CQhzERS0.js",
+          "expected_bytes": 132951,
+          "expected_sha256": "a3aa2f560400339443649fb3f27a15b8f00cee3e05076460697c11ca2e6251dc",
+          "status": 200,
+          "bytes": 132951,
+          "sha256": "a3aa2f560400339443649fb3f27a15b8f00cee3e05076460697c11ca2e6251dc",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/AdminConsole-CQhzERS0.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/AdminConsole-_5uVIHU_.css",
+          "expected_bytes": 2061,
+          "expected_sha256": "b9b1ba6172958bc8544a8ace66b0c317020f67b50488ef4e8d9113b78e549aae",
+          "status": 200,
+          "bytes": 2061,
+          "sha256": "b9b1ba6172958bc8544a8ace66b0c317020f67b50488ef4e8d9113b78e549aae",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/AdminConsole-_5uVIHU_.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/CompanyFullAccount-CaPm-Hp-.js",
+          "expected_bytes": 2007,
+          "expected_sha256": "328aff4906acc132d45cdb2e6beddac5cb4d4695ff16b0a5efbe147453f21140",
+          "status": 200,
+          "bytes": 2007,
+          "sha256": "328aff4906acc132d45cdb2e6beddac5cb4d4695ff16b0a5efbe147453f21140",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/CompanyFullAccount-CaPm-Hp-.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/CompanyFullAdmin-BTxXx0V-.js",
+          "expected_bytes": 13725,
+          "expected_sha256": "cb0bd2390cce55050a7f8569eae4508e9901fe4ebf9358f8dfd5e5a3c5f2652d",
+          "status": 200,
+          "bytes": 13725,
+          "sha256": "cb0bd2390cce55050a7f8569eae4508e9901fe4ebf9358f8dfd5e5a3c5f2652d",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/CompanyFullAdmin-BTxXx0V-.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/CompanyFullAdmin-Dv05IQdm.css",
+          "expected_bytes": 1171,
+          "expected_sha256": "1a728340237482e2574a01758359355920c1e1c2a2fbd86a714ca2ddfff13497",
+          "status": 200,
+          "bytes": 1171,
+          "sha256": "1a728340237482e2574a01758359355920c1e1c2a2fbd86a714ca2ddfff13497",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/CompanyFullAdmin-Dv05IQdm.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/MfaChallenge-DYfvIQ-o.js",
+          "expected_bytes": 3097,
+          "expected_sha256": "79d6feb2dc29a66f7d0bccd62ee638499e47a0afdc3b7820ecb4c72e90d4e4e8",
+          "status": 200,
+          "bytes": 3097,
+          "sha256": "79d6feb2dc29a66f7d0bccd62ee638499e47a0afdc3b7820ecb4c72e90d4e4e8",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/MfaChallenge-DYfvIQ-o.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/MfaSettings-Db1sMDmX.js",
+          "expected_bytes": 7037,
+          "expected_sha256": "1a466cb1f32596032dad451a351537a0c498dc051f5501ccf46075b2f42fd996",
+          "status": 200,
+          "bytes": 7037,
+          "sha256": "1a466cb1f32596032dad451a351537a0c498dc051f5501ccf46075b2f42fd996",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/MfaSettings-Db1sMDmX.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+          "expected_bytes": 36932,
+          "expected_sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+          "status": 200,
+          "bytes": 36932,
+          "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/index-C8O496Ut.js",
+          "expected_bytes": 938092,
+          "expected_sha256": "8efba9416c5fc8f1720a77d8854bc4923e07fefcfda14ef35ca77cefe2b9ab47",
+          "status": 200,
+          "bytes": 938092,
+          "sha256": "8efba9416c5fc8f1720a77d8854bc4923e07fefcfda14ef35ca77cefe2b9ab47",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/index-C8O496Ut.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/index-aQsLPUjQ.css",
+          "expected_bytes": 138707,
+          "expected_sha256": "2cbacc98052b7b2002831b651cfd330a771a313123fa042a9e05a7810d7d0ec4",
+          "status": 200,
+          "bytes": 138707,
+          "sha256": "2cbacc98052b7b2002831b651cfd330a771a313123fa042a9e05a7810d7d0ec4",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/index-aQsLPUjQ.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/mail-C2WzLYej.js",
+          "expected_bytes": 86279,
+          "expected_sha256": "ca5d405a060ec632de48c8e269e945f75f69e4ef15161e67e07b93e132543331",
+          "status": 200,
+          "bytes": 86279,
+          "sha256": "ca5d405a060ec632de48c8e269e945f75f69e4ef15161e67e07b93e132543331",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/mail-C2WzLYej.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+          "expected_bytes": 24836,
+          "expected_sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+          "status": 200,
+          "bytes": 24836,
+          "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/mfa-Bhnd7ttu.js",
+          "expected_bytes": 433,
+          "expected_sha256": "c70d054fc38021894c810322ea1a65974b5136e1186085990013179e9040437b",
+          "status": 200,
+          "bytes": 433,
+          "sha256": "c70d054fc38021894c810322ea1a65974b5136e1186085990013179e9040437b",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/mfa-Bhnd7ttu.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/mfa-K_vLim-R.css",
+          "expected_bytes": 992,
+          "expected_sha256": "729e8b6d0e8ced7e142dfd321b00626ca845048fa9afc82a0b833c4f6398df0c",
+          "status": 200,
+          "bytes": 992,
+          "sha256": "729e8b6d0e8ced7e142dfd321b00626ca845048fa9afc82a0b833c4f6398df0c",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/mfa-K_vLim-R.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/ui-BB5zv1Kv.js",
+          "expected_bytes": 1211575,
+          "expected_sha256": "5c0bc7e3f8f1cb447226c2b863b537530b741fbe1259bce75010027078c46a8a",
+          "status": 200,
+          "bytes": 1211575,
+          "sha256": "5c0bc7e3f8f1cb447226c2b863b537530b741fbe1259bce75010027078c46a8a",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/ui-BB5zv1Kv.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+          "expected_bytes": 5653,
+          "expected_sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+          "status": 200,
+          "bytes": 5653,
+          "sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/brands/man.webp",
+          "expected_bytes": 2738,
+          "expected_sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+          "status": 200,
+          "bytes": 2738,
+          "sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/brands/man.webp",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/brands/mercedes-benz.svg",
+          "expected_bytes": 1320,
+          "expected_sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+          "status": 200,
+          "bytes": 1320,
+          "sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/brands/mercedes-benz.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/brands/scania.svg",
+          "expected_bytes": 177998,
+          "expected_sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+          "status": 200,
+          "bytes": 177998,
+          "sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/brands/scania.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/examples/factura-demostracion.pdf",
+          "expected_bytes": 2155,
+          "expected_sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+          "status": 200,
+          "bytes": 2155,
+          "sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/examples/factura-demostracion.pdf",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/favicon.svg",
+          "expected_bytes": 380,
+          "expected_sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+          "status": 200,
+          "bytes": 380,
+          "sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/favicon.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/gmail-callback.css",
+          "expected_bytes": 1413,
+          "expected_sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+          "status": 200,
+          "bytes": 1413,
+          "sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/gmail-callback.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/gmail-callback.html",
+          "expected_bytes": 1151,
+          "expected_sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+          "status": 200,
+          "bytes": 1151,
+          "sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+          "redirects": 1,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/gmail-callback",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/gmail-callback.js",
+          "expected_bytes": 1917,
+          "expected_sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+          "status": 200,
+          "bytes": 1917,
+          "sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/gmail-callback.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/icons/icon-192.png",
+          "expected_bytes": 942,
+          "expected_sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+          "status": 200,
+          "bytes": 942,
+          "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/icons/icon-192.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/icons/icon-512.png",
+          "expected_bytes": 2766,
+          "expected_sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "status": 200,
+          "bytes": 2766,
+          "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/icons/icon-512.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/icons/maskable-512.png",
+          "expected_bytes": 2766,
+          "expected_sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "status": 200,
+          "bytes": 2766,
+          "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/icons/maskable-512.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/images/fleet-alpine-hero.webp",
+          "expected_bytes": 316402,
+          "expected_sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+          "status": 200,
+          "bytes": 316402,
+          "sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/images/fleet-alpine-hero.webp",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/images/fleet-cockpit-truck.jpg",
+          "expected_bytes": 181776,
+          "expected_sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+          "status": 200,
+          "bytes": 181776,
+          "sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/images/fleet-cockpit-truck.jpg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/images/fleet-light-trucks.jpg",
+          "expected_bytes": 221619,
+          "expected_sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+          "status": 200,
+          "bytes": 221619,
+          "sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/images/fleet-light-trucks.jpg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/index.html",
+          "expected_bytes": 1058,
+          "expected_sha256": "edc39e82a0194ba3e4064022fb5b6d57541a8b675966bb09fb499cca5c5c50b5",
+          "status": 200,
+          "bytes": 1058,
+          "sha256": "edc39e82a0194ba3e4064022fb5b6d57541a8b675966bb09fb499cca5c5c50b5",
+          "redirects": 1,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/manifest.webmanifest",
+          "expected_bytes": 509,
+          "expected_sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+          "status": 200,
+          "bytes": 509,
+          "sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/manifest.webmanifest",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/release.json",
+          "expected_bytes": 286,
+          "expected_sha256": "d823ad092b99964737c5053c649b47d83145284555ec077c0985718e846bd0c4",
+          "status": 200,
+          "bytes": 286,
+          "sha256": "d823ad092b99964737c5053c649b47d83145284555ec077c0985718e846bd0c4",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/release.json",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/sw.js",
+          "expected_bytes": 3692,
+          "expected_sha256": "4a7b61d9c639bc8c8f4dc20cf2b912cc2fce0e64c9c9338271fa53d8f37edce9",
+          "status": 200,
+          "bytes": 3692,
+          "sha256": "4a7b61d9c639bc8c8f4dc20cf2b912cc2fce0e64c9c9338271fa53d8f37edce9",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/sw.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "path": "/workbox-2fbc6a65.js",
+          "expected_bytes": 15026,
+          "expected_sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+          "status": 200,
+          "bytes": 15026,
+          "sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+          "redirects": 0,
+          "final_origin": "https://truckcontrolai.com",
+          "final_path": "/workbox-2fbc6a65.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/AdminConsole-CQhzERS0.js",
+          "expected_bytes": 132951,
+          "expected_sha256": "a3aa2f560400339443649fb3f27a15b8f00cee3e05076460697c11ca2e6251dc",
+          "status": 200,
+          "bytes": 132951,
+          "sha256": "a3aa2f560400339443649fb3f27a15b8f00cee3e05076460697c11ca2e6251dc",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/AdminConsole-CQhzERS0.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/AdminConsole-_5uVIHU_.css",
+          "expected_bytes": 2061,
+          "expected_sha256": "b9b1ba6172958bc8544a8ace66b0c317020f67b50488ef4e8d9113b78e549aae",
+          "status": 200,
+          "bytes": 2061,
+          "sha256": "b9b1ba6172958bc8544a8ace66b0c317020f67b50488ef4e8d9113b78e549aae",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/AdminConsole-_5uVIHU_.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/CompanyFullAccount-CaPm-Hp-.js",
+          "expected_bytes": 2007,
+          "expected_sha256": "328aff4906acc132d45cdb2e6beddac5cb4d4695ff16b0a5efbe147453f21140",
+          "status": 200,
+          "bytes": 2007,
+          "sha256": "328aff4906acc132d45cdb2e6beddac5cb4d4695ff16b0a5efbe147453f21140",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/CompanyFullAccount-CaPm-Hp-.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/CompanyFullAdmin-BTxXx0V-.js",
+          "expected_bytes": 13725,
+          "expected_sha256": "cb0bd2390cce55050a7f8569eae4508e9901fe4ebf9358f8dfd5e5a3c5f2652d",
+          "status": 200,
+          "bytes": 13725,
+          "sha256": "cb0bd2390cce55050a7f8569eae4508e9901fe4ebf9358f8dfd5e5a3c5f2652d",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/CompanyFullAdmin-BTxXx0V-.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/CompanyFullAdmin-Dv05IQdm.css",
+          "expected_bytes": 1171,
+          "expected_sha256": "1a728340237482e2574a01758359355920c1e1c2a2fbd86a714ca2ddfff13497",
+          "status": 200,
+          "bytes": 1171,
+          "sha256": "1a728340237482e2574a01758359355920c1e1c2a2fbd86a714ca2ddfff13497",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/CompanyFullAdmin-Dv05IQdm.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/MfaChallenge-DYfvIQ-o.js",
+          "expected_bytes": 3097,
+          "expected_sha256": "79d6feb2dc29a66f7d0bccd62ee638499e47a0afdc3b7820ecb4c72e90d4e4e8",
+          "status": 200,
+          "bytes": 3097,
+          "sha256": "79d6feb2dc29a66f7d0bccd62ee638499e47a0afdc3b7820ecb4c72e90d4e4e8",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/MfaChallenge-DYfvIQ-o.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/MfaSettings-Db1sMDmX.js",
+          "expected_bytes": 7037,
+          "expected_sha256": "1a466cb1f32596032dad451a351537a0c498dc051f5501ccf46075b2f42fd996",
+          "status": 200,
+          "bytes": 7037,
+          "sha256": "1a466cb1f32596032dad451a351537a0c498dc051f5501ccf46075b2f42fd996",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/MfaSettings-Db1sMDmX.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+          "expected_bytes": 36932,
+          "expected_sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+          "status": 200,
+          "bytes": 36932,
+          "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/index-C8O496Ut.js",
+          "expected_bytes": 938092,
+          "expected_sha256": "8efba9416c5fc8f1720a77d8854bc4923e07fefcfda14ef35ca77cefe2b9ab47",
+          "status": 200,
+          "bytes": 938092,
+          "sha256": "8efba9416c5fc8f1720a77d8854bc4923e07fefcfda14ef35ca77cefe2b9ab47",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/index-C8O496Ut.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/index-aQsLPUjQ.css",
+          "expected_bytes": 138707,
+          "expected_sha256": "2cbacc98052b7b2002831b651cfd330a771a313123fa042a9e05a7810d7d0ec4",
+          "status": 200,
+          "bytes": 138707,
+          "sha256": "2cbacc98052b7b2002831b651cfd330a771a313123fa042a9e05a7810d7d0ec4",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/index-aQsLPUjQ.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/mail-C2WzLYej.js",
+          "expected_bytes": 86279,
+          "expected_sha256": "ca5d405a060ec632de48c8e269e945f75f69e4ef15161e67e07b93e132543331",
+          "status": 200,
+          "bytes": 86279,
+          "sha256": "ca5d405a060ec632de48c8e269e945f75f69e4ef15161e67e07b93e132543331",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/mail-C2WzLYej.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+          "expected_bytes": 24836,
+          "expected_sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+          "status": 200,
+          "bytes": 24836,
+          "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/mfa-Bhnd7ttu.js",
+          "expected_bytes": 433,
+          "expected_sha256": "c70d054fc38021894c810322ea1a65974b5136e1186085990013179e9040437b",
+          "status": 200,
+          "bytes": 433,
+          "sha256": "c70d054fc38021894c810322ea1a65974b5136e1186085990013179e9040437b",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/mfa-Bhnd7ttu.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/mfa-K_vLim-R.css",
+          "expected_bytes": 992,
+          "expected_sha256": "729e8b6d0e8ced7e142dfd321b00626ca845048fa9afc82a0b833c4f6398df0c",
+          "status": 200,
+          "bytes": 992,
+          "sha256": "729e8b6d0e8ced7e142dfd321b00626ca845048fa9afc82a0b833c4f6398df0c",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/mfa-K_vLim-R.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/ui-BB5zv1Kv.js",
+          "expected_bytes": 1211575,
+          "expected_sha256": "5c0bc7e3f8f1cb447226c2b863b537530b741fbe1259bce75010027078c46a8a",
+          "status": 200,
+          "bytes": 1211575,
+          "sha256": "5c0bc7e3f8f1cb447226c2b863b537530b741fbe1259bce75010027078c46a8a",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/ui-BB5zv1Kv.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+          "expected_bytes": 5653,
+          "expected_sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+          "status": 200,
+          "bytes": 5653,
+          "sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/brands/man.webp",
+          "expected_bytes": 2738,
+          "expected_sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+          "status": 200,
+          "bytes": 2738,
+          "sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/brands/man.webp",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/brands/mercedes-benz.svg",
+          "expected_bytes": 1320,
+          "expected_sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+          "status": 200,
+          "bytes": 1320,
+          "sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/brands/mercedes-benz.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/brands/scania.svg",
+          "expected_bytes": 177998,
+          "expected_sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+          "status": 200,
+          "bytes": 177998,
+          "sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/brands/scania.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/examples/factura-demostracion.pdf",
+          "expected_bytes": 2155,
+          "expected_sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+          "status": 200,
+          "bytes": 2155,
+          "sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/examples/factura-demostracion.pdf",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/favicon.svg",
+          "expected_bytes": 380,
+          "expected_sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+          "status": 200,
+          "bytes": 380,
+          "sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/favicon.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/gmail-callback.css",
+          "expected_bytes": 1413,
+          "expected_sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+          "status": 200,
+          "bytes": 1413,
+          "sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/gmail-callback.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/gmail-callback.html",
+          "expected_bytes": 1151,
+          "expected_sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+          "status": 200,
+          "bytes": 1151,
+          "sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+          "redirects": 1,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/gmail-callback",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/gmail-callback.js",
+          "expected_bytes": 1917,
+          "expected_sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+          "status": 200,
+          "bytes": 1917,
+          "sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/gmail-callback.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/icons/icon-192.png",
+          "expected_bytes": 942,
+          "expected_sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+          "status": 200,
+          "bytes": 942,
+          "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/icons/icon-192.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/icons/icon-512.png",
+          "expected_bytes": 2766,
+          "expected_sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "status": 200,
+          "bytes": 2766,
+          "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/icons/icon-512.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/icons/maskable-512.png",
+          "expected_bytes": 2766,
+          "expected_sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "status": 200,
+          "bytes": 2766,
+          "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/icons/maskable-512.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/images/fleet-alpine-hero.webp",
+          "expected_bytes": 316402,
+          "expected_sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+          "status": 200,
+          "bytes": 316402,
+          "sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/images/fleet-alpine-hero.webp",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/images/fleet-cockpit-truck.jpg",
+          "expected_bytes": 181776,
+          "expected_sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+          "status": 200,
+          "bytes": 181776,
+          "sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/images/fleet-cockpit-truck.jpg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/images/fleet-light-trucks.jpg",
+          "expected_bytes": 221619,
+          "expected_sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+          "status": 200,
+          "bytes": 221619,
+          "sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/images/fleet-light-trucks.jpg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/index.html",
+          "expected_bytes": 1058,
+          "expected_sha256": "edc39e82a0194ba3e4064022fb5b6d57541a8b675966bb09fb499cca5c5c50b5",
+          "status": 200,
+          "bytes": 1058,
+          "sha256": "edc39e82a0194ba3e4064022fb5b6d57541a8b675966bb09fb499cca5c5c50b5",
+          "redirects": 1,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/manifest.webmanifest",
+          "expected_bytes": 509,
+          "expected_sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+          "status": 200,
+          "bytes": 509,
+          "sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/manifest.webmanifest",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/release.json",
+          "expected_bytes": 286,
+          "expected_sha256": "d823ad092b99964737c5053c649b47d83145284555ec077c0985718e846bd0c4",
+          "status": 200,
+          "bytes": 286,
+          "sha256": "d823ad092b99964737c5053c649b47d83145284555ec077c0985718e846bd0c4",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/release.json",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/sw.js",
+          "expected_bytes": 3692,
+          "expected_sha256": "4a7b61d9c639bc8c8f4dc20cf2b912cc2fce0e64c9c9338271fa53d8f37edce9",
+          "status": 200,
+          "bytes": 3692,
+          "sha256": "4a7b61d9c639bc8c8f4dc20cf2b912cc2fce0e64c9c9338271fa53d8f37edce9",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/sw.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "path": "/workbox-2fbc6a65.js",
+          "expected_bytes": 15026,
+          "expected_sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+          "status": 200,
+          "bytes": 15026,
+          "sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+          "redirects": 0,
+          "final_origin": "https://www.truckcontrolai.com",
+          "final_path": "/workbox-2fbc6a65.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/AdminConsole-CQhzERS0.js",
+          "expected_bytes": 132951,
+          "expected_sha256": "a3aa2f560400339443649fb3f27a15b8f00cee3e05076460697c11ca2e6251dc",
+          "status": 200,
+          "bytes": 132951,
+          "sha256": "a3aa2f560400339443649fb3f27a15b8f00cee3e05076460697c11ca2e6251dc",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/AdminConsole-CQhzERS0.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/AdminConsole-_5uVIHU_.css",
+          "expected_bytes": 2061,
+          "expected_sha256": "b9b1ba6172958bc8544a8ace66b0c317020f67b50488ef4e8d9113b78e549aae",
+          "status": 200,
+          "bytes": 2061,
+          "sha256": "b9b1ba6172958bc8544a8ace66b0c317020f67b50488ef4e8d9113b78e549aae",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/AdminConsole-_5uVIHU_.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/CompanyFullAccount-CaPm-Hp-.js",
+          "expected_bytes": 2007,
+          "expected_sha256": "328aff4906acc132d45cdb2e6beddac5cb4d4695ff16b0a5efbe147453f21140",
+          "status": 200,
+          "bytes": 2007,
+          "sha256": "328aff4906acc132d45cdb2e6beddac5cb4d4695ff16b0a5efbe147453f21140",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/CompanyFullAccount-CaPm-Hp-.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/CompanyFullAdmin-BTxXx0V-.js",
+          "expected_bytes": 13725,
+          "expected_sha256": "cb0bd2390cce55050a7f8569eae4508e9901fe4ebf9358f8dfd5e5a3c5f2652d",
+          "status": 200,
+          "bytes": 13725,
+          "sha256": "cb0bd2390cce55050a7f8569eae4508e9901fe4ebf9358f8dfd5e5a3c5f2652d",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/CompanyFullAdmin-BTxXx0V-.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/CompanyFullAdmin-Dv05IQdm.css",
+          "expected_bytes": 1171,
+          "expected_sha256": "1a728340237482e2574a01758359355920c1e1c2a2fbd86a714ca2ddfff13497",
+          "status": 200,
+          "bytes": 1171,
+          "sha256": "1a728340237482e2574a01758359355920c1e1c2a2fbd86a714ca2ddfff13497",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/CompanyFullAdmin-Dv05IQdm.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/MfaChallenge-DYfvIQ-o.js",
+          "expected_bytes": 3097,
+          "expected_sha256": "79d6feb2dc29a66f7d0bccd62ee638499e47a0afdc3b7820ecb4c72e90d4e4e8",
+          "status": 200,
+          "bytes": 3097,
+          "sha256": "79d6feb2dc29a66f7d0bccd62ee638499e47a0afdc3b7820ecb4c72e90d4e4e8",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/MfaChallenge-DYfvIQ-o.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/MfaSettings-Db1sMDmX.js",
+          "expected_bytes": 7037,
+          "expected_sha256": "1a466cb1f32596032dad451a351537a0c498dc051f5501ccf46075b2f42fd996",
+          "status": 200,
+          "bytes": 7037,
+          "sha256": "1a466cb1f32596032dad451a351537a0c498dc051f5501ccf46075b2f42fd996",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/MfaSettings-Db1sMDmX.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+          "expected_bytes": 36932,
+          "expected_sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+          "status": 200,
+          "bytes": 36932,
+          "sha256": "9fea608a947e67020c33cad9a6fe3d60c54119dfb8cff87768a8117a15ed7543",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/dm-sans-latin-wght-normal-Xz1IZZA0.woff2",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/index-C8O496Ut.js",
+          "expected_bytes": 938092,
+          "expected_sha256": "8efba9416c5fc8f1720a77d8854bc4923e07fefcfda14ef35ca77cefe2b9ab47",
+          "status": 200,
+          "bytes": 938092,
+          "sha256": "8efba9416c5fc8f1720a77d8854bc4923e07fefcfda14ef35ca77cefe2b9ab47",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/index-C8O496Ut.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/index-aQsLPUjQ.css",
+          "expected_bytes": 138707,
+          "expected_sha256": "2cbacc98052b7b2002831b651cfd330a771a313123fa042a9e05a7810d7d0ec4",
+          "status": 200,
+          "bytes": 138707,
+          "sha256": "2cbacc98052b7b2002831b651cfd330a771a313123fa042a9e05a7810d7d0ec4",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/index-aQsLPUjQ.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/mail-C2WzLYej.js",
+          "expected_bytes": 86279,
+          "expected_sha256": "ca5d405a060ec632de48c8e269e945f75f69e4ef15161e67e07b93e132543331",
+          "status": 200,
+          "bytes": 86279,
+          "sha256": "ca5d405a060ec632de48c8e269e945f75f69e4ef15161e67e07b93e132543331",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/mail-C2WzLYej.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+          "expected_bytes": 24836,
+          "expected_sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+          "status": 200,
+          "bytes": 24836,
+          "sha256": "a30ddcd349703aff7464c34bef3fffdff405ee50c113440d7c8693c02d210972",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/manrope-latin-wght-normal-DHIcAJRg.woff2",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/mfa-Bhnd7ttu.js",
+          "expected_bytes": 433,
+          "expected_sha256": "c70d054fc38021894c810322ea1a65974b5136e1186085990013179e9040437b",
+          "status": 200,
+          "bytes": 433,
+          "sha256": "c70d054fc38021894c810322ea1a65974b5136e1186085990013179e9040437b",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/mfa-Bhnd7ttu.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/mfa-K_vLim-R.css",
+          "expected_bytes": 992,
+          "expected_sha256": "729e8b6d0e8ced7e142dfd321b00626ca845048fa9afc82a0b833c4f6398df0c",
+          "status": 200,
+          "bytes": 992,
+          "sha256": "729e8b6d0e8ced7e142dfd321b00626ca845048fa9afc82a0b833c4f6398df0c",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/mfa-K_vLim-R.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/ui-BB5zv1Kv.js",
+          "expected_bytes": 1211575,
+          "expected_sha256": "5c0bc7e3f8f1cb447226c2b863b537530b741fbe1259bce75010027078c46a8a",
+          "status": 200,
+          "bytes": 1211575,
+          "sha256": "5c0bc7e3f8f1cb447226c2b863b537530b741fbe1259bce75010027078c46a8a",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/ui-BB5zv1Kv.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+          "expected_bytes": 5653,
+          "expected_sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+          "status": 200,
+          "bytes": 5653,
+          "sha256": "17bcc17d60dc78f927834b880c39649b03af46fd1f5cdbb8c42c5ae2b515dce9",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/assets/workbox-window.prod.es5-Bd17z0YL.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/brands/man.webp",
+          "expected_bytes": 2738,
+          "expected_sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+          "status": 200,
+          "bytes": 2738,
+          "sha256": "99d4d0423c08856e76160291c01d21c28fbcbc6360baf44619c105cd64cf677a",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/brands/man.webp",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/brands/mercedes-benz.svg",
+          "expected_bytes": 1320,
+          "expected_sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+          "status": 200,
+          "bytes": 1320,
+          "sha256": "be9f132184cf11645bfb4f721761e72499578d474e3d4d8eb5f7d42d2799b7e5",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/brands/mercedes-benz.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/brands/scania.svg",
+          "expected_bytes": 177998,
+          "expected_sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+          "status": 200,
+          "bytes": 177998,
+          "sha256": "18e63fd299d9a80a1c001bc6466ede3842271a75af3c4ae5d5993f32d356e459",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/brands/scania.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/examples/factura-demostracion.pdf",
+          "expected_bytes": 2155,
+          "expected_sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+          "status": 200,
+          "bytes": 2155,
+          "sha256": "b367e2c30da94602e2fbcd98d927c47aff180f3d614c768793fe6b5f0c695a4b",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/examples/factura-demostracion.pdf",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/favicon.svg",
+          "expected_bytes": 380,
+          "expected_sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+          "status": 200,
+          "bytes": 380,
+          "sha256": "55bfe274e795ca38b7dd99a4e9772a519b268c78ada4e18a3727b88afe11ca8e",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/favicon.svg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/gmail-callback.css",
+          "expected_bytes": 1413,
+          "expected_sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+          "status": 200,
+          "bytes": 1413,
+          "sha256": "515c3687bc66349b7e173e5e08f2a400c1dadd45d7704e9440c687de43976655",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/gmail-callback.css",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/gmail-callback.html",
+          "expected_bytes": 1151,
+          "expected_sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+          "status": 200,
+          "bytes": 1151,
+          "sha256": "f74e3b1901af3e8467a4739e0b1ebbc3383f6573ce1a5af828d1888b33ccc5df",
+          "redirects": 1,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/gmail-callback",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/gmail-callback.js",
+          "expected_bytes": 1917,
+          "expected_sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+          "status": 200,
+          "bytes": 1917,
+          "sha256": "59a9a31893a4f893b8c81c1a9bceada1e783eba7a186d4df35b4eeeaa28abeef",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/gmail-callback.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/icons/icon-192.png",
+          "expected_bytes": 942,
+          "expected_sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+          "status": 200,
+          "bytes": 942,
+          "sha256": "b7d1697eebed3fdcfb5f0ae84645b6f563fb17bf63c5b7a19bfeb1a9662d4b4d",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/icons/icon-192.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/icons/icon-512.png",
+          "expected_bytes": 2766,
+          "expected_sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "status": 200,
+          "bytes": 2766,
+          "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/icons/icon-512.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/icons/maskable-512.png",
+          "expected_bytes": 2766,
+          "expected_sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "status": 200,
+          "bytes": 2766,
+          "sha256": "ea052f17ae371b1312a5ccb159d98b4179fb83013a35ca8fcae761c5f2f7e108",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/icons/maskable-512.png",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/images/fleet-alpine-hero.webp",
+          "expected_bytes": 316402,
+          "expected_sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+          "status": 200,
+          "bytes": 316402,
+          "sha256": "ad0df77b1830d3a7b071a7de7683f7194ae7d9b6b327ab8cf3915b48637c7c2d",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/images/fleet-alpine-hero.webp",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/images/fleet-cockpit-truck.jpg",
+          "expected_bytes": 181776,
+          "expected_sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+          "status": 200,
+          "bytes": 181776,
+          "sha256": "532ce5f608f0bb80c81f292d454d7e5588fb87b52a741cf451cb433d6ea2b3e2",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/images/fleet-cockpit-truck.jpg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/images/fleet-light-trucks.jpg",
+          "expected_bytes": 221619,
+          "expected_sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+          "status": 200,
+          "bytes": 221619,
+          "sha256": "f851e5c92220b6c853f0c5e708cc66d2629533078bf12fc34c0b2e425a010bf7",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/images/fleet-light-trucks.jpg",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/index.html",
+          "expected_bytes": 1058,
+          "expected_sha256": "edc39e82a0194ba3e4064022fb5b6d57541a8b675966bb09fb499cca5c5c50b5",
+          "status": 200,
+          "bytes": 1058,
+          "sha256": "edc39e82a0194ba3e4064022fb5b6d57541a8b675966bb09fb499cca5c5c50b5",
+          "redirects": 1,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/manifest.webmanifest",
+          "expected_bytes": 509,
+          "expected_sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+          "status": 200,
+          "bytes": 509,
+          "sha256": "8678999ca8098254229a98732542aaf90cdbccfda89920627888e9bcfc101e25",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/manifest.webmanifest",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/release.json",
+          "expected_bytes": 286,
+          "expected_sha256": "d823ad092b99964737c5053c649b47d83145284555ec077c0985718e846bd0c4",
+          "status": 200,
+          "bytes": 286,
+          "sha256": "d823ad092b99964737c5053c649b47d83145284555ec077c0985718e846bd0c4",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/release.json",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/sw.js",
+          "expected_bytes": 3692,
+          "expected_sha256": "4a7b61d9c639bc8c8f4dc20cf2b912cc2fce0e64c9c9338271fa53d8f37edce9",
+          "status": 200,
+          "bytes": 3692,
+          "sha256": "4a7b61d9c639bc8c8f4dc20cf2b912cc2fce0e64c9c9338271fa53d8f37edce9",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/sw.js",
+          "passed": true,
+          "code": "exact_package_file"
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "path": "/workbox-2fbc6a65.js",
+          "expected_bytes": 15026,
+          "expected_sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+          "status": 200,
+          "bytes": 15026,
+          "sha256": "39c2e6ae44c3f29666f6a328b6523bf13a053a1d95c74af8ddea82b1045b0b6e",
+          "redirects": 0,
+          "final_origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "final_path": "/workbox-2fbc6a65.js",
+          "passed": true,
+          "code": "exact_package_file"
+        }
+      ]
+    },
+    "public_release": {
+      "mode": "post_deployment_public_release",
+      "checked_at": "2026-11-17T17:43:32.577Z",
+      "expected_source": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+      "expected_version": "0.5.32-rc.1",
+      "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+      "sites_identity": {
+        "number": 51,
+        "versionId": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_34171029625881919a7feb1978c4f77d",
+        "deploymentId": "appgdep_6afc91fc04988191bf227400e6406a36"
+      },
+      "expected_identity_fields_only": [
+        "published_commit",
+        "app_version",
+        "published_version_number",
+        "published_version_id",
+        "deployment_id"
+      ],
+      "baseline_monitor_sha256": "0e0a837cfe48124b458cced57cf0b5b5d1589212b46a2327e52e989d08fa942a",
+      "package_proof_sha256": "15782c3c754ee058fcac693329c6148baacf6c3336396a2bf6235b9fddc70bab",
+      "unchanged_verifiers": [
+        {
+          "path": "scripts/verify-published-candidate.mjs",
+          "sha256": "e3c1ab2c579a01807d0b99b28c9a1a12066a63f2151dd3fdb870713abdd31ae7"
+        },
+        {
+          "path": "scripts/production-health.mjs",
+          "sha256": "4d947429763b095280b4201031151fee3307899114ddaaa7c5467e6212bbeb39"
+        }
+      ],
+      "pwa_profiles": [
+        {
+          "origin": "https://truckcontrolai.com",
+          "profile": "windows",
+          "themes": [
+            "light",
+            "cockpit"
+          ]
+        },
+        {
+          "origin": "https://truckcontrolai.com",
+          "profile": "android",
+          "themes": [
+            "light",
+            "cockpit"
+          ]
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "profile": "windows",
+          "themes": [
+            "light",
+            "cockpit"
+          ]
+        },
+        {
+          "origin": "https://www.truckcontrolai.com",
+          "profile": "android",
+          "themes": [
+            "light",
+            "cockpit"
+          ]
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "profile": "windows",
+          "themes": [
+            "light",
+            "cockpit"
+          ]
+        },
+        {
+          "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+          "profile": "android",
+          "themes": [
+            "light",
+            "cockpit"
+          ]
+        }
+      ],
+      "health_probes": [
+        "https://truckcontrolai.com/release.json",
+        "https://www.truckcontrolai.com/release.json",
+        "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site/release.json",
+        "https://kkkemaycedexymrpaqtp.supabase.co/functions/v1/company-copilot/specialists/health",
+        "https://kkkemaycedexymrpaqtp.supabase.co/rest/v1/trucks?select=id&limit=1"
+      ],
+      "expected_pwa_profiles": 6,
+      "expected_health_checks": 5,
+      "provider_calls": 0,
+      "model_calls": 0,
+      "owned_auth_or_inbox_access": false,
+      "physical_devices": false,
+      "run_artifacts": "/tmp/truckcontrol-mail51-tools.WaVUz4/release-run-ThLGaI",
+      "passed": true,
+      "publication_accepted_by_owner": true,
+      "monitor_offer_flags_and_origins_preserved": true,
+      "health_checks": 5,
+      "browser_process": {
+        "passed": true,
+        "exit_code": 0,
+        "signal": null,
+        "code": "unchanged_browser_verifier_completed",
+        "stdout_bytes": 726,
+        "stderr_bytes": 0,
+        "stdout_sha256": "bdb6175c715134b429fd73ca8ab7bea704e8806e718d50fb95a1982f0b6d80f7",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "raw_process_output_retained": false
+      },
+      "pwa_profiles_passed": 6,
+      "pwa_receipt_sha256": "2bd049dea633292efedc90018683c73a8a696dfb2112aec1fbcaf80b94c2ac76"
+    },
+    "native_runtime": {
+      "version": 17,
+      "status": "ACTIVE",
+      "files": 21,
+      "byte_equal": true,
+      "ezbr_sha256": "a478b875d1c909cf777479c85be0624fa886e7489198f94f5fc81a4f668e918f",
+      "project_id": "kkkemaycedexymrpaqtp",
+      "function": "company-mail",
+      "source_commit": "b42db97223c37dabdfbc05857783c5a8aba8ba57",
+      "previous_version": 16,
+      "previous_snapshot": "native-company-mail16-recovery.json",
+      "migration_performed": false,
+      "provider_acceptance_performed": false,
+      "model_calls": 0
+    },
+    "native_HTTP": {
+      "recorded_at": "2026-11-17T16:33:18.224Z",
+      "project": "kkkemaycedexymrpaqtp",
+      "function": "company-mail",
+      "checks": [
+        {
+          "name": "anonymous_legacy_status",
+          "status": 401,
+          "controlled_error_matches": true,
+          "exact_origin": true,
+          "passed": true
+        },
+        {
+          "name": "anonymous_connected_import",
+          "status": 401,
+          "controlled_error_matches": true,
+          "exact_origin": true,
+          "passed": true
+        },
+        {
+          "name": "anonymous_automatic_import",
+          "status": 401,
+          "controlled_error_matches": true,
+          "exact_origin": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_origin",
+          "status": 403,
+          "controlled_error_matches": true,
+          "exact_origin": false,
+          "passed": true
+        },
+        {
+          "name": "allowed_preflight",
+          "status": 204,
+          "controlled_error_matches": true,
+          "exact_origin": true,
+          "passed": true
+        },
+        {
+          "name": "canonical_method",
+          "status": 405,
+          "controlled_error_matches": true,
+          "exact_origin": true,
+          "passed": true
+        }
+      ],
+      "passed": 6,
+      "total": 6,
+      "authenticated_provider_acceptance": false,
+      "mailbox_reads": 0,
+      "model_calls": 0,
+      "customer_mutations": 0
+    },
+    "security_review": {
+      "recorded_at": "2026-11-17T16:39:41.027075+00:00",
+      "review_type": "Final independent static review; evidence only, no formal GitHub PR approval or deployment attestation.",
+      "baseline": "48562e7a261ec8c758289290f94d6f0696f7465e",
+      "feature": "5d34bae8c04fced899fde4700e4f4d4e7865bdb4",
+      "prepared_production": "b42db97223c37dabdfbc05857783c5a8aba8ba57",
+      "outcome": "No new blocking authorization, session, period, cursor, expiry, race, cost-reservation or logging regression identified in the specified product diff.",
+      "actions": {
+        "product_or_test_writes": false,
+        "new_test_runs": 0,
+        "live_provider_or_model_calls": 0,
+        "managed_database_operations": 0
+      },
+      "source_equivalence": {
+        "native_sources_including_deno_config": 21,
+        "unchanged_from_baseline": 16,
+        "changed": 4,
+        "new": 1,
+        "manifest_payload_feature_production_equal": true,
+        "all_src_supabase_tests_equal_between_feature_and_production": true,
+        "migration_diff_empty": true
+      },
+      "checks": [
+        {
+          "area": "Default OFF / consent",
+          "result": "Pass",
+          "evidence": [
+            "src/components/ConnectedMailboxInvoices.tsx",
+            "src/app/ConnectedMailAutomation.tsx"
+          ],
+          "detail": "No scheduler job exists until explicit activation. The separate RAM consent, fresh capability and exact mailbox/organization/date selection are required. No cron or persisted credential is added."
+        },
+        {
+          "area": "Auth / SID / MFA / organization",
+          "result": "Pass",
+          "evidence": [
+            "supabase/functions/_shared/auth-session.ts",
+            "supabase/functions/company-mail/gateway.ts",
+            "supabase/functions/company-mail/handler.ts",
+            "src/integrations/personal-mail/invoice-import.ts"
+          ],
+          "detail": "The unchanged gateway authenticates the captured bearer through Auth and tc_verified_session. Grant claims are decoded only after verification; actor/SID/AAL and fresh company write/features are checked before effects. UI context and pending-start invalidation remain in place."
+        },
+        {
+          "area": "Period / expiry / cursor",
+          "result": "Pass",
+          "evidence": [
+            "supabase/functions/_shared/mail-automation.ts",
+            "supabase/functions/company-mail/connected-contract.ts",
+            "src/domain/mail-automation.ts"
+          ],
+          "detail": "Canonical timestamps, fixed original dates, at most one hour and Madrid day end, native SID/AAL binding and request narrowing are enforced. Signed continuations bind the original grant period, account, identity, start and expiry. Repeated/no-progress continuations stop the coordinator."
+        },
+        {
+          "area": "Async races / stopping",
+          "result": "Pass",
+          "evidence": [
+            "supabase/functions/company-mail/handler.ts",
+            "src/app/ConnectedMailAutomation.tsx",
+            "src/domain/mail-automation.ts"
+          ],
+          "detail": "Grant expiry is checked again after awaited permissions/AI availability. Stopping an account also aborts pending activation. The provider checks account/scope/visibility/connectivity again after status awaits; stopped flights cannot update a replacement job."
+        },
+        {
+          "area": "Costs / originals / compatibility",
+          "result": "Pass",
+          "evidence": [
+            "supabase/functions/company-mail/connected-gmail.ts",
+            "supabase/functions/company-mail/connected-imap-core.ts",
+            "supabase/functions/_shared/ai-runtime.ts",
+            "supabase/functions/company-mail/gateway.ts"
+          ],
+          "detail": "Automatic requests stop after one new original or the first incidence; candidate/byte/message bounds remain. Manual requests retain ten attachments. Existing private originals, content-hash deduplication, unique invoice reservation and conservative unknown-usage reservation are unchanged. No SQL, quota or provider-setting change is introduced."
+        },
+        {
+          "area": "Privacy / logging / transport",
+          "result": "Pass",
+          "evidence": [
+            "src/domain/legal.ts",
+            "docs/MAIL_AUTOMATION.md",
+            "supabase/functions/personal-mail/transport.ts",
+            "src/integrations/personal-mail/invoice-import.ts"
+          ],
+          "detail": "Supplemental privacy describes the opt-in foreground scope and limits without replacing previous contractual consent. No new sensitive logging or WebStorage is introduced; fixed HTTPS destinations, no redirects, pinned public IMAP DNS/strict TLS and disabled transport logging remain."
+        },
+        {
+          "area": "Rate-limit wording",
+          "result": "Pass",
+          "evidence": [
+            "docs/MAIL_AUTOMATION.md",
+            "src/domain/legal.ts"
+          ],
+          "detail": "Five minutes, ten batches and one active flight are coordinator controls. The documentation separately attributes one new original per automatic request and existing AI reservations/quotas to the backend; it does not describe min5/max10 as a remote rate limiter."
+        }
+      ],
+      "operating_limits": [
+        "Coordinator interval, request ceiling, visibility and concurrency are per running app instance. They are not a global remote rate limiter across tabs, devices, direct callers or legacy manual requests; the server retains its existing authorization and AI quotas.",
+        "A grant is a transient request acknowledgement rather than a persisted contractual receipt. App visibility and explicit human interaction are enforced by the client workflow; the server independently verifies the bearer, scope, dates and supplied grant expiry.",
+        "Stopping removes subsequent app work and discards late UI results. A request or model call already accepted may complete; saved originals remain private. Uncertain provider usage retains its conservative reservation and is not automatically retried.",
+        "AI readiness indicates configuration/permission availability, not a reserved remaining budget. An original can be saved before AI budget denial; the resulting incidence stops automatic work and requires review.",
+        "Gmail/IMAP pagination or UIDVALIDITY changes can stop a traversal. Exhausting ten batches before catch-up completes requires explicit review/reactivation; no silent cursor reset or date expansion is promised.",
+        "This review does not constitute a new live mailbox, Google public-verification, managed recovery, physical-device or model/provider acceptance. No live calls were repeated."
+      ],
+      "prior_evidence_reused_not_rerun": {
+        "grant_adversarial_cases": 73,
+        "combined_core_cases_including_those_73": 138,
+        "browser_cases": 172,
+        "core_log": "/workspace/artifacts/truckcontrol-mail-automation-20261117/new-core-final.log",
+        "browser_receipt": "/workspace/artifacts/truckcontrol-mail-automation-20261117/browser-automation-review-20261117.json"
+      },
+      "native_sources": [
+        {
+          "name": "_shared/ai-runtime.ts",
+          "sha256": "7c5a27762ab5aa6629b4248730260eb7d2e593af35ba90ad128800abdb83114d",
+          "bytes": 4534,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "_shared/app-origins.ts",
+          "sha256": "031572d2b69b535bec41d4ee696139756fd85a306273d6f03dcc43e1f199661a",
+          "bytes": 443,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "_shared/auth-session.ts",
+          "sha256": "4d489e5610118a0d4170b743803c4d12562f560e02367e1b5198e44cec32c30f",
+          "bytes": 2404,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "_shared/invoice-ai.ts",
+          "sha256": "d207ae07858bbae9b77526d5f36acf9e8117ef191ec445700a91d1478f785731",
+          "bytes": 867,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "_shared/invoice.ts",
+          "sha256": "e81557bd97de9ab38e9d623a754960e88eaf92bd1faa6a0e253c40c8514bf189",
+          "bytes": 9001,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "_shared/mail-automation.ts",
+          "sha256": "853217ed12c732e6e454165122a8756904b072305c21e3bc0bcbc02749df54c4",
+          "bytes": 6108,
+          "baseline": "new"
+        },
+        {
+          "name": "_shared/mail-period.ts",
+          "sha256": "0e2d90265915d834a7712cadf252b0dbf2bf0703446a80cd87db3a9cdab49071",
+          "bytes": 5111,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "_shared/mail.ts",
+          "sha256": "bb898316a43ffd74adf8fc4132f54af8af3af15cf4f6871a8b267bee0fd6e34e",
+          "bytes": 5240,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "_shared/resend-runtime.ts",
+          "sha256": "ac381e6a2f283e0150b7f9d94c989ecced3f1cb5fab6a3b7e7c0c8a61a0a98aa",
+          "bytes": 1537,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "company-mail/connected-contract.ts",
+          "sha256": "c49f6b236e58c0b46aa0f592a7bb60e1176cd5b3018121c4942474af15ca7677",
+          "bytes": 11325,
+          "baseline": "changed"
+        },
+        {
+          "name": "company-mail/connected-gmail.ts",
+          "sha256": "915fa2b126a589a9d7f001f770e4cda60b269087297562ff1d3277f430dbe5a6",
+          "bytes": 14259,
+          "baseline": "changed"
+        },
+        {
+          "name": "company-mail/connected-imap-core.ts",
+          "sha256": "732431a907325b64ad8fa25c385704caaf75bda24004d47860c19a74b43215ba",
+          "bytes": 8843,
+          "baseline": "changed"
+        },
+        {
+          "name": "company-mail/connected-imap.ts",
+          "sha256": "51810a1dcb2ba579614f6916e14cc4d5200afbbfcfa51b71debdf2d418e9ffba",
+          "bytes": 3294,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "company-mail/connected-importer.ts",
+          "sha256": "d836bda79997bc28e9a27c4bdfefdfc452d8a05de3f4d20cbefb7600c774b6a1",
+          "bytes": 739,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "company-mail/deno.json",
+          "sha256": "f50dbef211edc147a9506a744070fd5bce186a8bde517325f83b61ae0898d3ea",
+          "bytes": 191,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "company-mail/gateway.ts",
+          "sha256": "d545caa5137e0ee7654c3168fd456173fa68cb70983d79670831e6d27018ba33",
+          "bytes": 4509,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "company-mail/handler.ts",
+          "sha256": "516460d380fdc26c82c16bb3075039c993278f538fe1ffc70ad446bad4fd91cf",
+          "bytes": 21760,
+          "baseline": "changed"
+        },
+        {
+          "name": "company-mail/index.ts",
+          "sha256": "8ff63af972d323a25ec5399e3dbbdc4ede9cd57b12996b6b23bbe7dc34c54106",
+          "bytes": 1862,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "company-mail/saved-ai.ts",
+          "sha256": "d20d88f7a9d3662960ec6d5a06355556725c421a759403517a9c02f2543364b8",
+          "bytes": 5119,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "personal-mail/contract.ts",
+          "sha256": "10b5e16dc7c5714727ff0651c9516d2d940fb057e602b533ebb4ceb1264a9c51",
+          "bytes": 7018,
+          "baseline": "unchanged"
+        },
+        {
+          "name": "personal-mail/transport.ts",
+          "sha256": "620753fcf1e31877c853e25185e863be197b583094df439d6ff43be8ed18e8e6",
+          "bytes": 13958,
+          "baseline": "unchanged"
+        }
+      ]
+    },
+    "clock_sync": {
+      "recorded_at": "2026-11-17T17:10:30.009609+00:00",
+      "scope": "Test-only virtual-clock / synthetic HTTP synchronization correction; no product, native permission, quota or timeout changes.",
+      "failed_ci": {
+        "run_id": 44125297905,
+        "source": "5d34bae8c04fced899fde4700e4f4d4e7865bdb4",
+        "result": "171/172; Android Light expected second import but observed one.",
+        "official_trace_receipt": "/workspace/artifacts/truckcontrol-mail-automation-20261117/ci-pr-failure-diagnosis-44125297905.json",
+        "artifact_id": 14349128307
+      },
+      "established_facts": [
+        "The first 240000ms virtual-clock jump starts a native company-access revalidation whose real HTTP response has not finished when the 61000ms jump starts.",
+        "The official trace records a 3.776ms gap between the clock calls, two HTTP 200 responses without complete recorded bodies, stable expected synthetic SID/AAL and no second import.",
+        "The final CI DOM has no connected account or invoice dialog, while Full access is again active. This is a private-context withdrawal, not merely a missing scheduler tick."
+      ],
+      "attribution_limit": "The overlap is demonstrated. The exact callback that withdrew the CI private context is not established; do not label the failure a random flake or assert that the 12000ms callback was conclusively identified in CI.",
+      "unmodified_local_reproduction": {
+        "project": "mail-android-light",
+        "repetitions": 5,
+        "passed": 5,
+        "log": "/workspace/artifacts/truckcontrol-mail-automation-20261117/ci-android-grant-repro5.log",
+        "interpretation": "Non-reproduction alone does not explain or dismiss the CI failure."
+      },
+      "external_controlled_experiments": [
+        {
+          "held": "tc_finish_registration",
+          "second_jump_ms": 61000,
+          "observation": "Account remained; two imports observed. The intended account-withdrawal assertion failed, so this did not reproduce the CI closure.",
+          "log": "/workspace/artifacts/truckcontrol-mail-automation-20261117/ci-poll-controlled-esm.log"
+        },
+        {
+          "held": "tc_organization_access",
+          "second_jump_ms": 61000,
+          "observation": "Account remained; the intended withdrawal assertion failed. This did not reproduce the CI closure.",
+          "log": "/workspace/artifacts/truckcontrol-mail-automation-20261117/ci-poll-controlled-membership.log"
+        },
+        {
+          "held": "tc_organization_access",
+          "second_jump_ms": 13000,
+          "observation": "Before the next 15000ms heartbeat, the isolated probe withdrew the account and kept one import. This demonstrates a possible in-flight deadline path, not the exact CI callback.",
+          "log": "/workspace/artifacts/truckcontrol-mail-automation-20261117/ci-poll-controlled-before-heartbeat.log"
+        },
+        {
+          "condition": "Release the held response and drain real HTTP before the next clock jump.",
+          "observation": "The controlled drained probes kept the connected account and applied the second import.",
+          "log": "/workspace/artifacts/truckcontrol-mail-automation-20261117/ci-poll-controlled-before-heartbeat.log"
+        }
+      ],
+      "fix": {
+        "file": "tests/unified-mail-browser/automation.spec.ts",
+        "sha256": "8f3c9ee4d97e363c343ba7db41f51bc86761e62b675bd6a01a55554258d33e3b",
+        "added_lines": 18,
+        "removed_lines": 0,
+        "details": "Only the grant test waits for networkidle in the closed synthetic fixture before its second and third jumps, then also asserts the same account and waiting state. All original import-count, scope, date, cursor, expiry and WebStorage assertions remain.",
+        "original_clock_deltas_retained": [
+          240000,
+          61000,
+          301000
+        ],
+        "timeouts_changed": false,
+        "product_changed": false,
+        "native_heartbeat_disabled": false,
+        "root_authorized": true
+      },
+      "verification": {
+        "focused_cases": 20,
+        "passed": 20,
+        "failed": 0,
+        "by_project": {
+          "mail-android-cockpit": 5,
+          "mail-android-light": 5,
+          "mail-windows-cockpit": 5,
+          "mail-windows-light": 5
+        },
+        "log": "/workspace/artifacts/truckcontrol-mail-automation-20261117/ci-grant-fixed20.log",
+        "full_172_local_repeated": false,
+        "full_ci": "Required next; Root owns commit, push and final CI."
+      },
+      "preservation": {
+        "failed_ci_receipt_retained": true,
+        "failed_control_logs_retained": true,
+        "ci_original_extracted_files": "/tmp/truckcontrol-pr44125297905-failure-g2xbwb7e",
+        "raw_control_traces": "The shared temporary diagnostic output was reused between controlled probes; earlier probe logs are preserved, while the final 13s/drained trace pair remains under /tmp/truckcontrol-mail-poll-diagnostic-3way15i8/results."
+      },
+      "actions": {
+        "commits_or_pushes_by_this_agent": 0,
+        "live_provider_or_model_calls": 0,
+        "managed_database_operations": 0,
+        "new_unattended_work": 0
+      }
+    },
+    "archive_postflight": {
+      "source_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+      "saved_version": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_34171029625881919a7feb1978c4f77d",
+      "saved_number": 51,
+      "input_gzip_sha256": "466a21633632a096ec98468cbeae8354fda5d52826aa831d5391954f13191eaa",
+      "input_uncompressed_tar_sha256": "6d7c3ea05d31c73c7e12f59d407cae86230efa3790097fcaa692f3c8d44866ca",
+      "platform_archive": {
+        "archive_format": "tar",
+        "sediment_file_id": "file_0000000081a081f5b8f7bbfe5353b7b4",
+        "content_hash": "sha256:e462b0d25e8a19c89dc506bb498e624ea40bf505b1655500c8fd0d57f3588c0e",
+        "size_bytes": 3573760,
+        "file_count": 36
+      },
+      "source_and_archive_backed_version_verified": true,
+      "first_guard_rejected_different_archive_envelope": true,
+      "input_gzip_and_service_tar_are_not_same_byte_representation": true,
+      "platform_archive_not_downloaded": "native stored archive reference could not resolve with uploaded-file downloader; no alternate private access attempted",
+      "all_input_files_verified_against_official_CI": true,
+      "post_deployment_public_hash_verification_required": 105,
+      "actual_public_file_hashes_verified_yet": true,
+      "recorded_at": "2026-11-17T17:51:42.572921+00:00",
+      "public_checks_passed": 105,
+      "distinct_files_per_origin": 35,
+      "origins_verified": 3,
+      "all_published_asset_bytes_equal_original_CI_package": true,
+      "pwa_profiles_passed": 6,
+      "health_checks_passed": 5
+    }
+  }
+}
