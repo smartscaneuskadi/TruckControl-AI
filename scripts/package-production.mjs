@@ -5,7 +5,7 @@ import { join, resolve, relative } from "node:path";
 const siteId = "appgprj_6ae655e56db481918fe18adfe9df8b66";
 const origin = "https://truckcontrolai.com";
 const supabase = "https://kkkemaycedexymrpaqtp.supabase.co";
-const expectedBaseline = "5f44a164700ea4cc803bb7cf480b664cce68af43";
+const expectedBaseline = "16f4923cb55ca1203c68bf58a4e8a66e499edcd8";
 const root = resolve(".");
 const sha = execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim();
 if (!/^[a-f0-9]{40}$/.test(sha)) throw Error("Missing exact source commit.");
@@ -138,6 +138,9 @@ if (!["Descargar facturas del correo por IA", "Autorizar y descargar facturas",
     "import_connected_mailbox", "selected_mailbox_period", "2026-11-16",
     "connected_mailbox_import", "Gestionar mis cuentas de correo"].every((value) => bundle.includes(value)))
   throw Error("The reviewed unified email accounts or scoped invoice authorization is missing.");
+if (!["Activar revisión automática", "Detener todas las revisiones",
+    "open_visible_session", "max_new_attachments", "2026-11-17"].every((value) => bundle.includes(value)))
+  throw Error("Explicitly scoped foreground invoice automation is missing.");
 const archivePath = join(process.env.RUNNER_TEMP || "/tmp", "truckcontrol-production-" + sha + ".tar.gz");
 const tar = spawnSync("tar", ["-czf", archivePath, ".openai/hosting.json", "dist"], { stdio: "inherit", shell: false });
 if (tar.status !== 0) throw Error("Production packaging failed.");
@@ -150,6 +153,11 @@ const proof = {
   mfa_enrollment_requested: true, mfa_requires_exact_server_capability: true,
   native_mfa_or_provider_configuration_changed_by_build: false,
   connected_mailbox_import_ui: true,
+  open_session_invoice_automation_ui: true,
+  open_session_invoice_automation_consent_version: "2026-11-17",
+  open_session_invoice_automation_default: false,
+  open_session_invoice_automation_requires_backend_capability: true,
+  closed_app_or_server_cron_enabled: false,
   connected_mailbox_consent_version: "2026-11-16",
   connected_mailbox_import_requires_backend_capability: true,
   connected_mailbox_consent_is_transient: true,
