@@ -7,6 +7,7 @@ import {
 import type { NativeAuth } from "../billing-attachments-browser/fixture";
 import { actor, org } from "../mfa-browser/fixture";
 import { mailPeriodPolicy } from "../../supabase/functions/_shared/mail-period";
+import { openMailAutomationPolicy } from "../../supabase/functions/_shared/mail-automation";
 
 export const firstMail = "one@example.invalid";
 export const secondMail = "two@example.invalid";
@@ -46,6 +47,7 @@ export async function mailboxFixture(
   }[] = [];
   const controls = {
     capability: true,
+    automation: false,
     aiEnabled: true,
     hasMore: false,
     holdImport: false,
@@ -55,14 +57,21 @@ export async function mailboxFixture(
     wrongProfile: null as string | null,
     denyMail: null as string | null,
     importFailure: null as string | null,
+    holdStatus: false,
+    pendingStatuses: 0,
+    resultFailures: 0,
   };
   const importWaiters: (() => void)[] = [],
-    profileWaiters: (() => void)[] = [];
+    profileWaiters: (() => void)[] = [],
+    statusWaiters: (() => void)[] = [];
   const releaseImports = () => {
     for (const release of importWaiters.splice(0)) release();
   };
   const releaseProfiles = () => {
     for (const release of profileWaiters.splice(0)) release();
+  };
+  const releaseStatuses = () => {
+    for (const release of statusWaiters.splice(0)) release();
   };
   await context.addInitScript(() => {
     const writes: string[] = [];
@@ -251,7 +260,11 @@ export async function mailboxFixture(
       else data = { changed: true };
     } else if (companyMail) {
       expect(identity.sub).toBe(actor);
-      if (body?.action === "status")
+      if (body?.action === "status") {
+        if (controls.holdStatus) {
+          controls.pendingStatuses++;
+          await new Promise<void>((resolve) => statusWaiters.push(resolve));
+        }
         data = {
           upload_ready: true,
           forwarding_ready: false,
@@ -266,11 +279,14 @@ export async function mailboxFixture(
                   max_messages: 50,
                   max_attachments: 10,
                   received_period_policy: { ...mailPeriodPolicy },
+                  ...(controls.automation
+                    ? { automation: { ...openMailAutomationPolicy } }
+                    : {}),
                 },
               }
             : {}),
         };
-      else if (body?.action === "import_connected_mailbox") {
+      } else if (body?.action === "import_connected_mailbox") {
         expect(body.organization_id).toBe(org);
         if (controls.holdImport) {
           controls.pendingImports++;
@@ -285,8 +301,8 @@ export async function mailboxFixture(
             consent_version: "2026-11-16",
             imported: 1,
             skipped: 0,
-            failures: 0,
-            ai_used: 1,
+            failures: controls.resultFailures,
+            ai_used: controls.resultFailures ? 0 : 1,
             examined: 1,
             has_more: controls.hasMore,
             next_cursor: controls.hasMore ? "synthetic-next-mail-cursor" : null,
@@ -313,6 +329,7 @@ export async function mailboxFixture(
     tokens,
     releaseImports,
     releaseProfiles,
+    releaseStatuses,
     async grant(page: Page, email: string, expires = 3600) {
       const token = "synthetic-unified-mail-token-" + ++next;
       tokens.set(token, email);
@@ -337,6 +354,7 @@ export const test = base.extend<{ mail: MailFixture }>({
     await use(mail);
     mail.releaseImports();
     mail.releaseProfiles();
+    mail.releaseStatuses();
   },
 });
 export { expect, selectedTheme };

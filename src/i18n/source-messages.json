@@ -19372,5 +19372,17 @@
     "contexts": [
       "src/components/ConnectedMailboxInvoices.tsx:message"
     ]
+  },
+  {
+    "key": "Revisión opcional de facturas durante la sesión",
+    "contexts": [
+      "src/domain/legal.ts:message"
+    ]
+  },
+  {
+    "key": "Información complementaria de 17/11/2026. Puedes autorizar por separado revisiones periódicas del buzón y período elegidos mientras TruckControl permanece abierto y visible. La opción está desactivada por defecto. El consentimiento temporal se vincula a tu usuario, empresa, cuenta y sesión, no se guarda en el dispositivo y dura como máximo una hora, sin superar los permisos del buzón, la sesión o el día autorizado. El coordinador limita diez lotes, separados al menos cinco minutos, y el servidor admite como máximo un original nuevo por petición automática, dentro de las cuotas IA existentes. Se detiene al ocultar la app, cerrar sesión, perder conexión, cambiar contexto o encontrar una incidencia, sin reactivarse ni reintentar automáticamente. No amplía las fechas, no ejecuta lecturas con la app cerrada y no guarda contraseñas ni permisos duraderos. Puedes detenerlo desde Correo o su control visible en otros módulos. Un lote recibido puede terminar; se conservan los originales privados y su revisión humana antes del gasto.",
+    "contexts": [
+      "src/domain/legal.ts:message"
+    ]
   }
 ]
