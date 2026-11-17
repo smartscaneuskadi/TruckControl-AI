@@ -1,6 +1,6 @@
 # Correo único y descarga autorizada de facturas
 
-Actualización candidata `0.5.31-rc.1`, Android10, 16/11/2026. La publicación vigente al iniciar esta tarea sigue siendo Sites49 / `0.5.30-rc.1`; consultar `CURRENT_DELIVERY.md` y el recibo de publicación antes de atribuir esta versión a producción.
+Actualización publicada **Sites 50 / `0.5.31-rc.1`**, Android 10, 16/11/2026, en https://truckcontrolai.com. Backend `company-mail` 16 verificado; producción 49 y demo 6 conservadas. [Recibo y alcance de las pruebas](verification/unified-mailbox-published50-20261116.json).
 
 ## Uso
 

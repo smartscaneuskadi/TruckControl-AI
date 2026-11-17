@@ -14,6 +14,10 @@ import type { MailConnection } from "../integrations/personal-mail/imap";
 import { mailConnectorPrivacy } from "../domain/mail-privacy";
 import { MailConnectorDisclosure } from "../components/MailConnectorDisclosure";
 import { t } from "../i18n/runtime";
+import {
+  ConnectedMailAutomationProvider,
+  ConnectedMailAutomationControls,
+} from "../app/ConnectedMailAutomation";
 
 export interface UnifiedMailboxAccount {
   id: string;
@@ -350,335 +354,352 @@ export function MailWorkspace({
   const showForm = adding || !selectedAccount;
   if (!active && !accounts.length) return null;
   return (
-    <section
-      className="mail-workspace"
-      hidden={!active}
-      aria-labelledby="mail-title"
+    <ConnectedMailAutomationProvider
+      accounts={accounts}
+      available={cloud && online && available}
     >
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">TU ESPACIO DE TRABAJO</p>
-          <h1 id="mail-title">Correo</h1>
-          <p>Conecta las cuentas que quieras utilizar y elige tu buzón.</p>
+      <section
+        className="mail-workspace"
+        hidden={!active}
+        aria-labelledby="mail-title"
+      >
+        <div className="page-heading">
+          <div>
+            <p className="eyebrow">TU ESPACIO DE TRABAJO</p>
+            <h1 id="mail-title">Correo</h1>
+            <p>Conecta las cuentas que quieras utilizar y elige tu buzón.</p>
+          </div>
         </div>
-      </div>
-      <div className="mail-actions">
-        <button
-          className="button primary"
-          type="button"
-          onClick={() => {
-            setAdding(true);
-            setConsent(false);
-            setForm((current) => ({ ...current, password: "" }));
-            setError("");
-          }}
-        >
-          <Plus size={18} aria-hidden="true" /> Añadir correo
-        </button>
-      </div>
-      {accounts.length > 0 && (
-        <nav className="mail-open-views" aria-label="Correos conectados">
-          {accounts.map((account) => (
-            <div className="mail-view-tab" key={account.id}>
-              <button
-                type="button"
-                className={`button ${selected === account.id && !adding ? "primary" : "secondary"}`}
-                aria-pressed={selected === account.id && !adding}
-                onClick={() => {
-                  setSelected(account.id);
-                  setAdding(false);
-                  setForm((current) => ({ ...current, password: "" }));
-                  setConsent(false);
-                  if (account.provider === "gmail") personal.select(account.id);
+        <div className="mail-actions">
+          <button
+            className="button primary"
+            type="button"
+            onClick={() => {
+              setAdding(true);
+              setConsent(false);
+              setForm((current) => ({ ...current, password: "" }));
+              setError("");
+            }}
+          >
+            <Plus size={18} aria-hidden="true" /> Añadir correo
+          </button>
+        </div>
+        <ConnectedMailAutomationControls />
+        {accounts.length > 0 && (
+          <nav className="mail-open-views" aria-label="Correos conectados">
+            {accounts.map((account) => (
+              <div className="mail-view-tab" key={account.id}>
+                <button
+                  type="button"
+                  className={`button ${selected === account.id && !adding ? "primary" : "secondary"}`}
+                  aria-pressed={selected === account.id && !adding}
+                  onClick={() => {
+                    setSelected(account.id);
+                    setAdding(false);
+                    setForm((current) => ({ ...current, password: "" }));
+                    setConsent(false);
+                    if (account.provider === "gmail")
+                      personal.select(account.id);
+                  }}
+                >
+                  <Mail size={16} aria-hidden="true" /> {account.email}
+                </button>
+                <button
+                  type="button"
+                  className="button secondary"
+                  aria-label={`Desconectar ${account.email}`}
+                  onClick={account.disconnect}
+                >
+                  <X size={16} aria-hidden="true" />
+                </button>
+              </div>
+            ))}
+          </nav>
+        )}
+        {(!online || !available) && (
+          <p className="card cargotrack-offline" role="status">
+            Necesitas conexión a Internet para utilizar tu correo.
+          </p>
+        )}
+        {showForm && (
+          <div className="card mail-provider-card">
+            <h2>Añadir una cuenta de correo</h2>
+            <p>
+              Escribe tu correo y elige cómo quieres conectarlo. La descarga de
+              facturas por IA se autoriza después, dentro de cada cuenta.
+            </p>
+            {cloud ? (
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (provider === "google") {
+                    if (personal.ready) personal.connect(form.email);
+                    else void personal.prepare();
+                  } else void connect();
                 }}
               >
-                <Mail size={16} aria-hidden="true" /> {account.email}
-              </button>
-              <button
-                type="button"
-                className="button secondary"
-                aria-label={`Desconectar ${account.email}`}
-                onClick={account.disconnect}
-              >
-                <X size={16} aria-hidden="true" />
-              </button>
-            </div>
-          ))}
-        </nav>
-      )}
-      {(!online || !available) && (
-        <p className="card cargotrack-offline" role="status">
-          Necesitas conexión a Internet para utilizar tu correo.
-        </p>
-      )}
-      {showForm && (
-        <div className="card mail-provider-card">
-          <h2>Añadir una cuenta de correo</h2>
-          <p>
-            Escribe tu correo y elige cómo quieres conectarlo. La descarga de
-            facturas por IA se autoriza después, dentro de cada cuenta.
-          </p>
-          {cloud ? (
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                if (provider === "google") {
-                  if (personal.ready) personal.connect(form.email);
-                  else void personal.prepare();
-                } else void connect();
-              }}
-            >
-              <label htmlFor="mail-email">Correo electrónico</label>
-              <input
-                id="mail-email"
-                type="email"
-                required
-                maxLength={254}
-                value={form.email}
-                disabled={busy || personal.connecting}
-                onChange={(event) =>
-                  changeForm({ ...form, email: event.target.value })
-                }
-                autoComplete="email"
-                placeholder="tu@empresa.com"
-              />
-              <label htmlFor="mail-provider">Proveedor de correo</label>
-              <select
-                id="mail-provider"
-                value={provider}
-                disabled={busy || personal.connecting}
-                onChange={(event) => choose(event.target.value as Provider)}
-              >
-                <option value="google">Gmail / Google Workspace</option>
-                <option value="yahoo">Yahoo Mail</option>
-                <option value="porkbun">Porkbun</option>
-                <option value="gmail">
-                  Gmail con contraseña de aplicación
-                </option>
-                <option value="other">Otro proveedor IMAP/SMTP</option>
-              </select>
-              {provider === "google" ? (
-                <>
-                  <p className="muted">
-                    Elige esa misma cuenta en la ventana oficial de Google.
-                    Autorizar el correo no activa la IA ni descarga facturas.
-                  </p>
-                  {personal.configured === true ? (
-                    <button
-                      className="button primary"
-                      type="submit"
-                      disabled={personal.connecting || !online || !available}
+                <label htmlFor="mail-email">Correo electrónico</label>
+                <input
+                  id="mail-email"
+                  type="email"
+                  required
+                  maxLength={254}
+                  value={form.email}
+                  disabled={busy || personal.connecting}
+                  onChange={(event) =>
+                    changeForm({ ...form, email: event.target.value })
+                  }
+                  autoComplete="email"
+                  placeholder="tu@empresa.com"
+                />
+                <label htmlFor="mail-provider">Proveedor de correo</label>
+                <select
+                  id="mail-provider"
+                  value={provider}
+                  disabled={busy || personal.connecting}
+                  onChange={(event) => choose(event.target.value as Provider)}
+                >
+                  <option value="google">Gmail / Google Workspace</option>
+                  <option value="yahoo">Yahoo Mail</option>
+                  <option value="porkbun">Porkbun</option>
+                  <option value="gmail">
+                    Gmail con contraseña de aplicación
+                  </option>
+                  <option value="other">Otro proveedor IMAP/SMTP</option>
+                </select>
+                {provider === "google" ? (
+                  <>
+                    <p className="muted">
+                      Elige esa misma cuenta en la ventana oficial de Google.
+                      Autorizar el correo no activa la IA ni descarga facturas.
+                    </p>
+                    {personal.configured === true ? (
+                      <button
+                        className="button primary"
+                        type="submit"
+                        disabled={personal.connecting || !online || !available}
+                      >
+                        {personal.connecting
+                          ? "Preparando Google…"
+                          : personal.ready
+                            ? "Entrar con Google"
+                            : "Preparar conexión con Google"}
+                      </button>
+                    ) : (
+                      <>
+                        <p className="muted">
+                          {personal.configured === false
+                            ? "La conexión de Google aún no está configurada para esta aplicación."
+                            : "Comprobando la conexión de Google…"}
+                        </p>
+                        <button
+                          className="button secondary"
+                          type="button"
+                          disabled={!online || !available}
+                          onClick={() => void personal.configure()}
+                        >
+                          Comprobar Google
+                        </button>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <label htmlFor="mail-password">
+                      Contraseña del buzón o de aplicación
+                    </label>
+                    <input
+                      id="mail-password"
+                      type="password"
+                      required
+                      maxLength={2048}
+                      value={form.password}
+                      disabled={busy}
+                      onChange={(event) =>
+                        changeForm({ ...form, password: event.target.value })
+                      }
+                      autoComplete="off"
+                    />
+                    <details
+                      className="mail-provider-advanced"
+                      open={provider === "other" ? true : undefined}
                     >
-                      {personal.connecting
-                        ? "Preparando Google…"
-                        : personal.ready
-                          ? "Entrar con Google"
-                          : "Preparar conexión con Google"}
-                    </button>
-                  ) : (
-                    <>
-                      <p className="muted">
-                        {personal.configured === false
-                          ? "La conexión de Google aún no está configurada para esta aplicación."
-                          : "Comprobando la conexión de Google…"}
-                      </p>
+                      <summary>Configuración avanzada del proveedor</summary>
+                      <div className="form-grid">
+                        <label htmlFor="mail-username">
+                          Usuario del buzón (si es diferente del correo)
+                        </label>
+                        <input
+                          id="mail-username"
+                          maxLength={254}
+                          value={form.username}
+                          disabled={busy}
+                          onChange={(event) =>
+                            changeForm({
+                              ...form,
+                              username: event.target.value,
+                            })
+                          }
+                          autoComplete="off"
+                        />
+                        <label htmlFor="mail-imap">
+                          Servidor de entrada IMAP · puerto 993, TLS
+                        </label>
+                        <input
+                          id="mail-imap"
+                          required
+                          maxLength={253}
+                          value={form.imapHost}
+                          disabled={busy}
+                          onChange={(event) =>
+                            changeForm({
+                              ...form,
+                              imapHost: event.target.value,
+                            })
+                          }
+                          placeholder="imap.tuproveedor.com"
+                          autoComplete="off"
+                        />
+                        <label htmlFor="mail-smtp">
+                          Servidor de salida SMTP · puerto 465, TLS
+                        </label>
+                        <input
+                          id="mail-smtp"
+                          required
+                          maxLength={253}
+                          value={form.smtpHost}
+                          disabled={busy}
+                          onChange={(event) =>
+                            changeForm({
+                              ...form,
+                              smtpHost: event.target.value,
+                            })
+                          }
+                          placeholder="smtp.tuproveedor.com"
+                          autoComplete="off"
+                        />
+                      </div>
                       <button
                         className="button secondary"
                         type="button"
-                        disabled={!online || !available}
-                        onClick={() => void personal.configure()}
+                        disabled={checking || !online}
+                        onClick={() => void checkService()}
                       >
-                        Comprobar Google
+                        {checking
+                          ? "Comprobando servicio…"
+                          : "Comprobar servicio de correo"}
                       </button>
-                    </>
-                  )}
-                </>
-              ) : (
-                <>
-                  <label htmlFor="mail-password">
-                    Contraseña del buzón o de aplicación
-                  </label>
-                  <input
-                    id="mail-password"
-                    type="password"
-                    required
-                    maxLength={2048}
-                    value={form.password}
-                    disabled={busy}
-                    onChange={(event) =>
-                      changeForm({ ...form, password: event.target.value })
-                    }
-                    autoComplete="off"
-                  />
-                  <details
-                    className="mail-provider-advanced"
-                    open={provider === "other" ? true : undefined}
-                  >
-                    <summary>Configuración avanzada del proveedor</summary>
-                    <div className="form-grid">
-                      <label htmlFor="mail-username">
-                        Usuario del buzón (si es diferente del correo)
-                      </label>
+                      {serviceNotice && <p role="status">{serviceNotice}</p>}
+                    </details>
+                    <MailConnectorDisclosure />
+                    <label className="mail-consent">
                       <input
-                        id="mail-username"
-                        maxLength={254}
-                        value={form.username}
-                        disabled={busy}
-                        onChange={(event) =>
-                          changeForm({ ...form, username: event.target.value })
-                        }
-                        autoComplete="off"
-                      />
-                      <label htmlFor="mail-imap">
-                        Servidor de entrada IMAP · puerto 993, TLS
-                      </label>
-                      <input
-                        id="mail-imap"
+                        type="checkbox"
                         required
-                        maxLength={253}
-                        value={form.imapHost}
+                        checked={consent}
                         disabled={busy}
-                        onChange={(event) =>
-                          changeForm({ ...form, imapHost: event.target.value })
-                        }
-                        placeholder="imap.tuproveedor.com"
-                        autoComplete="off"
+                        aria-describedby="mail-connector-disclosure"
+                        onChange={(event) => setConsent(event.target.checked)}
                       />
-                      <label htmlFor="mail-smtp">
-                        Servidor de salida SMTP · puerto 465, TLS
-                      </label>
-                      <input
-                        id="mail-smtp"
-                        required
-                        maxLength={253}
-                        value={form.smtpHost}
-                        disabled={busy}
-                        onChange={(event) =>
-                          changeForm({ ...form, smtpHost: event.target.value })
-                        }
-                        placeholder="smtp.tuproveedor.com"
-                        autoComplete="off"
-                      />
-                    </div>
+                      {t(mailConnectorPrivacy.consentLabel)}
+                    </label>
+                    {(provider === "yahoo" || provider === "gmail") && (
+                      <p className="muted">
+                        Usa una contraseña de aplicación si tu proveedor la
+                        requiere.
+                      </p>
+                    )}
+                    {provider === "porkbun" && (
+                      <p className="muted">
+                        Usa la contraseña de este buzón, que puede ser distinta
+                        de la del panel de Porkbun.
+                      </p>
+                    )}
                     <button
-                      className="button secondary"
-                      type="button"
-                      disabled={checking || !online}
-                      onClick={() => void checkService()}
+                      className="button primary"
+                      type="submit"
+                      disabled={busy || !consent || !online || !available}
                     >
-                      {checking
-                        ? "Comprobando servicio…"
-                        : "Comprobar servicio de correo"}
+                      {busy
+                        ? "Verificando lectura y envío…"
+                        : "Conectar y verificar buzón"}
                     </button>
-                    {serviceNotice && <p role="status">{serviceNotice}</p>}
-                  </details>
-                  <MailConnectorDisclosure />
-                  <label className="mail-consent">
-                    <input
-                      type="checkbox"
-                      required
-                      checked={consent}
-                      disabled={busy}
-                      aria-describedby="mail-connector-disclosure"
-                      onChange={(event) => setConsent(event.target.checked)}
-                    />
-                    {t(mailConnectorPrivacy.consentLabel)}
-                  </label>
-                  {(provider === "yahoo" || provider === "gmail") && (
-                    <p className="muted">
-                      Usa una contraseña de aplicación si tu proveedor la
-                      requiere.
-                    </p>
-                  )}
-                  {provider === "porkbun" && (
-                    <p className="muted">
-                      Usa la contraseña de este buzón, que puede ser distinta de
-                      la del panel de Porkbun.
-                    </p>
-                  )}
-                  <button
-                    className="button primary"
-                    type="submit"
-                    disabled={busy || !consent || !online || !available}
-                  >
-                    {busy
-                      ? "Verificando lectura y envío…"
-                      : "Conectar y verificar buzón"}
-                  </button>
-                </>
-              )}
-              {(error || (provider === "google" && personal.error)) && (
-                <p role="alert" className="form-error">
-                  {error || personal.error}
+                  </>
+                )}
+                {(error || (provider === "google" && personal.error)) && (
+                  <p role="alert" className="form-error">
+                    {error || personal.error}
+                  </p>
+                )}
+              </form>
+            ) : (
+              <>
+                <p className="muted">
+                  Estás en la demo. Las cuentas reales se conectan después de
+                  entrar con tu usuario de TruckControl.
                 </p>
-              )}
-            </form>
-          ) : (
-            <>
-              <p className="muted">
-                Estás en la demo. Las cuentas reales se conectan después de
-                entrar con tu usuario de TruckControl.
-              </p>
+                <button
+                  className="button primary"
+                  type="button"
+                  onClick={() =>
+                    add("demo@example.invalid", createDemoMailbox(), () => {})
+                  }
+                >
+                  Probar buzón ficticio
+                </button>
+              </>
+            )}
+            <p className="mail-security">
+              <ShieldCheck size={20} aria-hidden="true" /> Las cuentas y
+              credenciales permanecen temporalmente en memoria y se desconectan
+              al salir, cambiar de empresa o recargar. Los mensajes no se
+              guardan en copias offline.
+            </p>
+            <p className="muted">
+              Microsoft 365/Outlook necesita una conexión OAuth compatible con
+              su proveedor.
+            </p>
+            {accounts.length > 0 && (
               <button
-                className="button primary"
+                className="button secondary"
                 type="button"
-                onClick={() =>
-                  add("demo@example.invalid", createDemoMailbox(), () => {})
-                }
+                onClick={() => {
+                  setSelected(accounts[0].id);
+                  setAdding(false);
+                  setForm((current) => ({ ...current, password: "" }));
+                  setConsent(false);
+                }}
               >
-                Probar buzón ficticio
+                Volver al buzón conectado
               </button>
-            </>
-          )}
-          <p className="mail-security">
-            <ShieldCheck size={20} aria-hidden="true" /> Las cuentas y
-            credenciales permanecen temporalmente en memoria y se desconectan al
-            salir, cambiar de empresa o recargar. Los mensajes no se guardan en
-            copias offline.
-          </p>
-          <p className="muted">
-            Microsoft 365/Outlook necesita una conexión OAuth compatible con su
-            proveedor.
-          </p>
-          {accounts.length > 0 && (
-            <button
-              className="button secondary"
-              type="button"
-              onClick={() => {
-                setSelected(accounts[0].id);
-                setAdding(false);
-                setForm((current) => ({ ...current, password: "" }));
-                setConsent(false);
+            )}
+          </div>
+        )}
+        {accounts.map((account) => (
+          <div
+            key={account.id}
+            className="mail-provider-view"
+            hidden={showForm || selected !== account.id}
+          >
+            <ConnectedMailView
+              connection={{
+                mailbox: account.mailbox,
+                email: account.email,
+                online: online && available,
+                disconnect: account.disconnect,
+                expire: account.expire,
               }}
-            >
-              Volver al buzón conectado
-            </button>
-          )}
-        </div>
-      )}
-      {accounts.map((account) => (
-        <div
-          key={account.id}
-          className="mail-provider-view"
-          hidden={showForm || selected !== account.id}
-        >
-          <ConnectedMailView
-            connection={{
-              mailbox: account.mailbox,
-              email: account.email,
-              online: online && available,
-              disconnect: account.disconnect,
-              expire: account.expire,
-            }}
-            toolbarAction={
-              active && !showForm && selected === account.id
-                ? renderInvoiceAction?.(account)
-                : null
-            }
-            active={active && !showForm && selected === account.id}
-          />
-        </div>
-      ))}
-    </section>
+              toolbarAction={
+                active && !showForm && selected === account.id
+                  ? renderInvoiceAction?.(account)
+                  : null
+              }
+              active={active && !showForm && selected === account.id}
+            />
+          </div>
+        ))}
+      </section>
+      {!active && <ConnectedMailAutomationControls floating />}
+    </ConnectedMailAutomationProvider>
   );
 }

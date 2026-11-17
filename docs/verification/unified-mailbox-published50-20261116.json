@@ -1,0 +1,503 @@
+{
+  "recorded_at": "2026-11-16T18:38:26.755444+00:00",
+  "status": "published_and_verified_for_this_delivery",
+  "scope": "Single Correo workspace and explicitly authorized invoice AI import; no global commercial completion claim",
+  "url": "https://truckcontrolai.com",
+  "version": "0.5.31-rc.1",
+  "sites": 50,
+  "project_id": "appgprj_6ae655e56db481918fe18adfe9df8b66",
+  "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ee728639b8688191add56b276ad84b87",
+  "deployment_id": "appgdep_6afb4a20f2e881918f97f61b1c6d52ec",
+  "deployment_status": "SUCCEEDED",
+  "deployed_at": "2026-11-16T18:23:43.559289+00:00",
+  "source_commit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+  "source_branch": "deploy/unified-mailbox-production-20261116",
+  "reviewed_head": "cc3a3424a7179e5efb7c8a2d8789c60a2bd2f48c",
+  "pull_request": 155,
+  "merge_sha": "758aa2dfe1336b636d1d31987e8c5e54a8149bd9",
+  "code_and_source_ci": {
+    "conclusion": "SUCCESS",
+    "quality": [
+      43923463422,
+      43923454517,
+      43923519390
+    ],
+    "package": 43923519348,
+    "android": {
+      "run": 43923463442,
+      "successful_attempt": 2,
+      "first_attempt": "Maven Central429; unchanged dependency versions; official failed-job retry succeeded"
+    },
+    "isolated_frontend_archive": 43923463282
+  },
+  "checks_per_quality_run": {
+    "unit_sql": 2146,
+    "unit_files": 168,
+    "python": 154,
+    "demo_browser": 94,
+    "company_browser": 62,
+    "saas_browser": 274,
+    "mfa_browser": 98,
+    "manual_full_browser": 44,
+    "billing_attachments_browser": 68,
+    "unified_mail_browser": 68,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "previous_public_profiles": 6,
+    "retained_original_tests": 64,
+    "retained_hashes": 11
+  },
+  "new_sql_integration": {
+    "cases": 6,
+    "engine": "PGlite isolated PostgreSQL",
+    "real_managed_restore": false
+  },
+  "local_saas": {
+    "suite": "existing SaaS browser regression",
+    "source_runtime_equal_to": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+    "tests_source_sha256": "763e0214fa63a50b2a4926212f7208e7cb68de73750a3b7dd5e014fe8d813ec4",
+    "stats": {
+      "startTime": "2026-11-16T17:51:21.347Z",
+      "duration": 572884.2220000001,
+      "expected": 274,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "errors": 0,
+    "browser": "existing /usr/bin/chromium",
+    "profiles": [
+      "Windows emulation",
+      "Android Pixel7 emulation"
+    ],
+    "original_config": "playwright.saas.config.ts",
+    "timeouts_or_workers_changed": false,
+    "providers_fictional": true,
+    "raw_json_sha256": "0d30d221f034d04eb53f892f580629c94daf7465f2481555e14d9f24b989bc95",
+    "physical_devices": false,
+    "new_model_calls": 0,
+    "runtime_changes_after_verified_browser_build": false
+  },
+  "published_browser": {
+    "cases": 68,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "projects": {
+      "published-mail-windows-light": 17,
+      "published-mail-android-light": 17,
+      "published-mail-windows-cockpit": 17,
+      "published-mail-android-cockpit": 17
+    },
+    "files": {
+      "languages.spec.ts": 12,
+      "mail.spec.ts": 56
+    },
+    "specification_bytes_unchanged": true,
+    "source_verified_before_every_case": true,
+    "real_application_and_SDK": true,
+    "private_transport": "fictional and closed to unmatched HTTP/WSS",
+    "real_provider_calls": 0,
+    "model_calls": 0,
+    "payment_calls": 0,
+    "physical_devices": false
+  },
+  "published_inventory": {
+    "passed": true,
+    "checks": 105,
+    "files": 35,
+    "origins": [
+      "https://truckcontrolai.com",
+      "https://www.truckcontrolai.com",
+      "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site"
+    ],
+    "package_archive_sha256": "eb6dfee6d2b6b89a109b94488c8e186bbe9632c78f558206485e0a50805ac612",
+    "report_sha256": "5f3cc1bce7e2cf42122c9e83774c0eafbf157cc27d7dc6998a3ddeeaab3cd681"
+  },
+  "published_pwa": {
+    "profiles": 6,
+    "passed": true,
+    "results": [
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "profile": "windows",
+        "sourceCommit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+        "themes": [
+          "light",
+          "cockpit"
+        ],
+        "gmailCallback": true,
+        "universalMailOffline": true,
+        "authMailCors": true,
+        "mailServicesCors": true,
+        "personalMailConfig": true,
+        "personalMailReady": true,
+        "publicLegalPages": true,
+        "billingIssuer": true,
+        "invoiceInbox": true,
+        "tyresOffline": true,
+        "personalMailOffline": true,
+        "companyFiscalPreparation": true,
+        "companyCopilot": true,
+        "aiSpecialists": true,
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+        "profile": "android",
+        "sourceCommit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+        "themes": [
+          "light",
+          "cockpit"
+        ],
+        "gmailCallback": true,
+        "universalMailOffline": true,
+        "authMailCors": true,
+        "mailServicesCors": true,
+        "personalMailConfig": true,
+        "personalMailReady": true,
+        "publicLegalPages": true,
+        "billingIssuer": true,
+        "invoiceInbox": true,
+        "tyresOffline": true,
+        "personalMailOffline": true,
+        "companyFiscalPreparation": true,
+        "companyCopilot": true,
+        "aiSpecialists": true,
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "profile": "windows",
+        "sourceCommit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+        "themes": [
+          "light",
+          "cockpit"
+        ],
+        "gmailCallback": true,
+        "universalMailOffline": true,
+        "authMailCors": true,
+        "mailServicesCors": true,
+        "personalMailConfig": true,
+        "personalMailReady": true,
+        "publicLegalPages": true,
+        "billingIssuer": true,
+        "invoiceInbox": true,
+        "tyresOffline": true,
+        "personalMailOffline": true,
+        "companyFiscalPreparation": true,
+        "companyCopilot": true,
+        "aiSpecialists": true,
+        "passed": true
+      },
+      {
+        "origin": "https://truckcontrolai.com",
+        "profile": "android",
+        "sourceCommit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+        "themes": [
+          "light",
+          "cockpit"
+        ],
+        "gmailCallback": true,
+        "universalMailOffline": true,
+        "authMailCors": true,
+        "mailServicesCors": true,
+        "personalMailConfig": true,
+        "personalMailReady": true,
+        "publicLegalPages": true,
+        "billingIssuer": true,
+        "invoiceInbox": true,
+        "tyresOffline": true,
+        "personalMailOffline": true,
+        "companyFiscalPreparation": true,
+        "companyCopilot": true,
+        "aiSpecialists": true,
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "profile": "windows",
+        "sourceCommit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+        "themes": [
+          "light",
+          "cockpit"
+        ],
+        "gmailCallback": true,
+        "universalMailOffline": true,
+        "authMailCors": true,
+        "mailServicesCors": true,
+        "personalMailConfig": true,
+        "personalMailReady": true,
+        "publicLegalPages": true,
+        "billingIssuer": true,
+        "invoiceInbox": true,
+        "tyresOffline": true,
+        "personalMailOffline": true,
+        "companyFiscalPreparation": true,
+        "companyCopilot": true,
+        "aiSpecialists": true,
+        "passed": true
+      },
+      {
+        "origin": "https://www.truckcontrolai.com",
+        "profile": "android",
+        "sourceCommit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+        "themes": [
+          "light",
+          "cockpit"
+        ],
+        "gmailCallback": true,
+        "universalMailOffline": true,
+        "authMailCors": true,
+        "mailServicesCors": true,
+        "personalMailConfig": true,
+        "personalMailReady": true,
+        "publicLegalPages": true,
+        "billingIssuer": true,
+        "invoiceInbox": true,
+        "tyresOffline": true,
+        "personalMailOffline": true,
+        "companyFiscalPreparation": true,
+        "companyCopilot": true,
+        "aiSpecialists": true,
+        "passed": true
+      }
+    ],
+    "physicalDevices": false,
+    "verifier_sha256": "e3c1ab2c579a01807d0b99b28c9a1a12066a63f2151dd3fdb870713abdd31ae7",
+    "legacy_probe_only_change": {
+      "from": "/mailbox/gmail",
+      "to": "/mailbox/gmail?legacy=personal",
+      "assertions_changed": false
+    },
+    "report_sha256": "5d99546f9cdec7599fde679b78fdd940a8a979bb368fd7d5652e48f8dc91799f"
+  },
+  "native_backend": {
+    "project": "kkkemaycedexymrpaqtp",
+    "function": "company-mail",
+    "version": 16,
+    "status": "ACTIVE",
+    "verified_files": 20,
+    "all_bytes_equal_committed_source": true,
+    "manifest": {
+      "source_commit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+      "files": [
+        {
+          "name": "_shared/ai-runtime.ts",
+          "bytes": 4534,
+          "sha256": "7c5a27762ab5aa6629b4248730260eb7d2e593af35ba90ad128800abdb83114d"
+        },
+        {
+          "name": "_shared/app-origins.ts",
+          "bytes": 443,
+          "sha256": "031572d2b69b535bec41d4ee696139756fd85a306273d6f03dcc43e1f199661a"
+        },
+        {
+          "name": "_shared/auth-session.ts",
+          "bytes": 2404,
+          "sha256": "4d489e5610118a0d4170b743803c4d12562f560e02367e1b5198e44cec32c30f"
+        },
+        {
+          "name": "_shared/invoice-ai.ts",
+          "bytes": 867,
+          "sha256": "d207ae07858bbae9b77526d5f36acf9e8117ef191ec445700a91d1478f785731"
+        },
+        {
+          "name": "_shared/invoice.ts",
+          "bytes": 9001,
+          "sha256": "e81557bd97de9ab38e9d623a754960e88eaf92bd1faa6a0e253c40c8514bf189"
+        },
+        {
+          "name": "_shared/mail-period.ts",
+          "bytes": 5111,
+          "sha256": "0e2d90265915d834a7712cadf252b0dbf2bf0703446a80cd87db3a9cdab49071"
+        },
+        {
+          "name": "_shared/mail.ts",
+          "bytes": 5240,
+          "sha256": "bb898316a43ffd74adf8fc4132f54af8af3af15cf4f6871a8b267bee0fd6e34e"
+        },
+        {
+          "name": "_shared/resend-runtime.ts",
+          "bytes": 1537,
+          "sha256": "ac381e6a2f283e0150b7f9d94c989ecced3f1cb5fab6a3b7e7c0c8a61a0a98aa"
+        },
+        {
+          "name": "company-mail/connected-contract.ts",
+          "bytes": 10042,
+          "sha256": "b5156612b48e6fc2aed1f9e7b4a09244e6871c1fc71aba23d1331d83d13ae242"
+        },
+        {
+          "name": "company-mail/connected-gmail.ts",
+          "bytes": 12332,
+          "sha256": "6fa15901bc3cb570d8a4937bdafac3269b61899efc87750cab736381a3216693"
+        },
+        {
+          "name": "company-mail/connected-imap-core.ts",
+          "bytes": 7521,
+          "sha256": "7368483a080a55cf8f8c2e0b8f029aa01df838fc0acac0d7590964400873314c"
+        },
+        {
+          "name": "company-mail/connected-imap.ts",
+          "bytes": 3294,
+          "sha256": "51810a1dcb2ba579614f6916e14cc4d5200afbbfcfa51b71debdf2d418e9ffba"
+        },
+        {
+          "name": "company-mail/connected-importer.ts",
+          "bytes": 739,
+          "sha256": "d836bda79997bc28e9a27c4bdfefdfc452d8a05de3f4d20cbefb7600c774b6a1"
+        },
+        {
+          "name": "company-mail/deno.json",
+          "bytes": 191,
+          "sha256": "f50dbef211edc147a9506a744070fd5bce186a8bde517325f83b61ae0898d3ea"
+        },
+        {
+          "name": "company-mail/gateway.ts",
+          "bytes": 4509,
+          "sha256": "d545caa5137e0ee7654c3168fd456173fa68cb70983d79670831e6d27018ba33"
+        },
+        {
+          "name": "company-mail/handler.ts",
+          "bytes": 20483,
+          "sha256": "0fcf6f92182a7602a9b16c8a6343f0e808b268c914715e70ed9374003b939672"
+        },
+        {
+          "name": "company-mail/index.ts",
+          "bytes": 1862,
+          "sha256": "8ff63af972d323a25ec5399e3dbbdc4ede9cd57b12996b6b23bbe7dc34c54106"
+        },
+        {
+          "name": "company-mail/saved-ai.ts",
+          "bytes": 5119,
+          "sha256": "d20d88f7a9d3662960ec6d5a06355556725c421a759403517a9c02f2543364b8"
+        },
+        {
+          "name": "personal-mail/contract.ts",
+          "bytes": 7018,
+          "sha256": "10b5e16dc7c5714727ff0651c9516d2d940fb057e602b533ebb4ceb1264a9c51"
+        },
+        {
+          "name": "personal-mail/transport.ts",
+          "bytes": 13958,
+          "sha256": "620753fcf1e31877c853e25185e863be197b583094df439d6ff43be8ed18e8e6"
+        }
+      ],
+      "new_migrations": 0,
+      "not_deployed": true
+    },
+    "anonymous_guards": {
+      "recorded_at": "2026-11-16T18:02:55.102Z",
+      "project": "kkkemaycedexymrpaqtp",
+      "function": "company-mail",
+      "checks": [
+        {
+          "name": "anonymous_legacy_status",
+          "status": 401,
+          "error": "authentication_required",
+          "exact_origin": true,
+          "passed": true
+        },
+        {
+          "name": "anonymous_connected_import",
+          "status": 401,
+          "error": "authentication_required",
+          "exact_origin": true,
+          "passed": true
+        },
+        {
+          "name": "unknown_origin",
+          "status": 403,
+          "error": "origin_not_allowed",
+          "exact_origin": false,
+          "passed": true
+        },
+        {
+          "name": "allowed_preflight",
+          "status": 204,
+          "error": null,
+          "exact_origin": true,
+          "passed": true
+        },
+        {
+          "name": "canonical_method",
+          "status": 405,
+          "error": "method_not_allowed",
+          "exact_origin": true,
+          "passed": true
+        }
+      ],
+      "passed": 5,
+      "total": 5,
+      "authenticated_provider_acceptance": false,
+      "mailbox_reads": 0,
+      "model_calls": 0,
+      "customer_mutations": 0
+    },
+    "migrations": 76,
+    "latest_migration": "20261116085827_billing_document_attachments",
+    "new_migrations": 0,
+    "personal_mail_function_changed": false
+  },
+  "features": {
+    "single_mail_entry": true,
+    "multiple_user_selected_accounts": [
+      "Google/Gmail",
+      "compatibleIMAP/SMTP"
+    ],
+    "ordinary_mail_does_not_start_IA": true,
+    "invoice_consent_version": "2026-11-16",
+    "default_received_days": 30,
+    "maximum_calendar_months": 12,
+    "provider_receipt_metadata_before_content": true,
+    "private_originals": true,
+    "financial_posting_requires_review": true,
+    "cursor_max_messages": 50,
+    "cursor_max_new_attachments": 10,
+    "credentials_or_tokens_persisted_for_import": false,
+    "unattended_background_sync": false,
+    "durable_mailbox_period_contract_record": false
+  },
+  "recovery": {
+    "previous_sites": 49,
+    "previous_source": "5f44a164700ea4cc803bb7cf480b664cce68af43",
+    "previous_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0a57d381ffd081918f6d663aef093740",
+    "previous_backend_snapshot": 15,
+    "previous_backend_snapshot_sha256": "8a80c58fa2274f3002273ecb896a9b53122c64a223177c914896856c063dc0f6",
+    "previous_frontend_compatible_with_backend16": true,
+    "SQL76must_remain": true,
+    "older47_and_saved48_preserved": true,
+    "demo6_separate_and_untouched": true,
+    "main_hosting_manifest": "DEMO; do not deploy it as production"
+  },
+  "costs": {
+    "new_purchases": 0,
+    "new_recurring_commitments": 0,
+    "new_model_calls": 0,
+    "new_paid_browser_automation": 0,
+    "authorized_aggregate_eur": 200,
+    "historical_remaining_balance_eur": null,
+    "historical_balance": "not_reconciled; no new charge activated",
+    "ai_limit_usd_per_month_unchanged": 10,
+    "calls_per_company_unchanged": 100,
+    "payments_enabled": false
+  },
+  "preserved_diagnostics": [
+    "Fixed real French Android toolbar overflow, without hiding page overflow.",
+    "Fixed real USER_UPDATED appearance events incorrectly clearing connected mail, preserving UID/SID/AAL/role validation.",
+    "Adapted two retained SaaS mailbox cases to the intended provider form and review navigation without removing security assertions.",
+    "Synthetic JWT fixture now pins the original issued token and advances1100ms to verify exact pinning across a second boundary.",
+    "Initial public browser TLS setup could not initialize its existing NSS store; strict TLS stayed enabled and the same68cases passed with scoped NSS write access.",
+    "The old public demo verifier expected Mi correo on the newly unified alias. Only its explicit legacy URI changed; all6profiles and every assertion now pass."
+  ],
+  "limits": [
+    "These new flow tests use fictional mail/model transport; no new real mailbox reading, sending or OpenAI acceptance was performed.",
+    "Owner previous personal Gmail acceptance and eight real AI37 acceptance calls are preserved, not repeated.",
+    "Public Google verification and the legacy enterprise OAuth credential are separate external limitations; the new selected-account flow does not use that legacy secret.",
+    "Microsoft365/Outlook OAuth is not implemented by this delivery; use a supported account/provider.",
+    "Consent is transient for explicitly requested batches; this does not activate unattended ongoing reads.",
+    "Physical Android/Windows, commercial Android signing/Play and managed-service recovery are not claimed.",
+    "Owner handles legal review and manual sales/invoices; automatic Stripe charges remain disabled."
+  ],
+  "commercial_launch_global_claimed": false
+}
