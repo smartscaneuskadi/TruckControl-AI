@@ -19168,5 +19168,221 @@
     "contexts": [
       "src/pages/Invoices.tsx:description"
     ]
+  },
+  {
+    "key": "Revisión automática de facturas activa en {0} cuenta(s).",
+    "contexts": [
+      "src/app/ConnectedMailAutomation.tsx:message"
+    ]
+  },
+  {
+    "key": "Solo mientras TruckControl está abierto y visible. Detener no borra los documentos ya guardados.",
+    "contexts": [
+      "src/app/ConnectedMailAutomation.tsx:message"
+    ]
+  },
+  {
+    "key": "Detener todas las revisiones",
+    "contexts": [
+      "src/app/ConnectedMailAutomation.tsx:message"
+    ]
+  },
+  {
+    "key": "La revisión automática se ha detenido por el límite de IA. No se reintentará sola.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La revisión automática se ha detenido por una incidencia. Revisa los originales guardados antes de volver a autorizarla.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La autorización automática ha caducado. Conecta de nuevo la cuenta si es necesario y vuelve a autorizarla.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La revisión automática se ha detenido al ocultar la aplicación. Debes volver a autorizarla para continuar.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La revisión automática se ha detenido al perder la conexión. No se reactivará al volver a internet.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "El resultado de una revisión no se ha podido confirmar. Comprueba las facturas guardadas; no habrá reintentos automáticos.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Se ha alcanzado el máximo de lotes de esta autorización. Revisa el resultado antes de iniciar otra.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La cuenta o los permisos han cambiado. La autorización anterior ya no está activa.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La revisión automática está detenida. Los documentos guardados se conservan.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Detén las revisiones automáticas antes de iniciar una descarga manual.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Espera a que termine la solicitud anterior antes de iniciar otra.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisión automática autorizada para esta cuenta durante la sesión actual.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisar facturas automáticamente mientras uso TruckControl",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Un documento nuevo como máximo por lote, al menos cinco minutos entre solicitudes y hasta diez lotes por autorización.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La autorización dura como máximo una hora y nunca más que la cuenta o el día seleccionado. No se guardan las credenciales.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Cerrar esta ventana permite continuar por las otras pantallas. Ocultar la aplicación, perder conexión o salir detiene la revisión; no se reactiva sola.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Para revisar correos nuevos, el período debe terminar hoy. Las descargas manuales admiten períodos anteriores.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "La revisión automática usa únicamente esta cuenta y estas fechas mientras la aplicación está abierta y visible. No autoriza lecturas con la aplicación cerrada ni amplía el período al cambiar de día.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Autorizo las revisiones periódicas y su análisis IA en esta sesión, desde esta cuenta y para esta empresa, únicamente del {0} al {1}, dentro de mis límites de consumo.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Estado de la revisión automática",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisión automática autorizada",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisión automática detenida",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Comprobando un lote autorizado…",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Esperando la siguiente revisión autorizada.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Válida hasta las {0}, hora de Madrid.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Originales guardados: {0}. Análisis aplicados: {1}. Incidencias: {2}.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Última revisión confirmada a las {0}, hora de Madrid.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Detener revisión automática",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:text"
+    ]
+  },
+  {
+    "key": "Detener evita las siguientes solicitudes. Un lote ya recibido puede terminar; revisa las facturas antes de repetir.",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Incidencias",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Activar revisión automática",
+    "contexts": [
+      "src/components/ConnectedMailboxInvoices.tsx:message"
+    ]
+  },
+  {
+    "key": "Revisión opcional de facturas durante la sesión",
+    "contexts": [
+      "src/domain/legal.ts:message"
+    ]
+  },
+  {
+    "key": "Información complementaria de 17/11/2026. Puedes autorizar por separado revisiones periódicas del buzón y período elegidos mientras TruckControl permanece abierto y visible. La opción está desactivada por defecto. El consentimiento temporal se vincula a tu usuario, empresa, cuenta y sesión, no se guarda en el dispositivo y dura como máximo una hora, sin superar los permisos del buzón, la sesión o el día autorizado. El coordinador limita diez lotes, separados al menos cinco minutos, y el servidor admite como máximo un original nuevo por petición automática, dentro de las cuotas IA existentes. Se detiene al ocultar la app, cerrar sesión, perder conexión, cambiar contexto o encontrar una incidencia, sin reactivarse ni reintentar automáticamente. No amplía las fechas, no ejecuta lecturas con la app cerrada y no guarda contraseñas ni permisos duraderos. Puedes detenerlo desde Correo o su control visible en otros módulos. Un lote recibido puede terminar; se conservan los originales privados y su revisión humana antes del gasto.",
+    "contexts": [
+      "src/domain/legal.ts:message"
+    ]
   }
 ]

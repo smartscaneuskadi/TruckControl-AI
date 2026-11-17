@@ -22,6 +22,11 @@ import {
   ConnectedMailError,
 } from "./connected-contract.ts";
 import type { ConnectedMailboxScanner } from "./connected-contract.ts";
+import {
+  assertOpenSessionMailContext,
+  automationIdentityFromVerifiedBearer,
+  OpenSessionMailError,
+} from "../_shared/mail-automation.ts";
 
 type Data = Record<string, unknown>;
 export interface MailAccess {
@@ -487,13 +492,44 @@ export function createMailHandler(gateway: MailGateway, config: MailConfig) {
             // Roles alone cannot invalidate a revoked SID. Reuse the SAME captured
             // human bearer and reject any identity change before every effect.
             const actor = token ? await gateway.authenticate(token) : null;
-            if (!actor || actor.id !== user.id)
+            if (!token || !actor || actor.id !== user.id)
               throw new MailActionError("authentication_required", 401);
+            const assertAutomation = () => {
+              if (!input.automation) return;
+              try {
+                const binding = automationIdentityFromVerifiedBearer(
+                  token,
+                  actor.id,
+                );
+                assertOpenSessionMailContext(
+                  input.automation,
+                  {
+                    actorId: actor.id,
+                    organizationId: input.organizationId,
+                    email: input.email,
+                    provider: input.provider,
+                    ...binding,
+                  },
+                  input.period,
+                  (config.now ?? Date.now)(),
+                );
+              } catch (error) {
+                throw new ConnectedMailError(
+                  error instanceof OpenSessionMailError
+                    ? error.code
+                    : "automation_context_changed",
+                  428,
+                );
+              }
+            };
+            assertAutomation();
             const current = await allowed(input.organizationId, user.id, true);
             if (!current.features.invoice_ai)
               throw new MailActionError("company_access_denied", 403);
             if (!gateway.analyze || !(await gateway.aiStatus?.()))
               throw new ConnectedMailError("invoice_ai_unavailable", 503);
+            // Authorization can expire while permissions/runtime are awaited.
+            assertAutomation();
             if (request.signal.aborted)
               throw new ConnectedMailError("mailbox_import_cancelled", 409);
           };

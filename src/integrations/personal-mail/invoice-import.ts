@@ -9,6 +9,12 @@ import {
 } from "../../../supabase/functions/_shared/mail-period";
 import type { ReceivedPeriod } from "../../../supabase/functions/_shared/mail-period";
 import type { MailConnection } from "./imap";
+import {
+  assertOpenSessionMailContext,
+  openMailAutomationPolicy,
+  readOpenSessionMailGrant,
+} from "../../../supabase/functions/_shared/mail-automation";
+import type { OpenSessionMailGrant } from "../../../supabase/functions/_shared/mail-automation";
 
 export const connectedInvoiceConsentVersion = "2026-11-16";
 export type ConnectedMailProvider = "gmail" | "imap";
@@ -27,6 +33,7 @@ export interface ConnectedInvoiceImportRequest {
   period: ReceivedPeriod;
   consent: ConnectedInvoiceConsent;
   cursor?: string | null;
+  automation?: OpenSessionMailGrant;
 }
 export interface ConnectedInvoiceImportResult {
   authorization_scope: "selected_mailbox_period";
@@ -43,6 +50,7 @@ export interface ConnectedInvoiceImportResult {
 export interface ConnectedInvoiceReadiness {
   ready: boolean;
   aiEnabled: boolean;
+  automation?: typeof openMailAutomationPolicy;
 }
 export class ConnectedInvoiceImportError extends Error {
   constructor(
@@ -66,8 +74,10 @@ type ImportCredentials =
       connection: MailConnection;
       connector_consent: { version: "2026-11-13"; accepted: true };
     };
-const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const address = /^[^\s<>@\x00-\x1f]{1,200}@[^\s<>@\x00-\x1f]{1,200}\.[A-Za-z]{2,63}$/;
+const uuid =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const address =
+  /^[^\s<>@\x00-\x1f]{1,200}@[^\s<>@\x00-\x1f]{1,200}\.[A-Za-z]{2,63}$/;
 
 export function validateConnectedInvoiceRequest(
   request: ConnectedInvoiceImportRequest,
@@ -103,7 +113,43 @@ export function validateConnectedInvoiceRequest(
     consent.period?.to !== period.to
   )
     throw new ConnectedInvoiceImportError("consent_required");
+  if (request.automation) {
+    try {
+      const grant = readOpenSessionMailGrant(request.automation, period, now);
+      assertOpenSessionMailContext(
+        grant,
+        {
+          actorId: request.actorId,
+          organizationId: request.organizationId,
+          email: request.email,
+          provider: request.provider,
+          sessionId: grant.session_id,
+          aal: grant.aal,
+        },
+        period,
+        now,
+      );
+    } catch {
+      throw new ConnectedInvoiceImportError("consent_required");
+    }
+  }
   return period;
+}
+
+export function connectedInvoiceAutomationCapability(value: unknown): boolean {
+  if (!connectedInvoiceCapability(value)) return false;
+  const policy = (
+    value.connected_mailbox_import as unknown as Record<string, unknown>
+  ).automation;
+  return Boolean(
+    policy &&
+    typeof policy === "object" &&
+    !Array.isArray(policy) &&
+    Object.entries(openMailAutomationPolicy).every(
+      ([key, expected]) =>
+        (policy as Record<string, unknown>)[key] === expected,
+    ),
+  );
 }
 
 export function connectedInvoiceCapability(value: unknown): value is {
@@ -112,23 +158,25 @@ export function connectedInvoiceCapability(value: unknown): value is {
 } {
   if (!value || typeof value !== "object") return false;
   const data = value as Record<string, unknown>;
-  const capability = data.connected_mailbox_import as Record<string, unknown> | undefined;
-  const policy = capability?.received_period_policy as Record<string, unknown> | undefined;
+  const capability = data.connected_mailbox_import as
+    Record<string, unknown> | undefined;
+  const policy = capability?.received_period_policy as
+    Record<string, unknown> | undefined;
   return Boolean(
     typeof data.ai_enabled === "boolean" &&
-      capability?.version === 1 &&
-      capability.consent_version === connectedInvoiceConsentVersion &&
-      capability.max_messages === 50 &&
-      capability.max_attachments === 10 &&
-      Array.isArray(capability.providers) &&
-      capability.providers.length === 2 &&
-      capability.providers.includes("gmail") &&
-      capability.providers.includes("imap") &&
-      policy?.version === mailPeriodPolicy.version &&
-      policy.default_days === mailPeriodPolicy.default_days &&
-      policy.max_months === mailPeriodPolicy.max_months &&
-      policy.time_zone === mailPeriodPolicy.time_zone &&
-      policy.action === mailPeriodPolicy.action,
+    capability?.version === 1 &&
+    capability.consent_version === connectedInvoiceConsentVersion &&
+    capability.max_messages === 50 &&
+    capability.max_attachments === 10 &&
+    Array.isArray(capability.providers) &&
+    capability.providers.length === 2 &&
+    capability.providers.includes("gmail") &&
+    capability.providers.includes("imap") &&
+    policy?.version === mailPeriodPolicy.version &&
+    policy.default_days === mailPeriodPolicy.default_days &&
+    policy.max_months === mailPeriodPolicy.max_months &&
+    policy.time_zone === mailPeriodPolicy.time_zone &&
+    policy.action === mailPeriodPolicy.action,
   );
 }
 
@@ -141,7 +189,13 @@ export function connectedInvoiceResult(
     !data ||
     data.authorization_scope !== "selected_mailbox_period" ||
     data.consent_version !== connectedInvoiceConsentVersion ||
-    ![data.imported, data.skipped, data.failures, data.ai_used, data.examined].every(
+    ![
+      data.imported,
+      data.skipped,
+      data.failures,
+      data.ai_used,
+      data.examined,
+    ].every(
       (count) => Number.isSafeInteger(count) && count >= 0 && count <= 1000,
     ) ||
     data.imported > 10 ||
@@ -171,18 +225,66 @@ export function connectedInvoiceResult(
     examined: data.examined,
     has_more: data.has_more,
     next_cursor: data.next_cursor,
-    received_period: { from: expected.from, to: expected.to, time_zone: "Europe/Madrid" },
+    received_period: {
+      from: expected.from,
+      to: expected.to,
+      time_zone: "Europe/Madrid",
+    },
   };
 }
 
 function safeImportError(code: unknown): ConnectedInvoiceImportError["code"] {
-  if (["authentication_required", "expired", "session_changed", "mailbox_authorization_required"].includes(String(code))) return "expired";
-  if (["consent_required", "connected_mailbox_consent_required", "mailbox_import_consent_required"].includes(String(code))) return "consent_required";
-  if (["identity_mismatch", "mailbox_identity_mismatch"].includes(String(code))) return "identity_mismatch";
-  if (["invalid_period", "invalid_received_period"].includes(String(code))) return "invalid_period";
-  if (["budget_exceeded", "budget_unavailable", "ai_budget_exceeded", "ai_budget_unavailable", "quota_exceeded"].includes(String(code))) return "budget";
-  if (["forbidden", "permission_denied", "access_denied", "ai_disabled", "denied", "company_access_denied"].includes(String(code))) return "denied";
-  if (["unsupported_action", "connected_mailbox_import_unavailable"].includes(String(code))) return "backend_outdated";
+  if (
+    [
+      "authentication_required",
+      "expired",
+      "session_changed",
+      "mailbox_authorization_required",
+      "automation_expired",
+      "automation_context_changed",
+    ].includes(String(code))
+  )
+    return "expired";
+  if (
+    [
+      "consent_required",
+      "connected_mailbox_consent_required",
+      "mailbox_import_consent_required",
+      "automation_consent_required",
+    ].includes(String(code))
+  )
+    return "consent_required";
+  if (["identity_mismatch", "mailbox_identity_mismatch"].includes(String(code)))
+    return "identity_mismatch";
+  if (["invalid_period", "invalid_received_period"].includes(String(code)))
+    return "invalid_period";
+  if (
+    [
+      "budget_exceeded",
+      "budget_unavailable",
+      "ai_budget_exceeded",
+      "ai_budget_unavailable",
+      "quota_exceeded",
+    ].includes(String(code))
+  )
+    return "budget";
+  if (
+    [
+      "forbidden",
+      "permission_denied",
+      "access_denied",
+      "ai_disabled",
+      "denied",
+      "company_access_denied",
+    ].includes(String(code))
+  )
+    return "denied";
+  if (
+    ["unsupported_action", "connected_mailbox_import_unavailable"].includes(
+      String(code),
+    )
+  )
+    return "backend_outdated";
   return "unavailable";
 }
 
@@ -203,17 +305,47 @@ async function invokeScoped(
   if (initial.error || !session || session.user.id !== actorId)
     throw new ConnectedInvoiceImportError("expired");
   const hint = nativeSessionHint(session);
+  if (body.automation !== undefined) {
+    try {
+      if (!hint?.sessionId || !hint.aal) throw Error();
+      const grant = readOpenSessionMailGrant(
+        body.automation,
+        body.period as ReceivedPeriod,
+      );
+      assertOpenSessionMailContext(
+        grant,
+        {
+          actorId,
+          organizationId,
+          email: String(body.email),
+          provider: String(body.provider),
+          sessionId: hint.sessionId,
+          aal: hint.aal,
+        },
+        body.period as ReceivedPeriod,
+      );
+    } catch {
+      throw new ConnectedInvoiceImportError("expired");
+    }
+  }
   const token = session.access_token;
   const identityAbort = new AbortController();
   const activeSignal = AbortSignal.any([signal, identityAbort.signal]);
   let current = true;
-  const matches = (next: typeof session | null) => Boolean(
-    next && next.user.id === actorId &&
-    (hint?.sessionId ? nativeSessionHint(next)?.sessionId === hint.sessionId : next.access_token === token) &&
-    nativeSessionHint(next)?.aal === hint?.aal,
-  );
+  const matches = (next: typeof session | null) =>
+    Boolean(
+      next &&
+      next.user.id === actorId &&
+      (hint?.sessionId
+        ? nativeSessionHint(next)?.sessionId === hint.sessionId
+        : next.access_token === token) &&
+      nativeSessionHint(next)?.aal === hint?.aal,
+    );
   const { data: listener } = client.auth.onAuthStateChange((_event, next) => {
-    if (!matches(next)) { current = false; identityAbort.abort(); }
+    if (!matches(next)) {
+      current = false;
+      identityAbort.abort();
+    }
   });
   const verify = async () => {
     activeSignal.throwIfAborted();
@@ -225,34 +357,73 @@ async function invokeScoped(
   try {
     await verify();
     const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-    const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined;
-    if (!url || !key?.startsWith("sb_publishable_")) throw new ConnectedInvoiceImportError("unavailable");
+    const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as
+      string | undefined;
+    if (!url || !key?.startsWith("sb_publishable_"))
+      throw new ConnectedInvoiceImportError("unavailable");
     const endpoint = new URL(url);
-    const loopback = ["localhost", "127.0.0.1", "[::1]"].includes(endpoint.hostname) &&
-      (typeof window === "undefined" || ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname));
+    const loopback =
+      ["localhost", "127.0.0.1", "[::1]"].includes(endpoint.hostname) &&
+      (typeof window === "undefined" ||
+        ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname));
     if (
-      endpoint.username || endpoint.password || endpoint.search || endpoint.hash || endpoint.pathname !== "/" ||
-      (endpoint.origin !== "https://kkkemaycedexymrpaqtp.supabase.co" && !(loopback && endpoint.protocol === "http:"))
-    ) throw new ConnectedInvoiceImportError("unavailable");
+      endpoint.username ||
+      endpoint.password ||
+      endpoint.search ||
+      endpoint.hash ||
+      endpoint.pathname !== "/" ||
+      (endpoint.origin !== "https://kkkemaycedexymrpaqtp.supabase.co" &&
+        !(loopback && endpoint.protocol === "http:"))
+    )
+      throw new ConnectedInvoiceImportError("unavailable");
     const transport = globalThis.fetch.bind(globalThis);
     const scoped = createClient<Database>(url, key, {
-      accessToken: async () => { await verify(); return token; },
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
-      global: { fetch: async (input, init) => {
+      accessToken: async () => {
         await verify();
-        const destination = new URL(typeof input === "string" ? input : input instanceof Request ? input.url : input.href);
-        if (destination.origin !== endpoint.origin || destination.pathname !== "/functions/v1/company-mail" ||
-          destination.username || destination.password || destination.search || destination.hash)
-          throw new ConnectedInvoiceImportError("denied");
-        return transport(input, {
-          ...init,
-          redirect: "error", credentials: "omit", cache: "no-store", referrerPolicy: "no-referrer",
-          signal: AbortSignal.any([activeSignal, ...(init?.signal ? [init.signal] : [])]),
-        });
-      } },
+        return token;
+      },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+      },
+      global: {
+        fetch: async (input, init) => {
+          await verify();
+          const destination = new URL(
+            typeof input === "string"
+              ? input
+              : input instanceof Request
+                ? input.url
+                : input.href,
+          );
+          if (
+            destination.origin !== endpoint.origin ||
+            destination.pathname !== "/functions/v1/company-mail" ||
+            destination.username ||
+            destination.password ||
+            destination.search ||
+            destination.hash
+          )
+            throw new ConnectedInvoiceImportError("denied");
+          return transport(input, {
+            ...init,
+            redirect: "error",
+            credentials: "omit",
+            cache: "no-store",
+            referrerPolicy: "no-referrer",
+            signal: AbortSignal.any([
+              activeSignal,
+              ...(init?.signal ? [init.signal] : []),
+            ]),
+          });
+        },
+      },
     });
     const { data, error } = await scoped.functions.invoke("company-mail", {
-      body: { ...body, organization_id: organizationId }, signal: activeSignal, timeout: body.action === "status" ? 20000 : 150000,
+      body: { ...body, organization_id: organizationId },
+      signal: activeSignal,
+      timeout: body.action === "status" ? 20000 : 150000,
     });
     await verify();
     if (error) {
@@ -260,7 +431,9 @@ async function invokeScoped(
         const response = await error.context.json().catch(() => null);
         throw new ConnectedInvoiceImportError(safeImportError(response?.error));
       }
-      throw new ConnectedInvoiceImportError(body.action === "status" ? "unavailable" : "uncertain");
+      throw new ConnectedInvoiceImportError(
+        body.action === "status" ? "unavailable" : "uncertain",
+      );
     }
     return data as unknown;
   } finally {
@@ -275,9 +448,20 @@ export async function connectedInvoiceReadiness(
   actorId: string,
   signal: AbortSignal,
 ): Promise<ConnectedInvoiceReadiness> {
-  const status = await invokeScoped(organizationId, actorId, { action: "status" }, signal);
+  const status = await invokeScoped(
+    organizationId,
+    actorId,
+    { action: "status" },
+    signal,
+  );
   return connectedInvoiceCapability(status)
-    ? { ready: true, aiEnabled: status.ai_enabled }
+    ? {
+        ready: true,
+        aiEnabled: status.ai_enabled,
+        ...(connectedInvoiceAutomationCapability(status)
+          ? { automation: openMailAutomationPolicy }
+          : {}),
+      }
     : { ready: false, aiEnabled: false };
 }
 
@@ -287,16 +471,35 @@ export async function importFromConnectedMailbox(
   signal: AbortSignal,
 ): Promise<ConnectedInvoiceImportResult> {
   const period = validateConnectedInvoiceRequest(request);
-  const validCredentials = request.provider === "gmail"
-    ? "gmail_access_token" in credentials && credentials.gmail_access_token.length > 0 && credentials.gmail_access_token.length <= 4096 && !/\s/.test(credentials.gmail_access_token)
-    : "connection" in credentials && credentials.connection.email === request.email && credentials.connector_consent.version === "2026-11-13" && credentials.connector_consent.accepted === true;
-  if (!validCredentials) throw new ConnectedInvoiceImportError("consent_required");
+  const validCredentials =
+    request.provider === "gmail"
+      ? "gmail_access_token" in credentials &&
+        credentials.gmail_access_token.length > 0 &&
+        credentials.gmail_access_token.length <= 4096 &&
+        !/\s/.test(credentials.gmail_access_token)
+      : "connection" in credentials &&
+        credentials.connection.email === request.email &&
+        credentials.connector_consent.version === "2026-11-13" &&
+        credentials.connector_consent.accepted === true;
+  if (!validCredentials)
+    throw new ConnectedInvoiceImportError("consent_required");
   signal.throwIfAborted();
-  const data = await invokeScoped(request.organizationId, request.actorId, {
-    action: "import_connected_mailbox", provider: request.provider, email: request.email,
-    period, consent: { ...request.consent, period }, analyze: true,
-    cursor: request.cursor ?? null, ...credentials,
-  }, signal);
+  const data = await invokeScoped(
+    request.organizationId,
+    request.actorId,
+    {
+      action: "import_connected_mailbox",
+      provider: request.provider,
+      email: request.email,
+      period,
+      consent: { ...request.consent, period },
+      analyze: true,
+      cursor: request.cursor ?? null,
+      ...credentials,
+      ...(request.automation ? { automation: request.automation } : {}),
+    },
+    signal,
+  );
   signal.throwIfAborted();
   return connectedInvoiceResult(data, period);
 }

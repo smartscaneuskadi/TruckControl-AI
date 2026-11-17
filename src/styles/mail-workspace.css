@@ -74,7 +74,9 @@
   max-width: 100%;
   flex-wrap: wrap;
 }
-.mail-provider-view .page-heading > div { min-width: 0; }
+.mail-provider-view .page-heading > div {
+  min-width: 0;
+}
 .mail-provider-view .page-heading .button {
   min-width: 0;
   max-width: 100%;
@@ -130,16 +132,22 @@
   border-color: var(--theme-green);
   padding: 16px;
 }
-.mail-invoice-authorization svg { color: var(--theme-green); }
+.mail-invoice-authorization svg {
+  color: var(--theme-green);
+}
 .mail-invoice-authorization p,
-.mail-open-views .mail-view-tab { overflow-wrap: anywhere; }
+.mail-open-views .mail-view-tab {
+  overflow-wrap: anywhere;
+}
 .mail-invoice-disclosure {
   padding-block: 12px;
   font-size: 0.875rem;
   line-height: 1.65;
   color: var(--theme-muted);
 }
-.mail-invoice-disclosure a { color: var(--theme-blue); }
+.mail-invoice-disclosure a {
+  color: var(--theme-blue);
+}
 .mail-invoice-consent {
   display: flex;
   align-items: flex-start;
@@ -167,9 +175,48 @@
   padding: 12px;
   min-width: 0;
 }
-.mail-invoice-results dt { color: var(--theme-muted); font-size: 0.875rem; }
-.mail-invoice-results dd { margin: 4px 0 0; font-size: 1.4rem; font-weight: 750; }
+.mail-invoice-results dt {
+  color: var(--theme-muted);
+  font-size: 0.875rem;
+}
+.mail-invoice-results dd {
+  margin: 4px 0 0;
+  font-size: 1.4rem;
+  font-weight: 750;
+}
 @media (max-width: 600px) {
   .mail-provider-advanced .form-grid,
-  .mail-invoice-authorization { grid-template-columns: minmax(0, 1fr); }
+  .mail-invoice-authorization {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.mail-automation-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  min-width: 0;
+}
+.mail-automation-summary p {
+  margin: 0;
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+.mail-automation-summary button,
+.mail-auto-option,
+.mail-automatic-status {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.mail-automation-summary button {
+  white-space: normal;
+}
+.mail-automation-floating {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 45;
+  width: min(25rem, calc(100vw - 2rem));
+  max-height: min(40vh, 18rem);
+  overflow-y: auto;
 }
