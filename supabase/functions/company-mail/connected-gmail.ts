@@ -17,11 +17,9 @@ import type {
 } from "./connected-contract.ts";
 
 type Data = Record<string, unknown>;
-interface Part {
-  filename: string;
-  body: Data;
-  index: number;
-}
+type Part =
+  | { valid: true; filename: string; body: Data; index: number }
+  | { valid: false };
 interface GmailCursor {
   page: string;
   offset: number;
@@ -49,19 +47,29 @@ function attachments(value: unknown) {
     if (++count > 256 || item.depth > 12 || !object(item.value))
       throw new ConnectedMailError("mailbox_message_invalid", 502);
     const part = item.value;
-    if (
-      typeof part.filename === "string" &&
-      part.filename &&
-      part.filename.length <= 1024 &&
-      object(part.body) &&
-      Number.isInteger(part.body.size) &&
-      Number(part.body.size) > 0 &&
-      Number(part.body.size) <= connectedMailLimits.fileBytes &&
-      ((typeof part.body.attachmentId === "string" &&
-        attachmentId.test(part.body.attachmentId)) ||
-        typeof part.body.data === "string")
-    )
-      result.push({ filename: part.filename, body: part.body, index: count });
+    // Keep rejected named parts in the scan order: omitting them here would
+    // report an empty/successful scan and could hide a document needing review.
+    if (part.filename !== undefined && part.filename !== "") {
+      if (
+        typeof part.filename === "string" &&
+        part.filename.length <= 1024 &&
+        object(part.body) &&
+        Number.isInteger(part.body.size) &&
+        Number(part.body.size) > 0 &&
+        Number(part.body.size) <= connectedMailLimits.fileBytes &&
+        ((typeof part.body.attachmentId === "string" &&
+          attachmentId.test(part.body.attachmentId)) ||
+          (part.body.attachmentId === undefined &&
+            typeof part.body.data === "string"))
+      )
+        result.push({
+          valid: true,
+          filename: part.filename,
+          body: part.body,
+          index: count,
+        });
+      else result.push({ valid: false });
+    }
     if (part.parts !== undefined) {
       if (!Array.isArray(part.parts) || part.parts.length > 128)
         throw new ConnectedMailError("mailbox_message_invalid", 502);
@@ -155,6 +163,14 @@ export async function scanConnectedGmail(
   )
     throw new ConnectedMailError("invalid_mailbox_cursor", 409);
   const result = emptyConnectedCounters();
+  const automatic = Boolean(input.automation);
+  // Duplicates may be scanned until one new original is imported, while the
+  // candidate cap still bounds provider traffic when every part is a duplicate.
+  const attachmentLimit = automatic
+    ? connectedMailLimits.messages
+    : connectedMailLimits.attachments;
+  const atAttachmentLimit = () =>
+    downloaded >= attachmentLimit || (automatic && result.imported >= 1);
   const visitedPages = new Set<string>();
   let downloaded = 0,
     downloadedBytes = 0;
@@ -248,7 +264,7 @@ export async function scanConnectedGmail(
       const id = (messages[index] as Data).id as string;
       if (
         result.examined >= connectedMailLimits.messages ||
-        downloaded >= connectedMailLimits.attachments ||
+        atAttachmentLimit() ||
         Date.now() > deadline
       )
         return next({
@@ -282,6 +298,30 @@ export async function scanConnectedGmail(
         continue;
       }
       const files = attachments(message.payload ?? {});
+      const after = (fileIndex: number) => {
+        if (fileIndex < files.length)
+          return next({
+            page,
+            offset: index,
+            attachment: fileIndex,
+            message: id,
+          });
+        if (index + 1 < messages.length)
+          return next({
+            page,
+            offset: index + 1,
+            attachment: 0,
+            message: (messages[index + 1] as Data).id as string,
+          });
+        if (following)
+          return next({
+            page: following,
+            offset: 0,
+            attachment: 0,
+            message: null,
+          });
+        return result;
+      };
       for (
         let fileIndex = index === offset ? attachmentOffset : 0;
         fileIndex < files.length;
@@ -289,10 +329,11 @@ export async function scanConnectedGmail(
       ) {
         const part = files[fileIndex];
         if (
-          downloaded >= connectedMailLimits.attachments ||
+          atAttachmentLimit() ||
           Date.now() > deadline ||
-          downloadedBytes + Number(part.body.size) >
-            connectedMailLimits.batchBytes
+          (part.valid &&
+            downloadedBytes + Number(part.body.size) >
+              connectedMailLimits.batchBytes)
         )
           return next({
             page,
@@ -302,6 +343,12 @@ export async function scanConnectedGmail(
           });
         await context.assertCurrent();
         downloaded++;
+        if (!part.valid) {
+          result.skipped++;
+          result.failures++;
+          if (automatic) return after(fileIndex + 1);
+          continue;
+        }
         const raw = part.body.attachmentId
           ? await google(
               url +
@@ -316,6 +363,8 @@ export async function scanConnectedGmail(
           !/^[A-Za-z0-9_+\/-]*={0,2}$/.test(raw.data)
         ) {
           result.skipped++;
+          result.failures++;
+          if (automatic) return after(fileIndex + 1);
           continue;
         }
         let bytes: Uint8Array;
@@ -323,6 +372,8 @@ export async function scanConnectedGmail(
           bytes = fromBase64(raw.data);
         } catch {
           result.skipped++;
+          result.failures++;
+          if (automatic) return after(fileIndex + 1);
           continue;
         }
         if (downloadedBytes + bytes.length > connectedMailLimits.batchBytes)
@@ -336,6 +387,8 @@ export async function scanConnectedGmail(
           bytes.length !== Number(part.body.size)
         ) {
           result.skipped++;
+          result.failures++;
+          if (automatic) return after(fileIndex + 1);
           continue;
         }
         await context.assertCurrent();
@@ -370,6 +423,7 @@ export async function scanConnectedGmail(
             ],
           }),
         );
+        if (automatic && result.failures > 0) return after(fileIndex + 1);
       }
       attachmentOffset = 0;
     }
@@ -379,7 +433,7 @@ export async function scanConnectedGmail(
     if (
       page &&
       (result.examined >= connectedMailLimits.messages ||
-        downloaded >= connectedMailLimits.attachments ||
+        atAttachmentLimit() ||
         Date.now() > deadline)
     )
       return next({ page, offset: 0, attachment: 0, message: null });

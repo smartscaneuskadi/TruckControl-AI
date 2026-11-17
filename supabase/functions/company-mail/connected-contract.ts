@@ -7,6 +7,12 @@ import {
 } from "../personal-mail/contract.ts";
 import type { MailConnection } from "../personal-mail/contract.ts";
 import type { ParsedMail } from "../_shared/mail.ts";
+import {
+  openMailAutomationPolicy,
+  readOpenSessionMailGrant,
+  OpenSessionMailError,
+} from "../_shared/mail-automation.ts";
+import type { OpenSessionMailGrant } from "../_shared/mail-automation.ts";
 
 export const connectedMailConsentVersion = "2026-11-16" as const;
 export const connectedMailImportVersion = 1 as const;
@@ -33,6 +39,7 @@ export interface ConnectedMailRequest {
   cursor: string | null;
   gmailAccessToken?: string;
   connection?: MailConnection;
+  automation?: OpenSessionMailGrant;
 }
 export interface ConnectedImportCounters {
   imported: number;
@@ -69,6 +76,7 @@ export function connectedMailboxCapability(key: string | undefined) {
         max_messages: connectedMailLimits.messages,
         max_attachments: connectedMailLimits.attachments,
         received_period_policy: mailPeriodPolicy,
+        automation: openMailAutomationPolicy,
       }
     : null;
 }
@@ -124,6 +132,7 @@ export function connectedMailRequest(
     "gmail_access_token",
     "connection",
     "connector_consent",
+    "automation",
   ];
   if (
     !exactKeys(body, allowed) ||
@@ -180,6 +189,28 @@ export function connectedMailRequest(
     period,
     cursor,
   };
+  if (body.automation !== undefined) {
+    try {
+      result.automation = readOpenSessionMailGrant(
+        body.automation,
+        period,
+        now,
+      );
+      if (
+        result.automation.organization_id !== result.organizationId ||
+        result.automation.provider !== result.provider ||
+        result.automation.mailbox.toLowerCase() !== result.email
+      )
+        throw new OpenSessionMailError("automation_context_changed");
+    } catch (error) {
+      throw new ConnectedMailError(
+        error instanceof OpenSessionMailError
+          ? error.code
+          : "automation_consent_required",
+        428,
+      );
+    }
+  }
   if (body.provider === "gmail") {
     if (
       body.connection !== undefined ||
@@ -208,20 +239,29 @@ export async function connectedScope(
   request: ConnectedMailRequest,
   userId: string,
 ) {
-  return hash(
-    new TextEncoder().encode(
-      JSON.stringify([
-        "connected-mail-v1",
-        request.organizationId,
-        userId,
-        request.provider,
-        request.email,
-        request.connection?.imapHost ?? "",
-        request.connection?.username ?? "",
-        request.period.key,
-      ]),
-    ),
-  );
+  const identity = [
+    "connected-mail-v1",
+    request.organizationId,
+    userId,
+    request.provider,
+    request.email,
+    request.connection?.imapHost ?? "",
+    request.connection?.username ?? "",
+    request.period.key,
+  ];
+  if (request.automation)
+    identity.push(
+      "open-session-v1",
+      request.automation.id,
+      request.automation.account_id,
+      request.automation.session_id,
+      request.automation.aal,
+      request.automation.started_at,
+      request.automation.expires_at,
+      request.automation.period.from,
+      request.automation.period.to,
+    );
+  return hash(new TextEncoder().encode(JSON.stringify(identity)));
 }
 const purpose = "truckcontrol-connected-mail-cursor-v1:";
 const encoder = new TextEncoder();

@@ -45,7 +45,7 @@ function stamp(value: Date | string | undefined) {
         : NaN;
   return Number.isSafeInteger(time) ? String(time) : "";
 }
-function permittedMeta(
+function receivedMeta(
   value: ImapInvoiceMetadata | false,
   uid: number,
   input: ConnectedMailRequest,
@@ -54,13 +54,23 @@ function permittedMeta(
   return (
     value &&
     value.uid === uid &&
-    Number.isSafeInteger(value.size) &&
-    Number(value.size) > 0 &&
-    Number(value.size) <= connectedMailLimits.fileBytes &&
     value.flags instanceof Set &&
     !value.flags.has("\\Draft") &&
     !value.flags.has("\\Sent") &&
     receivedInPeriod(stamp(value.internalDate), input.period, now)
+  );
+}
+function permittedMeta(
+  value: ImapInvoiceMetadata | false,
+  uid: number,
+  input: ConnectedMailRequest,
+  now: number,
+) {
+  return (
+    receivedMeta(value, uid, input, now) &&
+    Number.isSafeInteger(value && value.size) &&
+    Number(value && value.size) > 0 &&
+    Number(value && value.size) <= connectedMailLimits.fileBytes
   );
 }
 /** Pure scan logic: transport is injected so tests never authenticate a real mailbox. */
@@ -116,8 +126,14 @@ export async function scanConnectedImap(
     .filter((uid) => uid >= (saved?.nextUid ?? 1))
     .sort((a, b) => a - b);
   const result = emptyConnectedCounters();
+  const automatic = Boolean(input.automation);
+  const attachmentLimit = automatic
+    ? connectedMailLimits.messages
+    : connectedMailLimits.attachments;
   let downloaded = 0,
     downloadedBytes = 0;
+  const atAttachmentLimit = () =>
+    downloaded >= attachmentLimit || (automatic && result.imported >= 1);
   const deadline = Date.now() + 110000;
   const next = async (uid: number, attachment: number) => {
     result.has_more = true;
@@ -129,11 +145,13 @@ export async function scanConnectedImap(
     );
     return result;
   };
+  const afterMessage = (index: number) =>
+    index + 1 < ids.length ? next(ids[index + 1], 0) : result;
   for (let index = 0; index < ids.length; index++) {
     const uid = ids[index];
     if (
       result.examined >= connectedMailLimits.messages ||
-      downloaded >= connectedMailLimits.attachments ||
+      atAttachmentLimit() ||
       Date.now() > deadline
     )
       return next(uid, saved?.nextUid === uid ? saved.attachment : 0);
@@ -142,6 +160,10 @@ export async function scanConnectedImap(
     const meta = await client.metadata(uid);
     if (!permittedMeta(meta, uid, input, context.now())) {
       result.skipped++;
+      if (automatic && receivedMeta(meta, uid, input, context.now())) {
+        result.failures++;
+        return afterMessage(index);
+      }
       continue;
     }
     if (
@@ -160,6 +182,13 @@ export async function scanConnectedImap(
       full.source.length > connectedMailLimits.fileBytes
     ) {
       result.skipped++;
+      if (
+        automatic &&
+        (!full || receivedMeta(full, uid, input, context.now()))
+      ) {
+        result.failures++;
+        return afterMessage(index);
+      }
       continue;
     }
     downloadedBytes += full.source.length;
@@ -177,29 +206,34 @@ export async function scanConnectedImap(
       });
     } catch {
       result.failures++;
+      if (automatic) return afterMessage(index);
       continue;
     }
     if (email.attachments.some((p) => p.rfc822DepthExceeded)) {
       result.failures++;
+      if (automatic) return afterMessage(index);
       continue;
     }
     const files = email.attachments.filter(
       (p) => p.disposition !== "inline" && p.filename,
     );
+    const after = (partIndex: number) =>
+      partIndex < files.length ? next(uid, partIndex) : afterMessage(index);
     for (
       let partIndex = saved?.nextUid === uid ? saved.attachment : 0;
       partIndex < files.length;
       partIndex++
     ) {
-      if (
-        downloaded >= connectedMailLimits.attachments ||
-        Date.now() > deadline
-      )
+      if (atAttachmentLimit() || Date.now() > deadline)
         return next(uid, partIndex);
       const part = files[partIndex];
       downloaded++;
       if (typeof part.content === "string") {
         result.skipped++;
+        if (automatic) {
+          result.failures++;
+          return after(partIndex + 1);
+        }
         continue;
       }
       const bytes = new Uint8Array(part.content);
@@ -210,6 +244,10 @@ export async function scanConnectedImap(
         bytes.length > connectedMailLimits.fileBytes
       ) {
         result.skipped++;
+        if (automatic) {
+          result.failures++;
+          return after(partIndex + 1);
+        }
         continue;
       }
       await context.assertCurrent();
@@ -242,6 +280,7 @@ export async function scanConnectedImap(
           ],
         }),
       );
+      if (automatic && result.failures > 0) return after(partIndex + 1);
     }
   }
   return result;
