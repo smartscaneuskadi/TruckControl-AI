@@ -266,6 +266,17 @@ test("el grant mantiene cuenta, empresa, SID, fechas y caducidad y espera cinco 
   await advance(page, openMailAutomationPolicy.min_interval_ms - 60000);
   expect(mail.imports()).toHaveLength(1);
   mail.controls.hasMore = false;
+  // Advancing virtual timers also starts the native permission heartbeat. Its
+  // real HTTP must settle before another jump can expire request deadlines.
+  // This fixture closes all external traffic, so networkidle drains only its
+  // intercepted/local requests; retain the account and waiting-state checks.
+  await page.waitForLoadState("networkidle");
+  await expect(dialog.locator(".mail-automatic-status")).toContainText(
+    waitingLabel,
+  );
+  await expect(
+    accounts(page).getByRole("button", { name: firstMail, exact: true }),
+  ).toBeVisible();
   await advance(page, 61000);
   await settled(mail, 2, dialog);
   expect(mail.imports()[1].body).toMatchObject({
@@ -273,6 +284,13 @@ test("el grant mantiene cuenta, empresa, SID, fechas y caducidad y espera cinco 
     period,
     cursor: "synthetic-next-mail-cursor",
   });
+  await page.waitForLoadState("networkidle");
+  await expect(dialog.locator(".mail-automatic-status")).toContainText(
+    waitingLabel,
+  );
+  await expect(
+    accounts(page).getByRole("button", { name: firstMail, exact: true }),
+  ).toBeVisible();
   await advance(page);
   await settled(mail, 3, dialog);
   expect(mail.imports()[2].body).toMatchObject({
