@@ -1,3 +1,7 @@
+## Acceso a Gmail: candidata del 19/11/2026 UTC
+
+Google rechaza www y el hostname técnico con 400/`origin_mismatch`; el dominio canónico abre su inicio de sesión. La candidata 0.5.32-rc.2 evita abrir la autorización desde esas direcciones y conserva el trabajo en la ventana actual. 2.302 pruebas unitarias/SQL, tipos, compilación, los 64 originales/11 hashes y 12 recorridos nuevos correctos. CI completa, regresión y publicación pendientes. [Diagnóstico](GMAIL_ORIGIN_REPAIR.md). Producción 51/c592, demo 6, backend y 76 migraciones intactos. No acredita consentimiento de una cuenta ni revisión pública de Google; sin compras, llamadas IA o acceso real a mensajes.
+
 ## Correo y revisión opcional publicados y verificados — Sites51 ·17/11/2026UTC
 
 Vigente **https://truckcontrolai.com ·Sites51 /0.5.32-rc.1**, fuente `c592945b7da8e2ddbed8b5bc54b80651b313224e`, despliegue `appgdep_6afc91fc04988191bf227400e6406a36` SUCCEEDED. PR157 integrado en `c70e3bde3116958fc9b38e0cb33cfb3128f9f76b`. Dentro de una cuenta Gmail o IMAP conectada, **Descargar facturas del correo por IA** permite optar por revisiones periódicas mientras la app esté abierta y visible. Conectar correo no activa IA. Consentimiento RAM por usuario/empresa/cuenta/SID/AAL/buzón/período:30días por defecto, máximo12meses; hasta1h,5min entre solicitudes y10lotes por autorización,un original nuevo por petición automática. La frecuencia y serialización son por instancia; las cuotas del servidor permanecen10USD/mes–100llamadas/empresa. No hay lectura con la app cerrada ni renovación del permiso. Se conserva la revisión humana antes del gasto.
@@ -406,7 +410,3 @@ Pendientes: conexión y aceptación de un proveedor para emisión fiscal real po
 ## Historial de correo y bandeja v16
 
 La entrega anterior 0.5.9-rc.1 / v16 actualizó `company-mail` a v11 y `company-assistant` a v10 para los tres orígenes de producción. Pasaron 21 controles HTTP sin llamadas a proveedores; la migración 55 añadió la consulta invoker y el índice de la bandeja. El límite de 10.000 es explícito y una carga incompleta no se presenta como completa. [Guía](INVOICE_INBOX.md), checkpoint `/workspace/artifacts/truckcontrol-invoice-inbox-20261102/checkpoint.json` y checks de PR #24. La lectura IA introducida en v17 utiliza company-mail v12 y se conserva en v23; [guía](INVOICE_AI.md).
-## Reparación del acceso a Google ·candidata19/11/2026UTC
-
-Google real acepta el origen canónico hasta su inicio de sesión yrechazawww/hostname técnico con400/`origin_mismatch`, reproduciendo el aviso del titular sin credenciales. Candidata0.5.32-rc.2 dirige explícitamente al Correo canónico,con ventana anterior conservada ysin transferir datos/sesiones.2302unit/SQL,tipos,compilación,64originales/11hashes y12recorridos nuevos correctos; CI completa/regresión/publicación pendientes. [Diagnóstico yalcance](GMAIL_ORIGIN_REPAIR.md). Producción51/c592 ydemo6 no sustituidas aún,backend/76migraciones/cuotas intactos. No acredita consentimiento personal ni revisión pública deGoogle; no hay compras,IA,lectura/envío reales oautomatización pagada.
-
