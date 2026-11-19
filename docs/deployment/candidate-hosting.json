@@ -6,10 +6,10 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_ee728639b8688191add56b276ad84b87",
-  "published_version_number": 50,
-  "deployment_id": "appgdep_6afb4a20f2e881918f97f61b1c6d52ec",
+  "published_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_34171029625881919a7feb1978c4f77d",
+  "published_version_number": 51,
+  "deployment_id": "appgdep_6afc91fc04988191bf227400e6406a36",
   "previous_deployment_id": "appgdep_6aface4569a48191ab5bd6c0008d40d2",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
@@ -21,7 +21,7 @@
     "vat_rate_bps": 2100,
     "plans": [
       {
-        "name": "B\u00e1sico",
+        "name": "Básico",
         "monthly_cents": 30000
       },
       {
@@ -76,7 +76,7 @@
     "app_version": "0.5.30-rc.1"
   },
   "source_deployment_ci_run": 43923519348,
-  "app_version": "0.5.31-rc.1",
+  "app_version": "0.5.32-rc.1",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -380,7 +380,7 @@
   "expected_billing_issuer": {
     "name": "ELEVADANCOR S.L.",
     "tax_id": "B02993426",
-    "address": "Pol\u00edgono Arzabalza, n.\u00ba 50, 20400 Tolosa",
+    "address": "Polígono Arzabalza, n.º 50, 20400 Tolosa",
     "email": "pedidos@smartscaneuskadi.com"
   },
   "expected_company_fiscal_preparation": true,

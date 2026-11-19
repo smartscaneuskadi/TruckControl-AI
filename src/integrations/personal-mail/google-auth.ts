@@ -1,4 +1,21 @@
 import { personalMailScope } from "./gmail";
+export const googleMailEntryUrl = "https://truckcontrolai.com/#/mailbox";
+export const googleMailOriginMessage =
+  "Abre el correo en truckcontrolai.com para conectar tu cuenta de Google. Tu trabajo en esta ventana se mantiene abierto.";
+/** Google authorizes exact JavaScript origins, not all aliases of a Site. */
+export function googleMailOriginAllowed(origin: string): boolean {
+  if (origin === "https://truckcontrolai.com") return true;
+  try {
+    const url = new URL(origin);
+    return (
+      url.origin === origin &&
+      ["http:", "https:"].includes(url.protocol) &&
+      ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
+    );
+  } catch {
+    return false;
+  }
+}
 export interface GoogleToken {
   access_token?: string;
   expires_in?: number;

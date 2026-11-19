@@ -19384,5 +19384,17 @@
     "contexts": [
       "src/domain/legal.ts:message"
     ]
+  },
+  {
+    "key": "Abre el correo en truckcontrolai.com para conectar tu cuenta de Google. Tu trabajo en esta ventana se mantiene abierto.",
+    "contexts": [
+      "src/components/GoogleMailOriginNotice.tsx:message"
+    ]
+  },
+  {
+    "key": "Abrir Correo en truckcontrolai.com",
+    "contexts": [
+      "src/components/GoogleMailOriginNotice.tsx:message"
+    ]
   }
 ]
