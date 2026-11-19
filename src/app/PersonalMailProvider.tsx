@@ -28,6 +28,8 @@ import {
   grantedMailToken,
   loadGoogleMailOAuth,
   publicGoogleClientId,
+  googleMailOriginAllowed,
+  googleMailOriginMessage,
 } from "../integrations/personal-mail/google-auth";
 import type { GoogleMailOAuth } from "../integrations/personal-mail/google-auth";
 
@@ -53,6 +55,7 @@ interface PersonalMail {
   disconnectAccount(id: string): void;
   expireAccount(id: string): void;
   ready: boolean;
+  googleOriginAllowed: boolean;
   configured: boolean | null;
   connecting: boolean;
   error: string;
@@ -71,6 +74,7 @@ export function PersonalMailProvider({ children }: { children: ReactNode }) {
     { snapshot } = useFleet(),
     subscription = useSubscription();
   const cloud = company.mode === "company";
+  const googleOriginAllowed = googleMailOriginAllowed(window.location.origin);
   const allowed =
     cloud &&
     Boolean(company.user) &&
@@ -330,6 +334,10 @@ export function PersonalMailProvider({ children }: { children: ReactNode }) {
     }
   }
   async function prepare() {
+    if (!googleOriginAllowed) {
+      setError(googleMailOriginMessage);
+      return;
+    }
     if (!current(scopeKey) || !online || !clientId || lock.current) return;
     lock.current = true;
     setConnecting(true);
@@ -354,6 +362,10 @@ export function PersonalMailProvider({ children }: { children: ReactNode }) {
     }
   }
   function connect(expectedEmail = "") {
+    if (!googleOriginAllowed) {
+      setError(googleMailOriginMessage);
+      return;
+    }
     if (
       !current(scopeKey) ||
       !navigator.onLine ||
@@ -497,6 +509,7 @@ export function PersonalMailProvider({ children }: { children: ReactNode }) {
         expireAccount: (id) => close(id, true),
         ready,
         configured,
+        googleOriginAllowed,
         connecting,
         error,
         configure,

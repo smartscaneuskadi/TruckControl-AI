@@ -17,6 +17,7 @@ import {
   Unplug,
 } from "lucide-react";
 import { usePersonalMail } from "../app/PersonalMailProvider";
+import { GoogleMailOriginNotice } from "../components/GoogleMailOriginNotice";
 import { Button, Field, Modal, PageHeading } from "../components/ui";
 import { createDemoMailbox } from "../integrations/personal-mail/demo";
 import { fromBase64 } from "../../supabase/functions/_shared/invoice";
@@ -389,7 +390,9 @@ function PersonalMailView({
           </div>
         ) : account.cloud ? (
           <div className="personal-mail-connect">
-            {account.configured === true ? (
+            {!account.googleOriginAllowed ? (
+              <GoogleMailOriginNotice />
+            ) : account.configured === true ? (
               <>
                 <p>
                   Gmail / Google Workspace. Autoriza lectura, redacción y

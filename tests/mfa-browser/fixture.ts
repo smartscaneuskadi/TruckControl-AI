@@ -58,8 +58,16 @@ export async function nativeFixture(
   {
     factors = [],
     company = false,
-  }: { factors?: Factor[]; company?: boolean } = {},
+    backendOrigin = "http://127.0.0.1:9999",
+  }: { factors?: Factor[]; company?: boolean; backendOrigin?: string } = {},
 ) {
+  if (
+    ![
+      "http://127.0.0.1:9999",
+      "https://kkkemaycedexymrpaqtp.supabase.co",
+    ].includes(backendOrigin)
+  )
+    throw new Error("Unexpected synthetic backend origin");
   const controls = {
     factors: new Map<string, Factor[]>([
       [actor, factors],
@@ -244,7 +252,7 @@ export async function nativeFixture(
       ].includes(url.origin)
     )
       return route.continue();
-    if (url.origin !== "http://127.0.0.1:9999") {
+    if (url.origin !== backendOrigin) {
       blocked.push(request.url());
       return route.abort("blockedbyclient");
     }

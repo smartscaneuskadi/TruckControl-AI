@@ -35,7 +35,15 @@ const claims = (request: Request) => {
 export async function mailboxFixture(
   context: BrowserContext,
   auth: NativeAuth,
+  backendOrigin = "http://127.0.0.1:9999",
 ) {
+  if (
+    ![
+      "http://127.0.0.1:9999",
+      "https://kkkemaycedexymrpaqtp.supabase.co",
+    ].includes(backendOrigin)
+  )
+    throw new Error("Unexpected synthetic mailbox backend origin");
   auth.controls.manualFullEnabled = true;
   const tokens = new Map<string, string>();
   const calls: {
@@ -124,14 +132,11 @@ export async function mailboxFixture(
       url.origin === "https://gmail.googleapis.com" &&
       path.startsWith("/gmail/v1/users/me/");
     const personal =
-      url.origin === "http://127.0.0.1:9999" &&
-      path === "/functions/v1/personal-mail";
+      url.origin === backendOrigin && path === "/functions/v1/personal-mail";
     const companyMail =
-      url.origin === "http://127.0.0.1:9999" &&
-      path === "/functions/v1/company-mail";
+      url.origin === backendOrigin && path === "/functions/v1/company-mail";
     const invoicePage =
-      url.origin === "http://127.0.0.1:9999" &&
-      path === "/rest/v1/rpc/tc_invoice_page";
+      url.origin === backendOrigin && path === "/rest/v1/rpc/tc_invoice_page";
     if (!(
       browserConfig ||
       googleScript ||

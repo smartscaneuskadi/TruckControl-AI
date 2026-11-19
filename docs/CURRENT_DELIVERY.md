@@ -406,3 +406,7 @@ Pendientes: conexión y aceptación de un proveedor para emisión fiscal real po
 ## Historial de correo y bandeja v16
 
 La entrega anterior 0.5.9-rc.1 / v16 actualizó `company-mail` a v11 y `company-assistant` a v10 para los tres orígenes de producción. Pasaron 21 controles HTTP sin llamadas a proveedores; la migración 55 añadió la consulta invoker y el índice de la bandeja. El límite de 10.000 es explícito y una carga incompleta no se presenta como completa. [Guía](INVOICE_INBOX.md), checkpoint `/workspace/artifacts/truckcontrol-invoice-inbox-20261102/checkpoint.json` y checks de PR #24. La lectura IA introducida en v17 utiliza company-mail v12 y se conserva en v23; [guía](INVOICE_AI.md).
+## Reparación del acceso a Google ·candidata19/11/2026UTC
+
+Google real acepta el origen canónico hasta su inicio de sesión yrechazawww/hostname técnico con400/`origin_mismatch`, reproduciendo el aviso del titular sin credenciales. Candidata0.5.32-rc.2 dirige explícitamente al Correo canónico,con ventana anterior conservada ysin transferir datos/sesiones.2302unit/SQL,tipos,compilación,64originales/11hashes y12recorridos nuevos correctos; CI completa/regresión/publicación pendientes. [Diagnóstico yalcance](GMAIL_ORIGIN_REPAIR.md). Producción51/c592 ydemo6 no sustituidas aún,backend/76migraciones/cuotas intactos. No acredita consentimiento personal ni revisión pública deGoogle; no hay compras,IA,lectura/envío reales oautomatización pagada.
+

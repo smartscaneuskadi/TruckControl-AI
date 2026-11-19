@@ -1,0 +1,126 @@
+{
+  "checkedAt": "2026-11-19T06:28:01.918Z",
+  "config": {
+    "status": 200,
+    "configured": true,
+    "provider": "google",
+    "mode": "personal_browser",
+    "client_id": "468881730124-ss24lmbcjdronuogra584saigfj8sb0t.apps.googleusercontent.com"
+  },
+  "results": [
+    {
+      "origin": "https://truckcontrolai.com",
+      "webStatus": 200,
+      "actualOrigin": "https://truckcontrolai.com",
+      "googlePath": "accounts.google.com/v3/signin/identifier",
+      "title": "Inicia sesión: Cuentas de Google",
+      "body": "Iniciar sesión con Google\nInicia sesión\n\nIr a truckcontrolai.com\n\nCorreo electrónico o teléfono\n\n¿Has olvidado tu correo electrónico?\n\nSiguiente\nCrear cuenta",
+      "navigation": [
+        {
+          "path": "/o/oauth2/v2/auth",
+          "status": 302
+        },
+        {
+          "path": "/v3/signin/identifier",
+          "status": 200
+        },
+        {
+          "path": "/_/bscframe",
+          "status": 200
+        }
+      ],
+      "errorCallback": null,
+      "signedIn": false,
+      "consentSubmitted": false
+    },
+    {
+      "origin": "https://www.truckcontrolai.com",
+      "webStatus": 200,
+      "actualOrigin": "https://www.truckcontrolai.com",
+      "googlePath": "accounts.google.com/signin/oauth/error",
+      "title": "Inicia sesión: Cuentas de Google",
+      "body": "Iniciar sesión con Google\nAcceso bloqueado: error de autorización\n\n\nNo puedes iniciar sesión en esta aplicación porque no cumple con la política OAuth 2.0 de Google.\n\nSi eres quien ha desarrollado la aplicación, registra el origen de JavaScript en la consola de Google Cloud.\nMás información sobre este error\n\nSi eres desarrollador de esta app, consulta los detalles del error.\n\nError 400: origin_mismatch",
+      "navigation": [
+        {
+          "path": "/o/oauth2/v2/auth",
+          "status": 302
+        },
+        {
+          "path": "/signin/oauth/error",
+          "status": 302
+        },
+        {
+          "path": "/signin/oauth/error",
+          "status": 200
+        }
+      ],
+      "errorCallback": null,
+      "signedIn": false,
+      "consentSubmitted": false
+    },
+    {
+      "origin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "webStatus": 200,
+      "actualOrigin": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
+      "googlePath": "accounts.google.com/signin/oauth/error",
+      "title": "Inicia sesión: Cuentas de Google",
+      "body": "Iniciar sesión con Google\nAcceso bloqueado: error de autorización\n\n\nNo puedes iniciar sesión en esta aplicación porque no cumple con la política OAuth 2.0 de Google.\n\nSi eres quien ha desarrollado la aplicación, registra el origen de JavaScript en la consola de Google Cloud.\nMás información sobre este error\n\nSi eres desarrollador de esta app, consulta los detalles del error.\n\nError 400: origin_mismatch",
+      "navigation": [
+        {
+          "path": "/o/oauth2/v2/auth",
+          "status": 302
+        },
+        {
+          "path": "/signin/oauth/error",
+          "status": 302
+        },
+        {
+          "path": "/signin/oauth/error",
+          "status": 200
+        }
+      ],
+      "errorCallback": null,
+      "signedIn": false,
+      "consentSubmitted": false
+    }
+  ],
+  "authenticatedAccounts": 0,
+  "providerDataRead": false,
+  "limitations": [
+    "No account credentials entered; no OAuth consent completed.",
+    "Current Google audience and restricted-scope review are not independently confirmed.",
+    "Origin mismatch is reproduced on two aliases; the origin used by the owner has not been confirmed."
+  ],
+  "baseline_main": "ab4d810e6871b6d740a555476b890ca2306605b9",
+  "baseline_public_source": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+  "tests": {
+    "check": {
+      "passed": true,
+      "unit_sql_passed": 2302,
+      "files_passed": 172,
+      "retained_original_files": 11,
+      "retained_original_tests": 64
+    },
+    "google_origin_browser": {
+      "passed": true,
+      "cases": 12,
+      "profiles": [
+        "Windows light",
+        "Android light",
+        "Windows cockpit",
+        "Android cockpit"
+      ],
+      "transport": "Synthetic private HTTP; actual app and SDK; unknown requests and WebSockets denied."
+    },
+    "github_ci": "pending"
+  },
+  "costs": {
+    "new_purchases_eur": 0,
+    "new_model_requests": 0,
+    "new_mail_read_send": 0,
+    "new_paid_browser_runs": 0,
+    "historical_200_eur_remaining": "not reconciled; no new spend",
+    "tinyfish_balance_usd": "-0.328",
+    "ai_limits_unchanged": true
+  }
+}

@@ -4,6 +4,7 @@ import { Plus, X, ShieldCheck, Mail } from "lucide-react";
 import { useCompany } from "../app/CompanyAccess";
 import { useFleet } from "../app/FleetProvider";
 import { usePersonalMail } from "../app/PersonalMailProvider";
+import { GoogleMailOriginNotice } from "../components/GoogleMailOriginNotice";
 import { sessionExitEvent } from "../app/session-events";
 import { ConnectedMailView } from "./PersonalMail";
 import { createImapMailbox } from "../integrations/personal-mail/imap";
@@ -473,7 +474,9 @@ export function MailWorkspace({
                       Elige esa misma cuenta en la ventana oficial de Google.
                       Autorizar el correo no activa la IA ni descarga facturas.
                     </p>
-                    {personal.configured === true ? (
+                    {!personal.googleOriginAllowed ? (
+                      <GoogleMailOriginNotice />
+                    ) : personal.configured === true ? (
                       <button
                         className="button primary"
                         type="submit"
