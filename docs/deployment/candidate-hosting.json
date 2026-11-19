@@ -6,11 +6,11 @@
   "purpose": "Primary client application; stable demo separate and candidate 8 retained for recovery",
   "created_at": "2026-10-31T20:56:05.847544+00:00",
   "current_live_url": "https://truckcontrol-ai-candidata.earlymug513.chatgpt.site",
-  "published_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
-  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_34171029625881919a7feb1978c4f77d",
-  "published_version_number": 51,
-  "deployment_id": "appgdep_6afc91fc04988191bf227400e6406a36",
-  "previous_deployment_id": "appgdep_6aface4569a48191ab5bd6c0008d40d2",
+  "published_commit": "0f3e311b4aaf3eaea632b3a7f0ad76e69cee740a",
+  "published_version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_081df58f84a4819194cf4e5449c78d0d",
+  "published_version_number": 52,
+  "deployment_id": "appgdep_6afea2824538819189a6252694fd6217",
+  "previous_deployment_id": "appgdep_6afc91fc04988191bf227400e6406a36",
   "verified_custom_origins": [
     "https://truckcontrolai.com",
     "https://www.truckcontrolai.com"
@@ -31,12 +31,12 @@
     ],
     "trial_plan": "limited"
   },
-  "deployed_at": "2026-11-16T18:23:43.559289+00:00",
+  "deployed_at": "2026-11-19T07:17:36.172315+00:00",
   "expected_themes": [
     "light",
     "cockpit"
   ],
-  "source_ci_run": 43923519390,
+  "source_ci_run": 44474585956,
   "expected_gmail_callback": true,
   "callback_route": "/gmail-callback",
   "rollback_history": {
@@ -65,18 +65,18 @@
   "primary_url": "https://truckcontrolai.com",
   "expected_channel": "production",
   "expected_registration_open": true,
-  "source_ci_commit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+  "source_ci_commit": "0f3e311b4aaf3eaea632b3a7f0ad76e69cee740a",
   "production_source_manifest_only_diff": false,
   "owner_verified_at": "2026-11-01T22:42:43.543501+00:00",
   "previous_production": {
-    "version": 49,
-    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_0a57d381ffd081918f6d663aef093740",
-    "source_commit": "5f44a164700ea4cc803bb7cf480b664cce68af43",
-    "deployment_id": "appgdep_6aface4569a48191ab5bd6c0008d40d2",
-    "app_version": "0.5.30-rc.1"
+    "version": 51,
+    "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_34171029625881919a7feb1978c4f77d",
+    "source_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+    "deployment_id": "appgdep_6afc91fc04988191bf227400e6406a36",
+    "app_version": "0.5.32-rc.1"
   },
-  "source_deployment_ci_run": 43923519348,
-  "app_version": "0.5.32-rc.1",
+  "source_deployment_ci_run": 44474585864,
+  "app_version": "0.5.32-rc.2",
   "expected_company_backup": true,
   "production_history": [
     {
@@ -286,6 +286,13 @@
       "source_commit": "5f44a164700ea4cc803bb7cf480b664cce68af43",
       "deployment_id": "appgdep_6aface4569a48191ab5bd6c0008d40d2",
       "app_version": "0.5.30-rc.1"
+    },
+    {
+      "version": 51,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_34171029625881919a7feb1978c4f77d",
+      "source_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+      "deployment_id": "appgdep_6afc91fc04988191bf227400e6406a36",
+      "app_version": "0.5.32-rc.1"
     }
   ],
   "expected_provider_admin": true,
@@ -303,7 +310,7 @@
   "gmail_function_version": 19,
   "expected_mail_service_cors": true,
   "expected_invoice_inbox": true,
-  "mail_function_version": 15,
+  "mail_function_version": 17,
   "assistant_function_version": 13,
   "expected_tyres": true,
   "unpublished_tyre_candidate": {
@@ -351,21 +358,34 @@
     "time_zone": "Europe/Madrid",
     "action": "sync_period"
   },
-  "ci_scope_note": "Verified application source5f44:2035unitSQL,154Python,94demo,62company,274SaaS,98MFA,44Full,68billing,20candidate,20production and6previous public profiles per execution. After actual49 deployment:68published UI,105HTTPS hashes,6PWA,5health and2native anonymous RPC denials. Real bundle/SDK with synthetic private HTTP, no physical/provider/managed-restore claim.",
+  "ci_scope_note": "PR159 and exact production source: 2302unit/SQL,154Python,94demo,62company,274SaaS,98MFA,44Full,68attachments,172mail,12Google-origin,20candidate,20production and6prior public profiles per full run. After publishing52:105HTTPS hashes,6PWA,5health and172mail cases passed. Real app/SDK with synthetic closed private HTTP; no fresh account, provider, model, physical or managed-restore acceptance.",
   "final_release_verification": {
-    "status": "passed",
-    "receipt": "docs/verification/unified-mailbox-published50-20261116.json",
-    "source_commit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
-    "browser_cases": 68,
-    "static_hashes": 105,
-    "pwa_profiles": 6,
-    "health_checks": 5,
-    "native_anonymous_mail_guards": 5,
-    "real_provider_calls": 0,
-    "physical_devices": false
+    "unit_sql": 2302,
+    "unit_sql_files": 172,
+    "python": 154,
+    "demo_browser": 94,
+    "company_browser": 62,
+    "saas_browser": 274,
+    "mfa_browser": 98,
+    "manual_full_browser": 44,
+    "billing_attachments_browser": 68,
+    "mail_browser": 172,
+    "google_origin_browser": 12,
+    "candidate_browser": 20,
+    "production_browser": 20,
+    "previous_public_profiles": 6,
+    "retained_original_tests": 64,
+    "retained_hashes": 11,
+    "post_publication_https_hashes": 105,
+    "post_publication_pwa_profiles": 6,
+    "post_publication_health_checks": 5,
+    "post_publication_mail_cases": 172,
+    "physical_devices": false,
+    "real_new_google_consent": false,
+    "commercial_payments": false
   },
-  "source_branch": "deploy/unified-mailbox-production-20261116",
-  "production_source_manifest_only_diff_scope": "Reviewed PR155 headcc3a342 and deployed source16f4923 have identical application, tests, Supabase, dependencies, compiler and Android source trees. The eight differences in postpublication_allowed_differences concern production packaging, hosting identity and preserved delivery/recovery metadata. This comparison pins that exact review pair; later delivery notes and verification metadata evolve on main. The manifest-only flag remains false.",
+  "source_branch": "deploy/google-origin-production-20261119",
+  "production_source_manifest_only_diff_scope": "Pinned comparison: reviewed PR159 head6b15fe4 / merged mainb6b7b37 and published source0f3e311 have equal application, tests, functions, dependencies, compiler and Android trees. Eight enumerated differences are production hosting, packaging and preserved recovery records. Main keeps its demo manifest; later delivery documentation is not published runtime.",
   "postpublication_runtime_tree_equal": true,
   "postpublication_allowed_differences": [
     ".github/workflows/production-package.yml",
@@ -388,26 +408,16 @@
   "copilot_function_version": 5,
   "expected_ai_specialists": true,
   "previous_final_release_verification": {
-    "code_commit": "56eeef208e0cd2cfd13926cdf8ab44bc09855fcc",
-    "source_commit": "30b39be58e5ec19e417f819e00f2e579ec2abe7d",
-    "checks_before_publication": 1107,
-    "unit_sql_passed": 789,
-    "python_passed": 32,
-    "demo_browser_passed": 64,
-    "company_browser_passed": 50,
-    "saas_browser_passed": 132,
-    "candidate_browser_passed": 14,
-    "production_build_passed": 20,
-    "public_profiles": 6,
-    "native_live_profiles": 8,
-    "native_browser_online_devices": 2,
-    "native_browser_themes": 2,
-    "https_file_hashes_after_publication": 75,
-    "migrations": 60,
-    "postpublication_checks": "https://github.com/smartscaneuskadi/TruckControl-AI/pull/38/checks",
-    "chat_writes_require_human_confirmation": true,
-    "scheduled_paid_model_calls": 0,
-    "emission_available": false
+    "status": "passed",
+    "receipt": "docs/verification/unified-mailbox-published50-20261116.json",
+    "source_commit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+    "browser_cases": 68,
+    "static_hashes": 105,
+    "pwa_profiles": 6,
+    "health_checks": 5,
+    "native_anonymous_mail_guards": 5,
+    "real_provider_calls": 0,
+    "physical_devices": false
   },
   "expected_cargotrack_embedded": true,
   "release_verification_history": [
@@ -516,6 +526,18 @@
       "pwa_profiles": 6,
       "health_checks": 5,
       "native_anonymous_read_rpc_denials": 2
+    },
+    {
+      "status": "passed",
+      "receipt": "docs/verification/unified-mailbox-published50-20261116.json",
+      "source_commit": "16f4923cb55ca1203c68bf58a4e8a66e499edcd8",
+      "browser_cases": 68,
+      "static_hashes": 105,
+      "pwa_profiles": 6,
+      "health_checks": 5,
+      "native_anonymous_mail_guards": 5,
+      "real_provider_calls": 0,
+      "physical_devices": false
     }
   ],
   "expected_languages": [
@@ -537,7 +559,7 @@
   ],
   "expected_second_driver": true,
   "expected_subscription_incidents": true,
-  "source_production_manifest_only_diff_scope": "Sites50 deploys source16f4923, derived from reviewed PR155 headcc3a342. Runtime and dependencies match; all eight production packaging, hosting and delivery/recovery differences are enumerated. Main retains its demo hosting manifest and must never be deployed as production.",
+  "source_production_manifest_only_diff_scope": "Pinned comparison: reviewed PR159 head6b15fe4 / merged mainb6b7b37 and published source0f3e311 have equal application, tests, functions, dependencies, compiler and Android trees. Eight enumerated differences are production hosting, packaging and preserved recovery records. Main keeps its demo manifest; later delivery documentation is not published runtime.",
   "expected_canonical_subscription_refresh": true,
   "expected_subscription_risk_review": true,
   "personal_mail_function_version": 4,
@@ -559,6 +581,13 @@
       "source_commit": "bb161141c33e8692aab8c4efdaf8c4e359903a3d",
       "deployment_id": "appgdep_6af827b8dc48819182d18b8efefeafd4",
       "app_version": "0.5.25-rc.1"
+    },
+    {
+      "version": 51,
+      "version_id": "appgprj_6ae655e56db481918fe18adfe9df8b66~appgver_34171029625881919a7feb1978c4f77d",
+      "source_commit": "c592945b7da8e2ddbed8b5bc54b80651b313224e",
+      "deployment_id": "appgdep_6afc91fc04988191bf227400e6406a36",
+      "app_version": "0.5.32-rc.1"
     }
   ],
   "supabase_migrations": 76,
@@ -600,11 +629,13 @@
   "production_source_manifest_only_diff_scope_history": [
     "Runtime src/public/tests/supabase/package/compiler/Android sources match reviewed67911f2 and merged mainc233a3c; only production identity, package workflow/helper and three preserved source-delivery records differ. Never deploy the demo manifest from main.",
     "Coreea9 and production888 have identical src/supabase runtime and dependency versions. They differ in production packaging workflow/script, hosting manifest and three prior release-source documents, so the manifest-only flag stays false.",
-    "Reviewed PR153 head4e08dfe and deployed source5f44 have identical application, tests, Supabase, dependency, compiler and Android source trees. The nine differences are enumerated in postpublication_allowed_differences: hosting identity, production packaging workflow/helpers and delivery/recovery metadata. The manifest-only flag remains false."
+    "Reviewed PR153 head4e08dfe and deployed source5f44 have identical application, tests, Supabase, dependency, compiler and Android source trees. The nine differences are enumerated in postpublication_allowed_differences: hosting identity, production packaging workflow/helpers and delivery/recovery metadata. The manifest-only flag remains false.",
+    "Reviewed PR155 headcc3a342 and deployed source16f4923 have identical application, tests, Supabase, dependencies, compiler and Android source trees. The eight differences in postpublication_allowed_differences concern production packaging, hosting identity and preserved delivery/recovery metadata. This comparison pins that exact review pair; later delivery notes and verification metadata evolve on main. The manifest-only flag remains false."
   ],
   "source_production_manifest_only_diff_scope_history": [
     "Shipped runtime src/public/functions/package/compiler/Android sources match reviewed PR128 head4880e2d and merged maindd2b530. Production identity, package workflow/helper and three delivery records differ. Independent offline preflight PR127/Python tests are preserved on main and the delivery branch, outside the static bundle. Never deploy the demo manifest from main.",
-    "Sites49 deploys source5f44, derived from reviewed PR153 head4e08dfe. Application/runtime and dependencies match; all nine packaging, hosting and delivery/recovery metadata differences are explicitly enumerated. Main retains its demo hosting manifest and must not be deployed as production."
+    "Sites49 deploys source5f44, derived from reviewed PR153 head4e08dfe. Application/runtime and dependencies match; all nine packaging, hosting and delivery/recovery metadata differences are explicitly enumerated. Main retains its demo hosting manifest and must not be deployed as production.",
+    "Sites50 deploys source16f4923, derived from reviewed PR155 headcc3a342. Runtime and dependencies match; all eight production packaging, hosting and delivery/recovery differences are enumerated. Main retains its demo hosting manifest and must never be deployed as production."
   ],
-  "company_mail_function_version": 16
+  "company_mail_function_version": 17
 }

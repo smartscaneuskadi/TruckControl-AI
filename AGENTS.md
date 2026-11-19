@@ -1,3 +1,11 @@
+## Gmail corregido y publicado · Sites 52 · 19/11/2026 UTC
+
+Vigente **https://truckcontrolai.com · 0.5.32-rc.2**, fuente `0f3e311b4aaf3eaea632b3a7f0ad76e69cee740a`, despliegue `appgdep_6afea2824538819189a6252694fd6217` SUCCEEDED. PR #159 integrado en `b6b7b37c2fb63db23c626a64533ce7c6a9f75e1f` después de tres CI completas SUCCESS. Google reproduce `400/origin_mismatch` desde www y el hostname técnico; el dominio canónico abre su inicio de sesión. Correo único y heredado evitan ese popup y ofrecen una entrada fija al Correo oficial en otra ventana, conservando el trabajo y sin transferir usuario, empresa, sesión o tokens.
+
+**Verificado:** 2.302 unitarias/SQL, 154 Python y 12 recorridos nuevos; 64 originales/11 hashes intactos. Después de publicar: 172/172 correo, 105/105 hashes HTTPS, 6/6 PWA y 5/5 salud, sin fallos, omisiones o flaky. Aplicación y SDK reales con transporte privado ficticio cerrado; Android/Windows emulados. No se ha completado un nuevo consentimiento de Google. No declarar aprobación pública, hardware o lanzamiento comercial global completos.
+
+Supabase mantiene 76 migraciones y 13 funciones ACTIVE; backend y cuotas intactos. Sin DDL, claves, datos o cobros modificados. Se conservan Sites51/c592, anteriores y demo6. Cero compras, modelos o navegación pagada nuevos; histórico de 200 EUR sin conciliar. Main conserva manifiesto DEMO: no desplegarlo ni republicar52 por estas notas. [Guía](docs/GMAIL_ORIGIN_REPAIR.md) y [recibo](docs/verification/google-origin-published52-20261119.json).
+
 ## Acceso a Gmail: corrección en curso · 19/11/2026 UTC
 
 Rama `fix/google-mail-canonical-origin-20261119` desde main `ab4d810`. Google reproduce 400/`origin_mismatch` desde www y el hostname técnico; el dominio canónico abre su inicio de sesión. Candidata 0.5.32-rc.2 evita esos popups y ofrece un enlace fijo al Correo oficial sin transferir datos o sesiones, conservando la ventana anterior. 2.302 pruebas unitarias/SQL y 12 recorridos nuevos correctos; CI completa y publicación pendientes. [Guía](docs/GMAIL_ORIGIN_REPAIR.md). Producción 51/c592, demo 6, 76 migraciones, backend y cuotas intactos. No repetir claves, proyectos, migraciones, tarea #37 ni consumos reales. No acredita consentimiento de una cuenta ni aprobación pública de Google.

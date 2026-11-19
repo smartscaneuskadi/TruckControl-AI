@@ -1,40 +1,29 @@
 # Gmail: acceso desde el dominio oficial
 
-Diagnóstico del 19/11/2026 UTC, incidencia #97. Producción al comenzar: Sites51 /0.5.32-rc.1, fuente `c592945b7da8e2ddbed8b5bc54b80651b313224e`. La corrección 0.5.32-rc.2 es candidata hasta terminar CI y publicación.
+Publicada y verificada el 19/11/2026 UTC en **Sites52 / 0.5.32-rc.2**. [Abrir Correo](https://truckcontrolai.com/#/mailbox). [Recibo verificable](verification/google-origin-published52-20261119.json). PR159 integrado; fuente `0f3e311b4aaf3eaea632b3a7f0ad76e69cee740a`.
 
-## Error reproducido con Google
+## Error reproducido
 
-Sin iniciar sesión ni aceptar permisos, se ha abierto Google Identity Services real con el cliente público existente del proyecto468881730124 y el alcance `gmail.modify` previsto por la aplicación:
+Google devuelve «Acceso bloqueado: error de autorización», `400/origin_mismatch`, cuando la autorización empieza en www o en el hostname técnico. Desde `https://truckcontrolai.com` abre su inicio de sesión. Se ha comprobado con Google real en escritorio y Pixel7 emulado, sin identificar cuentas ni aceptar permisos. El origen usado por el titular todavía no está confirmado.
 
-| Entrada de TruckControl | Respuesta de Google |
-| --- | --- |
-| `https://truckcontrolai.com` | HTTP200, pantalla oficial de inicio de sesión. |
-| `https://www.truckcontrolai.com` | «Acceso bloqueado: error de autorización»,400/`origin_mismatch`. |
-| Hostname técnico de producción | El mismo400/`origin_mismatch`. |
+Google admite orígenes JavaScript exactos. Compartir aplicación y HTTPS no autoriza todos sus alias. Este error es distinto del antiguo `invalid_client` empresarial: el Correo unificado utiliza el cliente público y los permisos temporales del buzón elegido, sin necesitar ese secreto heredado.
 
-Google admite orígenes JavaScript exactos. Que una dirección sirva la misma aplicación por HTTPS no la convierte en un origen admitido por el cliente OAuth. El dominio utilizado por el titular todavía no está confirmado; esta reproducción no acredita el consentimiento de su cuenta ni la revisión pública de alcances.
+## Comportamiento publicado
 
-No se confunde este fallo con el antiguo `invalid_client` del importador empresarial. El Correo unificado utiliza el cliente público en navegador, con credenciales temporales en RAM. No necesita el secreto del antiguo recorrido para acceder al buzón elegido.
+Las dos vistas del Correo evitan iniciar la autorización desde direcciones públicas distintas de la canónica. Ofrecen un enlace fijo al Correo oficial en otra ventana con `noopener`, `noreferrer` y sin referencia. No lleva correo, empresa, sesión, códigos o tokens. El formulario y el trabajo anteriores permanecen abiertos; la nueva ventana usa el acceso normal de TruckControl. No se comparten credenciales entre orígenes ni se hacen redirecciones automáticas. Los previews locales aislados siguen disponibles.
 
-## Corrección y uso
+No cambia el acceso al buzón propio, otros proveedores, aislamiento de empresa o consentimiento separado para importar facturas por IA. No se recrea el cliente ni se amplían los permisos de Google.
 
-La entrada oficial es **https://truckcontrolai.com/#/mailbox**.
+## Pruebas y alcance
 
-El Correo único y su vista heredada evitan abrir la autorización desde un origen público distinto del canónico. Muestran un enlace fijo al correo oficial en otra ventana, sin incluir dirección del buzón, empresa, sesión, códigos ni tokens. `noopener`, `noreferrer` y la política de referencia protegen el salto. El trabajo y el formulario de la ventana anterior permanecen abiertos. La nueva ventana usa el acceso normal de TruckControl; no hereda sus credenciales. Los previews locales aislados siguen disponibles.
+Las tres CI de rama, PR y fuente exacta son SUCCESS: 2.302 unitarias/SQL, 154 Python, 94 demo, 62 empresa, 274 SaaS, 98 MFA, 44 FULL, 68 documentos, 172 correo, 12 orígenes, 20 candidata, 20 producción y seis perfiles públicos previos por ejecución. Los 64 originales y 11 hashes se conservan.
 
-No se hacen redirecciones automáticas, no se comparten sesiones entre orígenes ni se amplía el cliente de Google a dominios ajenos. Los otros proveedores, las cuentas conectadas, los datos de empresa y el consentimiento separado de importación IA permanecen iguales.
+Después de publicar pasan 105 hashes en tres orígenes, seis perfiles PWA, cinco controles de salud y 172 recorridos sobre el bundle servido, sin fallos, omisiones o flaky. Los 12 casos nuevos previos cubren tres orígenes, formulario conservado, ausencia de solicitudes rechazadas, enlace sin información privada, separación de sesiones, cuatro idiomas, ambos temas y vista heredada. Son emulación y HTTP privado ficticio con la aplicación y SDK reales, no una nueva aceptación de buzón, IA o hardware.
 
-## Verificaciones
+El primer arnés intentó usar un backend local ficticio desde un origen público y el producto lo rechazó correctamente. Se conserva ese fallo. El arnés corregido usa una clave ficticia y la URL exclusiva, intercepta todo el HTTP privado y deniega solicitudes desconocidas y WebSockets. No rebaja el guard del producto. El primer Android del PR falló al resolver dependencias Maven; el reintento oficial pasó sin cambiar versiones o controles.
 
-- `npm run check`:2.302 pruebas unitarias/SQL en172archivos,tipos,compilación y11hashes originales intactos.
-- `npm run test:e2e:google-origin`:12casos,Windows/Android emulados yambos temas. Comprueban los tres orígenes, ausencia de solicitudes desde aliases rechazados, enlace sin información privada, ausencia de `opener`, separación de sesiones, formulario conservado,los cuatro idiomas yla vista heredada.
-- El primer arnés de prueba intentó utilizar una conexión local ficticia desde un origen HTTPS público; la aplicación la rechazó correctamente. Se conserva ese fallo. El nuevo arnés usa una clave ficticia yla URL del proyecto exclusivo, con todas las solicitudes privadas interceptadas ylas desconocidas/WebSockets denegadas. No se rebaja el guard del producto.
-- CI completa, regresión de correo ypublicación:pendientes al guardar este cambio. El recibo final debe distinguir estos resultados de una autenticación real.
+## Recuperación y límites
 
-[Diagnóstico público verificable](verification/google-origin-diagnostic-20261119.json). Recibos, capturas sin sesión yfallos iniciales: `/workspace/artifacts/truckcontrol-google-block-20261119`.
+Sites51/c592, su archivo nativo y demo6 se conservan. Las 76 migraciones, backend, credenciales, datos, RLS, IA10USD/mes y 100 llamadas por empresa no cambian. Stripe y cobros siguen apagados; ventas, FULL y facturas son manuales. Cero compras, modelos, mensajes o navegación de pago nuevos; histórico agregado200EUR sin conciliar.
 
-## Seguridad, costes y límites
-
-No se han introducido credenciales personales ni leído/enviado mensajes. Cero compras, llamadas IA oautomatizaciones de pago. TinyFish sin saldo disponible: no se recarga ni se ejecuta. El histórico agregado200EUR sigue sin conciliar. IA10USD/mes y100llamadas/empresa,StripeOFF,suscripciones manuales,76migraciones ydemo6 conservados; sin cambios en backend,claves oRLS.
-
-Un inicio de sesión visible no demuestra la aprobación pública deGoogle. Si el dominio canónico muestra otro rechazo después de seleccionar cuenta, se debe identificar su texto real yel estado del expediente existente. No recrear proyecto/cliente,reenviar secretos,cancelar revisiones ni repetir consentimientos sin diagnóstico. [Expediente público existente](GOOGLE_PUBLIC_VERIFICATION.md).
+La aprobación pública de Google y el consentimiento efectivo de una cuenta siguen sin acreditar. Un inicio de sesión visible no demuestra esos estados. Ante otro rechazo después de elegir cuenta en el dominio canónico se debe identificar su texto real y el expediente existente, sin repetir marca, proyecto, cliente, claves o consentimientos a ciegas. [Expediente existente](GOOGLE_PUBLIC_VERIFICATION.md).

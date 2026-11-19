@@ -1,3 +1,11 @@
+## Gmail corregido y publicado · Sites 52 · 19/11/2026 UTC
+
+Vigente **https://truckcontrolai.com · 0.5.32-rc.2**, fuente `0f3e311b4aaf3eaea632b3a7f0ad76e69cee740a`, despliegue `appgdep_6afea2824538819189a6252694fd6217` SUCCEEDED. PR #159 integrado en `b6b7b37c2fb63db23c626a64533ce7c6a9f75e1f` después de tres CI completas SUCCESS. Google reproduce `400/origin_mismatch` desde www y el hostname técnico; el dominio canónico abre su inicio de sesión. Correo único y heredado evitan ese popup y ofrecen una entrada fija al Correo oficial en otra ventana, conservando el trabajo y sin transferir usuario, empresa, sesión o tokens.
+
+**Verificado:** 2.302 unitarias/SQL, 154 Python y 12 recorridos nuevos; 64 originales/11 hashes intactos. Después de publicar: 172/172 correo, 105/105 hashes HTTPS, 6/6 PWA y 5/5 salud, sin fallos, omisiones o flaky. Aplicación y SDK reales con transporte privado ficticio cerrado; Android/Windows emulados. No se ha completado un nuevo consentimiento de Google. No declarar aprobación pública, hardware o lanzamiento comercial global completos.
+
+Supabase mantiene 76 migraciones y 13 funciones ACTIVE; backend y cuotas intactos. Sin DDL, claves, datos o cobros modificados. Se conservan Sites51/c592, anteriores y demo6. Cero compras, modelos o navegación pagada nuevos; histórico de 200 EUR sin conciliar. Main conserva manifiesto DEMO: no desplegarlo ni republicar52 por estas notas. [Guía](GMAIL_ORIGIN_REPAIR.md) y [recibo](verification/google-origin-published52-20261119.json).
+
 ## Acceso a Gmail: candidata del 19/11/2026 UTC
 
 Google rechaza www y el hostname técnico con 400/`origin_mismatch`; el dominio canónico abre su inicio de sesión. La candidata 0.5.32-rc.2 evita abrir la autorización desde esas direcciones y conserva el trabajo en la ventana actual. 2.302 pruebas unitarias/SQL, tipos, compilación, los 64 originales/11 hashes y 12 recorridos nuevos correctos. CI completa, regresión y publicación pendientes. [Diagnóstico](GMAIL_ORIGIN_REPAIR.md). Producción 51/c592, demo 6, backend y 76 migraciones intactos. No acredita consentimiento de una cuenta ni revisión pública de Google; sin compras, llamadas IA o acceso real a mensajes.
