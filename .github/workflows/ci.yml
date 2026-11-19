@@ -92,6 +92,10 @@ jobs:
         run: npm run test:e2e:unified-mail
         env:
           TRUCKCONTROL_UNIFIED_MAIL_ARTIFACTS: unified-mail-test-results
+      - name: Google exact origins and private canonical mailbox handoff
+        run: npm run test:e2e:google-origin
+        env:
+          TRUCKCONTROL_GOOGLE_ORIGIN_ARTIFACTS: google-origin-test-results
       - run: npm run test:e2e:candidate
         env:
           TRUCKCONTROL_CANDIDATE_TEST_ARTIFACTS: candidate-test-results
@@ -111,6 +115,7 @@ jobs:
             manual-full-test-results/
             billing-attachments-test-results/
             unified-mail-test-results/
+            google-origin-test-results/
             candidate-test-results/
             public-test-results/
             production-test-results/
