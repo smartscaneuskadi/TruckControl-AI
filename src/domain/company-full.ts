@@ -172,6 +172,7 @@ export function assertCompanyFullPlan(
     observed_at?: unknown;
     organization_id?: unknown;
     plan: string;
+    features?: { invoice_ai?: unknown; document_ai?: unknown };
   },
   organizationId?: string,
 ) {
@@ -184,6 +185,11 @@ export function assertCompanyFullPlan(
   const state = readManualFullAccess(value, organizationId);
   if ((value.plan === "full") !== Boolean(state?.configured && state.status === "active"))
     throw new Error("company_full_tier_mismatch");
+  // A malformed server response must not expose FULL-only AI controls under
+  // Basic, even if its tier and company licence fields otherwise agree.
+  // This is UI/offline defence in depth; backend authorization is authoritative.
+  if (value.plan === "limited" && (value.features?.invoice_ai === true || value.features?.document_ai === true))
+    throw new Error("company_full_forbidden_basic_feature");
   return state;
 }
 
