@@ -488,8 +488,9 @@ def exercise(stack) -> None:
         if time.monotonic() >= deadline:
             raise LabFailure("bounded_server_expiry_observation_timed_out")
         time.sleep(.25)
-    check("fresh HTTP access denies at and after the authoritative server expiry",
-          manual_state(observed["manual_full"], "expired") and observed.get("active") is True and observed.get("plan") == "limited"
+    check("fresh HTTP access downgrades FULL to Basic at and after authoritative server expiry",
+          manual_state(observed["manual_full"], "expired") and observed.get("active") is True
+          and observed.get("plan") == "limited")
     basic_company(stack, a, a["org"], path, "automatic server expiry")
     past = control.set(a["org"], revision, True, (expires - timedelta(days=1)).isoformat())
     revision = past["item"]["manual_full"]["revision"]
