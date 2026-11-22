@@ -93,7 +93,7 @@ def run(pg, f):
     # P0 regression: old paid/trial Full or user overrides cannot grant Full.
     # These are fabricated records inside ROLLBACK transactions only.
     old_full = ("reset role;update private.tc_customers set trial_plan_id='full',paid_plan='full',requested_plan='full',"
-        "trial_ends_at=now()+interval '14 days',paid_until=now()+interval '30 days',"
+        "trial_started_at=now()-interval '1 day',trial_ends_at=now()+interval '9 days',paid_until=now()+interval '30 days',"
         "ai_allowed=true,ai_opt_in=true,"
         "module_overrides=coalesce(module_overrides,'{}'::jsonb)||'{\"invoice_ai\":true,\"document_ai\":true}'::jsonb "
         "where user_id=" + q(owner) + ";")
