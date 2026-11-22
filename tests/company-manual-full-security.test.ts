@@ -103,6 +103,16 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     }
     await db.exec("update private.tc_settings set enforce_access=false");
     expect(await access()).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
+    // The legacy bypass may ignore the billing clock, never a live suspension.
+    // Assert both the access RPC and the actual RLS read gate are fail-closed.
+    await db.query("update private.tc_customers set status='suspended' where user_id=$1", [owner]);
+    expect(await access()).toMatchObject({
+      active: false, plan: "limited", can_write: false, can_manage: false,
+      features: { trucks: false, invoice_ai: false, document_ai: false },
+    });
+    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([]);
+    await db.query("update private.tc_customers set status='active' where user_id=$1", [owner]);
+    expect(await access()).toMatchObject({ active: true, plan: "limited" });
     // Exercise Root FULL while globally enabled AI modules are available.
     // Global module kill switches must remain independent of the licence.
     await db.exec("update private.tc_modules set enabled=true where id in ('invoice_ai','document_ai')");
