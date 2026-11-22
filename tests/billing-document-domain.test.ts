@@ -131,7 +131,10 @@ describe("clasificación documental sin modificar la contabilidad", () => {
     const now = new Date().toISOString();
     const access: SubscriptionAccess = {
       active: true,
-      plan: "full",
+      // Document classification is a Basic capability: a synthetic snapshot
+      // must not pretend to have FULL without a manual company licence.
+      organization_id: fleet.organization.id,
+      plan: "limited",
       features: {},
       company_role: "owner",
       can_write: true,
