@@ -177,6 +177,10 @@ export function assertCompanyFullPlan(
 ) {
   if (organizationId && value.organization_id !== organizationId)
     throw new Error("company_full_scope_mismatch");
+  // Only the two backend company tiers are valid. Unknown legacy or forged
+  // tiers must never be treated as a Basic fallback with unchecked features.
+  if (value.plan !== "limited" && value.plan !== "full")
+    throw new Error("company_full_unknown_tier");
   const state = readManualFullAccess(value, organizationId);
   if ((value.plan === "full") !== Boolean(state?.configured && state.status === "active"))
     throw new Error("company_full_tier_mismatch");
