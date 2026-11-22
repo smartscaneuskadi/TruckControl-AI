@@ -151,6 +151,26 @@ describe("sincronización offline cerrada por cambio de sesión", () => {
     expect(f.update).not.toHaveBeenCalled(); expect(f.execute).not.toHaveBeenCalled();
     expect(f.payload()).toEqual(f.original);
   });
+  it("no publica un cambio si el permiso can_write no existe en el RPC", async () => {
+    const f = await fixture();
+    const response = structuredClone(f.access);
+    delete response.can_write;
+    f.rpc.mockResolvedValue({ data: response, error: null, status: 200 });
+    await expect(synchronizeVault(f.session, f.client)).rejects.toThrow("permisos actuales");
+    expect(f.execute).not.toHaveBeenCalled();
+    expect(f.update).toHaveBeenCalledTimes(1);
+    expect(f.payload().outbox).toEqual(f.original.outbox);
+  });
+  it("no trata una feature no booleana como autorización de escritura offline", async () => {
+    const f = await fixture();
+    const response = { ...f.access,
+      features: { ...f.access.features, customers: "true" },
+    } as unknown as SubscriptionAccess;
+    f.rpc.mockResolvedValue({ data: response, error: null, status: 200 });
+    await expect(synchronizeVault(f.session, f.client)).rejects.toThrow("permisos actuales");
+    expect(f.execute).not.toHaveBeenCalled();
+    expect(f.payload().outbox).toEqual(f.original.outbox);
+  });
   it("con acceso vigente publica una sola vez el comando original y sólo entonces retira su UUID", async () => {
     const f = await fixture();
     const result = await synchronizeVault(f.session, f.client);
