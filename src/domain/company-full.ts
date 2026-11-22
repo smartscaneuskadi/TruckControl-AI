@@ -163,6 +163,24 @@ export function readManualFullAccess(
     throw new Error("company_full_expired_snapshot");
   return state;
 }
+/** Validate the effective tier of a company-scoped server response.
+ * Only a current, Root-authorized company licence can grant the FULL tier.
+ * A disabled/expired licence is valid when the server downgrades to Basic. */
+export function assertCompanyFullPlan(
+  value: {
+    manual_full?: unknown;
+    observed_at?: unknown;
+    organization_id?: unknown;
+    plan: string;
+  },
+  organizationId?: string,
+) {
+  const state = readManualFullAccess(value, organizationId);
+  if ((value.plan === "full") !== Boolean(state?.configured && state.status === "active"))
+    throw new Error("company_full_tier_mismatch");
+  return state;
+}
+
 export function watchFullExpiry(deadline: number, expire: () => void) {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let active = true;
