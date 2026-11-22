@@ -90,6 +90,35 @@ def run(pg, f):
     pg.check("Manual Full: unconfigured company retains its legacy trial and metadata",
         legacy["active"] and legacy["plan"] == "limited"
         and legacy["manual_full"]["status"] == "unconfigured" and legacy["manual_full"]["revision"] == 0)
+    # P0 regression: old paid/trial Full or user overrides cannot grant Full.
+    # These are fabricated records inside ROLLBACK transactions only.
+    old_full = ("reset role;update private.tc_customers set trial_plan_id='full',paid_plan='full',requested_plan='full',"
+        "trial_ends_at=now()+interval '14 days',paid_until=now()+interval '30 days',"
+        "ai_allowed=true,ai_opt_in=true,"
+        "module_overrides=coalesce(module_overrides,'{}'::jsonb)||'{\"invoice_ai\":true,\"document_ai\":true}'::jsonb "
+        "where user_id=" + q(owner) + ";")
+    for phase in ("trial", "active"):
+        old_access = trial(old_full + "update private.tc_customers set status=" + q(phase) + " where user_id=" + q(owner) + ";"
+            + context() + "select jsonb_build_object('company',public.tc_organization_access(" + q(org) + "),"
+            "'global',public.tc_finish_registration())")
+        company, global_account = old_access["company"], old_access["global"]
+        pg.check("Manual Full: historical " + phase + " Full and overrides never unlock unconfigured Full",
+            company["active"] and company["plan"] == "limited" and not company["manual_full"]["configured"]
+            and not company["features"]["invoice_ai"] and not company["features"]["document_ai"]
+            and global_account["plan"] == "limited"
+            and not global_account["features"]["invoice_ai"] and not global_account["features"]["document_ai"])
+    old_enforcement = trial(old_full + "update private.tc_settings set enforce_access=false;"
+        + context() + f.rpc("tc_organization_access", q(org) + "::uuid"))
+    pg.check("Manual Full: disabling global enforcement cannot activate old Full",
+        old_enforcement["plan"] == "limited"
+        and not old_enforcement["features"]["invoice_ai"] and not old_enforcement["features"]["document_ai"])
+    scoped_root = trial(old_full + set_full(org) + context()
+        + "select jsonb_build_object('first',public.tc_organization_access(" + q(org) + "),"
+        "'sibling',public.tc_organization_access(" + q(sibling) + "))")
+    pg.check("Manual Full: an actual Root decision enables only the selected company",
+        scoped_root["first"]["plan"] == "full" and scoped_root["first"]["manual_full"]["status"] == "active"
+        and scoped_root["sibling"]["plan"] == "limited" and not scoped_root["sibling"]["manual_full"]["configured"])
+
     expire = "reset role;update private.tc_customers set status='trial',paid_plan=null,paid_until=null,trial_started_at=now()-interval '20 days',trial_ends_at=now()-interval '10 days' where user_id=" + q(owner) + ";"
     scoped = trial(expire + "create temp table original_manual_customer as select to_jsonb(c) value from private.tc_customers c where user_id=" + q(owner) + ";"
         + set_full(org) + access(org) + "reset role;select jsonb_build_object('enabled',private.tc_organization_access_for(" + q(org) + "," + q(owner) + "),"
