@@ -72,6 +72,36 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     expect(await access()).toMatchObject({ active: false, manual_full: { configured: false } });
     await expect(access(org, outsider, outsiderSid)).resolves.toMatchObject({ active: false, profile: null });
   });
+  it("never upgrades an unconfigured company from historical Full trial/paid or user overrides", async () => {
+    // Synthetic fixtures cover a future reactivation of old accounts without
+    // touching real customers or existing licence rows.
+    await db.query(`update private.tc_customers
+      set trial_plan_id='full', paid_plan='full', requested_plan='full',
+          trial_ends_at=now()+interval '14 days', paid_until=now()+interval '30 days',
+          ai_allowed=true, ai_opt_in=true,
+          module_overrides=coalesce(module_overrides,'{}'::jsonb)||'{"invoice_ai":true,"document_ai":true}'::jsonb
+      where user_id=$1`, [owner]);
+    for (const status of ["trial", "active"]) {
+      await db.query("update private.tc_customers set status=$2 where user_id=$1", [owner, status]);
+      const company = await access();
+      expect(company).toMatchObject({ active: true, plan: "limited", manual_full: { configured: false, status: "unconfigured" } });
+      expect(company.features.invoice_ai).toBe(false);
+      expect(company.features.document_ai).toBe(false);
+      const bootstrap = (await actor<{ access: Access & { plan: string } }>("select public.tc_finish_registration() access"))[0].access;
+      expect(bootstrap.plan).toBe("limited");
+      expect(bootstrap.features.invoice_ai).toBe(false);
+      expect(bootstrap.features.document_ai).toBe(false);
+    }
+    await db.exec("update private.tc_settings set enforce_access=false");
+    expect(await access()).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
+    const enabled = await set();
+    expect(enabled.item.manual_full).toMatchObject({ status: "active", revision: 1 });
+    expect(await access()).toMatchObject({ active: true, plan: "full", features: { invoice_ai: true, document_ai: true } });
+    expect(await access(sibling)).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
+    await set(org, false, null, 1);
+    expect(await access()).toMatchObject({ active: false, manual_full: { status: "disabled" } });
+    expect(await db.query("select id from public.trucks where id=$1", [truck])).toMatchObject({ rows: [{ id: truck }] });
+  });
   it("activates one of two companies owned by an expired account without changing global entitlements", async () => {
     await expireOwner();
     const before = (await db.query("select paid_plan,status,paid_until,trial_ends_at from private.tc_customers where user_id=$1", [owner])).rows;
