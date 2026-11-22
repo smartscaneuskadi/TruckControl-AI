@@ -19,7 +19,7 @@ import type {
   Plan,
   SubscriptionAccess,
 } from "../domain/subscriptions";
-import { fullExpiryDeadline, manualFullBlocked, readManualFullAccess, watchFullExpiry } from "../domain/company-full";
+import { fullExpiryDeadline, readManualFullAccess, watchFullExpiry } from "../domain/company-full";
 import { endPrivateSessions } from "./session-events";
 const AdminConsole = lazy(() => import("../pages/AdminConsole").then((module) => ({ default: module.AdminConsole })));
 const CompanyFullAccount = lazy(() => import("../components/CompanyFullAccount").then((module) => ({ default: module.CompanyFullAccount })));
@@ -109,6 +109,10 @@ export function CommercialSession({
         if (!next.is_admin) {
           const state = readManualFullAccess(next, organizationId);
           if (currentAccess.current?.manual_full?.configured && state === undefined) throw Error();
+          // Fail closed if the server reports a Full tier inconsistent with its
+          // company-scoped Root licence. OFF/expired must be usable only as Basic.
+          if (state?.configured && next.active &&
+              ((state.status === "active") !== (next.plan === "full"))) throw Error();
         }
       }
       catch {
