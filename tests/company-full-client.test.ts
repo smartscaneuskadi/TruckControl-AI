@@ -413,6 +413,19 @@ describe("manual Full scope, expiry and bounded offline authorization", () => {
     }
     expect(assertCompanyFullPlan({ ...company, plan: "limited", manual_full: empty }, org)?.status)
       .toBe("unconfigured");
+    // Reject inconsistent Backend Basic feature flags, even if the licence
+    // was explicitly disabled or never configured; Full-only AI is not Basic.
+    for (const manual_full of [empty, { ...active(), status: "disabled" as const, enabled: false }]) {
+      for (const aiFeature of ["invoice_ai", "document_ai"] as const) {
+        expect(() => assertCompanyFullPlan({
+          ...company, plan: "limited", manual_full, features: { [aiFeature]: true },
+        }, org)).toThrow("company_full_forbidden_basic_feature");
+      }
+      expect(assertCompanyFullPlan({
+        ...company, plan: "limited", manual_full,
+        features: { invoice_ai: false, document_ai: false },
+      }, org)?.status).toBe(manual_full.status);
+    }
     expect(() => assertCompanyFullPlan({ ...company, plan: "full", manual_full: empty }, org))
       .toThrow("company_full_tier_mismatch");
   });
