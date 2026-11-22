@@ -50,17 +50,16 @@ def run(pg, f):
     def access(company, user=owner, sid=owner_sid):
         return context(user, sid) + f.rpc("tc_organization_access", q(company) + "::uuid") + ";"
 
-    # Test the shipped rollback body before any committed configured decision.
+    # A pre-gate rollback would restore functions with the historical FULL
+    # inheritance vulnerability. The existing version guard must fail closed.
+    # A secure, newly reviewed rollback is required before any publication.
     rollback = (f.ROOT / "docs/verification/company-manual-full-function-rollback.sql").read_text()
     assert rollback.rstrip().endswith("commit;")
     before_rollback = pg.catalog_fingerprint(pg.SOURCE)
-    restored = pg.value(rollback.rstrip()[:-len("commit;")]
-        + "select jsonb_build_object('rpc_absent',to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is null,"
-        + "'audit_kept',to_regclass('private.tc_company_full_audit') is not null,"
-        + "'old_guard',md5((select prosrc from pg_proc where oid='private.tc_account_active(uuid)'::regprocedure))='533ab690fbd7fe74419c99696168f3d9');rollback;")
-    pg.check("Manual Full: zero-record function rollback executes with old guard and immutable tables retained",
-        restored == {"rpc_absent": True, "audit_kept": True, "old_guard": True}
-        and pg.catalog_fingerprint(pg.SOURCE) == before_rollback)
+    pg.require_error("Manual Full: stale zero-record rollback is safely refused",
+        rollback, "company_full_rollback_body_mismatch")
+    pg.check("Manual Full: rejected rollback leaves schema unchanged",
+        pg.catalog_fingerprint(pg.SOURCE) == before_rollback)
 
     # Native service keys are not modeled here. These users/claims exist only
     # inside the pinned local catalog and cannot authenticate to a real service.
