@@ -5,7 +5,7 @@ import { SupabaseFleetRepository } from "../integrations/supabase/repository";
 import { CloudOperationRepository } from "./operations";
 import { offlinePayload } from "./offline-vault";
 import type { VaultSession } from "./offline-vault";
-import { manualFullBlocked, readManualFullAccess } from "../domain/company-full";
+import { readManualFullAccess } from "../domain/company-full";
 
 /** Permission-only refresh: never replay queued operations or extend a lease. */
 export async function refreshVaultAuthorization(
