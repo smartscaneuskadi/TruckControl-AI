@@ -28,7 +28,10 @@ AS $function$
   coalesce((p.modules->>m.id)::boolean,false) and
   coalesce((u.module_overrides->>m.id)::boolean,true) and
   coalesce((r.module_overrides->>m.id)::boolean,true) and
-  (m.id not in ('invoice_ai','document_ai') or (u.ai_allowed and u.ai_opt_in))),'{}'::jsonb)
+  -- Backend invariant independent of potentially drifted plan JSON/overrides.
+  (m.id not in ('invoice_ai','document_ai') or
+   (p_plan='full' and (private.tc_company_full_state(p_org)->>'status')='active'
+    and u.ai_allowed and u.ai_opt_in))),'{}'::jsonb)
  from private.tc_modules m cross join private.tc_plans p
  left join private.tc_customers u on u.user_id=p_user
  left join private.tc_memberships r on r.organization_id=p_org and r.user_id=p_user and r.status='active'
@@ -113,7 +116,8 @@ begin
   select jsonb_object_agg(m.id,coalesce(active,false) and m.enabled and
     (is_admin or coalesce((p.modules->>m.id)::boolean,false)) and
      (is_admin or coalesce((c.module_overrides->>m.id)::boolean,true)) and
-    (m.id not in ('invoice_ai','document_ai') or (not is_admin and c.ai_allowed and c.ai_opt_in))) into f from private.tc_modules m;
+    -- The global bootstrap cannot grant company-only FULL AI entitlements.
+    (m.id not in ('invoice_ai','document_ai'))) into f from private.tc_modules m;
   company_available:=actor_verified and not is_admin and exists(
    select 1 from private.tc_company_full_licenses l
    where l.enabled and (l.expires_at is null or l.expires_at>now())

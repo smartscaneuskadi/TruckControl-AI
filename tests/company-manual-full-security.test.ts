@@ -81,6 +81,15 @@ describe("manual Full: a company decision, fresh Root authorization and existing
           ai_allowed=true, ai_opt_in=true,
           module_overrides=coalesce(module_overrides,'{}'::jsonb)||'{"invoice_ai":true,"document_ai":true}'::jsonb
       where user_id=$1`, [owner]);
+    // Deliberately corrupt the reconstructed Limited plan as the historical
+    // document assistant migration did. Backend authorization must fail closed.
+    await db.exec(`update private.tc_plans
+      set modules=modules||'{"invoice_ai":true,"document_ai":true}'::jsonb
+      where id='limited';
+      update private.tc_modules set enabled=true where id in ('invoice_ai','document_ai')`);
+    const drift = (await db.query<{ invoice_ai: boolean; document_ai: boolean }>(
+      "select (modules->>'invoice_ai')::boolean invoice_ai, (modules->>'document_ai')::boolean document_ai from private.tc_plans where id='limited'")).rows[0];
+    expect(drift).toEqual({ invoice_ai: true, document_ai: true });
     for (const status of ["trial", "active"]) {
       await db.query("update private.tc_customers set status=$2 where user_id=$1", [owner, status]);
       const company = await access();
@@ -101,6 +110,11 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     expect(enabled.item.manual_full).toMatchObject({ status: "active", revision: 1 });
     expect(await access()).toMatchObject({ active: true, plan: "full", features: { invoice_ai: true, document_ai: true } });
     expect(await access(sibling)).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
+    // Even an internal call supplying 'full' cannot bypass the Root licence.
+    const forged = (await db.query<{ features: Record<string, boolean> }>(
+      "select private.tc_company_features($1,$2,'full',true) features", [sibling, owner])).rows[0].features;
+    expect(forged.invoice_ai).toBe(false);
+    expect(forged.document_ai).toBe(false);
     await set(org, false, null, 1);
     expect(await access()).toMatchObject({ active: false, manual_full: { status: "disabled" } });
     expect(await db.query("select id from public.trucks where id=$1", [truck])).toMatchObject({ rows: [{ id: truck }] });
