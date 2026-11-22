@@ -70,10 +70,11 @@ begin
   and u.email_confirmed_at is not null and not coalesce(phone_needed,true)
   and ((c.status='trial' and now()<c.trial_ends_at) or (c.status='active' and now()<c.paid_until));
  if (manual->>'configured')::boolean then
+  -- OFF/expired revokes only FULL capabilities, not a verified member's Basic
+  -- access to existing fleet data. Suspensions/identity checks remain mandatory.
   enabled:=c.user_id is not null and a.user_id is not null and c.status<>'suspended' and a.status<>'suspended'
-   and private.tc_actor_verified(o.owner_id,false) and not coalesce(phone_needed,true)
-   and manual->>'status'='active';
-  plan_id:='full';
+   and private.tc_actor_verified(o.owner_id,false) and not coalesce(phone_needed,true);
+  plan_id:=case when manual->>'status'='active' then 'full' else 'limited' end;
  else
   -- Historical Full trial/paid flags do not imply a manual company licence.
   plan_id:='limited';
@@ -89,6 +90,54 @@ begin
   'requires_phone_verification',coalesce(phone_needed,false),'sms_ready',s.sms_ready,
   'prices_are_examples',s.prices_are_examples,'payments_enabled',s.payments_enabled,
   'manual_full',manual,'observed_at',now());
+end;
+$function$;
+
+-- RLS and Storage use this identity/Basic gate. They must NOT depend on
+-- FULL licence status: OFF/expiry is a feature-tier change, not a data deletion
+-- or company suspension. FULL-only operations additionally require tc_feature.
+-- Guard ensures the current production definition, not an unexpected drift.
+do $basic_gate_guard$ begin
+ if not exists (select 1 from pg_catalog.pg_proc
+  where oid=to_regprocedure('private.tc_account_active(uuid)')
+   and md5(prosrc)='cb8465c6eef91273d2ec22ebc4c2d9cb') then
+  raise exception 'manual_full_basic_gate_prior_body_mismatch_tc_account_active';
+ end if;
+end;$basic_gate_guard$;
+CREATE OR REPLACE FUNCTION private.tc_account_active(p_organization_id uuid)
+ RETURNS boolean
+ LANGUAGE plpgsql
+ STABLE SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare actor uuid:=(select auth.uid());enforcement boolean;manual jsonb;
+begin
+ if not private.tc_current_actor_verified() then return false;end if;
+ if actor is null or private.tc_company_role_for(p_organization_id,actor) is null then return false;end if;
+ manual:=private.tc_company_full_state(p_organization_id);
+ if (manual->>'configured')::boolean then
+  -- Keep the existing verified/suspension checks for any configured licence;
+  -- the licence's active/disabled/expired status only changes the feature tier.
+  return exists(select 1 from public.organizations o
+   join private.tc_customers c on c.user_id=o.owner_id
+   join private.tc_customers a on a.user_id=actor
+   join auth.users u on u.id=actor cross join private.tc_settings s
+   where o.id=p_organization_id and c.status<>'suspended' and a.status<>'suspended'
+    and private.tc_actor_verified(o.owner_id,false)
+    and (not s.sms_ready or (u.phone_confirmed_at is not null
+      and ('+'||regexp_replace(coalesce(u.phone,''),'[^0-9]','','g'))=a.phone)));
+ end if;
+ select enforce_access into enforcement from private.tc_settings where id=true;
+ if not enforcement then return true;end if;
+ -- Unconfigured organizations retain the existing Limited trial entitlement.
+ return exists(select 1 from public.organizations o
+  join private.tc_customers c on c.user_id=o.owner_id
+  join private.tc_customers a on a.user_id=actor
+  join auth.users u on u.id=actor cross join private.tc_settings s
+  where o.id=p_organization_id and c.status<>'suspended' and a.status<>'suspended'
+   and u.email_confirmed_at is not null
+   and (not s.sms_ready or (u.phone_confirmed_at is not null and ('+'||regexp_replace(coalesce(u.phone,''),'[^0-9]','','g'))=a.phone))
+   and ((c.status='trial' and now()<c.trial_ends_at) or (c.status='active' and now()<c.paid_until)));
 end;
 $function$;
 
@@ -120,8 +169,9 @@ begin
     (m.id not in ('invoice_ai','document_ai'))) into f from private.tc_modules m;
   company_available:=actor_verified and not is_admin and exists(
    select 1 from private.tc_company_full_licenses l
-   where l.enabled and (l.expires_at is null or l.expires_at>now())
-    and private.tc_company_role_for(l.organization_id,p_user_id) is not null
+   -- A configured OFF/expired licence still provides a Basic company
+   -- entrypoint; the company access RPC enforces the effective tier.
+   where private.tc_company_role_for(l.organization_id,p_user_id) is not null
     and coalesce((private.tc_organization_access_for(l.organization_id,p_user_id)->>'active')::boolean,false));
   return jsonb_build_object('is_admin',is_admin,'active',coalesce(active,false) or coalesce(company_available,false),
     'company_access_available',coalesce(company_available,false),'features',coalesce(f,'{}'),
