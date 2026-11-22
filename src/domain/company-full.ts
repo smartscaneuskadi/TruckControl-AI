@@ -175,6 +175,8 @@ export function assertCompanyFullPlan(
   },
   organizationId?: string,
 ) {
+  if (organizationId && value.organization_id !== organizationId)
+    throw new Error("company_full_scope_mismatch");
   const state = readManualFullAccess(value, organizationId);
   if ((value.plan === "full") !== Boolean(state?.configured && state.status === "active"))
     throw new Error("company_full_tier_mismatch");
