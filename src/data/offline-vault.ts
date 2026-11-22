@@ -9,7 +9,7 @@ import {
 import type { OperationCommand, OperationRecord } from "../domain/operations";
 import { noFeatures } from "../domain/subscriptions";
 import type { SubscriptionAccess } from "../domain/subscriptions";
-import { manualFullBlocked, readManualFullAccess } from "../domain/company-full";
+import { readManualFullAccess } from "../domain/company-full";
 
 export const vaultIterations = 600_000;
 const bytes = (value: string) =>
