@@ -405,6 +405,16 @@ describe("manual Full scope, expiry and bounded offline authorization", () => {
       .toBe("disabled");
     expect(() => assertCompanyFullPlan({ ...company, manual_full: empty }, org)).toThrow("company_full_tier_mismatch");
     expect(() => assertCompanyFullPlan({ ...company, organization_id: "other" }, org)).toThrow();
+    // Fail closed on unknown/legacy tier labels even when an unconfigured
+    // company would otherwise be considered a harmless Limited fallback.
+    for (const invalid of ["enterprise", "premium", "trial", "", "FULL"]) {
+      expect(() => assertCompanyFullPlan({ ...company, plan: invalid, manual_full: empty }, org))
+        .toThrow("company_full_unknown_tier");
+    }
+    expect(assertCompanyFullPlan({ ...company, plan: "limited", manual_full: empty }, org)?.status)
+      .toBe("unconfigured");
+    expect(() => assertCompanyFullPlan({ ...company, plan: "full", manual_full: empty }, org))
+      .toThrow("company_full_tier_mismatch");
   });
   it("uses explicit UTC and rejects impossible dates", () => {
     expect(fullExpiryFromInput("")).toBeNull();
