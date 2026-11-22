@@ -5,7 +5,7 @@ import { SupabaseFleetRepository } from "../integrations/supabase/repository";
 import { CloudOperationRepository } from "./operations";
 import { offlinePayload } from "./offline-vault";
 import type { VaultSession } from "./offline-vault";
-import { readManualFullAccess } from "../domain/company-full";
+import { assertCompanyFullPlan } from "../domain/company-full";
 
 /** Permission-only refresh: never replay queued operations or extend a lease. */
 export async function refreshVaultAuthorization(
@@ -52,7 +52,7 @@ export async function refreshVaultAuthorization(
     );
   const access = data as unknown as SubscriptionAccess;
   try {
-    if (manualFullBlocked(readManualFullAccess(access, orgId))) return denied();
+    assertCompanyFullPlan(access, orgId);
   } catch {
     return denied();
   }
@@ -144,7 +144,7 @@ export async function synchronizeVault(
       throw Error(
         "No se han podido comprobar los permisos actuales. Los cambios siguen cifrados y pendientes.",
       );
-    try { if (manualFullBlocked(readManualFullAccess(access, orgId))) return denyCopy(); } catch { return denyCopy(); }
+    try { assertCompanyFullPlan(access, orgId); } catch { return denyCopy(); }
     if (!access?.active) return denyCopy();
     if (access.profile?.user_id !== userId)
       throw Error("La cuenta de la copia ha cambiado. Verifica de nuevo el acceso antes de sincronizar.");
