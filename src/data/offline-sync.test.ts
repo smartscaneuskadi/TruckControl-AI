@@ -23,6 +23,14 @@ async function fixture() {
     active: true, is_admin: false, features: demoFeatures, plan: "full", max_trucks: 50,
     sms_ready: false, prices_are_examples: true, payments_enabled: false,
     can_write: true, can_manage: true, company_role: "owner",
+    // Synthetic FULL access must carry a matching, current Root-issued company
+    // licence. An unscoped legacy "full" fixture is now correctly denied.
+    organization_id: fleet.organization.id,
+    observed_at: at,
+    manual_full: {
+      schema_version: 1, configured: true, status: "active", enabled: true,
+      expires_at: null, revision: 1, updated_at: at,
+    },
     profile: {
       user_id: user, email: "offline-sync@example.invalid", contact_name: "Persona ficticia",
       company_name: fleet.organization.name, tax_id: "DEMO-SYNC", address: "Direccion ficticia",
