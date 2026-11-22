@@ -33,7 +33,7 @@ AS $function$
  left join private.tc_customers u on u.user_id=p_user
  left join private.tc_memberships r on r.organization_id=p_org and r.user_id=p_user and r.status='active'
  where p.id=p_plan;
-$function$
+$function$;
 
 -- Company-scoped FULL needs a manual active licence regardless of legacy flags.
 CREATE OR REPLACE FUNCTION private.tc_organization_access_for(p_org uuid, p_user uuid)
@@ -87,7 +87,7 @@ begin
   'prices_are_examples',s.prices_are_examples,'payments_enabled',s.payments_enabled,
   'manual_full',manual,'observed_at',now());
 end;
-$function$
+$function$;
 
 -- Global account bootstrap is Basic-scoped; company-scoped FULL stays separate.
 CREATE OR REPLACE FUNCTION private.tc_user_access(p_user_id uuid)
@@ -126,4 +126,4 @@ begin
     'max_trucks',coalesce(p.max_trucks,50),'requires_phone_verification',coalesce(requires_phone,false),
     'sms_ready',s.sms_ready,'prices_are_examples',s.prices_are_examples,'payments_enabled',s.payments_enabled);
 end;
-$function$
+$function$;
