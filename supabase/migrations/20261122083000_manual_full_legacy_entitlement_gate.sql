@@ -58,8 +58,20 @@ begin
  manual:=private.tc_company_full_state(p_org);
  select * into s from private.tc_settings where id=true;
  if not s.enforce_access and not (manual->>'configured')::boolean then
-  return jsonb_build_object('active',true,'is_admin',false,'features',private.tc_company_features(p_org,p_user,'limited',true),
-   'company_role',r,'can_write',r<>'viewer','can_manage',r in ('owner','admin'),'organization_id',p_org,'profile',null,'plan','limited','max_trucks',50,'manual_full',manual,'observed_at',now());
+  -- Legacy enforcement bypass never disables identity, owner-ban, customer
+  -- suspension or phone checks. It only skips the Basic billing clock.
+  enabled:=exists(select 1 from public.organizations o
+   join private.tc_customers owner_customer on owner_customer.user_id=o.owner_id
+   join private.tc_customers actor_customer on actor_customer.user_id=p_user
+   join auth.users actor_user on actor_user.id=p_user
+   where o.id=p_org and owner_customer.status<>'suspended'
+    and actor_customer.status<>'suspended'
+    and private.tc_actor_verified(o.owner_id,false)
+    and actor_user.email_confirmed_at is not null
+    and (not s.sms_ready or (actor_user.phone_confirmed_at is not null
+     and ('+'||regexp_replace(coalesce(actor_user.phone,''),'[^0-9]','','g'))=actor_customer.phone)));
+  return jsonb_build_object('active',enabled,'is_admin',false,'features',private.tc_company_features(p_org,p_user,'limited',enabled),
+   'company_role',r,'can_write',enabled and r<>'viewer','can_manage',enabled and r in ('owner','admin'),'organization_id',p_org,'profile',null,'plan','limited','max_trucks',50,'manual_full',manual,'observed_at',now());
  end if;
  select * into o from public.organizations where id=p_org;
  select * into c from private.tc_customers where user_id=o.owner_id;
@@ -128,8 +140,8 @@ begin
       and ('+'||regexp_replace(coalesce(u.phone,''),'[^0-9]','','g'))=a.phone)));
  end if;
  select enforce_access into enforcement from private.tc_settings where id=true;
- if not enforcement then return true;end if;
- -- Unconfigured organizations retain the existing Limited trial entitlement.
+ -- Unconfigured organizations keep the Limited billing clock when enabled.
+ -- Enforcement OFF must never bypass account suspension or verified identity.
  return exists(select 1 from public.organizations o
   join private.tc_customers c on c.user_id=o.owner_id
   join private.tc_customers a on a.user_id=actor
@@ -137,7 +149,7 @@ begin
   where o.id=p_organization_id and c.status<>'suspended' and a.status<>'suspended'
    and u.email_confirmed_at is not null
    and (not s.sms_ready or (u.phone_confirmed_at is not null and ('+'||regexp_replace(coalesce(u.phone,''),'[^0-9]','','g'))=a.phone))
-   and ((c.status='trial' and now()<c.trial_ends_at) or (c.status='active' and now()<c.paid_until)));
+   and (not enforcement or ((c.status='trial' and now()<c.trial_ends_at) or (c.status='active' and now()<c.paid_until))));
 end;
 $function$;
 
