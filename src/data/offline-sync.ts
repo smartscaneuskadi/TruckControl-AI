@@ -188,7 +188,9 @@ export async function synchronizeVault(
       item.command.type === "save"
         ? item.command.value.kind
         : item.command.kind;
-    if (access.can_write === false || !access.features[kind]) {
+    // Only explicit, boolean grants are authorizations. Missing or malformed
+    // RPC capability flags must never publish cached offline mutations.
+    if (access.can_write !== true || access.features?.[kind] !== true) {
       await session.update((v) => ({ ...v, access }), signal);
       active();
       throw Error(
