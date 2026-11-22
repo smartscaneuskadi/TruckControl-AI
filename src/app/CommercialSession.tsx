@@ -19,7 +19,7 @@ import type {
   Plan,
   SubscriptionAccess,
 } from "../domain/subscriptions";
-import { fullExpiryDeadline, readManualFullAccess, watchFullExpiry } from "../domain/company-full";
+import { assertCompanyFullPlan, fullExpiryDeadline, watchFullExpiry } from "../domain/company-full";
 import { endPrivateSessions } from "./session-events";
 const AdminConsole = lazy(() => import("../pages/AdminConsole").then((module) => ({ default: module.AdminConsole })));
 const CompanyFullAccount = lazy(() => import("../components/CompanyFullAccount").then((module) => ({ default: module.CompanyFullAccount })));
@@ -107,12 +107,8 @@ export function CommercialSession({
       const next = data as unknown as SubscriptionAccess;
       try {
         if (!next.is_admin) {
-          const state = readManualFullAccess(next, organizationId);
+          const state = assertCompanyFullPlan(next, organizationId);
           if (currentAccess.current?.manual_full?.configured && state === undefined) throw Error();
-          // Fail closed if the server reports a Full tier inconsistent with its
-          // company-scoped Root licence. OFF/expired must be usable only as Basic.
-          if (state?.configured && next.active &&
-              ((state.status === "active") !== (next.plan === "full"))) throw Error();
         }
       }
       catch {
@@ -243,7 +239,7 @@ export function CommercialSession({
   );
   if (
     access.manual_full?.configured &&
-    (manualFullBlocked(access.manual_full) || expired || verificationFailed)
+    (!access.active || expired || verificationFailed)
   )
     return manualAccount;
   if (!access.profile || access.requires_phone_verification)
