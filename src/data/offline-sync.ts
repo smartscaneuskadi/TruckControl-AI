@@ -7,7 +7,9 @@ import { offlinePayload } from "./offline-vault";
 import type { VaultSession } from "./offline-vault";
 import { assertCompanyFullPlan } from "../domain/company-full";
 
-/** Permission-only refresh: never replay queued operations or extend a lease. */
+/** Permission-only refresh: never replay queued operations or extend a live FULL lease.
+ * After an online-confirmed FULL→Basic downgrade, an already expired offline
+ * lease can be reissued as Basic without deleting the encrypted draft/outbox. */
 export async function refreshVaultAuthorization(
   session: VaultSession,
   client: SupabaseClient<Database>,
@@ -65,9 +67,20 @@ export async function refreshVaultAuthorization(
     previous.operations,
     access,
   );
-  const expiresAt = new Date(
-    Math.min(Date.parse(previous.expiresAt), Date.parse(candidate.expiresAt)),
-  ).toISOString();
+  // A signed-in, company-scoped RPC has independently authorized a *new* Basic
+  // entitlement. An old expired FULL lease must not keep Basic data unusable.
+  // Never extend a still-valid lease or renew a FULL entitlement here.
+  const renewExpiredAsBasic =
+    previous.access.plan === "full" &&
+    access.plan === "limited" &&
+    access.manual_full?.configured === true &&
+    access.manual_full.status !== "active" &&
+    Date.parse(previous.expiresAt) <= Date.parse(access.observed_at ?? "");
+  const expiresAt = renewExpiredAsBasic
+    ? candidate.expiresAt
+    : new Date(
+        Math.min(Date.parse(previous.expiresAt), Date.parse(candidate.expiresAt)),
+      ).toISOString();
   const permissions = (value: SubscriptionAccess) =>
     JSON.stringify({
       active: value.active,
@@ -87,9 +100,14 @@ export async function refreshVaultAuthorization(
     (value) => ({
       ...value,
       access,
-      expiresAt: new Date(
-        Math.min(Date.parse(value.expiresAt), Date.parse(expiresAt)),
-      ).toISOString(),
+      // Rebase the seven-day offline window only for a fresh, reduced Basic
+      // lease; keeping the old authorizedAt would violate the vault's TTL.
+      authorizedAt: renewExpiredAsBasic ? candidate.authorizedAt : value.authorizedAt,
+      expiresAt: renewExpiredAsBasic
+        ? candidate.expiresAt
+        : new Date(
+            Math.min(Date.parse(value.expiresAt), Date.parse(expiresAt)),
+          ).toISOString(),
     }),
     signal,
   );
