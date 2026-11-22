@@ -45,7 +45,7 @@ CREATE OR REPLACE FUNCTION private.tc_organization_access_for(p_org uuid, p_user
  STABLE SECURITY DEFINER
  SET search_path TO ''
 AS $function$
-declare o public.organizations; c private.tc_customers; a private.tc_customers; s private.tc_settings;
+declare org_record public.organizations; c private.tc_customers; a private.tc_customers; s private.tc_settings;
  r text; plan_id text; enabled boolean; phone_needed boolean; u record; profile jsonb; manual jsonb;
 begin
  -- Human requests bind their own live session. Explicit server/background users
@@ -73,8 +73,8 @@ begin
   return jsonb_build_object('active',enabled,'is_admin',false,'features',private.tc_company_features(p_org,p_user,'limited',enabled),
    'company_role',r,'can_write',enabled and r<>'viewer','can_manage',enabled and r in ('owner','admin'),'organization_id',p_org,'profile',null,'plan','limited','max_trucks',50,'manual_full',manual,'observed_at',now());
  end if;
- select * into o from public.organizations where id=p_org;
- select * into c from private.tc_customers where user_id=o.owner_id;
+ select * into org_record from public.organizations where id=p_org;
+ select * into c from private.tc_customers where user_id=org_record.owner_id;
  select * into a from private.tc_customers where user_id=p_user;
  select * into u from auth.users where id=p_user;
  phone_needed:=s.sms_ready and (u.phone_confirmed_at is null or ('+'||regexp_replace(coalesce(u.phone,''),'[^0-9]','','g'))<>a.phone);
@@ -85,13 +85,13 @@ begin
   -- OFF/expired revokes only FULL capabilities, not a verified member's Basic
   -- access to existing fleet data. Suspensions/identity checks remain mandatory.
   enabled:=c.user_id is not null and a.user_id is not null and c.status<>'suspended' and a.status<>'suspended'
-   and private.tc_actor_verified(o.owner_id,false) and not coalesce(phone_needed,true);
+   and private.tc_actor_verified(org_record.owner_id,false) and not coalesce(phone_needed,true);
   plan_id:=case when manual->>'status'='active' then 'full' else 'limited' end;
  else
   -- Historical Full trial/paid flags do not imply a manual company licence.
   plan_id:='limited';
  end if;
- profile:=to_jsonb(a)-'stripe_subscription_id'||jsonb_build_object('company_name',o.name,
+ profile:=to_jsonb(a)-'stripe_subscription_id'||jsonb_build_object('company_name',org_record.name,
   'status',case when a.status='suspended' then 'suspended' else c.status end,
   'trial_started_at',c.trial_started_at,'trial_ends_at',c.trial_ends_at,'paid_until',c.paid_until,'paid_plan',c.paid_plan,'trial_plan_id',c.trial_plan_id);
  return jsonb_build_object('active',coalesce(enabled,false),'is_admin',false,
