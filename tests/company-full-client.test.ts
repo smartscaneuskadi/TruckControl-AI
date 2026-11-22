@@ -9,6 +9,7 @@ import {
   companyFullHistory,
 } from "../src/integrations/supabase/company-full";
 import {
+  assertCompanyFullPlan,
   fullExpiryDeadline,
   fullExpiryFromInput,
   manualFullSchema,
@@ -392,6 +393,18 @@ describe("manual Full scope, expiry and bounded offline authorization", () => {
     expect(() =>
       manualFullSchema.parse({ ...active(), enabled: false }),
     ).toThrow();
+  });
+  it("requires a matching manual company licence before trusting a Full tier", () => {
+    const observed_at = stamp();
+    const company = { organization_id: org, observed_at, manual_full: active(), plan: "full" };
+    expect(assertCompanyFullPlan(company, org)?.status).toBe("active");
+    expect(() => assertCompanyFullPlan({ ...company, plan: "limited" }, org)).toThrow("company_full_tier_mismatch");
+    expect(() => assertCompanyFullPlan({ ...company, manual_full: { ...active(), enabled: false, status: "disabled" } }, org))
+      .toThrow("company_full_tier_mismatch");
+    expect(assertCompanyFullPlan({ ...company, manual_full: { ...active(), enabled: false, status: "disabled" }, plan: "limited" }, org)?.status)
+      .toBe("disabled");
+    expect(() => assertCompanyFullPlan({ ...company, manual_full: empty }, org)).toThrow("company_full_tier_mismatch");
+    expect(() => assertCompanyFullPlan({ ...company, organization_id: "other" }, org)).toThrow();
   });
   it("uses explicit UTC and rejects impossible dates", () => {
     expect(fullExpiryFromInput("")).toBeNull();
