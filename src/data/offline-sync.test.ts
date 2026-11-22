@@ -201,23 +201,58 @@ describe("comprobación de licencia sin publicar la cola cifrada", () => {
     expect(second.payload.expiresAt).toBe(first.payload.expiresAt);
     expect(f.execute).not.toHaveBeenCalled();
   });
-  it("OFF bloquea la clave y conserva la cola sin ejecutar escrituras comerciales", async () => {
+  it("FULL OFF con autorización online degrada a Básico sin perder copia, operaciones ni escrituras pendientes", async () => {
     const f = await manualFixture();
-    f.access.active = false;
+    f.access.plan = "limited";
+    f.access.features = { ...f.access.features, invoice_ai: false, document_ai: false };
     f.access.manual_full = {
       ...f.access.manual_full!,
       enabled: false,
       status: "disabled",
       revision: 2,
     };
-    await expect(
-      refreshVaultAuthorization(f.session, f.client),
-    ).rejects.toThrow("ya no permite el acceso");
-    expect(() => f.session.assertUnlocked()).toThrow("bloqueada");
-    expect(f.payload().outbox).toEqual(f.original.outbox);
-    expect(f.payload().snapshot).toEqual(f.original.snapshot);
+    const result = await refreshVaultAuthorization(f.session, f.client);
+    expect(result.changed).toBe(true);
+    expect(result.payload.access.plan).toBe("limited");
+    expect(result.payload.access.features.invoice_ai).toBe(false);
+    expect(result.payload.access.features.document_ai).toBe(false);
+    expect(result.payload.expiresAt).toBe(f.original.expiresAt);
+    expect(result.payload.snapshot).toEqual(f.original.snapshot);
+    expect(result.payload.operations).toEqual(f.original.operations);
+    expect(result.payload.outbox).toEqual(f.original.outbox);
+    expect(() => f.session.assertUnlocked()).not.toThrow();
     expect(f.execute).not.toHaveBeenCalled();
-    expect(Date.parse(f.payload().expiresAt)).toBeLessThanOrEqual(Date.now());
+  });
+  it("renueva una copia FULL ya caducada solo como Básico tras comprobar permisos online", async () => {
+    const f = await manualFixture();
+    f.replace({
+      ...f.payload(),
+      authorizedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+      expiresAt: new Date(Date.now() - 1000).toISOString(),
+    });
+    f.access.plan = "limited";
+    f.access.features = { ...f.access.features, invoice_ai: false, document_ai: false };
+    f.access.manual_full = {
+      ...f.access.manual_full!,
+      enabled: false,
+      status: "disabled",
+      revision: 2,
+    };
+    f.access.observed_at = new Date().toISOString();
+    const result = await refreshVaultAuthorization(f.session, f.client);
+    expect(result.changed).toBe(true);
+    expect(result.payload.access.plan).toBe("limited");
+    expect(result.payload.authorizedAt).toBe(f.access.observed_at);
+    expect(Date.parse(result.payload.expiresAt)).toBeGreaterThan(Date.now());
+    expect(Date.parse(result.payload.expiresAt) - Date.parse(result.payload.authorizedAt)).toBe(7 * 86400000);
+    expect(result.payload.outbox).toEqual(f.original.outbox);
+    expect(result.payload.snapshot).toEqual(f.original.snapshot);
+    expect(result.payload.operations).toEqual(f.original.operations);
+    expect(result.payload.access.features.invoice_ai).toBe(false);
+    expect(result.payload.access.features.document_ai).toBe(false);
+    expect(f.execute).not.toHaveBeenCalled();
+    expect(f.load).not.toHaveBeenCalled();
+    expect(() => f.session.assertUnlocked()).not.toThrow();
   });
   it("una denegación mantiene cerrada la clave aunque falle IndexedDB", async () => {
     const f = await manualFixture();
@@ -283,7 +318,7 @@ describe("comprobación de licencia sin publicar la cola cifrada", () => {
     expect(f.load).not.toHaveBeenCalled();
     expect(f.payload().outbox).toEqual(f.original.outbox);
   });
-  it("un estado manual OFF no se convierte en permiso aunque otro campo declare active=true", async () => {
+  it("una respuesta que afirma FULL con licencia manual OFF se rechaza aunque active=true", async () => {
     for (const check of [refreshVaultAuthorization, synchronizeVault]) {
       const f = await manualFixture();
       f.access.manual_full = { ...f.access.manual_full!, enabled: false, status: "disabled", revision: 2 };
