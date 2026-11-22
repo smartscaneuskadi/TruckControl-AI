@@ -94,6 +94,9 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     }
     await db.exec("update private.tc_settings set enforce_access=false");
     expect(await access()).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
+    // Exercise Root FULL while globally enabled AI modules are available.
+    // Global module kill switches must remain independent of the licence.
+    await db.exec("update private.tc_modules set enabled=true where id in ('invoice_ai','document_ai')");
     const enabled = await set();
     expect(enabled.item.manual_full).toMatchObject({ status: "active", revision: 1 });
     expect(await access()).toMatchObject({ active: true, plan: "full", features: { invoice_ai: true, document_ai: true } });
@@ -262,16 +265,20 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     await set(org, false);
     await expect(db.exec(rollback)).rejects.toThrow('company_full_rollback_refuses_configured_companies');
   });
-  it("allows the function-only zero-record rollback while retaining immutable tables", async () => {
+  it("rejects a stale pre-gate rollback with zero records, preserving enforcement", async () => {
     const isolated = await financialDatabase();
     try {
       const company = randomUUID();
       await isolated.query("insert into public.organizations(id,owner_id,name) values($1,$2,'Synthetic rollback company')", [company, incidentAdmin]);
-      await isolated.exec(rollback);
-      expect((await isolated.query("select to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is null absent,to_regclass('private.tc_company_full_audit') is not null audit_kept")).rows).toEqual([{ absent: true, audit_kept: true }]);
-      await expect(isolated.query("insert into private.tc_company_full_licenses(organization_id,enabled,revision,updated_at,updated_by) values($1,false,1,now(),$2)", [company, incidentAdmin])).rejects.toThrow('company_full_rollback_fenced');
-      await expect(isolated.exec("update private.tc_company_full_licenses set enabled=true")).rejects.toThrow('company_full_rollback_fenced');
+      // A pre-gate rollback would restore the historical FULL inheritance bug.
+      // The body hash must fail closed until a newly reviewed rollback exists.
+      await expect(isolated.exec(rollback)).rejects.toThrow('company_full_rollback_body_mismatch');
+      await isolated.exec("rollback");
+      expect((await isolated.query("select to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is not null present,to_regclass('private.tc_company_full_audit') is not null audit_kept")).rows)
+        .toEqual([{ present: true, audit_kept: true }]);
       expect((await isolated.query("select count(*)::int n from private.tc_company_full_licenses")).rows).toEqual([{ n: 0 }]);
+      expect((await isolated.query("select to_regprocedure('private.tc_company_full_rollback_fenced()') is null no_stale_fence")).rows)
+        .toEqual([{ no_stale_fence: true }]);
     } finally { await isolated.close(); }
   }, 30000);
 });
