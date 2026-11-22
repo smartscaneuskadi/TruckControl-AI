@@ -82,7 +82,7 @@ export function CompanyFullAccount({
           </p>
         )}
         <div className="access-links">
-          {onBack && active && (
+          {onBack && access.active && !expired && !error && (
             <Button onClick={onBack}>Volver a mi empresa</Button>
           )}
           <Button variant="secondary" onClick={onRefresh}>
