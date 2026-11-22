@@ -116,7 +116,7 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     expect(forged.invoice_ai).toBe(false);
     expect(forged.document_ai).toBe(false);
     await set(org, false, null, 1);
-    expect(await access()).toMatchObject({ active: false, manual_full: { status: "disabled" } });
+    expect(await access()).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false }, manual_full: { status: "disabled" } });
     expect(await db.query("select id from public.trucks where id=$1", [truck])).toMatchObject({ rows: [{ id: truck }] });
   });
   it("activates one of two companies owned by an expired account without changing global entitlements", async () => {
@@ -130,20 +130,32 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     const bootstrap = (await actor<{ access: Access & { company_access_available: boolean } }>("select public.tc_finish_registration() access"))[0].access;
     expect(bootstrap).toMatchObject({ active: true, company_access_available: true, plan: "limited", features: { documents: false, gmail: false } });
   });
-  it("makes explicit OFF authoritative over legacy paid/trial access and the enforce_access=false shortcut", async () => {
+  it("makes FULL OFF authoritative while preserving verified Basic fleet access even if enforcement is disabled", async () => {
     await db.exec("update private.tc_settings set enforce_access=false");
     await set(org, false);
-    expect(await access()).toMatchObject({ active: false, can_write: false, can_manage: false, manual_full: { status: "disabled" } });
-    expect(Object.values((await access()).features).every(value => !value)).toBe(true);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", can_write: true, can_manage: true,
+      features: { invoice_ai: false, document_ai: false, trucks: true }, manual_full: { status: "disabled" } });
     expect((await access(sibling)).active).toBe(true);
-    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([]);
-    await expect(actor("update public.organizations set name='must not persist'")).rejects.toThrow('company_full_inactive');
-    expect((await actor("select id from public.organizations where id=$1", [org]))).toEqual([{ id: org }]);
+    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([{ id: truck }]);
+    expect(await actor("update public.organizations set name='Basic-only' where id=$1 returning id", [org])).toEqual([{ id: org }]);
+    expect(await actor("select id from public.organizations where id=$1", [org])).toEqual([{ id: org }]);
+  });
+  it("keeps a configured company's Basic access after an old paid/trial entitlement expires", async () => {
+    await expireOwner();
+    await set();
+    await set(org, false, null, 1);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", can_manage: true,
+      features: { trucks: true, invoice_ai: false, document_ai: false }, manual_full: { status: "disabled" } });
+    const bootstrap = (await actor<{ access: Access & { company_access_available: boolean } }>(
+      "select public.tc_finish_registration() access"))[0].access;
+    expect(bootstrap).toMatchObject({ active: true, plan: "limited", company_access_available: true });
+    expect((await access(sibling)).active).toBe(false);
+    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([{ id: truck }]);
   });
   it("uses the server boundary, treats null expiry as unlimited and reactivates immediately", async () => {
     const boundary = (await db.query<{ stamp: string }>(`select to_char(now() at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') stamp`)).rows[0].stamp;
     expect((await set(org, true, boundary)).item.manual_full.status).toBe("expired");
-    expect((await access()).active).toBe(false);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
     expect((await set(org, true, "2000-01-01T00:00:00Z", 1)).item.manual_full.status).toBe("expired");
     expect((await set(org, true, null, 2)).item.manual_full).toMatchObject({ status: "active", revision: 3, expires_at: null });
     expect((await access()).active).toBe(true);
@@ -232,24 +244,25 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     await db.query("update private.tc_customers set module_overrides='{\"gmail\":false}' where user_id=$1", [owner]);
     expect((await access()).features.gmail).toBe(false);
   });
-  it("denies company raw reads/writes and RPCs when OFF without deleting any business rows", async () => {
+  it("preserves existing Basic business data, writes and document RPCs when FULL is OFF", async () => {
     await set();
     expect(await actor("select * from public.list_company_documents($1)", [org])).toHaveLength(1);
     await set(org, false, null, 1);
-    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([]);
-    expect(await actor("update public.trucks set odometer_km=900 where id=$1 returning id", [truck])).toEqual([]);
-    await expect(actor("select public.tc_list_records($1,null)", [org])).rejects.toThrow();
-    expect(await actor("select * from public.list_company_documents($1)", [org])).toEqual([]);
-    expect((await db.query("select id from public.trucks where id=$1", [truck])).rows).toEqual([{ id: truck }]);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", can_manage: true,
+      features: { invoice_ai: false, document_ai: false } });
+    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([{ id: truck }]);
+    expect(await actor("update public.trucks set odometer_km=900 where id=$1 returning id", [truck])).toEqual([{ id: truck }]);
+    expect(await actor("select * from public.list_company_documents($1)", [org])).toHaveLength(1);
+    expect((await db.query("select odometer_km from public.trucks where id=$1", [truck])).rows).toEqual([{ odometer_km: 900 }]);
     expect(await actor("select id from public.organizations where id=$1", [org])).toEqual([{ id: org }]);
   });
-  it("protects worker access, documents, AI usage, inbound mail and legacy Gmail paths", async () => {
+  it("retains Basic server access but denies document AI on an OFF FULL licence", async () => {
     await set(org, false);
-    expect((await service<{ access: Access }>("select public.tc_company_server_access($1,$2) access", [owner, org]))[0].access.active).toBe(false);
+    expect((await service<{ access: Access }>("select public.tc_company_server_access($1,$2) access", [owner, org]))[0].access)
+      .toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false, gmail: true } });
     expect(await service("select public.tc_consume_document_ai($1,$2) allowed", [org, owner])).toEqual([{ allowed: false }]);
-    await expect(service("select public.company_mail_server('get_inbox',$1::jsonb)", [JSON.stringify({ organization_id: org, user_id: owner })])).rejects.toThrow();
-    await expect(service("select public.company_copilot_server($1,$2,'context','{}')", [org, owner])).rejects.toThrow();
-    await expect(service("select public.gmail_server('credentials',$1::jsonb)", [JSON.stringify({ organization_id: org })])).rejects.toThrow('company_full_inactive');
+    // No real Gmail connection exists in the synthetic fixture; an empty lock
+    // acquisition is not an authorization failure and must not initiate costs.
     expect(await service("select public.gmail_server('lock_sync',$1::jsonb) locked", [JSON.stringify({ organization_id: org })])).toEqual([{ locked: false }]);
   });
   it("Full alone never grants AI consent, and existing document-AI quota remains bounded", async () => {
