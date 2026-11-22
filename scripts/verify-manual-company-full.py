@@ -273,25 +273,39 @@ def background_access(stack, actor: dict, org: str, allowed: bool, label: str) -
           status == 200 and isinstance(result, dict) and result.get("active") is allowed)
 
 
-def closed_company(stack, owner: dict, org: str, document_path: str, label: str) -> None:
+def basic_company(stack, owner: dict, org: str, document_path: str, label: str) -> None:
+    """FULL revocation/expiry must retain Basic APIs, RLS and private originals."""
     before = business_snapshot(stack, org)
     state = access(stack, owner, org)
-    check(label + ": explicit company state closes every commercial feature",
-          state.get("active") is False and state.get("can_write") is False and state.get("can_manage") is False
-          and not any(value is True for value in state.get("features", {}).values()))
+    check(label + ": server downgrades FULL to an active Basic company",
+          state.get("active") is True and state.get("plan") == "limited"
+          and state.get("can_write") is True and state.get("can_manage") is True
+          and state.get("features", {}).get("trucks") is True
+          and state.get("features", {}).get("documents") is True
+          and state.get("features", {}).get("invoice_ai") is False
+          and state.get("features", {}).get("document_ai") is False)
     for table in ["trucks", "drivers", "finance_entries"]:
-        status, rows = stack.http("GET", "/rest/v1/" + table + "?select=id&organization_id=eq." + org, token=owner["token"])
-        check(label + ": raw " + table + " reads are denied", status >= 400 or rows == [])
-    denied(label + ": raw truck insert is denied", stack.http("POST", "/rest/v1/trucks", truck(org, "DENIED NEW"), token=owner["token"]))
-    stack.http("PATCH", "/rest/v1/trucks?organization_id=eq." + org, {"brand": "Denied overwrite"}, token=owner["token"])
-    stack.http("DELETE", "/rest/v1/drivers?organization_id=eq." + org, token=owner["token"])
-    denied(label + ": commercial RPC is denied", response(stack, owner["token"], "tc_company_suppliers", {"p_org": org, "p_action": "list", "p_data": {}}), status=403)
-    denied(label + ": document RPC is denied", response(stack, owner["token"], "tc_document_page", {"p_org": org}), status=403)
-    denied(label + ": fresh authenticated private download is denied", stack.http("GET", "/storage/v1/object/authenticated/truckcontrol-documents/" + document_path, token=owner["token"]))
-    denied(label + ": issuing a new signed document URL is denied", stack.http("POST", "/storage/v1/object/sign/truckcontrol-documents/" + document_path,
-                                                                                  {"expiresIn": 60}, token=owner["token"]))
-    background_access(stack, owner, org, False, label)
-    check(label + ": denied mutations preserve all company records", business_snapshot(stack, org) == before)
+        status, rows = stack.http("GET", "/rest/v1/" + table + "?select=id,organization_id&organization_id=eq." + org, token=owner["token"])
+        check(label + ": Basic " + table + " reads remain authorized and scoped",
+              status == 200 and isinstance(rows, list) and bool(rows)
+              and all(row["organization_id"] == org for row in rows))
+    status, suppliers = response(stack, owner["token"], "tc_company_suppliers",
+                                 {"p_org": org, "p_action": "list", "p_data": {}})
+    check(label + ": Basic suppliers RPC stays available", status == 200)
+    status, documents = response(stack, owner["token"], "tc_document_page", {"p_org": org})
+    check(label + ": Basic documents RPC stays available", status == 200)
+    status, content = stack.http("GET", "/storage/v1/object/authenticated/truckcontrol-documents/" + document_path, token=owner["token"])
+    check(label + ": existing private document remains retrievable under Basic",
+          status == 200 and content == lab.synthetic_pdf())
+    status, signed = stack.http("POST", "/storage/v1/object/sign/truckcontrol-documents/" + document_path,
+                                {"expiresIn": 60}, token=owner["token"])
+    check(label + ": Basic still permits a bounded private document URL",
+          status == 200 and isinstance(signed, dict)
+          and any(isinstance(signed.get(key), str) for key in ["signedURL", "signedUrl"]))
+    del signed
+    background_access(stack, owner, org, True, label)
+    check(label + ": read-only Basic checks leave every business record intact",
+          business_snapshot(stack, org) == before)
 
 
 def exercise(stack) -> None:
@@ -338,7 +352,7 @@ def exercise(stack) -> None:
           and all(manual_state(item.get("manual_full"), "unconfigured") for item in listed))
     root_off = control.set(root["org"], 0, False)
     check("root can disable its own company without losing account management",
-          manual_state(root_off["item"]["manual_full"], "disabled") and access(stack, root, root["org"]).get("active") is False
+          manual_state(root_off["item"]["manual_full"], "disabled") and access(stack, root, root["org"]).get("active") is True
           and control.rpc("capabilities").get("manual_company_full") is True
           and isinstance(stack.rpc("tc_admin_control", {"p_action": "snapshot", "p_data": {}}, root["token"]), dict))
     # Expire only the legacy commercial period; preserve native identity, legal
@@ -443,10 +457,11 @@ def exercise(stack) -> None:
     disabled = control.set(a["org"], revision, False)
     revision = disabled["item"]["manual_full"]["revision"]
     check("explicit OFF is a server state", manual_state(disabled["item"]["manual_full"], "disabled"))
-    closed_company(stack, a, a["org"], path, "explicit OFF")
+    basic_company(stack, a, a["org"], path, "explicit OFF")
     stack.sql("update private.tc_settings set enforce_access=false where id;")
-    check("explicit company OFF survives the legacy enforcement shortcut", access(stack, a, a["org"]).get("active") is False)
-    scoped_data(stack, a, a["org"], False, "explicit OFF with legacy shortcut disabled")
+    check("explicit company OFF remains Basic even with legacy enforcement disabled",
+          access(stack, a, a["org"]).get("active") is True and access(stack, a, a["org"]).get("plan") == "limited")
+    scoped_data(stack, a, a["org"], True, "explicit OFF with legacy shortcut disabled")
     stack.sql("update private.tc_settings set enforce_access=true where id;")
     stale_replay = control.set(a["org"], 0, True, operation=operation)
     check("old operation replay reports the current OFF state without reactivating",
@@ -474,12 +489,12 @@ def exercise(stack) -> None:
             raise LabFailure("bounded_server_expiry_observation_timed_out")
         time.sleep(.25)
     check("fresh HTTP access denies at and after the authoritative server expiry",
-          manual_state(observed["manual_full"], "expired") and observed.get("active") is False)
-    closed_company(stack, a, a["org"], path, "automatic server expiry")
+          manual_state(observed["manual_full"], "expired") and observed.get("active") is True and observed.get("plan") == "limited"
+    basic_company(stack, a, a["org"], path, "automatic server expiry")
     past = control.set(a["org"], revision, True, (expires - timedelta(days=1)).isoformat())
     revision = past["item"]["manual_full"]["revision"]
     check("past-dated enabled Full remains expired", manual_state(past["item"]["manual_full"], "expired"))
-    closed_company(stack, a, a["org"], path, "past expiry date")
+    basic_company(stack, a, a["org"], path, "past expiry date")
     restored = control.set(a["org"], revision, True)
     revision = restored["item"]["manual_full"]["revision"]
     check("expired company reactivates immediately with the same business records",
@@ -512,7 +527,7 @@ def exercise(stack) -> None:
     control = Control(stack, root)
     final = control.set(a["org"], revision, True)
     check("fresh root manages and reactivates while its own company remains OFF",
-          manual_state(final["item"]["manual_full"], "active") and access(stack, root, root["org"]).get("active") is False
+          manual_state(final["item"]["manual_full"], "active") and access(stack, root, root["org"]).get("active") is True
           and access(stack, a, a["org"]).get("active") is True)
     check("same-owner sibling and unrelated company remain unchanged after the complete lifecycle",
           access(stack, a, other_org).get("active") is False and manual_state(access(stack, a, other_org)["manual_full"], "unconfigured")
