@@ -484,6 +484,17 @@ describe("manual Full scope, expiry and bounded offline authorization", () => {
       3600000,
     );
     access.manual_full = { ...active(), enabled: false, status: "disabled" };
+    // An old cached Full entitlement is never treated as an active Basic lease.
     expect(() => offlinePayload(fleet, [], access)).toThrow();
+    access.plan = "limited";
+    access.features = { ...demoFeatures, invoice_ai: false, document_ai: false };
+    const basic = offlinePayload(fleet, [], access);
+    expect(Date.parse(basic.expiresAt) - now).toBe(7 * 86400000);
+    expect(basic.access.features.invoice_ai).toBe(false);
+    expect(basic.access.features.document_ai).toBe(false);
+    access.manual_full = {
+      ...active(), status: "expired", expires_at: new Date(now - 3600000).toISOString(),
+    };
+    expect(Date.parse(offlinePayload(fleet, [], access).expiresAt) - now).toBe(7 * 86400000);
   });
 });
