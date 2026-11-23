@@ -382,21 +382,14 @@ export function CompanyFullAdmin({ userId }: { userId: string }) {
             <div className="company-full-state">
               <Badge
                 tone={
-                  (
-                    item.manual_full.configured
-                      ? item.manual_full.status === "active"
-                      : item.effective_active && item.effective_plan === "full"
-                  )
+                  (item.manual_full.configured && item.manual_full.status === "active")
                     ? "green"
                     : item.manual_full.status === "expired"
                       ? "amber"
                       : "neutral"
                 }
               >
-                {fullStatusLabel(
-                  item.manual_full,
-                  item.effective_active && item.effective_plan === "full",
-                )}
+                {fullStatusLabel(item.manual_full)}
               </Badge>
               <p>
                 {item.manual_full.configured
