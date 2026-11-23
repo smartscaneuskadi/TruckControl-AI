@@ -20,6 +20,7 @@ import type {
   SubscriptionAccess,
 } from "../domain/subscriptions";
 import { assertCompanyFullPlan, fullExpiryDeadline, watchFullExpiry } from "../domain/company-full";
+import { allowAutomaticStripeCheckout } from "../domain/stripe-checkout-policy";
 import { endPrivateSessions } from "./session-events";
 const AdminConsole = lazy(() => import("../pages/AdminConsole").then((module) => ({ default: module.AdminConsole })));
 const CompanyFullAccount = lazy(() => import("../components/CompanyFullAccount").then((module) => ({ default: module.CompanyFullAccount })));
@@ -320,8 +321,7 @@ export function Billing({
     setMessage("");
     try {
       if (
-        catalog.payments_enabled &&
-        !catalog.prices_are_examples &&
+        allowAutomaticStripeCheckout(catalog) &&
         (!recurring.status?.configured ||
           !recurring.status.invoice_delivery_ready ||
           !recurring.status.terms_version ||
@@ -335,7 +335,7 @@ export function Billing({
       });
       if (error || !data)
         throw new Error("No se ha podido guardar la solicitud de plan.");
-      if (catalog.payments_enabled && !catalog.prices_are_examples) {
+      if (allowAutomaticStripeCheckout(catalog)) {
         const checkout = await client.functions.invoke<{ url?: string }>(
           "truckcontrol-subscriptions",
           {
