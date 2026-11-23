@@ -90,11 +90,9 @@ export type CompanyFullCommand = {
   enabled: boolean;
   expiresAt: string | null;
 };
-export function fullStatusLabel(
-  value: ManualFullState,
-  effectiveActive = false,
-) {
-  if (!value.configured) return effectiveActive ? "Activo" : "Desactivado";
+export function fullStatusLabel(value: ManualFullState) {
+  // Basic access or a legacy effective FULL flag is not a Root-granted licence.
+  if (!value.configured) return "Sin activar";
   return value.status === "active"
     ? "Activo"
     : value.status === "expired"
