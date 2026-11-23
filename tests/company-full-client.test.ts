@@ -12,6 +12,7 @@ import {
   assertCompanyFullPlan,
   fullExpiryDeadline,
   fullExpiryFromInput,
+  fullStatusLabel,
   manualFullSchema,
   readManualFullAccess,
   watchFullExpiry,
@@ -377,6 +378,14 @@ describe("company Full contract with the real native SDK", () => {
   });
 });
 describe("manual Full scope, expiry and bounded offline authorization", () => {
+  it("never marks an unconfigured company FULL as active even when Basic is active", () => {
+    // The prior admin badge used an effective plan/active flag and could turn
+    // green for legacy FULL or an active Basic trial without a Root licence.
+    expect(fullStatusLabel(empty)).toBe("Sin activar");
+    expect(fullStatusLabel(active())).toBe("Activo");
+    expect(fullStatusLabel({ ...active(), enabled: false, status: "disabled" })).toBe("Desactivado");
+    expect(fullStatusLabel({ ...active(), status: "expired", expires_at: stamp() })).toBe("Vencido");
+  });
   it("preserves absent legacy metadata and rejects incompatible configured state", () => {
     expect(readManualFullAccess({}, org)).toBeUndefined();
     expect(manualFullSchema.parse(empty).configured).toBe(false);
