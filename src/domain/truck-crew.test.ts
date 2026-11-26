@@ -28,10 +28,12 @@ function crewFixture() {
   return validateSnapshot(fleet);
 }
 const user = "dd110000-0000-4000-8000-000000000001";
-function access(): SubscriptionAccess {
+function access(organizationId: string): SubscriptionAccess {
   return {
     active: true,
-    features: demoFeatures,
+    organization_id: organizationId,
+    plan: "limited",
+    features: { ...demoFeatures, invoice_ai: false, document_ai: false },
     profile: {
       user_id: user,
       status: "trial",
@@ -211,7 +213,7 @@ describe("segundo conductor opcional y compatibilidad", () => {
         user,
         fleet.organization.id,
       );
-    const payload = offlinePayload(fleet, [], access()),
+    const payload = offlinePayload(fleet, [], access(fleet.organization.id)),
       salt = newVaultSalt();
     const key = await deriveVaultKey("frase-ficticia-segundo-conductor", salt);
     const envelope = await sealVault(payload, scope, key, salt, 1);
