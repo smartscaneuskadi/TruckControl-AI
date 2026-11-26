@@ -203,31 +203,72 @@ describe("plataforma SaaS, prueba y administración", () => {
     expect(after.profile.trial_ends_at).toBe(before.profile.trial_ends_at);
     expect(after.is_admin).toBe(false);
   });
-  it("aplica permiso IA global, por usuario y consentimiento de forma conjunta", async () => {
-    await as(admin, () =>
-      adminCall("customer", { user_id: clientA, ai_allowed: true }),
-    );
-    await as(clientA, () => rpc("tc_set_ai_opt_in", [true]));
-    expect((await currentAccess()).features.invoice_ai).toBe(false);
-    await as(admin, () =>
-      adminCall("module", { id: "invoice_ai", enabled: true }),
-    );
-    expect((await currentAccess()).features.invoice_ai).toBe(false);
-    await as(admin, () =>
-      adminCall("customer", {
-        user_id: clientA,
-        module_overrides: { invoice_ai: true },
-      }),
-    );
-    expect((await currentAccess()).features.invoice_ai).toBe(true);
-    expect((await currentAccess(clientB)).features.invoice_ai).toBe(false);
-    await as(clientA, () => rpc("tc_set_ai_opt_in", [false]));
-    expect((await currentAccess()).features.invoice_ai).toBe(false);
-    await as(clientA, () => rpc("tc_set_ai_opt_in", [true]));
-    await as(admin, () =>
-      adminCall("customer", { user_id: clientA, ai_allowed: false }),
-    );
-    expect((await currentAccess()).features.invoice_ai).toBe(false);
+  it("exige FULL manual por empresa además de módulo global, permiso IA y consentimiento", async () => {
+    // Keep this licence and its audit rows inside the disposable test transaction;
+    // later tests deliberately exercise an unconfigured, expired Basic account.
+    const companyAccess = (user = clientA, org = orgA) =>
+      as(user, () => rpc<{
+        active: boolean;
+        plan: string;
+        features: Record<string, boolean>;
+        manual_full: { status: string };
+      }>("tc_organization_access", [org]));
+    const setFull = (enabled: boolean, revision: number) =>
+      as(admin, () => db.query(
+        "select public.tc_admin_company_full('set',$1::uuid,$2::bigint,$3::uuid,$4::jsonb,null::uuid)",
+        [orgA, revision, crypto.randomUUID(), JSON.stringify({ enabled, expires_at: null })],
+      ));
+    await db.exec("begin");
+    try {
+      await as(admin, () =>
+        adminCall("customer", { user_id: clientA, ai_allowed: true }),
+      );
+      await as(clientA, () => rpc("tc_set_ai_opt_in", [true]));
+      await as(admin, () =>
+        adminCall("module", { id: "invoice_ai", enabled: false }),
+      );
+      expect((await companyAccess()).features.invoice_ai).toBe(false);
+      await as(admin, () =>
+        adminCall("module", { id: "invoice_ai", enabled: true }),
+      );
+      await as(admin, () =>
+        adminCall("customer", {
+          user_id: clientA,
+          module_overrides: { invoice_ai: true },
+        }),
+      );
+      // Neither global settings nor a per-user override grants FULL.
+      expect(await companyAccess()).toMatchObject({
+        plan: "limited", features: { invoice_ai: false },
+        manual_full: { status: "unconfigured" },
+      });
+      expect((await currentAccess()).features.invoice_ai).toBe(false);
+      await setFull(true, 0);
+      expect(await companyAccess()).toMatchObject({
+        active: true, plan: "full", features: { invoice_ai: true },
+        manual_full: { status: "active" },
+      });
+      expect((await currentAccess()).features.invoice_ai).toBe(false);
+      expect((await companyAccess(clientB, orgB)).features.invoice_ai).toBe(false);
+      await as(clientA, () => rpc("tc_set_ai_opt_in", [false]));
+      expect((await companyAccess()).features.invoice_ai).toBe(false);
+      await as(clientA, () => rpc("tc_set_ai_opt_in", [true]));
+      expect((await companyAccess()).features.invoice_ai).toBe(true);
+      await as(admin, () =>
+        adminCall("customer", { user_id: clientA, ai_allowed: false }),
+      );
+      expect((await companyAccess()).features.invoice_ai).toBe(false);
+      await as(admin, () =>
+        adminCall("customer", { user_id: clientA, ai_allowed: true }),
+      );
+      await setFull(false, 1);
+      expect(await companyAccess()).toMatchObject({
+        active: true, plan: "limited", features: { invoice_ai: false },
+        manual_full: { status: "disabled" },
+      });
+    } finally {
+      await db.exec("rollback");
+    }
   });
   it("bloquea módulos en escrituras SQL y conserva el aislamiento entre empresas", async () => {
     await as(admin, () =>
