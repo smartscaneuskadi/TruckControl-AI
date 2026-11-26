@@ -70,7 +70,9 @@ export function CompanyFullAccount({
         <p>
           {active
             ? "Tu empresa tiene activados los módulos Full mediante una licencia manual."
-            : "El acceso comercial está bloqueado. La empresa y sus datos se conservan; el administrador de TruckControl puede reactivar el acceso."}
+            : access.active && !expired && !error
+              ? "Pack Full desactivado o vencido. Puedes continuar usando las funciones del plan Básico; los datos Full permanecen guardados hasta su reactivación manual."
+              : "No se puede verificar el acceso de esta empresa. Los datos se conservan; comprueba los permisos y vuelve a intentarlo."}
         </p>
         <p>
           Las conexiones, autorizaciones y límites de los servicios se
@@ -82,7 +84,7 @@ export function CompanyFullAccount({
           </p>
         )}
         <div className="access-links">
-          {onBack && active && (
+          {onBack && access.active && !expired && !error && (
             <Button onClick={onBack}>Volver a mi empresa</Button>
           )}
           <Button variant="secondary" onClick={onRefresh}>

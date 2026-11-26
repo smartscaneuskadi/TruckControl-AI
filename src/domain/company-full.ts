@@ -90,11 +90,9 @@ export type CompanyFullCommand = {
   enabled: boolean;
   expiresAt: string | null;
 };
-export function fullStatusLabel(
-  value: ManualFullState,
-  effectiveActive = false,
-) {
-  if (!value.configured) return effectiveActive ? "Activo" : "Desactivado";
+export function fullStatusLabel(value: ManualFullState) {
+  // Basic access or a legacy effective FULL flag is not a Root-granted licence.
+  if (!value.configured) return "Sin activar";
   return value.status === "active"
     ? "Activo"
     : value.status === "expired"
@@ -163,6 +161,36 @@ export function readManualFullAccess(
     throw new Error("company_full_expired_snapshot");
   return state;
 }
+/** Validate the effective tier of a company-scoped server response.
+ * Only a current, Root-authorized company licence can grant the FULL tier.
+ * A disabled/expired licence is valid when the server downgrades to Basic. */
+export function assertCompanyFullPlan(
+  value: {
+    manual_full?: unknown;
+    observed_at?: unknown;
+    organization_id?: unknown;
+    plan: string;
+    features?: { invoice_ai?: unknown; document_ai?: unknown };
+  },
+  organizationId?: string,
+) {
+  if (organizationId && value.organization_id !== organizationId)
+    throw new Error("company_full_scope_mismatch");
+  // Only the two backend company tiers are valid. Unknown legacy or forged
+  // tiers must never be treated as a Basic fallback with unchecked features.
+  if (value.plan !== "limited" && value.plan !== "full")
+    throw new Error("company_full_unknown_tier");
+  const state = readManualFullAccess(value, organizationId);
+  if ((value.plan === "full") !== Boolean(state?.configured && state.status === "active"))
+    throw new Error("company_full_tier_mismatch");
+  // A malformed server response must not expose FULL-only AI controls under
+  // Basic, even if its tier and company licence fields otherwise agree.
+  // This is UI/offline defence in depth; backend authorization is authoritative.
+  if (value.plan === "limited" && (value.features?.invoice_ai === true || value.features?.document_ai === true))
+    throw new Error("company_full_forbidden_basic_feature");
+  return state;
+}
+
 export function watchFullExpiry(deadline: number, expire: () => void) {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let active = true;

@@ -9,7 +9,7 @@ import {
 import type { OperationCommand, OperationRecord } from "../domain/operations";
 import { noFeatures } from "../domain/subscriptions";
 import type { SubscriptionAccess } from "../domain/subscriptions";
-import { manualFullBlocked, readManualFullAccess } from "../domain/company-full";
+import { assertCompanyFullPlan } from "../domain/company-full";
 
 export const vaultIterations = 600_000;
 const bytes = (value: string) =>
@@ -439,10 +439,9 @@ export function offlinePayload(
 ): VaultPayload {
   if (!access.active || !access.profile)
     throw Error("Verifica primero los permisos de tu cuenta.");
-  const manual = readManualFullAccess(access, snapshot.organization.id);
-  if (manualFullBlocked(manual)) throw Error("Tu periodo de acceso ha caducado.");
+  const manual = assertCompanyFullPlan(access, snapshot.organization.id);
   const now = manual?.configured ? Date.parse(access.observed_at!) : Date.now(),
-    entitlement = manual?.configured ? (manual.expires_at ? Date.parse(manual.expires_at) : now + 7 * 86400000) : Date.parse(
+    entitlement = manual?.configured ? (manual.status === "active" && manual.expires_at ? Date.parse(manual.expires_at) : now + 7 * 86400000) : Date.parse(
       access.profile.status === "trial"
         ? access.profile.trial_ends_at
         : (access.profile.paid_until ?? ""),

@@ -72,6 +72,63 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     expect(await access()).toMatchObject({ active: false, manual_full: { configured: false } });
     await expect(access(org, outsider, outsiderSid)).resolves.toMatchObject({ active: false, profile: null });
   });
+  it("never upgrades an unconfigured company from historical Full trial/paid or user overrides", async () => {
+    // Synthetic fixtures cover a future reactivation of old accounts without
+    // touching real customers or existing licence rows.
+    await db.query(`update private.tc_customers
+      set trial_plan_id='full', paid_plan='full', requested_plan='full',
+          trial_started_at=now()-interval '1 day', trial_ends_at=now()+interval '9 days', paid_until=now()+interval '30 days',
+          ai_allowed=true, ai_opt_in=true,
+          module_overrides=coalesce(module_overrides,'{}'::jsonb)||'{"invoice_ai":true,"document_ai":true}'::jsonb
+      where user_id=$1`, [owner]);
+    // Deliberately corrupt the reconstructed Limited plan as the historical
+    // document assistant migration did. Backend authorization must fail closed.
+    await db.exec(`update private.tc_plans
+      set modules=modules||'{"invoice_ai":true,"document_ai":true}'::jsonb
+      where id='limited';
+      update private.tc_modules set enabled=true where id in ('invoice_ai','document_ai')`);
+    const drift = (await db.query<{ invoice_ai: boolean; document_ai: boolean }>(
+      "select (modules->>'invoice_ai')::boolean invoice_ai, (modules->>'document_ai')::boolean document_ai from private.tc_plans where id='limited'")).rows[0];
+    expect(drift).toEqual({ invoice_ai: true, document_ai: true });
+    for (const status of ["trial", "active"]) {
+      await db.query("update private.tc_customers set status=$2 where user_id=$1", [owner, status]);
+      const company = await access();
+      expect(company).toMatchObject({ active: true, plan: "limited", manual_full: { configured: false, status: "unconfigured" } });
+      expect(company.features.invoice_ai).toBe(false);
+      expect(company.features.document_ai).toBe(false);
+      const bootstrap = (await actor<{ access: Access & { plan: string } }>("select public.tc_finish_registration() access"))[0].access;
+      expect(bootstrap.plan).toBe("limited");
+      expect(bootstrap.features.invoice_ai).toBe(false);
+      expect(bootstrap.features.document_ai).toBe(false);
+    }
+    await db.exec("update private.tc_settings set enforce_access=false");
+    expect(await access()).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
+    // The legacy bypass may ignore the billing clock, never a live suspension.
+    // Assert both the access RPC and the actual RLS read gate are fail-closed.
+    await db.query("update private.tc_customers set status='suspended' where user_id=$1", [owner]);
+    expect(await access()).toMatchObject({
+      active: false, plan: "limited", can_write: false, can_manage: false,
+      features: { trucks: false, invoice_ai: false, document_ai: false },
+    });
+    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([]);
+    await db.query("update private.tc_customers set status='active' where user_id=$1", [owner]);
+    expect(await access()).toMatchObject({ active: true, plan: "limited" });
+    // Exercise Root FULL while globally enabled AI modules are available.
+    // Global module kill switches must remain independent of the licence.
+    await db.exec("update private.tc_modules set enabled=true where id in ('invoice_ai','document_ai')");
+    const enabled = await set();
+    expect(enabled.item.manual_full).toMatchObject({ status: "active", revision: 1 });
+    expect(await access()).toMatchObject({ active: true, plan: "full", features: { invoice_ai: true, document_ai: true } });
+    expect(await access(sibling)).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
+    // Even an internal call supplying 'full' cannot bypass the Root licence.
+    const forged = (await db.query<{ features: Record<string, boolean> }>(
+      "select private.tc_company_features($1,$2,'full',true) features", [sibling, owner])).rows[0].features;
+    expect(forged.invoice_ai).toBe(false);
+    expect(forged.document_ai).toBe(false);
+    await set(org, false, null, 1);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false }, manual_full: { status: "disabled" } });
+    expect(await db.query("select id from public.trucks where id=$1", [truck])).toMatchObject({ rows: [{ id: truck }] });
+  });
   it("activates one of two companies owned by an expired account without changing global entitlements", async () => {
     await expireOwner();
     const before = (await db.query("select paid_plan,status,paid_until,trial_ends_at from private.tc_customers where user_id=$1", [owner])).rows;
@@ -83,20 +140,32 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     const bootstrap = (await actor<{ access: Access & { company_access_available: boolean } }>("select public.tc_finish_registration() access"))[0].access;
     expect(bootstrap).toMatchObject({ active: true, company_access_available: true, plan: "limited", features: { documents: false, gmail: false } });
   });
-  it("makes explicit OFF authoritative over legacy paid/trial access and the enforce_access=false shortcut", async () => {
+  it("makes FULL OFF authoritative while preserving verified Basic fleet access even if enforcement is disabled", async () => {
     await db.exec("update private.tc_settings set enforce_access=false");
     await set(org, false);
-    expect(await access()).toMatchObject({ active: false, can_write: false, can_manage: false, manual_full: { status: "disabled" } });
-    expect(Object.values((await access()).features).every(value => !value)).toBe(true);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", can_write: true, can_manage: true,
+      features: { invoice_ai: false, document_ai: false, trucks: true }, manual_full: { status: "disabled" } });
     expect((await access(sibling)).active).toBe(true);
-    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([]);
-    await expect(actor("update public.organizations set name='must not persist'")).rejects.toThrow('company_full_inactive');
-    expect((await actor("select id from public.organizations where id=$1", [org]))).toEqual([{ id: org }]);
+    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([{ id: truck }]);
+    expect(await actor("update public.organizations set name='Basic-only' where id=$1 returning id", [org])).toEqual([{ id: org }]);
+    expect(await actor("select id from public.organizations where id=$1", [org])).toEqual([{ id: org }]);
+  });
+  it("keeps a configured company's Basic access after an old paid/trial entitlement expires", async () => {
+    await expireOwner();
+    await set();
+    await set(org, false, null, 1);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", can_manage: true,
+      features: { trucks: true, invoice_ai: false, document_ai: false }, manual_full: { status: "disabled" } });
+    const bootstrap = (await actor<{ access: Access & { company_access_available: boolean } }>(
+      "select public.tc_finish_registration() access"))[0].access;
+    expect(bootstrap).toMatchObject({ active: true, plan: "limited", company_access_available: true });
+    expect((await access(sibling)).active).toBe(false);
+    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([{ id: truck }]);
   });
   it("uses the server boundary, treats null expiry as unlimited and reactivates immediately", async () => {
     const boundary = (await db.query<{ stamp: string }>(`select to_char(now() at time zone 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') stamp`)).rows[0].stamp;
     expect((await set(org, true, boundary)).item.manual_full.status).toBe("expired");
-    expect((await access()).active).toBe(false);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false } });
     expect((await set(org, true, "2000-01-01T00:00:00Z", 1)).item.manual_full.status).toBe("expired");
     expect((await set(org, true, null, 2)).item.manual_full).toMatchObject({ status: "active", revision: 3, expires_at: null });
     expect((await access()).active).toBe(true);
@@ -185,24 +254,25 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     await db.query("update private.tc_customers set module_overrides='{\"gmail\":false}' where user_id=$1", [owner]);
     expect((await access()).features.gmail).toBe(false);
   });
-  it("denies company raw reads/writes and RPCs when OFF without deleting any business rows", async () => {
+  it("preserves existing Basic business data, writes and document RPCs when FULL is OFF", async () => {
     await set();
     expect(await actor("select * from public.list_company_documents($1)", [org])).toHaveLength(1);
     await set(org, false, null, 1);
-    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([]);
-    expect(await actor("update public.trucks set odometer_km=900 where id=$1 returning id", [truck])).toEqual([]);
-    await expect(actor("select public.tc_list_records($1,null)", [org])).rejects.toThrow();
-    expect(await actor("select * from public.list_company_documents($1)", [org])).toEqual([]);
-    expect((await db.query("select id from public.trucks where id=$1", [truck])).rows).toEqual([{ id: truck }]);
+    expect(await access()).toMatchObject({ active: true, plan: "limited", can_manage: true,
+      features: { invoice_ai: false, document_ai: false } });
+    expect(await actor("select id from public.trucks where id=$1", [truck])).toEqual([{ id: truck }]);
+    expect(await actor("update public.trucks set odometer_km=900 where id=$1 returning id", [truck])).toEqual([{ id: truck }]);
+    expect(await actor("select * from public.list_company_documents($1)", [org])).toHaveLength(1);
+    expect((await db.query("select odometer_km from public.trucks where id=$1", [truck])).rows).toEqual([{ odometer_km: 900 }]);
     expect(await actor("select id from public.organizations where id=$1", [org])).toEqual([{ id: org }]);
   });
-  it("protects worker access, documents, AI usage, inbound mail and legacy Gmail paths", async () => {
+  it("retains Basic server access but denies document AI on an OFF FULL licence", async () => {
     await set(org, false);
-    expect((await service<{ access: Access }>("select public.tc_company_server_access($1,$2) access", [owner, org]))[0].access.active).toBe(false);
+    expect((await service<{ access: Access }>("select public.tc_company_server_access($1,$2) access", [owner, org]))[0].access)
+      .toMatchObject({ active: true, plan: "limited", features: { invoice_ai: false, document_ai: false, gmail: true } });
     expect(await service("select public.tc_consume_document_ai($1,$2) allowed", [org, owner])).toEqual([{ allowed: false }]);
-    await expect(service("select public.company_mail_server('get_inbox',$1::jsonb)", [JSON.stringify({ organization_id: org, user_id: owner })])).rejects.toThrow();
-    await expect(service("select public.company_copilot_server($1,$2,'context','{}')", [org, owner])).rejects.toThrow();
-    await expect(service("select public.gmail_server('credentials',$1::jsonb)", [JSON.stringify({ organization_id: org })])).rejects.toThrow('company_full_inactive');
+    // No real Gmail connection exists in the synthetic fixture; an empty lock
+    // acquisition is not an authorization failure and must not initiate costs.
     expect(await service("select public.gmail_server('lock_sync',$1::jsonb) locked", [JSON.stringify({ organization_id: org })])).toEqual([{ locked: false }]);
   });
   it("Full alone never grants AI consent, and existing document-AI quota remains bounded", async () => {
@@ -232,16 +302,20 @@ describe("manual Full: a company decision, fresh Root authorization and existing
     await set(org, false);
     await expect(db.exec(rollback)).rejects.toThrow('company_full_rollback_refuses_configured_companies');
   });
-  it("allows the function-only zero-record rollback while retaining immutable tables", async () => {
+  it("rejects a stale pre-gate rollback with zero records, preserving enforcement", async () => {
     const isolated = await financialDatabase();
     try {
       const company = randomUUID();
       await isolated.query("insert into public.organizations(id,owner_id,name) values($1,$2,'Synthetic rollback company')", [company, incidentAdmin]);
-      await isolated.exec(rollback);
-      expect((await isolated.query("select to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is null absent,to_regclass('private.tc_company_full_audit') is not null audit_kept")).rows).toEqual([{ absent: true, audit_kept: true }]);
-      await expect(isolated.query("insert into private.tc_company_full_licenses(organization_id,enabled,revision,updated_at,updated_by) values($1,false,1,now(),$2)", [company, incidentAdmin])).rejects.toThrow('company_full_rollback_fenced');
-      await expect(isolated.exec("update private.tc_company_full_licenses set enabled=true")).rejects.toThrow('company_full_rollback_fenced');
+      // A pre-gate rollback would restore the historical FULL inheritance bug.
+      // The body hash must fail closed until a newly reviewed rollback exists.
+      await expect(isolated.exec(rollback)).rejects.toThrow('company_full_rollback_body_mismatch');
+      await isolated.exec("rollback");
+      expect((await isolated.query("select to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is not null present,to_regclass('private.tc_company_full_audit') is not null audit_kept")).rows)
+        .toEqual([{ present: true, audit_kept: true }]);
       expect((await isolated.query("select count(*)::int n from private.tc_company_full_licenses")).rows).toEqual([{ n: 0 }]);
+      expect((await isolated.query("select to_regprocedure('private.tc_company_full_rollback_fenced()') is null no_stale_fence")).rows)
+        .toEqual([{ no_stale_fence: true }]);
     } finally { await isolated.close(); }
   }, 30000);
 });

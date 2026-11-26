@@ -50,17 +50,16 @@ def run(pg, f):
     def access(company, user=owner, sid=owner_sid):
         return context(user, sid) + f.rpc("tc_organization_access", q(company) + "::uuid") + ";"
 
-    # Test the shipped rollback body before any committed configured decision.
+    # A pre-gate rollback would restore functions with the historical FULL
+    # inheritance vulnerability. The existing version guard must fail closed.
+    # A secure, newly reviewed rollback is required before any publication.
     rollback = (f.ROOT / "docs/verification/company-manual-full-function-rollback.sql").read_text()
     assert rollback.rstrip().endswith("commit;")
     before_rollback = pg.catalog_fingerprint(pg.SOURCE)
-    restored = pg.value(rollback.rstrip()[:-len("commit;")]
-        + "select jsonb_build_object('rpc_absent',to_regprocedure('public.tc_admin_company_full(text,uuid,bigint,uuid,jsonb,uuid)') is null,"
-        + "'audit_kept',to_regclass('private.tc_company_full_audit') is not null,"
-        + "'old_guard',md5((select prosrc from pg_proc where oid='private.tc_account_active(uuid)'::regprocedure))='533ab690fbd7fe74419c99696168f3d9');rollback;")
-    pg.check("Manual Full: zero-record function rollback executes with old guard and immutable tables retained",
-        restored == {"rpc_absent": True, "audit_kept": True, "old_guard": True}
-        and pg.catalog_fingerprint(pg.SOURCE) == before_rollback)
+    pg.require_error("Manual Full: stale zero-record rollback is safely refused",
+        rollback, "company_full_rollback_body_mismatch")
+    pg.check("Manual Full: rejected rollback leaves schema unchanged",
+        pg.catalog_fingerprint(pg.SOURCE) == before_rollback)
 
     # Native service keys are not modeled here. These users/claims exist only
     # inside the pinned local catalog and cannot authenticate to a real service.
@@ -90,6 +89,35 @@ def run(pg, f):
     pg.check("Manual Full: unconfigured company retains its legacy trial and metadata",
         legacy["active"] and legacy["plan"] == "limited"
         and legacy["manual_full"]["status"] == "unconfigured" and legacy["manual_full"]["revision"] == 0)
+    # P0 regression: old paid/trial Full or user overrides cannot grant Full.
+    # These are fabricated records inside ROLLBACK transactions only.
+    old_full = ("reset role;update private.tc_customers set trial_plan_id='full',paid_plan='full',requested_plan='full',"
+        "trial_started_at=now()-interval '1 day',trial_ends_at=now()+interval '9 days',paid_until=now()+interval '30 days',"
+        "ai_allowed=true,ai_opt_in=true,"
+        "module_overrides=coalesce(module_overrides,'{}'::jsonb)||'{\"invoice_ai\":true,\"document_ai\":true}'::jsonb "
+        "where user_id=" + q(owner) + ";")
+    for phase in ("trial", "active"):
+        old_access = trial(old_full + "update private.tc_customers set status=" + q(phase) + " where user_id=" + q(owner) + ";"
+            + context() + "select jsonb_build_object('company',public.tc_organization_access(" + q(org) + "),"
+            "'global',public.tc_finish_registration())")
+        company, global_account = old_access["company"], old_access["global"]
+        pg.check("Manual Full: historical " + phase + " Full and overrides never unlock unconfigured Full",
+            company["active"] and company["plan"] == "limited" and not company["manual_full"]["configured"]
+            and not company["features"]["invoice_ai"] and not company["features"]["document_ai"]
+            and global_account["plan"] == "limited"
+            and not global_account["features"]["invoice_ai"] and not global_account["features"]["document_ai"])
+    old_enforcement = trial(old_full + "update private.tc_settings set enforce_access=false;"
+        + context() + f.rpc("tc_organization_access", q(org) + "::uuid"))
+    pg.check("Manual Full: disabling global enforcement cannot activate old Full",
+        old_enforcement["plan"] == "limited"
+        and not old_enforcement["features"]["invoice_ai"] and not old_enforcement["features"]["document_ai"])
+    scoped_root = trial(old_full + set_full(org) + context()
+        + "select jsonb_build_object('first',public.tc_organization_access(" + q(org) + "),"
+        "'sibling',public.tc_organization_access(" + q(sibling) + "))")
+    pg.check("Manual Full: an actual Root decision enables only the selected company",
+        scoped_root["first"]["plan"] == "full" and scoped_root["first"]["manual_full"]["status"] == "active"
+        and scoped_root["sibling"]["plan"] == "limited" and not scoped_root["sibling"]["manual_full"]["configured"])
+
     expire = "reset role;update private.tc_customers set status='trial',paid_plan=null,paid_until=null,trial_started_at=now()-interval '20 days',trial_ends_at=now()-interval '10 days' where user_id=" + q(owner) + ";"
     scoped = trial(expire + "create temp table original_manual_customer as select to_jsonb(c) value from private.tc_customers c where user_id=" + q(owner) + ";"
         + set_full(org) + access(org) + "reset role;select jsonb_build_object('enabled',private.tc_organization_access_for(" + q(org) + "," + q(owner) + "),"
@@ -107,29 +135,33 @@ def run(pg, f):
     disabled = trial(set_full(org, False) + "reset role;update private.tc_settings set enforce_access=false;"
         + context() + "update public.trucks set odometer_km=999 where id=" + q(truck) + ";"
         + "reset role;select jsonb_build_object('access',private.tc_organization_access_for(" + q(org) + "," + q(owner)
-        + "),'truck_unchanged',(select odometer_km=0 from public.trucks where id=" + q(truck) + "))")
-    # Separate role-visible assertions avoid inspecting the hidden business row
-    # as the authenticated caller. The owner-only read above verifies retention.
+        + "),'truck_written',(select odometer_km=999 from public.trucks where id=" + q(truck) + "))")
     visible = trial(set_full(org, False) + "reset role;update private.tc_settings set enforce_access=false;" + context()
         + "select jsonb_build_object('trucks',(select count(*) from public.trucks where id=" + q(truck) + "),"
         + "'organizations',(select count(*) from public.organizations where id=" + q(org) + "),"
         + "'objects',(select count(*) from storage.objects where id=" + q(storage) + "),'access',public.tc_organization_access(" + q(org) + "))")
-    pg.check("Manual Full: OFF wins even with legacy enforce_access=false; raw UPDATE without RETURNING cannot write",
-        not disabled["access"]["active"] and disabled["truck_unchanged"]
-        and visible["trucks"] == visible["objects"] == 0 and visible["organizations"] == 1
-        and not visible["access"]["can_write"] and not any(visible["access"]["features"].values()))
-    deny("OFF company rename is blocked without RETURNING", set_full(org, False) + context()
-        + "update public.organizations set name='must never persist' where id=" + q(org), "company_full_inactive")
-    deny("OFF document RPC denies original access", set_full(org, False) + context() + f.rpc("tc_document_page", q(org), "null::uuid"))
-    deny("OFF operational RPC is denied", set_full(org, False) + context() + f.rpc("tc_list_records", q(org), "null::uuid"))
-    deny("OFF storage insert cannot create a fresh original", set_full(org, False) + context()
-        + "insert into storage.objects(bucket_id,name,owner) values('truckcontrol-documents'," + q(org + "/" + f.op(218) + "/blocked.pdf") + "," + q(owner) + ")")
+    pg.check("Manual Full: OFF safely downgrades to Basic, retaining RLS, Storage and writes",
+        disabled["access"]["active"] and disabled["access"]["plan"] == "limited"
+        and disabled["access"]["can_write"] and disabled["truck_written"]
+        and not disabled["access"]["features"]["invoice_ai"]
+        and not disabled["access"]["features"]["document_ai"]
+        and visible["trucks"] == visible["objects"] == 1 and visible["organizations"] == 1)
+    renamed = trial(set_full(org, False) + context()
+        + "update public.organizations set name='Synthetic Basic fallback' where id=" + q(org) + ";"
+        + "reset role;select jsonb_build_object('name',(select name from public.organizations where id=" + q(org) + "))")
+    pg.check("Manual Full: OFF preserves company administration without changing other tenants",
+        renamed == {"name": "Synthetic Basic fallback"})
+    records = trial(set_full(org, False) + context()
+        + "select jsonb_build_object('rows',public.tc_list_records(" + q(org) + ",null))")
+    pg.check("Manual Full: OFF preserves operational fleet-record RPC", isinstance(records["rows"],list))
     # PostgreSQL transaction time makes equality deterministic, unlike HTTP.
     boundary_rpc = f.rpc("tc_admin_company_full", "'set'", q(org), "0", q(f.op(251)),
         "jsonb_build_object('enabled',true,'expires_at',now())", "null::uuid")
     boundary = trial(root(boundary_rpc) + access(org))
-    pg.check("Manual Full: exact server expiry boundary is expired and denies operations",
-        not boundary["active"] and boundary["manual_full"]["status"] == "expired")
+    pg.check("Manual Full: exact server expiry boundary revokes Full but retains Basic",
+        boundary["active"] and boundary["plan"] == "limited"
+        and not boundary["features"]["document_ai"] and not boundary["features"]["invoice_ai"]
+        and boundary["manual_full"]["status"] == "expired")
     transitions = trial(set_full(org, True, "2000-01-01T00:00:00Z")
         + set_full(org, True, None, 1, f.op(252)) + access(org))
     pg.check("Manual Full: reactivation from past expiry is immediate and NULL expiry is unlimited",
@@ -174,35 +206,27 @@ def run(pg, f):
         not features["features"]["documents"] and not features["features"]["gmail"])
 
     worker = trial(set_full(org, False) + service("select jsonb_build_object('access',public.tc_company_server_access(" + q(owner) + "," + q(org)
-        + "),'document_ai',public.tc_consume_document_ai(" + q(org) + "," + q(owner) + "),'legacy_lock',public.gmail_server('lock_sync',"
-        + js({"organization_id": org}) + "),'fenced_lock',public.gmail_server('lock_sync',"
-        + js({"organization_id": org, "user_id": owner, "sync_lease_id": f.op(254)}) + "))"))
-    pg.check("Manual Full: service background guard, AI reservation and both Gmail acquisition paths deny OFF",
-        not worker["access"]["active"] and worker["document_ai"] is False
-        and worker["legacy_lock"] is False and worker["fenced_lock"] is False)
+        + "),'document_ai',public.tc_consume_document_ai(" + q(org) + "," + q(owner) + "))"))
+    pg.check("Manual Full: Basic workers retain company access but Full document AI remains blocked",
+        worker["access"]["active"] and worker["access"]["plan"] == "limited"
+        and worker["access"]["features"]["gmail"] and worker["document_ai"] is False)
     lease = {"organization_id": org, "user_id": owner, "sync_lease_id": f.op(254)}
     active_lease = set_full(org) + service(f.rpc("gmail_server", "'lock_sync'", js(lease)))
     lease_on = trial(active_lease + service("select jsonb_build_object('allowed',public.gmail_server('assert_sync'," + js(lease) + "))"))
     pg.check("Manual Full: a permitted fenced worker can acquire the existing synthetic connection", lease_on == {"allowed": True})
     revoked_lease = active_lease + set_full(org, False, None, 1, f.op(255))
-    pg.check("Manual Full: disable revokes an already acquired worker capability",
-        trial(revoked_lease + service("select jsonb_build_object('allowed',public.gmail_server('assert_sync'," + js(lease) + "))")) == {"allowed": False})
-    deny("disable prevents an acquired fenced worker from committing an invoice",
-        revoked_lease + service(f.rpc("gmail_server", "'record_invoice'", js(lease))))
+    pg.check("Manual Full: existing Basic Gmail worker retains its current lease after FULL OFF",
+        trial(revoked_lease + service("select jsonb_build_object('allowed',public.gmail_server('assert_sync'," + js(lease) + "))")) == {"allowed": True})
+    blocked_ai = trial(revoked_lease + service("select jsonb_build_object('allowed',public.gmail_server('reserve_ai'," + js(lease) + "))"))
+    pg.check("Manual Full: an OFF company cannot reserve invoice AI even with an existing Gmail lease",
+        blocked_ai == {"allowed": False})
     finish = trial(revoked_lease + service(f.rpc("gmail_server", "'finish_sync'",
-        js({**lease, "succeeded": True, "reauthorize": True, "page_token": "must-not-persist"})))
+        js({**lease, "succeeded": True, "reauthorize": True, "page_token": "basic-cursor"})))
         + "reset role;select jsonb_build_object('lease_released',sync_lease_id is null and sync_lease_until is null,"
-        + "'cursor_preserved',sync_page_token='synthetic-existing-cursor','status_preserved',status='connected',"
-        + "'sync_preserved',last_sync_at='2026-01-01T00:00:00Z'::timestamptz) from private.gmail_connections where organization_id=" + q(org))
-    pg.check("Manual Full: denied worker may release only its lease, without cursor/status/sync mutations",
-        finish == {"lease_released": True, "cursor_preserved": True, "status_preserved": True, "sync_preserved": True})
-    for name, statement in (
-        ("legacy Gmail credentials", f.rpc("gmail_server", "'credentials'", js({"organization_id": org}))),
-        ("fenced Gmail original import", f.rpc("gmail_server", "'record_invoice'", js({"organization_id": org, "user_id": owner, "sync_lease_id": f.op(254)}))),
-        ("inbound company mail", f.rpc("company_mail_server", "'get_inbox'", js({"organization_id": org, "user_id": owner}))),
-        ("company copilot", f.rpc("company_copilot_server", q(org), q(owner), "'context'", "'{}'::jsonb")),
-    ):
-        deny("OFF blocks " + name, set_full(org, False) + service(statement))
+        + "'cursor_saved',sync_page_token='basic-cursor','status_reauthorize',status='reauthorize',"
+        + "'sync_advanced',last_sync_at>'2026-01-01T00:00:00Z'::timestamptz) from private.gmail_connections where organization_id=" + q(org))
+    pg.check("Manual Full: Basic Gmail sync persists cursor/status while FULL-only AI is revoked",
+        finish == {"lease_released": True, "cursor_saved": True, "status_reauthorize": True, "sync_advanced": True})
     ai = trial(set_full(org) + "reset role;update private.tc_modules set enabled=true where id='document_ai';" + access(org))
     pg.check("Manual Full: plan alone never opts in to AI or enables provider consent", not ai["features"]["document_ai"])
     quota = trial(set_full(org) + "reset role;update private.tc_modules set enabled=true where id='document_ai';"

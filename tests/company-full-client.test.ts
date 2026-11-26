@@ -9,8 +9,10 @@ import {
   companyFullHistory,
 } from "../src/integrations/supabase/company-full";
 import {
+  assertCompanyFullPlan,
   fullExpiryDeadline,
   fullExpiryFromInput,
+  fullStatusLabel,
   manualFullSchema,
   readManualFullAccess,
   watchFullExpiry,
@@ -376,6 +378,14 @@ describe("company Full contract with the real native SDK", () => {
   });
 });
 describe("manual Full scope, expiry and bounded offline authorization", () => {
+  it("never marks an unconfigured company FULL as active even when Basic is active", () => {
+    // The prior admin badge used an effective plan/active flag and could turn
+    // green for legacy FULL or an active Basic trial without a Root licence.
+    expect(fullStatusLabel(empty)).toBe("Sin activar");
+    expect(fullStatusLabel(active())).toBe("Activo");
+    expect(fullStatusLabel({ ...active(), enabled: false, status: "disabled" })).toBe("Desactivado");
+    expect(fullStatusLabel({ ...active(), status: "expired", expires_at: stamp() })).toBe("Vencido");
+  });
   it("preserves absent legacy metadata and rejects incompatible configured state", () => {
     expect(readManualFullAccess({}, org)).toBeUndefined();
     expect(manualFullSchema.parse(empty).configured).toBe(false);
@@ -392,6 +402,41 @@ describe("manual Full scope, expiry and bounded offline authorization", () => {
     expect(() =>
       manualFullSchema.parse({ ...active(), enabled: false }),
     ).toThrow();
+  });
+  it("requires a matching manual company licence before trusting a Full tier", () => {
+    const observed_at = stamp();
+    const company = { organization_id: org, observed_at, manual_full: active(), plan: "full" };
+    expect(assertCompanyFullPlan(company, org)?.status).toBe("active");
+    expect(() => assertCompanyFullPlan({ ...company, plan: "limited" }, org)).toThrow("company_full_tier_mismatch");
+    expect(() => assertCompanyFullPlan({ ...company, manual_full: { ...active(), enabled: false, status: "disabled" } }, org))
+      .toThrow("company_full_tier_mismatch");
+    expect(assertCompanyFullPlan({ ...company, manual_full: { ...active(), enabled: false, status: "disabled" }, plan: "limited" }, org)?.status)
+      .toBe("disabled");
+    expect(() => assertCompanyFullPlan({ ...company, manual_full: empty }, org)).toThrow("company_full_tier_mismatch");
+    expect(() => assertCompanyFullPlan({ ...company, organization_id: "other" }, org)).toThrow();
+    // Fail closed on unknown/legacy tier labels even when an unconfigured
+    // company would otherwise be considered a harmless Limited fallback.
+    for (const invalid of ["enterprise", "premium", "trial", "", "FULL"]) {
+      expect(() => assertCompanyFullPlan({ ...company, plan: invalid, manual_full: empty }, org))
+        .toThrow("company_full_unknown_tier");
+    }
+    expect(assertCompanyFullPlan({ ...company, plan: "limited", manual_full: empty }, org)?.status)
+      .toBe("unconfigured");
+    // Reject inconsistent Backend Basic feature flags, even if the licence
+    // was explicitly disabled or never configured; Full-only AI is not Basic.
+    for (const manual_full of [empty, { ...active(), status: "disabled" as const, enabled: false }]) {
+      for (const aiFeature of ["invoice_ai", "document_ai"] as const) {
+        expect(() => assertCompanyFullPlan({
+          ...company, plan: "limited", manual_full, features: { [aiFeature]: true },
+        }, org)).toThrow("company_full_forbidden_basic_feature");
+      }
+      expect(assertCompanyFullPlan({
+        ...company, plan: "limited", manual_full,
+        features: { invoice_ai: false, document_ai: false },
+      }, org)?.status).toBe(manual_full.status);
+    }
+    expect(() => assertCompanyFullPlan({ ...company, plan: "full", manual_full: empty }, org))
+      .toThrow("company_full_tier_mismatch");
   });
   it("uses explicit UTC and rejects impossible dates", () => {
     expect(fullExpiryFromInput("")).toBeNull();
@@ -484,6 +529,17 @@ describe("manual Full scope, expiry and bounded offline authorization", () => {
       3600000,
     );
     access.manual_full = { ...active(), enabled: false, status: "disabled" };
+    // An old cached Full entitlement is never treated as an active Basic lease.
     expect(() => offlinePayload(fleet, [], access)).toThrow();
+    access.plan = "limited";
+    access.features = { ...demoFeatures, invoice_ai: false, document_ai: false };
+    const basic = offlinePayload(fleet, [], access);
+    expect(Date.parse(basic.expiresAt) - now).toBe(7 * 86400000);
+    expect(basic.access.features.invoice_ai).toBe(false);
+    expect(basic.access.features.document_ai).toBe(false);
+    access.manual_full = {
+      ...active(), status: "expired", expires_at: new Date(now - 3600000).toISOString(),
+    };
+    expect(Date.parse(offlinePayload(fleet, [], access).expiresAt) - now).toBe(7 * 86400000);
   });
 });

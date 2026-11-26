@@ -5,9 +5,11 @@ import { SupabaseFleetRepository } from "../integrations/supabase/repository";
 import { CloudOperationRepository } from "./operations";
 import { offlinePayload } from "./offline-vault";
 import type { VaultSession } from "./offline-vault";
-import { manualFullBlocked, readManualFullAccess } from "../domain/company-full";
+import { assertCompanyFullPlan } from "../domain/company-full";
 
-/** Permission-only refresh: never replay queued operations or extend a lease. */
+/** Permission-only refresh: never replay queued operations or extend a live FULL lease.
+ * After an online-confirmed FULL→Basic downgrade, an already expired offline
+ * lease can be reissued as Basic without deleting the encrypted draft/outbox. */
 export async function refreshVaultAuthorization(
   session: VaultSession,
   client: SupabaseClient<Database>,
@@ -52,7 +54,7 @@ export async function refreshVaultAuthorization(
     );
   const access = data as unknown as SubscriptionAccess;
   try {
-    if (manualFullBlocked(readManualFullAccess(access, orgId))) return denied();
+    assertCompanyFullPlan(access, orgId);
   } catch {
     return denied();
   }
@@ -65,9 +67,20 @@ export async function refreshVaultAuthorization(
     previous.operations,
     access,
   );
-  const expiresAt = new Date(
-    Math.min(Date.parse(previous.expiresAt), Date.parse(candidate.expiresAt)),
-  ).toISOString();
+  // A signed-in, company-scoped RPC has independently authorized a *new* Basic
+  // entitlement. An old expired FULL lease must not keep Basic data unusable.
+  // Never extend a still-valid lease or renew a FULL entitlement here.
+  const renewExpiredAsBasic =
+    previous.access.plan === "full" &&
+    access.plan === "limited" &&
+    access.manual_full?.configured === true &&
+    access.manual_full.status !== "active" &&
+    Date.parse(previous.expiresAt) <= Date.parse(access.observed_at ?? "");
+  const expiresAt = renewExpiredAsBasic
+    ? candidate.expiresAt
+    : new Date(
+        Math.min(Date.parse(previous.expiresAt), Date.parse(candidate.expiresAt)),
+      ).toISOString();
   const permissions = (value: SubscriptionAccess) =>
     JSON.stringify({
       active: value.active,
@@ -87,9 +100,14 @@ export async function refreshVaultAuthorization(
     (value) => ({
       ...value,
       access,
-      expiresAt: new Date(
-        Math.min(Date.parse(value.expiresAt), Date.parse(expiresAt)),
-      ).toISOString(),
+      // Rebase the seven-day offline window only for a fresh, reduced Basic
+      // lease; keeping the old authorizedAt would violate the vault's TTL.
+      authorizedAt: renewExpiredAsBasic ? candidate.authorizedAt : value.authorizedAt,
+      expiresAt: renewExpiredAsBasic
+        ? candidate.expiresAt
+        : new Date(
+            Math.min(Date.parse(value.expiresAt), Date.parse(expiresAt)),
+          ).toISOString(),
     }),
     signal,
   );
@@ -144,7 +162,7 @@ export async function synchronizeVault(
       throw Error(
         "No se han podido comprobar los permisos actuales. Los cambios siguen cifrados y pendientes.",
       );
-    try { if (manualFullBlocked(readManualFullAccess(access, orgId))) return denyCopy(); } catch { return denyCopy(); }
+    try { assertCompanyFullPlan(access, orgId); } catch { return denyCopy(); }
     if (!access?.active) return denyCopy();
     if (access.profile?.user_id !== userId)
       throw Error("La cuenta de la copia ha cambiado. Verifica de nuevo el acceso antes de sincronizar.");
@@ -170,7 +188,9 @@ export async function synchronizeVault(
       item.command.type === "save"
         ? item.command.value.kind
         : item.command.kind;
-    if (access.can_write === false || !access.features[kind]) {
+    // Only explicit, boolean grants are authorizations. Missing or malformed
+    // RPC capability flags must never publish cached offline mutations.
+    if (access.can_write !== true || access.features?.[kind] !== true) {
       await session.update((v) => ({ ...v, access }), signal);
       active();
       throw Error(

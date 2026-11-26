@@ -94,7 +94,7 @@ beforeAll(async () => {
   const migrations = readdirSync("supabase/migrations")
     .filter((name) => name.endsWith(".sql"))
     .sort();
-  expect(migrations.at(-1)).toBe(
+  expect(migrations).toContain(
     "20261116085827_billing_document_attachments.sql",
   );
   for (const file of migrations)
