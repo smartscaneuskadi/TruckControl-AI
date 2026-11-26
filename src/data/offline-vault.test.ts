@@ -21,8 +21,9 @@ const now = new Date().toISOString(),
 const access: SubscriptionAccess = {
   active: true,
   is_admin: false,
-  features: demoFeatures,
-  plan: "full",
+  organization_id: fleet.organization.id,
+  features: { ...demoFeatures, invoice_ai: false, document_ai: false },
+  plan: "limited",
   max_trucks: 50,
   sms_ready: false,
   prices_are_examples: true,
@@ -58,6 +59,42 @@ const scope = vaultScope(
   ),
   passphrase = "frase-sintetica-para-pruebas-123";
 describe("almacenamiento offline cifrado", () => {
+  it("rechaza FULL heredado sin licencia manual y el ámbito de otra empresa", () => {
+    expect(() =>
+      offlinePayload(fleet, [], { ...access, plan: "full", features: demoFeatures }),
+    ).toThrow("company_full_tier_mismatch");
+    expect(() =>
+      offlinePayload(fleet, [], { ...access, organization_id: crypto.randomUUID() }),
+    ).toThrow("company_full_scope_mismatch");
+    expect(() =>
+      offlinePayload(fleet, [], { ...access, features: demoFeatures }),
+    ).toThrow("company_full_forbidden_basic_feature");
+  });
+  it("no amplía el vencimiento FULL concedido manualmente por el servidor", () => {
+    const expires = new Date(Date.parse(now) + 3600000).toISOString();
+    const granted: SubscriptionAccess = {
+      ...access,
+      plan: "full",
+      features: demoFeatures,
+      observed_at: now,
+      manual_full: {
+        schema_version: 1,
+        configured: true,
+        status: "active",
+        enabled: true,
+        expires_at: expires,
+        revision: 1,
+        updated_at: now,
+      },
+    };
+    expect(offlinePayload(fleet, [], granted).expiresAt).toBe(expires);
+    expect(() =>
+      offlinePayload(fleet, [], {
+        ...granted,
+        manual_full: { ...granted.manual_full!, status: "disabled", enabled: false },
+      }),
+    ).toThrow("company_full_tier_mismatch");
+  });
   it("protege datos personales y no permite exportar la clave", async () => {
     const salt = newVaultSalt(),
       key = await deriveVaultKey(passphrase, salt),
